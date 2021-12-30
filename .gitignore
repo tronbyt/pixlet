@@ -1,1 +1,12 @@
-*~
+# MacOS
+.DS_Store
+
+# Rendered Apps
+examples/*.webp
+examples/*.gif
+
+# Pixlet Binary
+pixlet
+
+# Releases
+build/

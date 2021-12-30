@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/lucasb-eyer/go-colorful"
-	"github.com/mitchellh/hashstructure"
+	"github.com/mitchellh/hashstructure/v2"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 	"tidbyt.dev/pixlet/render"
@@ -153,7 +153,7 @@ func (w *Animation) Freeze()              {}
 func (w *Animation) Truth() starlark.Bool { return true }
 
 func (w *Animation) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -267,7 +267,7 @@ func (w *Box) Freeze()              {}
 func (w *Box) Truth() starlark.Bool { return true }
 
 func (w *Box) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -369,7 +369,7 @@ func (w *Circle) Freeze()              {}
 func (w *Circle) Truth() starlark.Bool { return true }
 
 func (w *Circle) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -472,7 +472,7 @@ func (w *Column) Freeze()              {}
 func (w *Column) Truth() starlark.Bool { return true }
 
 func (w *Column) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -560,7 +560,7 @@ func (w *Image) Freeze()              {}
 func (w *Image) Truth() starlark.Bool { return true }
 
 func (w *Image) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -594,7 +594,10 @@ func newMarquee(
 ) (starlark.Value, error) {
 
 	var (
+		scroll_direction starlark.String
+
 		width        starlark.Int
+		height       starlark.Int
 		offset_start starlark.Int
 		offset_end   starlark.Int
 
@@ -605,15 +608,19 @@ func newMarquee(
 		"Marquee",
 		args, kwargs,
 		"child", &child,
-		"width", &width,
+		"width?", &width,
+		"height?", &height,
 		"offset_start?", &offset_start,
 		"offset_end?", &offset_end,
+		"scroll_direction?", &scroll_direction,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Marquee: %s", err)
 	}
 
 	w := &Marquee{}
+	w.ScrollDirection = scroll_direction.GoString()
 	w.Width = int(width.BigInt().Int64())
+	w.Height = int(height.BigInt().Int64())
 	w.OffsetStart = int(offset_start.BigInt().Int64())
 	w.OffsetEnd = int(offset_end.BigInt().Int64())
 
@@ -638,15 +645,21 @@ func (w *Marquee) AsRenderWidget() render.Widget {
 
 func (w *Marquee) AttrNames() []string {
 	return []string{
-		"child", "width", "offset_start", "offset_end",
+		"child", "width", "height", "offset_start", "offset_end", "scroll_direction",
 	}
 }
 
 func (w *Marquee) Attr(name string) (starlark.Value, error) {
 	switch name {
 
+	case "scroll_direction":
+		return starlark.String(w.ScrollDirection), nil
+
 	case "width":
 		return starlark.MakeInt(w.Width), nil
+
+	case "height":
+		return starlark.MakeInt(w.Height), nil
 
 	case "offset_start":
 		return starlark.MakeInt(w.OffsetStart), nil
@@ -668,7 +681,7 @@ func (w *Marquee) Freeze()              {}
 func (w *Marquee) Truth() starlark.Bool { return true }
 
 func (w *Marquee) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -789,7 +802,7 @@ func (w *Padding) Freeze()              {}
 func (w *Padding) Truth() starlark.Bool { return true }
 
 func (w *Padding) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -892,7 +905,7 @@ func (w *Row) Freeze()              {}
 func (w *Row) Truth() starlark.Bool { return true }
 
 func (w *Row) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -975,7 +988,7 @@ func (w *Stack) Freeze()              {}
 func (w *Stack) Truth() starlark.Bool { return true }
 
 func (w *Stack) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -1087,7 +1100,7 @@ func (w *Text) Freeze()              {}
 func (w *Text) Truth() starlark.Bool { return true }
 
 func (w *Text) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
@@ -1209,6 +1222,6 @@ func (w *WrappedText) Freeze()              {}
 func (w *WrappedText) Truth() starlark.Bool { return true }
 
 func (w *WrappedText) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, nil)
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }

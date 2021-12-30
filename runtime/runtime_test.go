@@ -174,7 +174,7 @@ hello_re = 'he[l]{2}o\\sthere'
 def main():
     if base64.decode(hello_b64) != "hello there":
         fail("base64 broken")
-    if json.loads(hello_json)["hello"] != "there":
+    if json.decode(hello_json)["hello"] != "there":
         fail("json broken")
     if http.get == None:
         fail("http broken")
@@ -182,7 +182,7 @@ def main():
         fail("math broken")
     if re.findall(hello_re, "well hello there friend") != ("hello there",):
         fail("re broken")
-    if time.duration("10s").seconds() != 10:
+    if time.parse_duration("10s").seconds != 10:
         fail("time broken")
     return render.Root(child=render.Box())
 `
@@ -215,6 +215,77 @@ def main():
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(roots))
 
+}
+
+func TestThreadInitializer(t *testing.T) {
+	src := `
+load("render.star", "render")
+def main():
+	print('foobar')
+	return render.Root(child=render.Box())
+`
+	// override the print function of the thread
+	var printedText string
+	initializer := func(thread *starlark.Thread) *starlark.Thread {
+		thread.Print = func(thread *starlark.Thread, msg string) {
+			printedText += msg
+		}
+		return thread
+	}
+
+	app := &Applet{}
+	err := app.Load("test.star", []byte(src), nil)
+	assert.NoError(t, err)
+	_, err = app.Run(map[string]string{}, initializer)
+	assert.NoError(t, err)
+
+	// our print function should have been called
+	assert.Equal(t, "foobar", printedText)
+}
+
+func TestXPathModule(t *testing.T) {
+	src := `
+load("render.star", r="render")
+load("xpath.star", "xpath")
+
+def main():
+    xml = """
+<foo>
+   <bar>1337</bar>
+   <bar>4711</bar>
+</foo>
+"""
+
+    d = xpath.loads(xml)
+
+    t = d.query("/foo/bar")
+    if t != "1337":
+        fail(t)
+
+    t = d.query_all("/foo/bar")
+    if len(t) != 2:
+        fail(len(t))
+    if t[0] != "1337":
+        fail(t[0])
+    if t[1] != "4711":
+        fail(t[1])
+
+    t = d.query("/foo/doesntexist")
+    if t != None:
+        fail(t)
+
+    t = d.query_all("/foo/doesntexist")
+    if len(t) != 0:
+        fail(t)
+
+    return [r.Root(child=r.Text("1337"))]
+`
+	app := &Applet{}
+	err := app.Load("test.star", []byte(src), nil)
+	assert.NoError(t, err)
+	screens, err := app.Run(map[string]string{})
+	assert.NoError(t, err)
+	assert.NotNil(t, screens)
 }
 
 // TODO: test Screens, especially Screens.Render()

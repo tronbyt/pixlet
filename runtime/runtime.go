@@ -6,11 +6,11 @@ import (
 
 	"github.com/pkg/errors"
 	starlibbase64 "github.com/qri-io/starlib/encoding/base64"
-	starlibjson "github.com/qri-io/starlib/encoding/json"
 	starlibhttp "github.com/qri-io/starlib/http"
-	starlibmath "github.com/qri-io/starlib/math"
 	starlibre "github.com/qri-io/starlib/re"
-	starlibtime "github.com/qri-io/starlib/time"
+	starlibjson "go.starlark.net/lib/json"
+	starlibmath "go.starlark.net/lib/math"
+	starlibtime "go.starlark.net/lib/time"
 	"go.starlark.net/resolve"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
@@ -19,6 +19,11 @@ import (
 )
 
 type ModuleLoader func(*starlark.Thread, string) (starlark.StringDict, error)
+
+// ThreadInitializer is called when building a Starlark thread to run an applet
+// on. It can customize the thread by overriding behavior or attaching thread
+// local data.
+type ThreadInitializer func(thread *starlark.Thread) *starlark.Thread
 
 func init() {
 	resolve.AllowFloat = true
@@ -38,14 +43,20 @@ type Applet struct {
 	main        *starlark.Function
 }
 
-func (a *Applet) thread() *starlark.Thread {
-	return &starlark.Thread{
+func (a *Applet) thread(initializers ...ThreadInitializer) *starlark.Thread {
+	t := &starlark.Thread{
 		Name: a.Id,
 		Load: a.loadModule,
 		Print: func(thread *starlark.Thread, msg string) {
 			fmt.Printf("[%s] %s\n", a.Filename, msg)
 		},
 	}
+
+	for _, init := range initializers {
+		t = init(t)
+	}
+
+	return t
 }
 
 // Loads an applet. The script filename is used as a descriptor only,
@@ -90,7 +101,7 @@ func (a *Applet) Load(filename string, src []byte, loader ModuleLoader) (err err
 
 // Runs the applet's main function, passing it configuration as a
 // starlark dict.
-func (a *Applet) Run(config map[string]string) (roots []render.Root, err error) {
+func (a *Applet) Run(config map[string]string, initializers ...ThreadInitializer) (roots []render.Root, err error) {
 	var args starlark.Tuple
 	if a.main.NumParams() > 0 {
 		starlarkConfig := starlark.NewDict(len(config))
@@ -103,7 +114,7 @@ func (a *Applet) Run(config map[string]string) (roots []render.Root, err error) 
 		args = starlark.Tuple{starlarkConfig}
 	}
 
-	returnValue, err := a.Call(a.main, args)
+	returnValue, err := a.Call(a.main, args, initializers...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,14 +148,14 @@ func (a *Applet) Run(config map[string]string) (roots []render.Root, err error) 
 
 // Calls any callable from Applet.Globals. Pass args and receive a
 // starlark Value, or an error if you're unlucky.
-func (a *Applet) Call(callable *starlark.Function, args starlark.Tuple) (val starlark.Value, err error) {
+func (a *Applet) Call(callable *starlark.Function, args starlark.Tuple, initializers ...ThreadInitializer) (val starlark.Value, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic while running %s: %v", a.Filename, r)
 		}
 	}()
 
-	resultVal, err := starlark.Call(a.thread(), callable, args, nil)
+	resultVal, err := starlark.Call(a.thread(initializers...), callable, args, nil)
 	if err != nil {
 		evalErr, ok := err.(*starlark.EvalError)
 		if ok {
@@ -176,23 +187,32 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 	case "cache.star":
 		return LoadCacheModule()
 
+	case "xpath.star":
+		return LoadXPathModule()
+
 	case "encoding/base64.star":
 		return starlibbase64.LoadModule()
 
 	case "encoding/json.star":
-		return starlibjson.LoadModule()
+		return starlark.StringDict{
+			starlibjson.Module.Name: starlibjson.Module,
+		}, nil
 
 	case "http.star":
 		return starlibhttp.LoadModule()
 
 	case "math.star":
-		return starlibmath.LoadModule()
+		return starlark.StringDict{
+			starlibmath.Module.Name: starlibmath.Module,
+		}, nil
 
 	case "re.star":
 		return starlibre.LoadModule()
 
 	case "time.star":
-		return starlibtime.LoadModule()
+		return starlark.StringDict{
+			starlibtime.Module.Name: starlibtime.Module,
+		}, nil
 
 	default:
 		return nil, fmt.Errorf("invalid module: %s", module)

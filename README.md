@@ -33,11 +33,9 @@ brew install tidbyt/tidbyt/pixlet
 
 Download the `pixlet` binary from [the latest release][1].
 
-Alternatively you can build from source with `go build`.
-Make sure to [install libwebp][2] first.
+Alternatively you can [build from source](BUILD.md).
 
 [1]: https://github.com/tidbyt/pixlet/releases/latest
-[2]: https://developers.google.com/speed/webp/download
 
 ### Hello, World!
 
@@ -138,3 +136,15 @@ To get the ID and API key for a device, open the settings for the device in the 
 If all goes well, you should see the Bitcoin tracker appear on your Tidbyt:
 
 ![](doc/img/tidbyt_2.jpg)
+
+## Push as an Installation
+Pushing an applet to your Tidbyt without an installation ID simply displays your applet one time. If you would like your applet to continously display as part of the rotation, add an installation ID to the push command:
+
+```
+pixlet render examples/bitcoin.star
+pixlet push --api-token <YOUR API TOKEN> <YOUR DEVICE ID> examples/bitcoin.webp <INSTALLATION ID>
+```
+
+For example, if we set the `installationID` to "Bitcoin", it would appear in the mobile app as follows:
+
+![](doc/img/mobile_1.jpg)

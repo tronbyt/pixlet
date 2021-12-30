@@ -2,6 +2,8 @@ package encode
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"image"
 	"image/color"
@@ -46,6 +48,34 @@ func ScreensFromImages(images ...image.Image) *Screens {
 		delay:  DefaultScreenDelayMillis,
 	}
 	return &screens
+}
+
+// Hash returns a hash of the render roots for this screen. This can be used for
+// testing whether two render trees are exactly equivalent, without having to
+// do the actual rendering.
+func (s *Screens) Hash() ([]byte, error) {
+	hashable := struct {
+		Roots  []render.Root
+		Images []image.Image
+		Delay  int32
+	}{
+		Roots: s.roots,
+		Delay: s.delay,
+	}
+
+	if len(s.roots) == 0 {
+		// there are no roots, so this might have been a screen created directly
+		// from images. if so, consider the images in the hash.
+		hashable.Images = s.images
+	}
+
+	j, err := json.Marshal(hashable)
+	if err != nil {
+		return nil, errors.Wrap(err, "marshaling render tree to JSON")
+	}
+
+	h := sha256.Sum256(j)
+	return h[:], nil
 }
 
 // Renders a screen to WebP. Optionally pass filters for
