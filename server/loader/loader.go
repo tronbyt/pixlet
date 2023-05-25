@@ -88,6 +88,7 @@ func (l *Loader) Run() error {
 			config = c
 		case <-l.requestedChanges:
 			up := Update{}
+			log.Printf("Config Changes Detected")
 
 			webp, err := l.loadApplet(config)
 			if err != nil {
