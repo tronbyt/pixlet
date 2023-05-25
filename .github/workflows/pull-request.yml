@@ -1,0 +1,101 @@
+name: pixlet
+
+on:
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.19"
+
+      - name: Install buildifier
+        run: make install-buildifier
+
+      - name: Run buildifier
+        run: buildifier -d -r ./
+
+  build-and-test:
+    name: Build and Test
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.19"
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        if: matrix.os == 'windows-latest'
+        with:
+          msystem: mingw64
+          update: true
+          install: >-
+            make
+            curl
+            mingw-w64-x86_64-go
+            mingw-w64-x86_64-toolchain
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: sudo apt-get install -y libwebp-dev
+
+      - name: Install macOS dependencies
+        if: matrix.os == 'macos-latest'
+        run: brew install webp
+
+      - name: Install Windows dependencies
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          set MSYSTEM=MINGW64
+          curl -LO https://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-libwebp-1.2.4-4-any.pkg.tar.zst
+          pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.2.4-4-any.pkg.tar.zst
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build
+        run: make build
+        if: matrix.os == 'ubuntu-22.04' || matrix.os == 'macos-latest'
+
+      - name: Build Windows
+        shell: msys2 {0}
+        run: |
+          set MSYSTEM=MINGW64
+          make build
+        if: matrix.os == 'windows-latest'
+
+      - name: Test
+        run: make test
+        if: matrix.os == 'ubuntu-22.04' || matrix.os == 'macos-latest'
+
+      - name: Test Windows
+        shell: msys2 {0}
+        run: |
+          set MSYSTEM=MINGW64
+          make test
+        if: matrix.os == 'windows-latest'

@@ -5,39 +5,82 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/fogleman/gg"
+	"github.com/tidbyt/gg"
 )
 
 var DefaultPlotColor = color.RGBA{0xff, 0xff, 0xff, 0xff}
 
-// surface fill gets line color with this alpha
-var FillAlpha uint8 = 0x55
+// surface fill gets line color dampened by this factor
+var FillDampFactor uint8 = 0x55
 
+// Plot is a widget that draws a data series.
+//
+// DOC(Data): A list of 2-tuples of numbers
+// DOC(Width): Limits Plot width
+// DOC(Height): Limits Plot height
+// DOC(Color): Line color, default is '#fff'
+// DOC(ColorInverted): Line color for Y-values below 0
+// DOC(XLim): Limit X-axis to a range
+// DOC(YLim): Limit Y-axis to a range
+// DOC(Fill): Paint surface between line and X-axis
+// DOC(FillColor): Fill color for Y-values above 0
+// DOC(FillColorInverted): Fill color for Y-values below 0
+// DOC(ChartType): Specifies the type of chart to render, "scatter" or "line", default is "line"
+//
+// EXAMPLE BEGIN
+// render.Plot(
+//   data = [
+//     (0, 3.35),
+//     (1, 2.15),
+//     (2, 2.37),
+//     (3, -0.31),
+//     (4, -3.53),
+//     (5, 1.31),
+//     (6, -1.3),
+//     (7, 4.60),
+//     (8, 3.33),
+//     (9, 5.92),
+//   ],
+//   width = 64,
+//   height = 32,
+//   color = "#0f0",
+//   color_inverted = "#f00",
+//   x_lim = (0, 9),
+//   y_lim = (-5, 7),
+//   fill = True,
+// ),
+// EXAMPLE END
 type Plot struct {
 	Widget
 
 	// Coordinates of points to plot
-	X []float64
-	Y []float64
+	Data [][2]float64 `starlark:"data,required"`
 
 	// Overall size of the plot
-	Height int
-	Width  int
+	Width  int `starlark:"width,required"`
+	Height int `starlark:"height,required"`
 
 	// Primary line color
-	Color *color.RGBA
+	Color color.Color `starlark:"color"`
 
 	// Optional line color for Y-values below 0
-	ColorInverted *color.RGBA
+	ColorInverted color.Color `starlark:"color_inverted"`
 
 	// Optional limit on X and Y axis
-	XLimMin *float64
-	XLimMax *float64
-	YLimMin *float64
-	YLimMax *float64
+	XLim [2]float64 `starlark:"x_lim"`
+	YLim [2]float64 `starlark:"y_lim"`
 
 	// If true, also paint surface between line and X-axis
-	Fill bool
+	Fill bool `starlark:"fill"`
+
+	// Optional, default "line". If set to "scatter", the line connecting dots will not be drawn
+	ChartType string `starlark:"chart_type"`
+
+	// Optional fill color for Y-values above 0
+	FillColor color.Color `starlark:"fill_color"`
+
+	// Optional fill color for Y-values below 0
+	FillColorInverted color.Color `starlark:"fill_color_inverted"`
 
 	invThreshold int
 }
@@ -46,24 +89,27 @@ type Plot struct {
 func (p *Plot) computeLimits() (float64, float64, float64, float64) {
 
 	// If all limits are set by user, no computation is required
-	if p.XLimMin != nil && p.XLimMax != nil && p.YLimMin != nil && p.YLimMax != nil {
-		return *p.XLimMin, *p.XLimMax, *p.YLimMin, *p.YLimMax
+	if !math.IsNaN(p.XLim[0]) && !math.IsNaN(p.XLim[1]) &&
+		!math.IsNaN(p.YLim[0]) && !math.IsNaN(p.YLim[1]) {
+		return p.XLim[0], p.XLim[1], p.YLim[0], p.YLim[1]
 	}
 
 	// Otherwise we'll need min/max of X and Y
-	minX, maxX, minY, maxY := p.X[0], p.X[0], p.Y[0], p.Y[0]
-	for i := 1; i < len(p.X); i++ {
-		if p.X[i] < minX {
-			minX = p.X[i]
+	pt := p.Data[0]
+	minX, maxX, minY, maxY := pt[0], pt[0], pt[1], pt[1]
+	for i := 1; i < len(p.Data); i++ {
+		pt = p.Data[i]
+		if pt[0] < minX {
+			minX = pt[0]
 		}
-		if p.X[i] > maxX {
-			maxX = p.X[i]
+		if pt[0] > maxX {
+			maxX = pt[0]
 		}
-		if p.Y[i] < minY {
-			minY = p.Y[i]
+		if pt[1] < minY {
+			minY = pt[1]
 		}
-		if p.Y[i] > maxY {
-			maxY = p.Y[i]
+		if pt[1] > maxY {
+			maxY = pt[1]
 		}
 	}
 
@@ -73,17 +119,17 @@ func (p *Plot) computeLimits() (float64, float64, float64, float64) {
 	xLimMax := maxX
 	yLimMin := minY
 	yLimMax := maxY
-	if p.XLimMin != nil {
-		xLimMin = *p.XLimMin
+	if !math.IsNaN(p.XLim[0]) {
+		xLimMin = p.XLim[0]
 	}
-	if p.XLimMax != nil {
-		xLimMax = *p.XLimMax
+	if !math.IsNaN(p.XLim[1]) {
+		xLimMax = p.XLim[1]
 	}
-	if p.YLimMin != nil {
-		yLimMin = *p.YLimMin
+	if !math.IsNaN(p.YLim[0]) {
+		yLimMin = p.YLim[0]
 	}
-	if p.YLimMax != nil {
-		yLimMax = *p.YLimMax
+	if !math.IsNaN(p.YLim[1]) {
+		yLimMax = p.YLim[1]
 	}
 
 	// The inferred limits can be non-sensical if user provides
@@ -91,14 +137,14 @@ func (p *Plot) computeLimits() (float64, float64, float64, float64) {
 	// provided limit and add an arbitraty +-0.5 to create limits
 	// that result in all points displayed "off-screen".
 	if xLimMax < xLimMin {
-		if p.XLimMin == nil {
+		if math.IsNaN(p.XLim[0]) {
 			xLimMin = xLimMax - 0.5
 		} else {
 			xLimMax = xLimMin + 0.5
 		}
 	}
 	if yLimMax < yLimMin {
-		if p.YLimMin == nil {
+		if math.IsNaN(p.YLim[0]) {
 			yLimMin = yLimMax - 0.5
 		} else {
 			yLimMax = yLimMin + 0.5
@@ -126,10 +172,11 @@ func (p *Plot) translatePoints() []PathPoint {
 	xLimMin, xLimMax, yLimMin, yLimMax := p.computeLimits()
 
 	// Translate
-	points := make([]PathPoint, len(p.X))
-	for i := 0; i < len(p.X); i++ {
-		nX := (p.X[i] - xLimMin) / (xLimMax - xLimMin)
-		nY := (p.Y[i] - yLimMin) / (yLimMax - yLimMin)
+	points := make([]PathPoint, len(p.Data))
+	for i := 0; i < len(p.Data); i++ {
+		pt := p.Data[i]
+		nX := (pt[0] - xLimMin) / (xLimMax - xLimMin)
+		nY := (pt[1] - yLimMin) / (yLimMax - yLimMin)
 		points[i] = PathPoint{
 			X: int(math.Round(nX * float64(p.Width-1))),
 			Y: p.Height - 1 - int(math.Round(nY*float64(p.Height-1))),
@@ -140,22 +187,36 @@ func (p *Plot) translatePoints() []PathPoint {
 	return points
 }
 
-func (p Plot) Paint(bounds image.Rectangle, frameIdx int) image.Image {
-	dc := gg.NewContext(p.Width, p.Height)
+func dampenColor(c color.Color, a uint8) color.Color {
+	r, g, b, _ := c.RGBA()
+	return color.RGBA{uint8(r * uint32(a) / 255), uint8(g * uint32(a) / 255), uint8(b * uint32(a) / 255), 0xFF}
+}
 
+func (p Plot) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
+	return image.Rect(0, 0, p.Width, p.Height)
+}
+
+func (p Plot) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	// Set line and fill colors
-	col := color.RGBA{0xff, 0xff, 0xff, 0xff}
+	var col color.Color
+	col = color.RGBA{0xff, 0xff, 0xff, 0xff}
 	if p.Color != nil {
-		col = *p.Color
+		col = p.Color
 	}
 	colInv := col
 	if p.ColorInverted != nil {
-		colInv = *p.ColorInverted
+		colInv = p.ColorInverted
 	}
-	fillCol := col
-	fillCol.A = FillAlpha
-	fillColInv := colInv
-	fillColInv.A = FillAlpha
+
+	fillCol := dampenColor(col, FillDampFactor)
+	if p.FillColor != nil {
+		fillCol = p.FillColor
+	}
+
+	fillColInv := dampenColor(colInv, FillDampFactor)
+	if p.FillColorInverted != nil {
+		fillColInv = p.FillColorInverted
+	}
 
 	pl := &PolyLine{Vertices: p.translatePoints()}
 
@@ -167,29 +228,43 @@ func (p Plot) Paint(bounds image.Rectangle, frameIdx int) image.Image {
 		}
 		if y > p.invThreshold {
 			dc.SetColor(fillColInv)
-			for ; y != p.invThreshold; y-- {
-				dc.SetPixel(x, y)
+			for ; y != p.invThreshold && y >= 0; y-- {
+				tx, ty := dc.TransformPoint(float64(x), float64(y))
+				dc.SetPixel(int(tx), int(ty))
 			}
 		} else {
 			dc.SetColor(fillCol)
-			for ; y <= p.invThreshold; y++ {
-				dc.SetPixel(x, y)
+			for ; y <= p.invThreshold && y <= p.Height; y++ {
+				tx, ty := dc.TransformPoint(float64(x), float64(y))
+				dc.SetPixel(int(tx), int(ty))
 			}
 		}
 	}
 
-	// the line itself
-	for i := 0; i < pl.Length(); i++ {
-		x, y := pl.Point(i)
-		if y > p.invThreshold {
-			dc.SetColor(colInv)
-		} else {
-			dc.SetColor(col)
+	if p.ChartType == "scatter" {
+		points := p.translatePoints()
+		for i := 0; i < len(points); i++ {
+			point := points[i]
+			if point.Y > p.invThreshold {
+				dc.SetColor(colInv)
+			} else {
+				dc.SetColor(col)
+			}
+			dc.SetPixel(int(point.X), int(point.Y))
 		}
-		dc.SetPixel(x, y)
+	} else {
+		// the line itself
+		for i := 0; i < pl.Length(); i++ {
+			x, y := pl.Point(i)
+			if y > p.invThreshold {
+				dc.SetColor(colInv)
+			} else {
+				dc.SetColor(col)
+			}
+			tx, ty := dc.TransformPoint(float64(x), float64(y))
+			dc.SetPixel(int(tx), int(ty))
+		}
 	}
-
-	return dc.Image()
 }
 
 func (p Plot) FrameCount() int {

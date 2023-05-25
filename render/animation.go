@@ -2,6 +2,8 @@ package render
 
 import (
 	"image"
+
+	"github.com/tidbyt/gg"
 )
 
 // Animations turns a list of children into an animation, where each
@@ -32,7 +34,11 @@ func (a Animation) FrameCount() int {
 	return len(a.Children)
 }
 
-func (a Animation) Paint(bounds image.Rectangle, frameIdx int) image.Image {
+func (a Animation) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
+	if len(a.Children) == 0 {
+		return image.Rect(0, 0, 0, 0)
+	}
+
 	if frameIdx > len(a.Children) {
 		frameIdx %= len(a.Children)
 		if frameIdx < 0 {
@@ -40,5 +46,20 @@ func (a Animation) Paint(bounds image.Rectangle, frameIdx int) image.Image {
 		}
 	}
 
-	return a.Children[ModInt(frameIdx, len(a.Children))].Paint(bounds, frameIdx)
+	return a.Children[ModInt(frameIdx, len(a.Children))].PaintBounds(bounds, frameIdx)
+}
+
+func (a Animation) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
+	if len(a.Children) == 0 {
+		return
+	}
+
+	if frameIdx > len(a.Children) {
+		frameIdx %= len(a.Children)
+		if frameIdx < 0 {
+			frameIdx += len(a.Children)
+		}
+	}
+
+	a.Children[ModInt(frameIdx, len(a.Children))].Paint(dc, bounds, frameIdx)
 }

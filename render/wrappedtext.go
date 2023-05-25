@@ -4,7 +4,7 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/fogleman/gg"
+	"github.com/tidbyt/gg"
 )
 
 // WrappedText draws multi-line text.
@@ -13,13 +13,18 @@ import (
 // area. If not set, WrappedText will use as much vertical and
 // horizontal space as possible to fit the text.
 //
+// Alignment of the text is controlled by passing one of the following `align` values:
+// - `"left"`: align text to the left
+// - `"center"`: align text in the center
+// - `"right"`: align text to the right
+//
 // DOC(Content): The text string to draw
 // DOC(Font): Desired font face
 // DOC(Height): Limits height of the area on which text may be drawn
 // DOC(Width): Limits width of the area on which text may be drawn
 // DOC(LineSpacing): Controls spacing between lines
 // DOC(Color): Desired font color
-//
+// DOC(Align): Text Alignment
 // EXAMPLE BEGIN
 // render.WrappedText(
 //       content="this is a multi-line text string",
@@ -36,14 +41,14 @@ type WrappedText struct {
 	Width       int
 	LineSpacing int
 	Color       color.Color
+	Align       string
 }
 
-func (tw WrappedText) Paint(bounds image.Rectangle, frameIdx int) image.Image {
+func (tw WrappedText) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
 	face := Font[DefaultFontFace]
 	if tw.Font != "" {
 		face = Font[tw.Font]
 	}
-
 	// The bounds provided by user or parent widget
 	width := tw.Width
 	if width == 0 {
@@ -53,7 +58,10 @@ func (tw WrappedText) Paint(bounds image.Rectangle, frameIdx int) image.Image {
 	if height == 0 {
 		height = bounds.Dy()
 	}
-
+	linespace := float64(tw.LineSpacing)
+	if linespace <= 0 {
+		linespace = 0
+	}
 	// Compute size of multi line string
 	//
 	// NOTE: Can't use dc.MeasureMultilineString() here. It only
@@ -67,7 +75,7 @@ func (tw WrappedText) Paint(bounds image.Rectangle, frameIdx int) image.Image {
 		if lw > w {
 			w = lw
 		}
-		h += lh
+		h += lh + linespace
 	}
 
 	// Size of drawing context
@@ -87,11 +95,27 @@ func (tw WrappedText) Paint(bounds image.Rectangle, frameIdx int) image.Image {
 		height = bounds.Dy()
 	}
 
+	return image.Rect(0, 0, width, height)
+}
+
+func (tw WrappedText) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
+	face := Font[DefaultFontFace]
+	if tw.Font != "" {
+		face = Font[tw.Font]
+	}
+	// Text alignment
+	align := gg.AlignLeft
+	if tw.Align == "center" {
+		align = gg.AlignCenter
+	} else if tw.Align == "right" {
+		align = gg.AlignRight
+	}
+
+	width := tw.PaintBounds(bounds, frameIdx).Dx()
+
 	metrics := face.Metrics()
 	descent := metrics.Descent.Floor()
 
-	// And draw
-	dc = gg.NewContext(width, height)
 	dc.SetFontFace(face)
 	if tw.Color != nil {
 		dc.SetColor(tw.Color)
@@ -107,10 +131,8 @@ func (tw WrappedText) Paint(bounds image.Rectangle, frameIdx int) image.Image {
 		0,
 		float64(width),
 		(float64(tw.LineSpacing)+dc.FontHeight())/dc.FontHeight(),
-		gg.AlignLeft,
+		align,
 	)
-
-	return dc.Image()
 }
 
 func (tw WrappedText) FrameCount() int {

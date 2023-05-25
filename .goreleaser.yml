@@ -1,14 +1,37 @@
+dist: out
+
+before:
+  hooks:
+    - scripts/set-executable.sh
+
 builds:
-  - dir: .goreleaser
+  - builder: prebuilt
+    binary: pixlet
 
     goarch:
       - amd64
+      - arm64
 
-    hooks:
-      post: ./.goreleaser/fetch-artifacts.sh
+    goos:
+      - darwin
+      - linux
+      - windows
+
+    goarm:
+      - 7
+
+    goamd64:
+      - v1
+
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+    prebuilt:
+      path: build/{{ .Os }}_{{ .Arch }}/pixlet{{ .Ext }}
 
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 
 changelog:
   sort: asc

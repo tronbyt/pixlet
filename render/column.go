@@ -2,6 +2,8 @@ package render
 
 import (
 	"image"
+
+	"github.com/tidbyt/gg"
 )
 
 // Column lays out and draws its children vertically (in a column).
@@ -62,7 +64,7 @@ type Column struct {
 	Expanded   bool
 }
 
-func (c Column) Paint(bounds image.Rectangle, frameIdx int) image.Image {
+func (c Column) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
 	v := Vector{
 		Vertical:   true,
 		Children:   c.Children,
@@ -70,16 +72,20 @@ func (c Column) Paint(bounds image.Rectangle, frameIdx int) image.Image {
 		CrossAlign: c.CrossAlign,
 		Expanded:   c.Expanded,
 	}
-	return v.Paint(bounds, frameIdx)
+	return v.PaintBounds(bounds, frameIdx)
+}
+
+func (c Column) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
+	v := Vector{
+		Vertical:   true,
+		Children:   c.Children,
+		MainAlign:  c.MainAlign,
+		CrossAlign: c.CrossAlign,
+		Expanded:   c.Expanded,
+	}
+	v.Paint(dc, bounds, frameIdx)
 }
 
 func (c Column) FrameCount() int {
-	n := 1
-	for _, child := range c.Children {
-		cn := child.FrameCount()
-		if cn > n {
-			n = cn
-		}
-	}
-	return n
+	return MaxFrameCount(c.Children)
 }

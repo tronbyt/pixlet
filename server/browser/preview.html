@@ -22,6 +22,9 @@
 	<div style="border: solid 1px white">
 		<img id="render" src="data:image/webp;base64,{{ .WebP }}" />
 	</div>
+	<div>
+		<p id="errors" style="color: red;">{{ .Err }}</p>
+	</div>
 
 	{{ if .Watch }}
 	<script>
@@ -31,7 +34,8 @@
 			}
 
 			connect() {
-				this.conn = new WebSocket("ws://" + document.location.host + "/ws");
+				const proto =  document.location.protocol === "https:" ? "wss:" : "ws:";
+				this.conn = new WebSocket(proto + "//" + document.location.host + "/ws");
 				this.conn.open = this.open.bind(this);
 				this.conn.onmessage = this.process.bind(this);
 				this.conn.onclose = this.close.bind(this);
@@ -45,11 +49,19 @@
 			process(e) {
 				console.log("recieved new message");
 				const data = JSON.parse(e.data);
+				const img = document.getElementById("render");
+				const err = document.getElementById("errors");
 
 				switch (data.type) {
 					case "webp":
-						const img = document.getElementById("render");
 						img.src = "data:image/webp;base64," + data.message;
+						err.innerHTML = "";
+						break;
+					case "error":
+						err.innerHTML = data.message;
+						break;
+					default:
+						console.log(`unknown type ${data.type}`);
 				}
 			}
 

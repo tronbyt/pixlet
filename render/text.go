@@ -4,12 +4,13 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/fogleman/gg"
+	"github.com/tidbyt/gg"
 )
 
 var (
 	DefaultFontFace  = "tb-8"
 	DefaultFontColor = color.White
+	MaxWidth         = 1000
 )
 
 // Text draws a string of text on a single line.
@@ -44,10 +45,12 @@ func (t *Text) Size() (int, int) {
 	return t.img.Bounds().Dx(), t.img.Bounds().Dy()
 }
 
-func (t *Text) Paint(
-	bounds image.Rectangle, frameIdx int,
-) image.Image {
-	return t.img
+func (t *Text) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
+	dc.DrawImage(t.img, 0, 0)
+}
+
+func (t *Text) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
+	return image.Rect(0, 0, t.img.Bounds().Dx(), t.img.Bounds().Dy())
 }
 
 func (t *Text) Init() error {
@@ -61,6 +64,12 @@ func (t *Text) Init() error {
 
 	w, _ := dc.MeasureString(t.Content)
 	width := int(w)
+
+	// If the width of the text is longer then the max, cut off the size of the
+	// image so it's not unbounded.
+	if width > MaxWidth {
+		width = MaxWidth
+	}
 
 	metrics := face.Metrics()
 	ascent := metrics.Ascent.Floor()

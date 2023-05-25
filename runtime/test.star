@@ -59,9 +59,9 @@ assert.eq(f.root.width, 123)
 assert.eq(f.root.child.content, "hello")
 
 # Padding
-p = render.Padding(pad=3, child=render.Box(width=1, height=2))
-p2 = render.Padding(pad=(1,2,3,4), child=render.Box(width=1, height=2))
-p3 = render.Padding(pad=1, child=render.Box(width=1, height=2), expanded=True)
+p = render.Padding(pad = 3, child = render.Box(width = 1, height = 2))
+p2 = render.Padding(pad = (1, 2, 3, 4), child = render.Box(width = 1, height = 2))
+p3 = render.Padding(pad = 1, child = render.Box(width = 1, height = 2), expanded = True)
 
 # PNG tests
 png_src = base64.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX/AAAZ4gk3AAAACklEQVR4nGNiAAAABgADNjd8qAAAAABJRU5ErkJggg==")
@@ -76,15 +76,36 @@ r1 = render.Row(
     main_align = "space_evenly",
     cross_align = "center",
     children = [
-        render.Box(width=12, height=14),
+        render.Box(width = 12, height = 14),
         render.Column(
             expanded = True,
             main_align = "start",
             cross_align = "end",
             children = [
-                render.Box(width=6, height=7),
-                render.Box(width=4, height=5),
+                render.Box(width = 6, height = 7),
+                render.Box(width = 4, height = 5),
             ],
+        ),
+        render.Plot(
+            data = [
+                (0, 3.35),
+                (1, 2.15),
+                (2, 2.37),
+                (3, -0.31),
+                (4, -3.53),
+                (5, 1.31),
+                (6, -1.3),
+                (7, 4.60),
+                (8, 3.33),
+                (9, 5.92),
+            ],
+            width = 64,
+            height = 32,
+            color = "#0f0",
+            color_inverted = "#f00",
+            x_lim = (0, 9),
+            y_lim = (-5, 7),
+            fill = True,
         ),
     ],
 )
@@ -93,5 +114,7 @@ assert.eq(r1.main_align, "space_evenly")
 assert.eq(r1.cross_align, "center")
 assert.eq(r1.children[1].main_align, "start")
 assert.eq(r1.children[1].cross_align, "end")
-assert.eq(len(r1.children), 2)
+assert.eq(len(r1.children), 3)
 assert.eq(len(r1.children[1].children), 2)
+
+# Plot

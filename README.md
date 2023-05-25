@@ -1,25 +1,32 @@
 # Pixlet
-
-[![Build & test](https://github.com/tidbyt/pixlet/workflows/Build%20&%20test/badge.svg)](https://github.com/tidbyt/pixlet/actions?query=workflow%3A%22Build+%26+test%22+branch%3Amain)
+[![Docs](https://img.shields.io/badge/docs-tidbyt.dev-blue?style=flat-square)](https://tidbyt.dev)
+[![Build & test](https://img.shields.io/github/workflow/status/tidbyt/pixlet/pixlet?style=flat-square)](https://github.com/tidbyt/pixlet/actions)
+[![Discourse](https://img.shields.io/discourse/status?server=https%3A%2F%2Fdiscuss.tidbyt.com&style=flat-square)](https://discuss.tidbyt.com/)
+[![Discord Server](https://img.shields.io/discord/928484660785336380?style=flat-square)](https://discord.gg/r45MXG4kZc)
 [![GoDoc](https://godoc.org/github.com/tidbyt/pixlet/runtime?status.svg)](https://godoc.org/github.com/tidbyt/pixlet/runtime)
 
 Pixlet is an app runtime and UX toolkit for highly-constrained displays.
 We use Pixlet to develop applets for [Tidbyt](https://tidbyt.com/), which has
 a 64x32 RGB LED matrix display:
 
-[![Example of a Tidbyt](doc/img/tidbyt_1.png)](https://tidbyt.com)
+[![Example of a Tidbyt](docs/img/tidbyt_1.png)](https://tidbyt.com)
 
 Apps developed with Pixlet can be served in a browser, rendered as WebP or
 GIF animations, or pushed to a physical Tidbyt device.
 
 ## Documentation
 
+> Hey! We have a new docs site! Check it out at [tidbyt.dev](https://tidbyt.dev). We'll be updating this repo in the coming weeks.
+
 - [Getting started](#getting-started)
 - [How it works](#how-it-works)
-- [In-depth tutorial](doc/tutorial.md)
-- [Widget reference](doc/widgets.md)
-- [Modules reference](doc/modules.md)
-- [Notes on the available fonts](doc/fonts.md)
+- [In-depth tutorial](docs/tutorial.md)
+- [Widget reference](docs/widgets.md)
+- [Animation reference](docs/animation.md)
+- [Modules reference](docs/modules.md)
+- [Schema reference](docs/schema/schema.md)
+- [Our thoughts on authoring apps](docs/authoring_apps.md)
+- [Notes on the available fonts](docs/fonts.md)
 
 ## Getting started
 
@@ -33,7 +40,7 @@ brew install tidbyt/tidbyt/pixlet
 
 Download the `pixlet` binary from [the latest release][1].
 
-Alternatively you can [build from source](BUILD.md).
+Alternatively you can [build from source](docs/BUILD.md).
 
 [1]: https://github.com/tidbyt/pixlet/releases/latest
 
@@ -59,7 +66,7 @@ curl https://raw.githubusercontent.com/tidbyt/pixlet/main/examples/hello_world.s
 
 You can view the result by navigating to [http://localhost:8080][3]:
 
-![](doc/img/tutorial_1.gif)
+![](docs/img/tutorial_1.gif)
 
 [3]: http://localhost:8080
 
@@ -109,16 +116,16 @@ def main(config):
 
 Here's the resulting image:
 
-![](doc/img/clock.gif)
+![](docs/img/clock.gif)
 
 ### Example: A Bitcoin Tracker
 
 Applets can get information from external data sources. For example,
 here is a Bitcoin price tracker:
 
-![](doc/img/tutorial_4.gif)
+![](docs/img/tutorial_4.gif)
 
-Read the [in-depth tutorial](doc/tutorial.md) to learn how to
+Read the [in-depth tutorial](docs/tutorial.md) to learn how to
 make an applet like this.
 
 ## Push to a Tidbyt
@@ -126,25 +133,37 @@ make an applet like this.
 If you have a Tidbyt, `pixlet` can push apps directly to it. For example,
 to show the Bitcoin tracker on your Tidbyt:
 
-```
+```console
+# render the bitcoin example
 pixlet render examples/bitcoin.star
-pixlet push --api-token <YOUR API TOKEN> <YOUR DEVICE ID> examples/bitcoin.webp
+
+# login to your Tidbyt account
+pixlet login
+
+# list available Tidbyt devices
+pixlet devices
+
+# push to your favorite Tidbyt
+pixlet push <YOUR DEVICE ID> examples/bitcoin.webp
 ```
 
-To get the ID and API key for a device, open the settings for the device in the Tidbyt app on your phone, and tap **Get API key**.
+To get the ID for a device, run `pixlet devices`. Alternatively, you can
+open the settings for the device in the Tidbyt app on your phone, and tap **Get API key**.
 
 If all goes well, you should see the Bitcoin tracker appear on your Tidbyt:
 
-![](doc/img/tidbyt_2.jpg)
+![](docs/img/tidbyt_2.jpg)
 
 ## Push as an Installation
 Pushing an applet to your Tidbyt without an installation ID simply displays your applet one time. If you would like your applet to continously display as part of the rotation, add an installation ID to the push command:
 
-```
+```console
 pixlet render examples/bitcoin.star
-pixlet push --api-token <YOUR API TOKEN> --installation-id <INSTALLATION ID> <YOUR DEVICE ID> examples/bitcoin.webp
+pixlet push --installation-id <INSTALLATION ID> <YOUR DEVICE ID> examples/bitcoin.webp
 ```
 
 For example, if we set the `installationID` to "Bitcoin", it would appear in the mobile app as follows:
 
-![](doc/img/mobile_1.jpg)
+![](docs/img/mobile_1.jpg)
+
+**Note:** `pixlet render` executes your Starlark code and generates a WebP image. `pixlet push` deploys the generated WebP image to your device. You'll need to repeat this process if you want to keep the app updated. You can also create [Community Apps](https://github.com/tidbyt/community) that run on Tidbyt’s servers and update automatically.

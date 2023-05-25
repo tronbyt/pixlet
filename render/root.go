@@ -3,9 +3,11 @@ package render
 import (
 	"image"
 	"image/color"
+	"runtime"
 	"sync"
 
-	"github.com/fogleman/gg"
+	"github.com/tidbyt/gg"
+	"tidbyt.dev/pixlet/globals"
 )
 
 const (
@@ -14,7 +16,13 @@ const (
 
 	// DefaultFrameHeight is the normal height for a frame.
 	DefaultFrameHeight = 32
+
+	// DefaultMaxFrameCount is the default maximum number of frames to render.
+	DefaultMaxFrameCount = 2000
 )
+
+var FrameWidth = DefaultFrameWidth
+var FrameHeight = DefaultFrameHeight
 
 // Every Widget tree has a Root.
 //
@@ -24,31 +32,100 @@ const (
 //
 // If the tree contains animated widgets, the resulting animation will
 // run with _delay_ milliseconds per frame.
+//
+// If the tree holds time sensitive information which must never be
+// displayed past a certain point in time, pass _MaxAge_ to specify
+// an expiration time in seconds. Display devices use this to avoid
+// displaying stale data in the event of e.g. connectivity issues.
+//
+// DOC(Child): Widget to render
+// DOC(Delay): Frame delay in milliseconds
+// DOC(MaxAge): Expiration time in seconds
+// DOC(ShowFullAnimation): Request animation is shown in full, regardless of app cycle speed
 type Root struct {
-	Child Widget
-	Delay int32
+	Child             Widget `starlark:"child,required"`
+	Delay             int32  `starlark:"delay"`
+	MaxAge            int32  `starlark:"max_age"`
+	ShowFullAnimation bool   `starlark:"show_full_animation"`
+
+	maxParallelFrames int
+	maxFrameCount     int
+}
+
+type RootPaintOption func(*Root)
+
+// WithMaxParallelFrames sets the maximum number of frames that will
+// be painted in parallel.
+//
+// By default, only `runtime.NumCPU()` frames are painted in parallel.
+// Higher parallelism consumes more memory, and doesn't usually make
+// sense since painting is CPU-bouond.
+func WithMaxParallelFrames(max int) RootPaintOption {
+	return func(r *Root) {
+		r.maxParallelFrames = max
+	}
+}
+
+// WithMaxFrameCount sets the maximum number of frames that will be
+// rendered when calling `Paint`.
+func WithMaxFrameCount(max int) RootPaintOption {
+	return func(r *Root) {
+		r.maxFrameCount = max
+	}
 }
 
 // Paint renders the child widget onto the frame. It doesn't do
 // any resizing or alignment.
-func (r Root) Paint(solidBackground bool) []image.Image {
+func (r Root) Paint(solidBackground bool, opts ...RootPaintOption) []image.Image {
+	for _, opt := range opts {
+		opt(&r)
+	}
+
+	if r.maxFrameCount <= 0 {
+		r.maxFrameCount = DefaultMaxFrameCount
+	}
+
 	numFrames := r.Child.FrameCount()
+	if numFrames > r.maxFrameCount {
+		numFrames = r.maxFrameCount
+	}
+
 	frames := make([]image.Image, numFrames)
 
+	parallelism := r.maxParallelFrames
+	if parallelism <= 0 {
+		parallelism = runtime.NumCPU()
+	}
+
+	if globals.Width != DefaultFrameWidth {
+		FrameWidth = globals.Width
+	}
+	if globals.Height != DefaultFrameHeight {
+		FrameHeight = globals.Height
+	}
+
 	var wg sync.WaitGroup
+	sem := make(chan bool, parallelism)
 	for i := 0; i < numFrames; i++ {
 		wg.Add(1)
+		sem <- true
+
 		go func(i int) {
-			dc := gg.NewContext(DefaultFrameWidth, DefaultFrameHeight)
+			defer func() {
+				<-sem
+				wg.Done()
+			}()
+
+			dc := gg.NewContext(FrameWidth, FrameHeight)
 			if solidBackground {
 				dc.SetColor(color.Black)
 				dc.Clear()
 			}
 
-			im := r.Child.Paint(image.Rect(0, 0, DefaultFrameWidth, DefaultFrameHeight), i)
-			dc.DrawImage(im, 0, 0)
+			dc.Push()
+			r.Child.Paint(dc, image.Rect(0, 0, FrameWidth, FrameHeight), i)
+			dc.Pop()
 			frames[i] = dc.Image()
-			wg.Done()
 		}(i)
 	}
 

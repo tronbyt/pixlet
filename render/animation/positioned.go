@@ -4,25 +4,43 @@ import (
 	"image"
 	"math"
 
-	"github.com/fogleman/gg"
+	"github.com/tidbyt/gg"
 
 	"tidbyt.dev/pixlet/render"
 )
 
+// Animate a widget from start to end coordinates.
+//
+// **DEPRECATED**: Please use `animation.Transformation` instead.
+//
+// DOC(Child): Widget to animate
+// DOC(XStart): Horizontal start coordinate
+// DOC(XEnd): Horizontal end coordinate
+// DOC(YStart): Vertical start coordinate
+// DOC(YEnd): Vertical end coordinate
+// DOC(Duration): Duration of animation in frames
+// DOC(Curve): Easing curve to use, default is 'linear'
+// DOC(Delay): Delay before animation in frames
+// DOC(Hold): Delay after animation in frames
+//
 type AnimatedPositioned struct {
 	render.Widget
-	Child    render.Widget
-	XStart   int
-	XEnd     int
-	YStart   int
-	YEnd     int
-	Duration int
-	Curve    Curve
-	Delay    int
-	Hold     int
+	Child    render.Widget `starlark:"child,required"`
+	XStart   int           `starlark:"x_start"`
+	XEnd     int           `starlark:"x_end"`
+	YStart   int           `starlark:"y_start"`
+	YEnd     int           `starlark:"y_end"`
+	Duration int           `starlark:"duration,required"`
+	Curve    Curve         `starlark:"curve,required"`
+	Delay    int           `starlark:"delay"`
+	Hold     int           `starlark:"hold"`
 }
 
-func (o AnimatedPositioned) Paint(bounds image.Rectangle, frameIdx int) image.Image {
+func (o AnimatedPositioned) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
+	return bounds
+}
+
+func (o AnimatedPositioned) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	var position float64
 
 	if frameIdx < o.Delay {
@@ -48,11 +66,10 @@ func (o AnimatedPositioned) Paint(bounds image.Rectangle, frameIdx int) image.Im
 	x := o.XStart + dx*sx
 	y := o.YStart + dy*sy
 
-	im := o.Child.Paint(bounds, frameIdx)
-
-	dc := gg.NewContext(bounds.Dx(), bounds.Dy())
-	dc.DrawImage(im, x, y)
-	return dc.Image()
+	dc.Push()
+	dc.Translate(float64(x), float64(y))
+	o.Child.Paint(dc, bounds, frameIdx)
+	dc.Pop()
 }
 
 func (o AnimatedPositioned) FrameCount() int {
