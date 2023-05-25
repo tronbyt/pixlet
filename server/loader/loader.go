@@ -86,9 +86,10 @@ func (l *Loader) Run() error {
 		select {
 		case c := <-l.configChanges:
 			config = c
+			log.Printf("Config Changes Detected")
 		case <-l.requestedChanges:
 			up := Update{}
-			log.Printf("Config Changes Detected")
+
 
 			webp, err := l.loadApplet(config)
 			if err != nil {
