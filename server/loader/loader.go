@@ -29,6 +29,7 @@ type Loader struct {
 	resultsChan      chan Update
 	maxDuration      int
 	initialLoad      chan bool
+	configOutFile	 string
 }
 
 type Update struct {
@@ -47,6 +48,7 @@ func NewLoader(
 	fileChanges chan bool,
 	updatesChan chan Update,
 	maxDuration int,
+	configOutFile string,
 ) (*Loader, error) {
 
 	l := &Loader{
@@ -60,6 +62,7 @@ func NewLoader(
 		resultsChan:      make(chan Update, 100),
 		maxDuration:      maxDuration,
 		initialLoad:      make(chan bool),
+		configOutFile:    configOutFile,
 	}
 
 	cache := runtime.NewInMemoryCache()
@@ -96,13 +99,16 @@ func (l *Loader) Run() error {
 				panic(err)
 			}
 		
-			// Write the byte slice to the file.
-			log.Printf("writing to applet_config.json")
-			err = ioutil.WriteFile("applet_config.json", byteSlice, 0644)
-			if err != nil {
-				panic(err)
-			}
 			
+			if l.configOutFile != "" {
+				// Write the byte slice to the file.
+				log.Printf("writing to %v",l.configOutFile)
+				err = ioutil.WriteFile(l.configOutFile, byteSlice, 0644)
+				if err != nil {
+					panic(err)
+				}
+			}
+
 			webp, err := l.loadApplet(config)
 			if err != nil {
 				log.Printf("error loading applet: %v", err)
