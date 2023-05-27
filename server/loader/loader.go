@@ -12,6 +12,8 @@ import (
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/schema"
+
+    "io/ioutil"
 )
 
 // Loader is a structure to provide applet loading when a file changes or on
@@ -88,7 +90,20 @@ func (l *Loader) Run() error {
 			config = c
 			log.Printf("Config Changes Detected")
 		case <-l.requestedChanges:
+			log.Printf("Requested Changes: config is : %v",config)
 			up := Update{}
+
+			byteSlice, err := json.Marshal(config)
+			if err != nil {
+				panic(err)
+			}
+		
+			// Write the byte slice to the file.
+			log.Printf("writing to applet_config.json")
+			err = ioutil.WriteFile("applet_config.json", byteSlice, 0644)
+			if err != nil {
+				panic(err)
+			}
 
 
 			webp, err := l.loadApplet(config)

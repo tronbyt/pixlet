@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	configJson	  string
 	output        string
 	magnify       int
 	renderGif     bool
@@ -26,6 +27,7 @@ var (
 )
 
 func init() {
+	RenderCmd.Flags().StringVarP(&configJson,"config","c","","Config in json format")
 	RenderCmd.Flags().StringVarP(&output, "output", "o", "", "Path for rendered image")
 	RenderCmd.Flags().BoolVarP(&renderGif, "gif", "", false, "Generate GIF instead of WebP")
 	RenderCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
