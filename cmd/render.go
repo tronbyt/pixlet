@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"encoding/json"
+	"log"
 
 	"github.com/spf13/cobra"
 	"go.starlark.net/starlark"
@@ -27,7 +29,7 @@ var (
 )
 
 func init() {
-	RenderCmd.Flags().StringVarP(&configJson,"config","c","","Config in json format")
+	RenderCmd.Flags().StringVarP(&configJson,"config","c","","Config file in json format")
 	RenderCmd.Flags().StringVarP(&output, "output", "o", "", "Path for rendered image")
 	RenderCmd.Flags().BoolVarP(&renderGif, "gif", "", false, "Generate GIF instead of WebP")
 	RenderCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
@@ -89,12 +91,32 @@ func render(cmd *cobra.Command, args []string) error {
 	}
 
 	config := map[string]string{}
-	for _, param := range args[1:] {
-		split := strings.Split(param, "=")
-		if len(split) < 2 {
-			return fmt.Errorf("parameters must be on form <key>=<value>, found %s", param)
+
+	if configJson != "" {
+		// Open the JSON file.
+		file, err := os.Open(configJson)
+		if err != nil {
+			return fmt.Errorf("file open error %v",err)
 		}
-		config[split[0]] = strings.Join(split[1:len(split)], "=")
+		
+		// Use the `json.Unmarshal()` function to unmarshal the JSON file into the map variable.
+		fileData, err := ioutil.ReadAll(file)
+		err = json.Unmarshal(fileData, &config)
+		if err != nil {
+			return fmt.Errorf("somewthing wrong with json %v",configJson)			
+		}
+	
+		log.Printf("got json config of %v",config)
+
+	} else {
+	
+		for _, param := range args[1:] {
+			split := strings.Split(param, "=")
+			if len(split) < 2 {
+				return fmt.Errorf("parameters must be on form <key>=<value>, found %s", param)
+			}
+			config[split[0]] = strings.Join(split[1:len(split)], "=")
+		}
 	}
 
 	src, err := ioutil.ReadFile(script)
