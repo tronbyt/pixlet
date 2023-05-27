@@ -99,10 +99,9 @@ func (l *Loader) Run() error {
 				panic(err)
 			}
 		
-			
 			if l.configOutFile != "" {
 				// Write the byte slice to the file.
-				log.Printf("writing to %v",l.configOutFile)
+				//log.Printf("writing to %v",l.configOutFile)
 				err = ioutil.WriteFile(l.configOutFile, byteSlice, 0644)
 				if err != nil {
 					panic(err)
