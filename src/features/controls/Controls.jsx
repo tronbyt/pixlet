@@ -99,8 +99,8 @@ export default function Controls() {
 
     return (
         <Stack sx={{ marginTop: '32px' }} spacing={2} direction="row">
-            <Button variant="outlined" onClick={() => selectConfig()}>Open Config</Button>
-            <Button variant="outlined" onClick={() => downloadConfig()}>Save Config</Button>
+            <Button variant="outlined" onClick={() => selectConfig()}>Iimport Config</Button>
+            <Button variant="outlined" onClick={() => downloadConfig()}>Export Config</Button>
             <Button variant="outlined" onClick={() => resetSchema()}>Reset</Button>
             <Button variant="contained" onClick={() => downloadPreview()}>Export Image</Button>
         </Stack>

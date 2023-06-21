@@ -1,6 +1,6 @@
 FROM golang:latest
 
-RUN apt update && apt upgrade && apt install unzip libwebp-dev iputils-ping -y
+RUN apt update && apt upgrade && apt install unzip libwebp-dev python3-venv python3-pip -y
 
 WORKDIR /tmp
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs && node -v
