@@ -118,7 +118,7 @@ func (l *Loader) Run() error {
 				}
 			}
 
-			webp, err := l.loadApplet(config)
+			img, err := l.loadApplet(config)
 			if err != nil {
 				log.Printf("error loading applet: %v", err)
 				up.Err = err

@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"image"
 	"io/fs"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 	"encoding/json"
 	"log"
-
 	"github.com/spf13/cobra"
-
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/globals"
 	"tidbyt.dev/pixlet/runtime"
@@ -149,7 +148,7 @@ func render(cmd *cobra.Command, args []string) error {
 			}
 			config[split[0]] = strings.Join(split[1:len(split)], "=")
 		}
-		config[split[0]] = strings.Join(split[1:], "=")
+
 	}
 
 	// Remove the print function from the starlark thread if the silent flag is

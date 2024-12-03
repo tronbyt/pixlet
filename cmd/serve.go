@@ -1,10 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
-
 	"tidbyt.dev/pixlet/server"
 )
 
@@ -39,7 +36,7 @@ containing multiple Starlark files and resources.`,
 }
 
 func serve(cmd *cobra.Command, args []string) error {
-	s, err := server.NewServer(host, port, watch, args[0], maxDuration,configOutFile)
+	s, err := server.NewServer(host, port, watch, args[0], maxDuration, timeout, serveGif,configOutFile)
 	if err != nil {
 		return err
 	}
