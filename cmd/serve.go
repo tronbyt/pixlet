@@ -13,9 +13,11 @@ var (
 	port  int
 	watch bool
 	serveGif bool
+	configOutFile string
 )
 
 func init() {
+	ServeCmd.Flags().StringVarP(&configOutFile,"saveconfig","o","", "Output file for config changes")
 	ServeCmd.Flags().StringVarP(&host, "host", "i", "127.0.0.1", "Host interface for serving rendered images")
 	ServeCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
 	ServeCmd.Flags().BoolVarP(&watch, "watch", "w", true, "Reload scripts on change. Does not recurse sub-directories.")
@@ -37,11 +39,7 @@ containing multiple Starlark files and resources.`,
 }
 
 func serve(cmd *cobra.Command, args []string) error {
-	if watch && cmd.Flags().Changed("watch") {
-		fmt.Printf("explicitly setting --watch is unnecessary, since it's the default\n\n")
-	}
-
-	s, err := server.NewServer(host, port, watch, args[0], maxDuration, timeout, serveGif)
+	s, err := server.NewServer(host, port, watch, args[0], maxDuration,configOutFile)
 	if err != nil {
 		return err
 	}
