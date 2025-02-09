@@ -1,13 +1,12 @@
-FROM golang:latest
+FROM alpine:3.21 AS builder
 
-RUN apt update && apt upgrade && apt install unzip libwebp-dev python3-venv python3-pip -y
+RUN apk --no-cache add go npm libwebp-dev libwebp-static git make clang musl-dev
+COPY . /pixlet
+WORKDIR /pixlet
+RUN npm install && npm run build && STATIC=1 make build
 
-WORKDIR /tmp
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs && node -v
+FROM scratch
 
-#uncomment below if you want to compile during build
-#RUN git clone https://github.com/tidbyt/pixlet.git
-#WORKDIR /tmp/pixlet
-#RUN npm install && npm run build && make build
+COPY --from=builder /pixlet/pixlet /bin/pixlet
 
-CMD ["bash"]
+ENTRYPOINT ["/bin/pixlet"]

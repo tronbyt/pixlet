@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tidbyt/pixlet.git"
+    "url": "git+https://github.com/tavdog/pixlet.git"
   },
   "keywords": [],
   "author": "Tidbyt, Inc.",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/tidbyt/pixlet/issues"
+    "url": "https://github.com/tavdog/pixlet/issues"
   },
-  "homepage": "https://github.com/tidbyt/pixlet#readme",
+  "homepage": "https://github.com/tavdog/pixlet#readme",
   "devDependencies": {
     "@babel/core": "7.24.4",
     "@babel/plugin-proposal-class-properties": "7.18.6",

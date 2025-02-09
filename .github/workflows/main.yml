@@ -7,16 +7,20 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22.2"
+          go-version: "1.23.6"
 
       - name: Install buildifier
         run: make install-buildifier
@@ -28,7 +32,7 @@ jobs:
     name: Build and Test Release Artifacts
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-latest, windows-latest]
+        os: [ubuntu-24.04, macos-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -39,7 +43,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22.2"
+          go-version: "1.23.6"
 
       - name: Install Node
         uses: actions/setup-node@v4
@@ -59,7 +63,7 @@ jobs:
             mingw-w64-x86_64-toolchain
 
       - name: Install Linux dependencies
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-24.04'
         run: sudo ./scripts/setup-linux.sh
 
       - name: Install macOS dependencies
@@ -71,8 +75,8 @@ jobs:
         shell: msys2 {0}
         run: |
           set MSYSTEM=MINGW64
-          curl -LO https://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-libwebp-1.2.4-4-any.pkg.tar.zst
-          pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.2.4-4-any.pkg.tar.zst
+          curl -LO https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-libwebp-1.5.0-1-any.pkg.tar.zst
+          pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.5.0-1-any.pkg.tar.zst
 
       - name: Install frontend dependencies
         run: npm install
@@ -82,7 +86,7 @@ jobs:
 
       - name: Build Linux
         run: make build
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-24.04'
 
       - name: Build macOS
         run: make build
@@ -100,7 +104,7 @@ jobs:
 
       - name: Test Linux
         run: make test
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-24.04'
 
       - name: Test macOS
         run: make test
@@ -119,7 +123,7 @@ jobs:
       - name: Set pixlet version
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-        if: matrix.os == 'ubuntu-22.04' || matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-24.04' || matrix.os == 'macos-latest'
 
       - name: Set Windows pixlet version
         id: windowsvars
@@ -130,7 +134,7 @@ jobs:
         if: matrix.os == 'windows-latest'
 
       - name: Build Release Linux
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-24.04'
         run: make release-linux
         env:
           PIXLET_VERSION: ${{ steps.vars.outputs.tag }}
@@ -153,14 +157,14 @@ jobs:
           PIXLET_VERSION: ${{ steps.windowsvars.outputs.tag }}
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: release-artifacts
+          name: release-artifacts-${{ matrix.os }}
           path: build
 
   create-release:
     name: Create Github Release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: release
     needs: build-and-test-release
     if: startsWith(github.ref, 'refs/tags/')
@@ -174,7 +178,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22.2"
+          go-version: "1.23.6"
 
       - name: Fetch Release Artifacts
         uses: actions/download-artifact@v3
@@ -193,3 +197,55 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TIDBYT_GITHUB_TOKEN }}
           DISCORD_WEBHOOK_ID: ${{ secrets.DISCORD_WEBHOOK_ID }}
           DISCORD_WEBHOOK_TOKEN: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+
+  build-and-push-image:
+    runs-on: ubuntu-24.04
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          flavor: |
+            latest=true
+            prefix=
+            suffix=
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
