@@ -2,12 +2,16 @@ GIT_COMMIT = $(shell git rev-list -1 HEAD)
 
 ifeq ($(OS),Windows_NT)
 	BINARY = pixlet.exe
-	LDFLAGS = -ldflags="-s -extldflags=-static -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
+	LDFLAGS = -ldflags="-s '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
 	TAGS = -tags timetzdata
 else
 	BINARY = pixlet
-	LDFLAGS = -ldflags="-X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
 	TAGS =
+	ifeq ($(STATIC),1)
+		LDFLAGS = -ldflags="-s -w -linkmode=external '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
+	else
+		LDFLAGS = -ldflags="-X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
+	endif
 endif
 
 all: build

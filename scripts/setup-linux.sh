@@ -4,28 +4,126 @@ set -e
 
 dpkg --add-architecture arm64
 
-cat <<EOT > /etc/apt/sources.list
-deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main restricted
-deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted
-deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy universe
-deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates universe
-deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy multiverse
-deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates multiverse
-deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
-deb [arch=amd64] http://security.ubuntu.com/ubuntu/ jammy-security main restricted
-deb [arch=amd64] http://security.ubuntu.com/ubuntu/ jammy-security universe
-deb [arch=amd64] http://security.ubuntu.com/ubuntu/ jammy-security multiverse
+cat <<EOT > /etc/apt/sources.list.d/ubuntu.sources
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble
+Components: main restricted
+Architectures: amd64
 
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy universe
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates universe
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy multiverse
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates multiverse
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-backports main restricted universe multiverse
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security universe
-deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security multiverse
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble-updates
+Components: main restricted
+Architectures: amd64
+
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble
+Components: universe
+Architectures: amd64
+
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble-updates
+Components: universe
+Architectures: amd64
+
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble
+Components: multiverse
+Architectures: amd64
+
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble-updates
+Components: multiverse
+Architectures: amd64
+
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble-backports
+Components: main restricted universe multiverse
+Architectures: amd64
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu/
+Suites: noble-security
+Components: main restricted
+Architectures: amd64
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu/
+Suites: noble-security
+Components: universe
+Architectures: amd64
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu/
+Suites: noble-security
+Components: multiverse
+Architectures: amd64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble
+Components: main restricted
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble-updates
+Components: main restricted
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble
+Components: universe
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble-updates
+Components: universe
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble
+Components: multiverse
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble-updates
+Components: multiverse
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble-backports
+Components: main restricted universe multiverse
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble-security
+Components: main restricted
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble-security
+Components: universe
+Architectures: arm64
+
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports
+Suites: noble-security
+Components: multiverse
+Architectures: arm64
 EOT
 
 apt-get update 
