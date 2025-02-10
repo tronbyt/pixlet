@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 
@@ -45,7 +45,7 @@ func devices(cmd *cobra.Command, args []string) {
 
 	if resp.StatusCode != 200 {
 		fmt.Printf("Tidbyt API returned status %s\n", resp.Status)
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
 		os.Exit(1)
 	}

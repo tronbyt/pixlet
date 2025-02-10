@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -28,7 +28,7 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	var result map[string]interface{}
-	bodyBytes, err := ioutil.ReadAll(r.Body)
+	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintln(w, err)
@@ -97,7 +97,7 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(resp.StatusCode)
 		fmt.Fprintln(w, err)
 
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
 		return
 	}

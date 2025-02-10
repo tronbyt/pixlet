@@ -69,8 +69,8 @@ jobs:
         shell: msys2 {0}
         run: |
           set MSYSTEM=MINGW64
-          curl -LO https://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-libwebp-1.2.4-4-any.pkg.tar.zst
-          pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.2.4-4-any.pkg.tar.zst
+          curl -LO https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-libwebp-1.5.0-1-any.pkg.tar.zst
+          pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.5.0-1-any.pkg.tar.zst
 
       - name: Install frontend dependencies
         run: npm install

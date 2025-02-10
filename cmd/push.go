@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 
@@ -56,7 +56,7 @@ func push(cmd *cobra.Command, args []string) error {
 	}
 
 	if background && len(installationID) == 0 {
-		return fmt.Errorf("Background push won't do anything unless you also specify an installation ID")	
+		return fmt.Errorf("Background push won't do anything unless you also specify an installation ID")
 	}
 
 	if apiToken == "" {
@@ -71,7 +71,7 @@ func push(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("blank Tidbyt API token (use `pixlet login`, set $%s or pass with --api-token)", APITokenEnv)
 	}
 
-	imageData, err := ioutil.ReadFile(image)
+	imageData, err := os.ReadFile(image)
 	if err != nil {
 		return fmt.Errorf("failed to read file %s: %w", image, err)
 	}
@@ -107,7 +107,7 @@ func push(cmd *cobra.Command, args []string) error {
 
 	if resp.StatusCode != 200 {
 		fmt.Printf("Tidbyt API returned status %s\n", resp.Status)
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
 		return fmt.Errorf("Tidbyt API returned status: %s", resp.Status)
 	}
