@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -29,9 +28,9 @@ var fontDataRaw = map[string]string{
 `
 
 func main() {
-	fontFileInfos, err := ioutil.ReadDir(FontDir)
+	fontFileInfos, err := os.ReadDir(FontDir)
 	if err != nil {
-		fmt.Printf("ioutil.ReadDir(%s): %s\n", FontDir, err)
+		fmt.Printf("os.ReadDir(%s): %s\n", FontDir, err)
 		os.Exit(1)
 	}
 
@@ -44,9 +43,9 @@ func main() {
 		name := strings.TrimSuffix(ffi.Name(), ".bdf")
 		path := fmt.Sprintf("%s/%s", FontDir, ffi.Name())
 
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
-			fmt.Printf("ioutil.Readfile(%s): %s\n", path, err)
+			fmt.Printf("os.Readfile(%s): %s\n", path, err)
 			os.Exit(1)
 		}
 

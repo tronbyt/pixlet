@@ -2,16 +2,17 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"image"
+	"io"
 	"io/fs"
-	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
-	"encoding/json"
-	"log"
+
 	"github.com/spf13/cobra"
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/globals"
@@ -20,7 +21,7 @@ import (
 )
 
 var (
-	configJson	  string
+	configJson    string
 	output        string
 	magnify       int
 	renderGif     bool
@@ -32,7 +33,7 @@ var (
 )
 
 func init() {
-	RenderCmd.Flags().StringVarP(&configJson,"config","c","","Config file in json format")
+	RenderCmd.Flags().StringVarP(&configJson, "config", "c", "", "Config file in json format")
 	RenderCmd.Flags().StringVarP(&output, "output", "o", "", "Path for rendered image")
 	RenderCmd.Flags().BoolVarP(&renderGif, "gif", "", false, "Generate GIF instead of WebP")
 	RenderCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
@@ -127,20 +128,23 @@ func render(cmd *cobra.Command, args []string) error {
 		// Open the JSON file.
 		file, err := os.Open(configJson)
 		if err != nil {
-			return fmt.Errorf("file open error %v",err)
+			return fmt.Errorf("file open error %v", err)
 		}
-		
+
 		// Use the `json.Unmarshal()` function to unmarshal the JSON file into the map variable.
-		fileData, err := ioutil.ReadAll(file)
+		fileData, err := io.ReadAll(file)
+		if err != nil {
+			return fmt.Errorf("file read error %v", err)
+		}
 		err = json.Unmarshal(fileData, &config)
 		if err != nil {
-			return fmt.Errorf("somewthing wrong with json %v",configJson)			
+			return fmt.Errorf("something wrong with json %v", configJson)
 		}
-	
-		log.Printf("got json config of %v",config)
+
+		log.Printf("got json config of %v", config)
 
 	} else {
-	
+
 		for _, param := range args[1:] {
 			split := strings.Split(param, "=")
 			if len(split) < 2 {

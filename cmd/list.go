@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"text/tabwriter"
@@ -66,7 +66,7 @@ func listInstallations(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("listing installations from API: %w", err)
 	}
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
 		fmt.Printf("Tidbyt API returned status %s\n", resp.Status)
 		fmt.Println(string(body))

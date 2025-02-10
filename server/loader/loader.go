@@ -9,13 +9,12 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"os"
 	"time"
 
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/schema"
-
-    "io/ioutil"
 )
 
 // Loader is a structure to provide applet loading when a file changes or on
@@ -32,8 +31,8 @@ type Loader struct {
 	maxDuration      int
 	initialLoad      chan bool
 	timeout          int
-	renderGif		 bool
-	configOutFile	 string
+	renderGif        bool
+	configOutFile    string
 }
 
 type Update struct {
@@ -108,11 +107,11 @@ func (l *Loader) Run() error {
 			if err != nil {
 				panic(err)
 			}
-		
+
 			if l.configOutFile != "" {
 				// Write the byte slice to the file.
 				//log.Printf("writing to %v",l.configOutFile)
-				err = ioutil.WriteFile(l.configOutFile, byteSlice, 0644)
+				err = os.WriteFile(l.configOutFile, byteSlice, 0644)
 				if err != nil {
 					panic(err)
 				}
