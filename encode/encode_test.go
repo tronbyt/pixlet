@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ingmarstein/go-libwebp/webp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tidbyt/go-libwebp/webp"
 	"tidbyt.dev/pixlet/render"
 	"tidbyt.dev/pixlet/runtime"
 )

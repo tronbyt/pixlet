@@ -1,6 +1,6 @@
 module tidbyt.dev/pixlet
 
-go 1.23
+go 1.23.6
 
 require (
 	github.com/Code-Hex/Neo-cowsay/v2 v2.0.4
@@ -17,6 +17,7 @@ require (
 	github.com/google/tink/go v1.7.0
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
+	github.com/ingmarstein/go-libwebp v0.0.0-20250210064648-2a5c38d63a1b
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nathan-osman/go-sunrise v1.1.0
@@ -33,7 +34,6 @@ require (
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
 	github.com/stretchr/testify v1.10.0
 	github.com/tidbyt/gg v0.0.0-20220808163829-95806fa1d427
-	github.com/tidbyt/go-libwebp v0.0.0-20230922075150-fb11063b2a6a
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
 	go.starlark.net v0.0.0-20250205221240-492d3672b3f4
