@@ -5,7 +5,7 @@ package render
 import (
 	"fmt"
 
-	"github.com/tidbyt/go-libwebp/webp"
+	"github.com/ingmarstein/go-libwebp/webp"
 )
 
 func (p *Image) InitFromWebP(data []byte) error {
