@@ -14,14 +14,14 @@ import (
 )
 
 const (
-	TidbytAPIPush = "https://api.tidbyt.com/v0/devices/%s/push"
-	APITokenEnv   = "TIDBYT_API_TOKEN"
+	APITokenEnv = "TIDBYT_API_TOKEN"
 )
 
 var (
 	apiToken       string
 	installationID string
 	background     bool
+	pushURL        string
 )
 
 type TidbytPushJSON struct {
@@ -35,6 +35,7 @@ func init() {
 	PushCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
 	PushCmd.Flags().StringVarP(&installationID, "installation-id", "i", "", "Give your installation an ID to keep it in the rotation")
 	PushCmd.Flags().BoolVarP(&background, "background", "b", false, "Don't immediately show the image on the device")
+	PushCmd.Flags().StringVarP(&pushURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
 }
 
 var PushCmd = &cobra.Command{
@@ -49,14 +50,14 @@ func push(cmd *cobra.Command, args []string) error {
 	image := args[1]
 
 	// TODO (mark): This is better served as a flag, but I don't want to break
-	// folks in the short term. We should consider dropping this as an arguement
+	// folks in the short term. We should consider dropping this as an argument
 	// in a future release.
 	if len(args) == 3 {
 		installationID = args[2]
 	}
 
 	if background && len(installationID) == 0 {
-		return fmt.Errorf("Background push won't do anything unless you also specify an installation ID")
+		return fmt.Errorf("background push won't do anything unless you also specify an installation ID")
 	}
 
 	if apiToken == "" {
@@ -91,7 +92,7 @@ func push(cmd *cobra.Command, args []string) error {
 	client := &http.Client{}
 	req, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf(TidbytAPIPush, deviceID),
+		fmt.Sprintf("%s/v0/devices/%s/push", pushURL, deviceID),
 		bytes.NewReader(payload),
 	)
 	if err != nil {

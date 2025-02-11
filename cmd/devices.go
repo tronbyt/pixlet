@@ -11,9 +11,11 @@ import (
 	"tidbyt.dev/pixlet/cmd/config"
 )
 
-const (
-	TidbytAPIListDevices = "https://api.tidbyt.com/v0/devices"
-)
+var devicesURL string
+
+func init() {
+	DevicesCmd.Flags().StringVarP(&devicesURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
+}
 
 var DevicesCmd = &cobra.Command{
 	Use:   "devices",
@@ -29,7 +31,7 @@ func devices(cmd *cobra.Command, args []string) {
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", TidbytAPIListDevices, nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v0/devices", devicesURL), nil)
 	if err != nil {
 		fmt.Printf("creating GET request: %v\n", err)
 		os.Exit(1)

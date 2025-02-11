@@ -10,12 +10,11 @@ import (
 	"tidbyt.dev/pixlet/cmd/config"
 )
 
-const (
-	TidbytAPIDelete = "https://api.tidbyt.com/v0/devices/%s/installations/%s"
-)
+var deleteURL string
 
 func init() {
 	DeleteCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
+	DeleteCmd.Flags().StringVarP(&deleteURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
 }
 
 var DeleteCmd = &cobra.Command{
@@ -44,7 +43,7 @@ func delete(cmd *cobra.Command, args []string) error {
 	client := &http.Client{}
 	req, err := http.NewRequest(
 		"DELETE",
-		fmt.Sprintf(TidbytAPIDelete, deviceID, installationID),
+		fmt.Sprintf("%s/v0/devices/%s/installations/%s", deleteURL, deviceID, installationID),
 		nil,
 	)
 	if err != nil {
