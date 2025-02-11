@@ -12,8 +12,8 @@ import (
 	"tidbyt.dev/pixlet/cmd/config"
 )
 
-const (
-	TidbytAPIList = "https://api.tidbyt.com/v0/devices/%s/installations"
+var (
+	listURL string
 )
 
 type TidbytInstallationJSON struct {
@@ -27,6 +27,7 @@ type TidbytInstallationListJSON struct {
 
 func init() {
 	ListCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
+	ListCmd.Flags().StringVarP(&listURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
 }
 
 var ListCmd = &cobra.Command{
@@ -54,7 +55,7 @@ func listInstallations(cmd *cobra.Command, args []string) error {
 	client := &http.Client{}
 	req, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf(TidbytAPIList, deviceID), nil)
+		fmt.Sprintf("%s/v0/devices/%s/installations", listURL, deviceID), nil)
 	if err != nil {
 		return fmt.Errorf("creating GET request: %w", err)
 	}
