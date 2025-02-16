@@ -150,7 +150,7 @@ func render(cmd *cobra.Command, args []string) error {
 			if len(split) < 2 {
 				return fmt.Errorf("parameters must be on form <key>=<value>, found %s", param)
 			}
-			config[split[0]] = strings.Join(split[1:len(split)], "=")
+			config[split[0]] = strings.Join(split[1:], "=")
 		}
 
 	}
