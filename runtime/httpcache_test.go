@@ -166,7 +166,7 @@ func TestDetermineTTLJitter(t *testing.T) {
 		StatusCode: 200,
 	}
 
-	rand.Seed(50)
+	jitterRand = rand.New(rand.NewSource(50))
 	ttl := DetermineTTL(req, res)
 	assert.Equal(t, 64, int(ttl.Seconds()))
 }

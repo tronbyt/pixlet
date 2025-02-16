@@ -83,7 +83,7 @@ func (ic ImageChecker) PrintImage(im image.Image) {
 			if ascii == "" {
 				ascii = "?"
 			}
-			fmt.Printf(ascii)
+			fmt.Print(ascii)
 		}
 		fmt.Printf("\n")
 	}

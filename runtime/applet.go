@@ -307,7 +307,7 @@ func (a *Applet) Call(ctx context.Context, callable *starlark.Function, args ...
 	if err != nil {
 		evalErr, ok := err.(*starlark.EvalError)
 		if ok {
-			return nil, fmt.Errorf(evalErr.Backtrace())
+			return nil, fmt.Errorf("%s", evalErr.Backtrace())
 		}
 		return nil, fmt.Errorf(
 			"in %s at %s: %s",
