@@ -44,6 +44,8 @@ var cacheableStatusCodes = map[int]bool{
 	501: true,
 }
 
+var jitterRand *rand.Rand
+
 type cacheClient struct {
 	cache     Cache
 	transport http.RoundTripper
@@ -197,7 +199,15 @@ func determineTTL(req *http.Request, resp *http.Response) time.Duration {
 
 func jitterDuration(duration time.Duration) time.Duration {
 	jitter := int64(float64(duration) * 0.1)
-	randomJitter := rand.Int63n(2*jitter+1) - jitter
+	var r int64
+	if jitterRand == nil {
+		// use global rand
+		r = rand.Int63n(2*jitter + 1)
+	} else {
+		// use supplied rand (used for testing)
+		r = jitterRand.Int63n(2*jitter + 1)
+	}
+	randomJitter := r - jitter
 	return time.Duration(duration + time.Duration(randomJitter))
 }
 
