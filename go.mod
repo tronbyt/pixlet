@@ -15,7 +15,6 @@ require (
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/google/pprof v0.0.0-20250208200701-d0013a598941
 	github.com/google/tink/go v1.7.0
-	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/ingmarstein/go-libwebp v0.0.0-20250210064648-2a5c38d63a1b
 	github.com/manifoldco/promptui v0.9.0
@@ -46,7 +45,6 @@ require (
 
 require (
 	dario.cat/mergo v1.0.1 // indirect
-	github.com/360EntSecGroup-Skylar/excelize v1.4.1 // indirect
 	github.com/Code-Hex/go-wordwrap v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.5 // indirect
@@ -78,8 +76,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
-	github.com/paulmach/orb v0.1.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -104,5 +100,4 @@ require (
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

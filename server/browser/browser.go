@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"golang.org/x/sync/errgroup"
 	"tidbyt.dev/pixlet/dist"
@@ -27,10 +26,10 @@ type Browser struct {
 	updateChan chan loader.Update // A channel of base64 encoded images.
 	watch      bool
 	fo         *fanout.Fanout
-	r          *mux.Router
+	r          *http.ServeMux
 	tmpl       *template.Template
 	loader     *loader.Loader
-	serveGif   bool               // True if serving GIF, false if serving WebP
+	serveGif   bool // True if serving GIF, false if serving WebP
 }
 
 //go:embed preview-mask.png
@@ -44,11 +43,11 @@ var previewHTML string
 
 // previewData is used to populate the HTML template.
 type previewData struct {
-	Title  string    `json:"title"`
-	Image  string    `json:"img"`
+	Title     string `json:"title"`
+	Image     string `json:"img"`
 	ImageType string `json:"img_type"`
-	Watch  bool      `json:"-"`
-	Err    string    `json:"error,omitempty"`
+	Watch     bool   `json:"-"`
+	Err       string `json:"error,omitempty"`
 }
 type handlerRequest struct {
 	ID    string `json:"id"`
@@ -73,7 +72,7 @@ func NewBrowser(addr string, title string, watch bool, updateChan chan loader.Up
 		serveGif:   serveGif,
 	}
 
-	r := mux.NewRouter()
+	r := http.NewServeMux()
 
 	// In order for React Router to work, all routes that React Router should
 	// manage need to return the root handler.
@@ -82,23 +81,23 @@ func NewBrowser(addr string, title string, watch bool, updateChan chan loader.Up
 
 	// This enables the static directory containing JS and CSS to be available
 	// at /static.
-	r.PathPrefix("/static").Handler(http.FileServer(http.FS(dist.Static)))
+	r.Handle("GET /static/", http.FileServer(http.FS(dist.Static)))
 
 	// In case we broke something or someone prefers the legacy editor, it is
 	// still available for now. This will be removed in the future once we
 	// have confirmed the new editor is stable.
 	r.HandleFunc("/legacy", b.oldRootHandler)
 	r.HandleFunc("/ws", b.websocketHandler)
-	r.HandleFunc("/favicon.png", b.faviconHandler).Methods("GET")
-	r.HandleFunc("/preview-mask.png", b.previewMaskHandler).Methods("GET")
+	r.HandleFunc("GET /favicon.png", b.faviconHandler)
+	r.HandleFunc("GET /preview-mask.png", b.previewMaskHandler)
 
 	// API endpoints to support the React frontend.
 	r.HandleFunc("/api/v1/preview", b.previewHandler)
 	r.HandleFunc("/api/v1/preview.webp", b.imageHandler)
 	r.HandleFunc("/api/v1/preview.gif", b.imageHandler)
 	r.HandleFunc("/api/v1/push", b.pushHandler)
-	r.HandleFunc("/api/v1/schema", b.schemaHandler).Methods("GET")
-	r.HandleFunc("/api/v1/handlers/{handler}", b.schemaHandlerHandler).Methods("POST")
+	r.HandleFunc("GET /api/v1/schema", b.schemaHandler)
+	r.HandleFunc("POST /api/v1/handlers/{handler}", b.schemaHandlerHandler)
 	r.HandleFunc("/api/v1/ws", b.websocketHandler)
 	b.r = r
 
@@ -134,8 +133,8 @@ func (b *Browser) schemaHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b *Browser) schemaHandlerHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	if _, ok := vars["handler"]; !ok {
+	handler := r.PathValue("handler")
+	if handler == "" {
 		w.WriteHeader(404)
 		fmt.Fprintln(w, "no handler")
 		return
@@ -150,7 +149,7 @@ func (b *Browser) schemaHandlerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := b.loader.CallSchemaHandler(r.Context(), vars["handler"], msg.Param)
+	data, err := b.loader.CallSchemaHandler(r.Context(), handler, msg.Param)
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintln(w, err)
@@ -303,7 +302,7 @@ func (b *Browser) oldRootHandler(w http.ResponseWriter, r *http.Request) {
 	data := previewData{
 		Title: b.title,
 		Watch: b.watch,
-		Image:  img,
+		Image: img,
 	}
 
 	if err != nil {
