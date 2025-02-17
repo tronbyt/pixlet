@@ -17,7 +17,7 @@ export default function refreshSchema() {
         },
     });
 
-    client.get(`${PIXLET_API_BASE}/api/v1/schema`)
+    client.get(`api/v1/schema`)
         .then(res => {
             store.dispatch(update(res.data));
         })
