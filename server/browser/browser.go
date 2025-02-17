@@ -298,7 +298,18 @@ func (b *Browser) updateWatcher() error {
 }
 func (b *Browser) rootHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	w.Write(dist.Index)
+	t, err := template.New("index").Parse(string(dist.Index))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error loading index template: %v", err), http.StatusInternalServerError)
+		return
+	}
+	config := map[string]any{}
+	if b.path != "/" {
+		config["Base"] = b.path
+	}
+	if err := t.Execute(w, config); err != nil {
+		http.Error(w, fmt.Sprintf("error executing template: %v", err), http.StatusInternalServerError)
+	}
 }
 
 func (b *Browser) oldRootHandler(w http.ResponseWriter, r *http.Request) {
