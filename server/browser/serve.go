@@ -8,6 +8,6 @@ import (
 )
 
 func (b *Browser) serveHTTP() error {
-	log.Printf("listening at http://%s\n", b.addr)
+	log.Printf("listening at http://%s%s\n", b.addr, b.path)
 	return http.ListenAndServe(b.addr, b.r)
 }

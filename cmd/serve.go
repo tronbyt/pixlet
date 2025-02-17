@@ -8,6 +8,7 @@ import (
 var (
 	host          string
 	port          int
+	path          string
 	watch         bool
 	serveGif      bool
 	configOutFile string
@@ -21,6 +22,7 @@ func init() {
 	ServeCmd.Flags().IntVarP(&maxDuration, "max_duration", "d", 15000, "Maximum allowed animation duration (ms)")
 	ServeCmd.Flags().IntVarP(&timeout, "timeout", "", 30000, "Timeout for execution (ms)")
 	ServeCmd.Flags().BoolVarP(&serveGif, "gif", "", false, "Generate GIF instead of WebP")
+	ServeCmd.Flags().StringVarP(&path, "path", "", "/", "Path to serve the app on")
 }
 
 var ServeCmd = &cobra.Command{
@@ -36,7 +38,7 @@ containing multiple Starlark files and resources.`,
 }
 
 func serve(cmd *cobra.Command, args []string) error {
-	s, err := server.NewServer(host, port, watch, args[0], maxDuration, timeout, serveGif, configOutFile)
+	s, err := server.NewServer(host, port, path, watch, args[0], maxDuration, timeout, serveGif, configOutFile)
 	if err != nil {
 		return err
 	}

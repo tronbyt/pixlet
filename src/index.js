@@ -12,7 +12,7 @@ const App = () => {
     return (
         <Provider store={store}>
             <DevToolsTheme>
-                <BrowserRouter>
+                <BrowserRouter basename={window.location.pathname}>
                     <Routes>
                         <Route exact path="/" element={<Main />} />
                         <Route path="oauth-callback" element={<OAuth2Handler />} />

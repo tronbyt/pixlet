@@ -16,7 +16,7 @@ export default function fetchPreview(formData) {
         },
     });
 
-    client.post(`${PIXLET_API_BASE}/api/v1/preview`, formData)
+    client.post(`api/v1/preview`, formData)
         .then(res => {
             document.title = res.data.title;
             store.dispatch(update(res.data));

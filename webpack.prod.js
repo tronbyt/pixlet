@@ -30,7 +30,7 @@ module.exports = merge(common, {
     devtool: 'source-map',
     output: {
         asyncChunks: true,
-        publicPath: '/static/',
+        publicPath: 'auto',
         path: path.resolve(__dirname, 'dist/static'),
         filename: '[name].[chunkhash].js',
         clean: true,
