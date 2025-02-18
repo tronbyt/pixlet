@@ -1,23 +1,17 @@
 package cmd
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"image"
 	"io"
-	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/encode"
-	"tidbyt.dev/pixlet/globals"
 	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/tools"
+	"tidbyt.dev/pixlet/server/loader"
 )
 
 var (
@@ -96,17 +90,14 @@ func render(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to stat %s: %w", path, err)
 	}
 
-	var fs fs.FS
 	var outPath string
 	if info.IsDir() {
-		fs = os.DirFS(path)
 		outPath = filepath.Join(path, filepath.Base(path))
 	} else {
 		if !strings.HasSuffix(path, ".star") {
 			return fmt.Errorf("script file must have suffix .star: %s", path)
 		}
 
-		fs = tools.NewSingleFileFS(path)
 		outPath = strings.TrimSuffix(path, ".star")
 	}
 
@@ -118,9 +109,6 @@ func render(cmd *cobra.Command, args []string) error {
 	if output != "" {
 		outPath = output
 	}
-
-	globals.Width = width
-	globals.Height = height
 
 	config := map[string]string{}
 
@@ -155,80 +143,11 @@ func render(cmd *cobra.Command, args []string) error {
 
 	}
 
-	// Remove the print function from the starlark thread if the silent flag is
-	// passed.
-	var opts []runtime.AppletOption
-	if silenceOutput {
-		opts = append(opts, runtime.WithPrintDisabled())
-	}
-
-	ctx := context.Background()
-	if timeout > 0 {
-		ctx, _ = context.WithTimeoutCause(
-			ctx,
-			time.Duration(timeout)*time.Millisecond,
-			fmt.Errorf("timeout after %dms", timeout),
-		)
-	}
-
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs, opts...)
-	if err != nil {
-		return fmt.Errorf("failed to load applet: %w", err)
-	}
-
-	roots, err := applet.RunWithConfig(ctx, config)
-	if err != nil {
-		return fmt.Errorf("error running script: %w", err)
-	}
-	screens := encode.ScreensFromRoots(roots)
-
-	filter := func(input image.Image) (image.Image, error) {
-		if magnify <= 1 {
-			return input, nil
-		}
-		in, ok := input.(*image.RGBA)
-		if !ok {
-			return nil, fmt.Errorf("image not RGBA, very weird")
-		}
-
-		out := image.NewRGBA(
-			image.Rect(
-				0, 0,
-				in.Bounds().Dx()*magnify,
-				in.Bounds().Dy()*magnify),
-		)
-		for x := 0; x < in.Bounds().Dx(); x++ {
-			for y := 0; y < in.Bounds().Dy(); y++ {
-				for xx := 0; xx < magnify; xx++ {
-					for yy := 0; yy < magnify; yy++ {
-						out.SetRGBA(
-							x*magnify+xx,
-							y*magnify+yy,
-							in.RGBAAt(x, y),
-						)
-					}
-				}
-			}
-		}
-
-		return out, nil
-	}
-
-	var buf []byte
-
-	if screens.ShowFullAnimation {
-		maxDuration = 0
-	}
-
-	if renderGif {
-		buf, err = screens.EncodeGIF(maxDuration, filter)
-	} else {
-		buf, err = screens.EncodeWebP(maxDuration, filter)
-	}
+	buf, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, renderGif, silenceOutput)
 	if err != nil {
 		return fmt.Errorf("error rendering: %w", err)
 	}

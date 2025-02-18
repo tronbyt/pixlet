@@ -1,4 +1,4 @@
-# MacOS
+# macOS
 .DS_Store
 
 # Rendered Apps
@@ -10,6 +10,11 @@ pixlet
 pixlet.exe
 pixlet.wasm
 
+# Pixlet library
+libpixlet.so
+libpixlet.h
+pixlet.dll
+
 # Releases
 build/
 out/
@@ -18,6 +23,3 @@ dist/
 # Dependency directories
 node_modules
 src/go
-
-# build files from monorepo
-BUILD.bazel

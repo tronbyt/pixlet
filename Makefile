@@ -1,16 +1,24 @@
 GIT_COMMIT = $(shell git rev-list -1 HEAD)
+ARCH = $(shell uname -m)
+OS = $(shell uname -s)
 
 ifeq ($(OS),Windows_NT)
 	BINARY = pixlet.exe
+	LIBRARY = pixlet.dll
 	LDFLAGS = -ldflags="-s '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
 	TAGS = -tags timetzdata
 else
 	BINARY = pixlet
-	TAGS =
+	LIBRARY = libpixlet.so
 	ifeq ($(STATIC),1)
-		LDFLAGS = -ldflags="-s -w -linkmode=external '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
+		TAGS = -tags netgo,osusergo
+		LDFLAGS = -ldflags="-s -w -linkmode=external '-extldflags=-static -lsharpyuv -lm' -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
+		ifeq ($(OS),Linux)
+			CGO_LDFLAGS="-Wl,-Bstatic -lwebp -lwebpdemux -lwebpmux -lsharpyuv -Wl,-Bdynamic"
+		endif
 	else
-		LDFLAGS = -ldflags="-X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
+		TAGS =
+		LDFLAGS = -ldflags="-s -w -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
 	endif
 endif
 
@@ -29,6 +37,7 @@ bench:
 
 build:
 	go build $(LDFLAGS) $(TAGS) -o $(BINARY) tidbyt.dev/pixlet
+	CGO_LDFLAGS=$(CGO_LDFLAGS) go build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared library/library.go
 
 embedfonts:
 	go run render/gen/embedfonts.go

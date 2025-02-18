@@ -7,14 +7,19 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"image"
 	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"tidbyt.dev/pixlet/encode"
+	"tidbyt.dev/pixlet/globals"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/schema"
+	"tidbyt.dev/pixlet/tools"
 )
 
 // Loader is a structure to provide applet loading when a file changes or on
@@ -232,4 +237,111 @@ func (l *Loader) markInitialLoadComplete() {
 	default:
 		close(l.initialLoad)
 	}
+}
+
+func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, renderGif, silenceOutput bool) ([]byte, error) {
+	// check if path exists, and whether it is a directory or a file
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to stat %s: %w", path, err)
+	}
+
+	var fs fs.FS
+	if info.IsDir() {
+		fs = os.DirFS(path)
+	} else {
+		if !strings.HasSuffix(path, ".star") {
+			return nil, fmt.Errorf("script file must have suffix .star: %s", path)
+		}
+
+		fs = tools.NewSingleFileFS(path)
+	}
+
+	if width > 0 {
+		globals.Width = width
+	}
+	if height > 0 {
+		globals.Height = height
+	}
+	if magnify == 0 {
+		magnify = 1
+	}
+
+	// Remove the print function from the starlark thread if the silent flag is
+	// passed.
+	var opts []runtime.AppletOption
+	if silenceOutput {
+		opts = append(opts, runtime.WithPrintDisabled())
+	}
+
+	ctx := context.Background()
+	if timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeoutCause(
+			ctx,
+			time.Duration(timeout)*time.Millisecond,
+			fmt.Errorf("timeout after %d ms", timeout),
+		)
+		defer cancel()
+	}
+
+	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load applet: %w", err)
+	}
+
+	roots, err := applet.RunWithConfig(ctx, config)
+	if err != nil {
+		return nil, fmt.Errorf("error running script: %w", err)
+	}
+	screens := encode.ScreensFromRoots(roots)
+
+	filter := func(input image.Image) (image.Image, error) {
+		if magnify <= 1 {
+			return input, nil
+		}
+		in, ok := input.(*image.RGBA)
+		if !ok {
+			return nil, fmt.Errorf("image not RGBA, very weird")
+		}
+
+		out := image.NewRGBA(
+			image.Rect(
+				0, 0,
+				in.Bounds().Dx()*magnify,
+				in.Bounds().Dy()*magnify),
+		)
+		for x := 0; x < in.Bounds().Dx(); x++ {
+			for y := 0; y < in.Bounds().Dy(); y++ {
+				for xx := 0; xx < magnify; xx++ {
+					for yy := 0; yy < magnify; yy++ {
+						out.SetRGBA(
+							x*magnify+xx,
+							y*magnify+yy,
+							in.RGBAAt(x, y),
+						)
+					}
+				}
+			}
+		}
+
+		return out, nil
+	}
+
+	var buf []byte
+
+	if screens.ShowFullAnimation {
+		maxDuration = 0
+	}
+
+	if renderGif {
+		buf, err = screens.EncodeGIF(maxDuration, filter)
+	} else {
+		buf, err = screens.EncodeWebP(maxDuration, filter)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("error rendering: %w", err)
+	}
+
+	return buf, nil
 }
