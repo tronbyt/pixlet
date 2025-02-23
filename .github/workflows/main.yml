@@ -185,7 +185,7 @@ jobs:
               --repo="${GITHUB_REPOSITORY}" \
               --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
               --generate-notes \
-              build/*
+              build/*.tar.gz
 
   build-and-push-image:
     runs-on: ubuntu-latest
