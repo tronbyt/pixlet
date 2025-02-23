@@ -35,5 +35,5 @@ do
 	fi
 
 	echo "Built ./build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/pixlet successfully"
-	tar -cvz -C "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}" -f "build/pixlet_${RELEASE_PLATFORM}_${RELEASE_ARCH}.tar.gz" pixlet
+	tar -cvz -C "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}" -f "build/pixlet_${PIXLET_VERSION}_${RELEASE_PLATFORM}_${RELEASE_ARCH}.tar.gz" pixlet
 done
