@@ -172,8 +172,9 @@ jobs:
       - name: Fetch Release Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release-artifacts
           path: build
+          pattern: release-artifacts-*
+          merge-multiple: true
 
       - name: Create Release
         env:
