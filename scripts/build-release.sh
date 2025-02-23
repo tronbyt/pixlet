@@ -26,8 +26,8 @@ do
 		CC=aarch64-linux-gnu-gcc CGO_LDFLAGS="-Wl,-Bstatic -lwebp -lwebpdemux -lwebpmux -lsharpyuv -Wl,-Bdynamic" CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -tags lib -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/libpixlet.so -buildmode=c-shared library/library.go
 	elif [[ $ARCH == "linux-amd64"  ]]; then
 		echo "linux-amd64"
-		CGO_LDFLAGS="-Wl,-Bstatic -lwebp -lwebpdemux -lwebpmux -lsharpyuv -Wl,-Bdynamic" CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-s '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=${PIXLET_VERSION}'" -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/pixlet tidbyt.dev/pixlet
-		CGO_LDFLAGS="-Wl,-Bstatic -lwebp -lwebpdemux -lwebpmux -lsharpyuv -Wl,-Bdynamic" CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -tags lib -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/libpixlet.so -buildmode=c-shared library/library.go
+		CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-s '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=${PIXLET_VERSION}'" -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/pixlet tidbyt.dev/pixlet
+		CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -tags lib -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/libpixlet.so -buildmode=c-shared library/library.go
 	elif [[ $ARCH == "windows-amd64"  ]]; then
 		echo "windows-amd64"
 		go build -ldflags="-s '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=${PIXLET_VERSION}'" -tags timetzdata -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/pixlet.exe tidbyt.dev/pixlet
