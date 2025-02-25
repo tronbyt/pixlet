@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import dayjs from 'dayjs';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -10,19 +11,19 @@ import { set, remove } from '../../config/configSlice'
 
 
 export default function DateTime({ field }) {
-    const [dateTime, setDateTime] = useState(new Date());
+    const [dateTime, setDateTime] = useState(dayjs());
     const config = useSelector(state => state.config);
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (field.id in config) {
-            setDateTime(new Date(config[field.id].value));
+            setDateTime(dayjs(config[field.id].value));
         }
     }, [config]);
 
     const onChange = (timestamp) => {
         if (!timestamp) {
-            setDateTime(new Date());
+            setDateTime(dayjs());
             dispatch(remove(field.id));
             return;
         }
@@ -30,7 +31,7 @@ export default function DateTime({ field }) {
         setDateTime(timestamp);
         dispatch(set({
             id: field.id,
-            value: timestamp,
+            value: timestamp.toISOString(),
         }));
     }
 
