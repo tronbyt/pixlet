@@ -31,7 +31,7 @@ export default function DateTime({ field }) {
         setDateTime(timestamp);
         dispatch(set({
             id: field.id,
-            value: timestamp,
+            value: timestamp.toISOString(),
         }));
     }
 
