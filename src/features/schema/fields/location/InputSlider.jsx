@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Slider from '@mui/material/Slider';
 import MuiInput from '@mui/material/Input';
 
@@ -11,7 +11,7 @@ const Input = styled(MuiInput)`
   width: 80px;
 `;
 
-export default function InputSlider({ min, max, step, defaultValue, onChange }) {
+export default function InputSlider({ min, max, step, defaultValue, onChange}) {
   const [value, setValue] = useState(defaultValue);
 
   const handleSliderChange = (event, newValue) => {
@@ -47,7 +47,7 @@ export default function InputSlider({ min, max, step, defaultValue, onChange }) 
   return (
     <Box sx={{ width: 250 }}>
       <Grid container spacing={2} alignItems="center">
-        <Grid item xs>
+        <Grid size="grow">
           <Slider
             value={value}
             min={min}
@@ -57,16 +57,16 @@ export default function InputSlider({ min, max, step, defaultValue, onChange }) 
             aria-labelledby="input-slider"
           />
         </Grid>
-        <Grid item>
+        <Grid>
           <Input
             value={value}
             size="small"
             onChange={handleInputChange}
             onBlur={handleBlur}
             inputProps={{
-              step: { step },
-              min: { min },
-              max: { max },
+              step: {step},
+              min: {min},
+              max: {max},
               type: 'number',
               'aria-labelledby': 'input-slider',
             }}

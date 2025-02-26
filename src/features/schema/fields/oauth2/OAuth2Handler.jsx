@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 
 
 export default function OAuth2Handler() {
@@ -25,7 +25,7 @@ export default function OAuth2Handler() {
             justifyContent="center"
             style={{ minHeight: '100vh' }}
         >
-            <Grid item xs={3}>
+            <Grid size={{ xs: 3 }}>
                 <CircularProgress />
             </Grid>
         </Grid>
