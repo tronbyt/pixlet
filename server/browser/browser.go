@@ -29,7 +29,6 @@ type Browser struct {
 	watch      bool
 	fo         *fanout.Fanout
 	r          *http.ServeMux
-	tmpl       *template.Template
 	loader     *loader.Loader
 	serveGif   bool // True if serving GIF, false if serving WebP
 }
@@ -39,9 +38,6 @@ var previewMask []byte
 
 //go:embed favicon.png
 var favicon []byte
-
-//go:embed preview.html
-var previewHTML string
 
 // previewData is used to populate the HTML template.
 type previewData struct {
@@ -58,11 +54,6 @@ type handlerRequest struct {
 
 // NewBrowser sets up a browser structure. Call Run() to kick off the main loops.
 func NewBrowser(addr string, servePath string, title string, watch bool, updateChan chan loader.Update, l *loader.Loader, serveGif bool) (*Browser, error) {
-	tmpl, err := template.New("preview").Parse(previewHTML)
-	if err != nil {
-		return nil, err
-	}
-
 	if !strings.HasPrefix(servePath, "/") {
 		servePath = "/" + servePath
 	}
@@ -75,7 +66,6 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 		addr:       addr,
 		path:       servePath,
 		fo:         fanout.NewFanout(),
-		tmpl:       tmpl,
 		title:      title,
 		loader:     l,
 		watch:      watch,
@@ -93,10 +83,6 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 	// at /static.
 	r.Handle(fmt.Sprintf("GET %sstatic/", servePath), http.StripPrefix(servePath, http.FileServer(http.FS(dist.Static))))
 
-	// In case we broke something or someone prefers the legacy editor, it is
-	// still available for now. This will be removed in the future once we
-	// have confirmed the new editor is stable.
-	r.HandleFunc(servePath+"legacy", b.oldRootHandler)
 	r.HandleFunc(servePath+"ws", b.websocketHandler)
 	r.HandleFunc(fmt.Sprintf("GET %sfavicon.png", servePath), b.faviconHandler)
 	r.HandleFunc(fmt.Sprintf("GET %spreview-mask.png", servePath), b.previewMaskHandler)
@@ -310,26 +296,4 @@ func (b *Browser) rootHandler(w http.ResponseWriter, r *http.Request) {
 	if err := t.Execute(w, config); err != nil {
 		http.Error(w, fmt.Sprintf("error executing template: %v", err), http.StatusInternalServerError)
 	}
-}
-
-func (b *Browser) oldRootHandler(w http.ResponseWriter, r *http.Request) {
-	config := make(map[string]string)
-	for k, vals := range r.URL.Query() {
-		config[k] = vals[0]
-	}
-
-	img, err := b.loader.LoadApplet(config)
-
-	data := previewData{
-		Title: b.title,
-		Watch: b.watch,
-		Image: img,
-	}
-
-	if err != nil {
-		data.Err = err.Error()
-	}
-
-	w.Header().Set("Content-Type", "text/html")
-	b.tmpl.Execute(w, data)
 }
