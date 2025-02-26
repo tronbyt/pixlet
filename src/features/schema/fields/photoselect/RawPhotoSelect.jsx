@@ -1,18 +1,12 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import Cropper from 'react-easy-crop';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Box from '@mui/material/Box';
 
 import { set, remove } from '../../../config/configSlice';
-import getCroppedImg from './cropImage';
-import styles from './styles.css';
 
 
 export default function RawPhotoSelect({ field }) {

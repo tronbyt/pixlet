@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 
 import { set, remove } from '../../../config/configSlice';
 import getCroppedImg from './cropImage';
-import styles from './styles.css';
+import * as styles from './styles.css';
 
 
 export default function PhotoSelect({ field }) {

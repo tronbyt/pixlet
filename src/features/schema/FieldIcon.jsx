@@ -4,7 +4,7 @@ import { findIconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 import Icon from '@mui/material/Icon';
 
-import styles from './styles.css';
+import * as styles from './styles.css';
 
 
 export default function FieldIcon(props) {
