@@ -10,6 +10,7 @@
   "scripts": {
     "start": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
+    "analyze": "webpack --config webpack.prod.js --profile --json > stats.json",
     "clean": "rm -rf dist/static/ && git restore dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,9 +25,13 @@
     "url": "https://github.com/Tronbyt/pixlet/issues"
   },
   "homepage": "https://github.com/Tronbyt/pixlet#readme",
+  "browserslist": [
+    "defaults and fully supports es6-module"
+  ],
   "devDependencies": {
     "@babel/core": "^7.24.4",
     "@babel/plugin-transform-class-properties": "^7.25.9",
+    "@babel/plugin-transform-runtime": "^7.26.9",
     "@babel/preset-react": "^7.24.1",
     "@svgr/webpack": "^8.1.0",
     "babel-loader": "^9.1.3",

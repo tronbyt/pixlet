@@ -1,4 +1,3 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { findIconDefinition } from '@fortawesome/fontawesome-svg-core';
 
@@ -6,6 +5,10 @@ import Icon from '@mui/material/Icon';
 
 import * as styles from './styles.css';
 
+const { library } = await import('@fortawesome/fontawesome-svg-core');
+const { fab } = await import('@fortawesome/free-brands-svg-icons');
+const { fas } = await import('@fortawesome/free-solid-svg-icons');
+library.add(fas, fab);
 
 export default function FieldIcon(props) {
     const iconName = props.icon;

@@ -1,9 +1,9 @@
-import React from 'react';
+import { createRef } from 'react';
 import { SnackbarProvider } from 'notistack';
 import * as styles from './styles.css';
 
 export default function ErrorSnackbar(props) {
-    const notistackRef = React.createRef();
+    const notistackRef = createRef();
 
     return (
         <SnackbarProvider

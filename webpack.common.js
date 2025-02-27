@@ -1,10 +1,9 @@
 module.exports = {
+    entry: {
+        app: { import: './src/index.js' }
+    },
     resolve: {
         extensions: ['*', '.js', '.jsx'],
-    },
-    experiments: {
-        asyncWebAssembly: true,
-        syncWebAssembly: true
     },
     module: {
         rules: [

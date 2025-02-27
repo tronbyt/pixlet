@@ -1,9 +1,8 @@
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.js");
-const webpack = require("webpack");
-const path = require("path");
-const HtmlWebPackPlugin = require("html-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+import { merge } from "webpack-merge";
+import common from "./webpack.common.js";
+import { resolve } from "path";
+import HtmlWebPackPlugin from "html-webpack-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
 
 const htmlPlugin = new HtmlWebPackPlugin({
     template: "./src/index.html",
@@ -16,21 +15,27 @@ const copyPlugin = new CopyWebpackPlugin({
 });
 
 let plugins = [htmlPlugin, copyPlugin];
-plugins.push(
-    new webpack.DefinePlugin({
-        PIXLET_API_BASE: JSON.stringify(""),
-    })
-);
 
-module.exports = merge(common, {
+export default merge(common, {
     mode: "production",
-    devtool: "source-map",
+    devtool: false,
     output: {
         asyncChunks: true,
         publicPath: "auto",
-        path: path.resolve(__dirname, "dist/static"),
+        path: resolve(import.meta.dirname, "dist/static"),
         filename: "[name].[chunkhash].js",
         clean: true,
+    },
+    performance: {
+        // free-brands-svg-icons and free-solid-svg-icons are large
+        // libraries. They arey are bundled fully to look up arbitrary
+        // icons by the name specified in the schema (see FieldIcon.jsx).
+        // Increase the maxAssetSize to silence the warning.
+        maxAssetSize: 1_000_000,
+    },
+    optimization: {
+        // Creates a runtime file to be shared for all generated chunks.
+        runtimeChunk: 'single'
     },
     plugins: plugins,
 });

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import Fragment, { useState, useCallback, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import { useDispatch } from 'react-redux';
 
@@ -111,7 +111,7 @@ export default function PhotoSelect({ field }) {
     }
 
     return (
-        <React.Fragment>
+        <Fragment>
             {buttons}
             <Modal
                 open={open}
@@ -158,6 +158,6 @@ export default function PhotoSelect({ field }) {
                     </div>
                 </div>
             </Modal>
-        </React.Fragment>
+        </Fragment>
     );
 }

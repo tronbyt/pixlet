@@ -1,7 +1,6 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { Paper } from '@mui/material';
+import Paper from '@mui/material/Paper';
 
 import * as styles from './styles.css';
 

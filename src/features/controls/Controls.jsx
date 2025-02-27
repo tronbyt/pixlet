@@ -1,7 +1,7 @@
-import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { Button, Stack } from '@mui/material';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 import { resetConfig, setConfig } from '../config/actions';
 import { set } from '../config/configSlice';
 

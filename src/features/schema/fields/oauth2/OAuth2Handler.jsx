@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid2';

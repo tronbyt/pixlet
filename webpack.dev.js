@@ -1,9 +1,8 @@
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.js");
-const webpack = require("webpack");
+import { merge } from "webpack-merge";
+import common from "./webpack.common.js";
 
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const HtmlWebPackPlugin = require("html-webpack-plugin");
+import CopyWebpackPlugin from "copy-webpack-plugin";
+import HtmlWebPackPlugin from "html-webpack-plugin";
 
 const htmlPlugin = new HtmlWebPackPlugin({
     template: "./src/index.html",
@@ -16,13 +15,8 @@ const copyPlugin = new CopyWebpackPlugin({
 });
 
 let plugins = [htmlPlugin, copyPlugin];
-plugins.push(
-    new webpack.DefinePlugin({
-        PIXLET_API_BASE: JSON.stringify(""),
-    })
-);
 
-module.exports = merge(common, {
+export default merge(common, {
     mode: "development",
     devtool: "source-map",
     devServer: {
