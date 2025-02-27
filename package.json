@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tavdog/pixlet.git"
+    "url": "git+https://github.com/Tronbyt/pixlet.git"
   },
   "keywords": [],
   "author": "Tidbyt, Inc.",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/tavdog/pixlet/issues"
+    "url": "https://github.com/Tronbyt/pixlet/issues"
   },
-  "homepage": "https://github.com/tavdog/pixlet#readme",
+  "homepage": "https://github.com/Tronbyt/pixlet#readme",
   "devDependencies": {
     "@babel/core": "^7.24.4",
     "@babel/plugin-transform-class-properties": "^7.25.9",
