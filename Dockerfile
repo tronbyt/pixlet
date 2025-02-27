@@ -16,5 +16,6 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /pixlet/pixlet /bin/pixlet
 COPY --from=builder /pixlet/libpixlet.so /lib/libpixlet.so
+COPY --from=builder /pixlet/libpixlet.h /usr/include/libpixlet/libpixlet.h
 
 ENTRYPOINT ["/bin/pixlet"]
