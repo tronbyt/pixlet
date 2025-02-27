@@ -1,10 +1,18 @@
 # Can't use Alpine because of
 # - https://github.com/golang/go/issues/54805: libpixlet.so can't be loaded dynamically
 # - https://github.com/python/cpython/issues/109332: CPython doesn't support musl
-FROM golang:1.24.0-bookworm AS builder
+FROM debian:trixie-slim AS builder
 
-RUN echo deb http://deb.debian.org/debian bookworm-backports main > /etc/apt/sources.list.d/bookworm-backports.list && \
-    apt-get update && apt install -y --no-install-recommends npm libwebp-dev/bookworm-backports git make clang tzdata ca-certificates && \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates \
+        clang \
+        git \
+        golang-go \
+        libwebp-dev \
+        make \
+        npm \
+        tzdata && \
     rm -rf /var/lib/apt/lists/*
 COPY . /pixlet
 WORKDIR /pixlet
