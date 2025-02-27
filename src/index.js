@@ -1,12 +1,13 @@
-import React from 'react';
+import { lazy } from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-
-import Main from './Main';
-import OAuth2Handler from './features/schema/fields/oauth2/OAuth2Handler';
-import store from './store';
-import DevToolsTheme from './features/theme/DevToolsTheme';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
+
+import store from './store';
+
+const DevToolsTheme = lazy(() => import(/* webpackChunkName: "devtoolstheme" */ './features/theme/DevToolsTheme'));
+const Main = lazy(() => import(/* webpackChunkName: "main" */ './Main'));
+const OAuth2Handler = lazy(() => import(/* webpackChunkName: "oauth2handler" */ './features/schema/fields/oauth2/OAuth2Handler'));
 
 const App = () => {
     return (
@@ -19,7 +20,7 @@ const App = () => {
                     </Routes>
                 </BrowserRouter>
             </DevToolsTheme>
-        </Provider >
+        </Provider>
     )
 }
 

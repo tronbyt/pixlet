@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -12,7 +11,7 @@ import FieldIcon from './FieldIcon';
 export default function Field(props) {
     const field = props.field;
 
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = useState(false);
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);

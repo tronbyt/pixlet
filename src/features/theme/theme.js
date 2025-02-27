@@ -1,11 +1,9 @@
-
 import '@fontsource/barlow';
 import '@fontsource/material-icons';
 
 import { createTheme } from '@mui/material/styles';
 
 import { solarized } from './colors';
-
 
 export const theme = createTheme({
     palette: {

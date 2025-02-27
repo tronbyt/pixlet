@@ -1,6 +1,4 @@
 // Largely based on https://mui.com/material-ui/react-slider/#InputSlider.js
-import React from 'react';
-
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';

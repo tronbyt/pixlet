@@ -1,5 +1,3 @@
-import React from 'react';
-
 import OAuth2 from './fields/oauth2/OAuth2';
 import PhotoSelect from './fields/photoselect/PhotoSelect';
 import Toggle from './fields/Toggle';

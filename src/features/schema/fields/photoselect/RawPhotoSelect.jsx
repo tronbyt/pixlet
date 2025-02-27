@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import Fragment, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Button from '@mui/material/Button';
@@ -87,8 +87,8 @@ export default function RawPhotoSelect({ field }) {
     }
 
     return (
-        <React.Fragment>
+        <Fragment>
             {buttons}
-        </React.Fragment>
+        </Fragment>
     );
 }
