@@ -2,7 +2,6 @@ import React from 'react';
 
 import OAuth2 from './fields/oauth2/OAuth2';
 import PhotoSelect from './fields/photoselect/PhotoSelect';
-import RawPhotoSelect from './fields/photoselect/RawPhotoSelect';
 import Toggle from './fields/Toggle';
 import Color from './fields/Color';
 import DateTime from './fields/DateTime';

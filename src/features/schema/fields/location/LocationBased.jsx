@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -89,7 +88,7 @@ export default function LocationBased({ field }) {
                 max={90}
                 step={0.1}
                 onChange={onChangeLatitude}
-                defaultValue={locationValue['lat']}
+                value={locationValue['lat']}
             >
             </InputSlider>
             <Typography>Longitude</Typography>
@@ -98,7 +97,7 @@ export default function LocationBased({ field }) {
                 max={180}
                 step={0.1}
                 onChange={onChangeLongitude}
-                defaultValue={locationValue['lng']}
+                value={locationValue['lng']}
             >
             </InputSlider>
             <Typography>Locality</Typography>
@@ -107,13 +106,13 @@ export default function LocationBased({ field }) {
                 variant="outlined"
                 onChange={onChangeLocality}
                 style={{ marginBottom: '0.5rem' }}
-                defaultValue={locationValue['locality']}
+                value={locationValue['locality']}
             />
             <Typography>Timezone</Typography>
             <Select
                 onChange={onChangeTimezone}
                 style={{ marginBottom: '0.5rem' }}
-                defaultValue={locationValue['timezone']}
+                value={locationValue['timezone']}
             >
                 {Intl.supportedValuesOf('timeZone').map((zone) => {
                     return <MenuItem value={zone}>{zone}</MenuItem>

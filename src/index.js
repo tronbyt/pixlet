@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -7,6 +6,7 @@ import Main from './Main';
 import OAuth2Handler from './features/schema/fields/oauth2/OAuth2Handler';
 import store from './store';
 import DevToolsTheme from './features/theme/DevToolsTheme';
+import { createRoot } from 'react-dom/client';
 
 const App = () => {
     return (
@@ -23,4 +23,6 @@ const App = () => {
     )
 }
 
-ReactDOM.render(<App />, document.getElementById('app'));
+const container = document.getElementById('app');
+const root = createRoot(container);
+root.render(<App />);

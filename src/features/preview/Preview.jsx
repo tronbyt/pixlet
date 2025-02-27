@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { Paper } from '@mui/material';
 
-import styles from './styles.css';
+import * as styles from './styles.css';
 
 const loading = `UklGRu4KAABXRUJQVlA4WAoAAAASAAAAPwAAHwAAQU5JTQYAAAD/////AABBTk1GYgAAAAAAAAAA
 AD8AAB8AADIAAAJWUDhMSQAAAC8/wAcAR6CgbRuml0g1/igHQkHaBmxo18iYgrQN2NCukbH5TwDb

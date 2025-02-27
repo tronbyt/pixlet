@@ -27,7 +27,7 @@ require (
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/qri-io/starlib v0.5.1-0.20220611014110-7fb7ff9ec804
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
-	github.com/spf13/cobra v1.9.0
+	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
@@ -35,9 +35,9 @@ require (
 	github.com/tidbyt/gg v0.0.0-20220808163829-95806fa1d427
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
-	go.starlark.net v0.0.0-20250205221240-492d3672b3f4
+	go.starlark.net v0.0.0-20250225190231-0d3f41d403af
 	golang.org/x/image v0.24.0
-	golang.org/x/oauth2 v0.26.0
+	golang.org/x/oauth2 v0.27.0
 	golang.org/x/sync v0.11.0
 	golang.org/x/text v0.22.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -93,8 +93,8 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.33.0 // indirect
-	golang.org/x/exp v0.0.0-20250215185904-eff6e970281f // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
