@@ -12,39 +12,62 @@ import { set } from '../../../config/configSlice';
 import { callHandler } from '../../../handlers/actions';
 
 export default function LocationBased({ field }) {
-    const [locationValue, setLocationValue] = useState({
+    const [value, setValue] = useState({
         // Default to Brooklyn, because that's where tidbyt folks
         // are and  we can only dispatch a location object which
         // has all fields set.
         'lat': 40.678,
         'lng': -73.944,
         'locality': 'Brooklyn, New York',
-        'timezone': 'America/New_York'
+        'timezone': 'America/New_York',
+        // But overwrite with app-specific defaults set in config.
+        'display': '',
+        'value': '',
+        ...field.default
     });
-
-    const [value, setValue] = useState(field.default);
 
     const config = useSelector(state => state.config);
     const dispatch = useDispatch();
     const handlerResults = useSelector(state => state.handlers)
 
+    const getLocationAsJson = (v) => {
+        return JSON.stringify({
+            lat: v.lat,
+            lng: v.lng,
+            locality: v.locality,
+            timezone: v.timezone
+        });
+    }
+
     useEffect(() => {
         if (field.id in config) {
-            setValue(config[field.id].value);
+            let v = JSON.parse(config[field.id].value);
+            setValue(v);
+            callHandler(field.id, field.handler, getLocationAsJson(v));
         } else if (field.default) {
+            value = field.default;
             dispatch(set({
                 id: field.id,
-                value: field.default,
+                value: JSON.stringify(field.default),
             }));
         }
-        callHandler(field.id, field.handler, JSON.stringify(locationValue));
-    }, [config])
+    }, [config]);
 
-    const setPart = (partName, partValue) => {
-        let newLocationValue = { ...locationValue };
-        newLocationValue[partName] = partValue;
-        setLocationValue(newLocationValue);
-        callHandler(field.id, field.handler, JSON.stringify(newLocationValue));
+    useEffect(() => {
+        if (!(field.id in config)) {
+            callHandler(field.id, field.handler, getLocationAsJson(value));
+        }
+    }, []);
+
+    const setLocationPart = (partName, partValue) => {
+        let newValue = { ...value };
+        newValue[partName] = partValue;
+        setValue(newValue);
+        dispatch(set({
+            id: field.id,
+            value: JSON.stringify(newValue),
+        }));
+        callHandler(field.id, field.handler, getLocationAsJson(newValue));
     }
 
     const truncateLatLng = (value) => {
@@ -52,31 +75,32 @@ export default function LocationBased({ field }) {
     }
 
     const onChangeLatitude = (event) => {
-        setPart('lat', truncateLatLng(event.target.value));
+        setLocationPart('lat', truncateLatLng(event.target.value));
     }
 
     const onChangeLongitude = (event) => {
-        setPart('lng', truncateLatLng(event.target.value));
+        setLocationPart('lng', truncateLatLng(event.target.value));
     }
 
     const onChangeLocality = (event) => {
-        setPart('locality', event.target.value);
+        setLocationPart('locality', event.target.value);
     }
 
     const onChangeTimezone = (event) => {
-        setPart('timezone', event.target.value);
+        setLocationPart('timezone', event.target.value);
     }
 
     const onChangeOption = (event) => {
-        setValue(event.target.value);
+        let newValue = { ...value };
+        newValue.value = event.target.value;
         const selectedOption = options.find(option => option.value === event.target.value);
-        let option = { 'value': event.target.value };
         if (selectedOption) {
-            option['display'] = selectedOption.display;
+            newValue.display = selectedOption.display;
         }
+        setValue(newValue);
         dispatch(set({
             id: field.id,
-            value: JSON.stringify(option)
+            value: JSON.stringify(newValue),
         }));
     }
 
@@ -93,7 +117,7 @@ export default function LocationBased({ field }) {
                 max={90}
                 step={0.1}
                 onChange={onChangeLatitude}
-                value={locationValue['lat']}
+                value={value['lat']}
             >
             </InputSlider>
             <Typography>Longitude</Typography>
@@ -102,7 +126,7 @@ export default function LocationBased({ field }) {
                 max={180}
                 step={0.1}
                 onChange={onChangeLongitude}
-                value={locationValue['lng']}
+                value={value['lng']}
             >
             </InputSlider>
             <Typography>Locality</Typography>
@@ -111,13 +135,13 @@ export default function LocationBased({ field }) {
                 variant="outlined"
                 onChange={onChangeLocality}
                 style={{ marginBottom: '0.5rem' }}
-                value={locationValue['locality']}
+                value={value['locality']}
             />
             <Typography>Timezone</Typography>
             <Select
                 onChange={onChangeTimezone}
                 style={{ marginBottom: '0.5rem' }}
-                value={locationValue['timezone']}
+                value={value['timezone']}
             >
                 {Intl.supportedValuesOf('timeZone').map((zone) => {
                     return <MenuItem value={zone}>{zone}</MenuItem>
@@ -126,7 +150,7 @@ export default function LocationBased({ field }) {
             <Typography>Options for chosen location</Typography>
             <Select
                 onChange={onChangeOption}
-                value={value}
+                value={value['value']}
             >
                 {options.map((option) => {
                     return <MenuItem key={option.value} value={option.value}>{option.display}</MenuItem>
