@@ -3,12 +3,14 @@
 # - https://github.com/python/cpython/issues/109332: CPython doesn't support musl
 FROM debian:trixie-slim AS builder
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl && \
     curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        ca-certificates \
         clang \
         git \
         golang-go \
