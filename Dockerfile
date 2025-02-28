@@ -16,7 +16,7 @@ RUN apt-get update && \
         golang-go \
         libwebp-dev \
         make \
-        npm \
+        nodejs \
         tzdata && \
     rm -rf /var/lib/apt/lists/*
 COPY . /pixlet
