@@ -69,9 +69,14 @@ export default function LocationBased({ field }) {
 
     const onChangeOption = (event) => {
         setValue(event.target.value);
+        const selectedOption = options.find(option => option.value === event.target.value);
+        let option = { 'value': event.target.value };
+        if (selectedOption) {
+            option['display'] = selectedOption.display;
+        }
         dispatch(set({
             id: field.id,
-            value: JSON.stringify({ 'value': event.target.value })
+            value: JSON.stringify(option)
         }));
     }
 
@@ -121,6 +126,7 @@ export default function LocationBased({ field }) {
             <Typography>Options for chosen location</Typography>
             <Select
                 onChange={onChangeOption}
+                value={value}
             >
                 {options.map((option) => {
                     return <MenuItem key={option.value} value={option.value}>{option.display}</MenuItem>
