@@ -1,11 +1,13 @@
 package runtime
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -58,6 +60,38 @@ func (c *InMemoryCache) Set(_ *starlark.Thread, key string, value []byte, ttl in
 	}
 
 	return nil
+}
+
+type RedisCache struct {
+	client *redis.Client
+}
+
+func NewRedisCache(url string) *RedisCache {
+	opts, err := redis.ParseURL(url)
+	if err != nil {
+		panic(err)
+	}
+
+	return &RedisCache{
+		client: redis.NewClient(opts),
+	}
+}
+
+func (c *RedisCache) Get(_ *starlark.Thread, key string) (value []byte, found bool, err error) {
+	ctx := context.Background()
+	val, err := c.client.Get(ctx, key).Bytes()
+	if err == redis.Nil {
+		return nil, false, nil
+	} else if err != nil {
+		return nil, false, err
+	} else {
+		return val, true, nil
+	}
+}
+
+func (c *RedisCache) Set(_ *starlark.Thread, key string, value []byte, ttl int64) error {
+	ctx := context.Background()
+	return c.client.Set(ctx, key, value, time.Duration(ttl)*time.Second).Err()
 }
 
 var (

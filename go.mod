@@ -11,12 +11,11 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gitsight/go-vcsurl v1.0.1
-	github.com/go-git/go-git/v5 v5.13.2
+	github.com/go-git/go-git/v5 v5.14.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/google/pprof v0.0.0-20250208200701-d0013a598941
 	github.com/google/tink/go v1.7.0
 	github.com/gorilla/websocket v1.5.3
-	github.com/ingmarstein/go-libwebp v0.0.0-20250210064648-2a5c38d63a1b
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nathan-osman/go-sunrise v1.1.0
@@ -26,6 +25,7 @@ require (
 	github.com/nlepage/go-tarfs v1.2.1
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/qri-io/starlib v0.5.1-0.20220611014110-7fb7ff9ec804
+	github.com/redis/go-redis/v9 v9.7.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
@@ -33,6 +33,7 @@ require (
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
 	github.com/stretchr/testify v1.10.0
 	github.com/tidbyt/gg v0.0.0-20220808163829-95806fa1d427
+	github.com/tronbyt/go-libwebp v0.0.0-20250301104241-d9da69a6560d
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
 	go.starlark.net v0.0.0-20250225190231-0d3f41d403af
@@ -47,14 +48,16 @@ require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Code-Hex/go-wordwrap v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/ProtonMail/go-crypto v1.1.5 // indirect
+	github.com/ProtonMail/go-crypto v1.1.6 // indirect
 	github.com/PuerkitoBio/goquery v1.10.2 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/xpath v1.3.3 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/cloudflare/circl v1.6.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustmop/soup v1.1.2-0.20190516214245-38228baa104e // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
@@ -94,7 +97,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
-	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
+	golang.org/x/exp v0.0.0-20250228200357-dead58393ab7 // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect

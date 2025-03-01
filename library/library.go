@@ -48,4 +48,11 @@ func init_cache() {
 	runtime.InitCache(cache)
 }
 
+//export init_redis_cache
+func init_redis_cache(redisURL *C.char) {
+	cache := runtime.NewRedisCache(C.GoString(redisURL))
+	runtime.InitHTTP(cache)
+	runtime.InitCache(cache)
+}
+
 func main() {}

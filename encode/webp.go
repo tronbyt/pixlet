@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ingmarstein/go-libwebp/webp"
+	"github.com/tronbyt/go-libwebp/webp"
 )
 
 // Renders a screen to WebP. Optionally pass filters for
