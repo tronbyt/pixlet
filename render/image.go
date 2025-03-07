@@ -83,7 +83,7 @@ func (p *Image) InitFromGIF(data []byte) error {
 		// if the frame is DisposalPrevious
 		// reset to the last non-DisposalPrevious frame
 		if is_disposal_previous && prev_src != nil {
-			draw.Draw(last, last.Bounds(), prev_src, image.ZP, draw.Over)
+			draw.Draw(last, last.Bounds(), prev_src, image.Point{}, draw.Over)
 		}
 
 		// if this is a non-DisposalPrevious frame

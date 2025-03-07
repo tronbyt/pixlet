@@ -33,9 +33,6 @@ type Browser struct {
 	serveGif   bool // True if serving GIF, false if serving WebP
 }
 
-//go:embed preview-mask.png
-var previewMask []byte
-
 //go:embed favicon.png
 var favicon []byte
 
@@ -77,6 +74,7 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 	// In order for React Router to work, all routes that React Router should
 	// manage need to return the root handler.
 	r.HandleFunc(servePath, b.rootHandler)
+	r.HandleFunc(servePath+"health", b.healthHandler)
 	r.HandleFunc(servePath+"oauth-callback", b.rootHandler)
 
 	// This enables the static directory containing JS and CSS to be available
@@ -85,7 +83,6 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 
 	r.HandleFunc(servePath+"ws", b.websocketHandler)
 	r.HandleFunc(fmt.Sprintf("GET %sfavicon.png", servePath), b.faviconHandler)
-	r.HandleFunc(fmt.Sprintf("GET %spreview-mask.png", servePath), b.previewMaskHandler)
 
 	// API endpoints to support the React frontend.
 	r.HandleFunc(servePath+"api/v1/preview", b.previewHandler)
@@ -118,9 +115,8 @@ func (b *Browser) faviconHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(favicon)
 }
 
-func (b *Browser) previewMaskHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "image/png")
-	w.Write(previewMask)
+func (b *Browser) healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
 }
 
 func (b *Browser) schemaHandler(w http.ResponseWriter, r *http.Request) {
