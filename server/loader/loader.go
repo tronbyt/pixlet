@@ -311,9 +311,9 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 				in.Bounds().Dx()*magnify,
 				in.Bounds().Dy()*magnify),
 		)
-		for x := 0; x < in.Bounds().Dx(); x++ {
-			for y := 0; y < in.Bounds().Dy(); y++ {
-				for xx := 0; xx < magnify; xx++ {
+		for x := range in.Bounds().Dx() {
+			for y := range in.Bounds().Dy() {
+				for xx := range magnify {
 					for yy := 0; yy < magnify; yy++ {
 						out.SetRGBA(
 							x*magnify+xx,

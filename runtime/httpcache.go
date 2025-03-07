@@ -97,7 +97,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 		if err != nil {
 			// if httputil.DumpResponse fails, it leaves the response body in an
 			// undefined state, so we cannot continue
-			return nil, fmt.Errorf("failed to serialize response for cache: %s", resp.Status)
+			return nil, fmt.Errorf("failed to serialize response for cache: %v (%s)", err, resp.Status)
 		}
 
 		ttl := DetermineTTL(req, resp)
