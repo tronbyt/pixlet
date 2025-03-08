@@ -34,6 +34,10 @@ func (s *Screens) EncodeWebP(maxDuration int, filters ...ImageFilter) ([]byte, e
 	defer anim.Close()
 
 	remainingDuration := time.Duration(maxDuration) * time.Millisecond
+	config, err := webp.ConfigLosslessPreset(9)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", "configuring encoder", err)
+	}
 	for _, im := range images {
 		frameDuration := time.Duration(s.delay) * time.Millisecond
 
@@ -44,7 +48,7 @@ func (s *Screens) EncodeWebP(maxDuration int, filters ...ImageFilter) ([]byte, e
 			remainingDuration -= frameDuration
 		}
 
-		if err := anim.AddFrame(im, frameDuration); err != nil {
+		if err := anim.AddFrame(im, frameDuration, config); err != nil {
 			return nil, fmt.Errorf("%s: %w", "adding frame", err)
 		}
 

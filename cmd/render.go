@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -128,9 +127,9 @@ func render(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return fmt.Errorf("something wrong with json %v", configJson)
 		}
-	
+
 	}
-	
+
 	for _, param := range args[1:] {
 		split := strings.Split(param, "=")
 		if len(split) < 2 {
@@ -138,8 +137,6 @@ func render(cmd *cobra.Command, args []string) error {
 		}
 		config[split[0]] = strings.Join(split[1:len(split)], "=")
 	}
-	
-	log.Printf("got config of %v",config)
 
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
