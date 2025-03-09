@@ -312,8 +312,8 @@ export default function LocationBased({ field }) {
         // Create new state with selected location
         const newValue = {
             ...value,
-            lat: location.lat,
-            lng: location.lng,
+            lat: location.lat.toString(),
+            lng: location.lng.toString(),
             locality: location.locality || location.formattedName,
             timezone: location.timezone
         };
@@ -367,7 +367,7 @@ export default function LocationBased({ field }) {
             {value && (
                 <div className="mt-4 p-3 border rounded bg-gray-50">
                     <Typography variant="body2"><strong>Selected:</strong> {value.locality}</Typography>
-                    <Typography variant="body2"><strong>Coordinates:</strong> {value.lat.toFixed(3)}, {value.lng.toFixed(3)}</Typography>
+                    <Typography variant="body2"><strong>Coordinates:</strong> {value.lat}, {value.lng}</Typography>
                     <Typography variant="body2"><strong>Timezone:</strong> {value.timezone}</Typography>
                 </div>
             )}
