@@ -1,6 +1,6 @@
 {
   "name": "pixlet",
-  "version": "0.37.0",
+  "version": "0.40.0",
   "description": "[![Build & test](https://github.com/tidbyt/pixlet/workflows/Build%20&%20test/badge.svg)](https://github.com/tidbyt/pixlet/actions?query=workflow%3A%22Build+%26+test%22+branch%3Amain) [![GoDoc](https://godoc.org/github.com/tidbyt/pixlet/runtime?status.svg)](https://godoc.org/github.com/tidbyt/pixlet/runtime)",
   "main": "src/index.js",
   "directories": {
@@ -57,7 +57,7 @@
     "@mui/material": "^6.4.4",
     "@mui/styles": "^6.4.4",
     "@mui/x-date-pickers": "^7.26.0",
-    "@reduxjs/toolkit": "2.6.0",
+    "@reduxjs/toolkit": "^2.6.0",
     "@uiw/react-color": "^2.4.0",
     "axios": "^1.8.1",
     "axios-retry": "^4.5.0",

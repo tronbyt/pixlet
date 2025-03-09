@@ -13,7 +13,7 @@
 			"nvmVersion": "latest"
 		},
 		"ghcr.io/devcontainers/features/go:1": {
-			"version": "1.24.0"
+			"version": "1.24.1"
 		}
 	},
 	"customizations": {
