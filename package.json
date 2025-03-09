@@ -59,7 +59,7 @@
     "@mui/x-date-pickers": "^7.26.0",
     "@reduxjs/toolkit": "2.6.0",
     "@uiw/react-color": "^2.4.0",
-    "axios": "^1.8.1",
+    "axios": "^1.8.2",
     "axios-retry": "^4.5.0",
     "copy-webpack-plugin": "^13.0.0",
     "core-js": "^3.41.0",
