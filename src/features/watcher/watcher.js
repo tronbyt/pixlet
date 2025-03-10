@@ -10,7 +10,8 @@ export default class Watcher {
 
     connect() {
         const proto = document.location.protocol === "https:" ? "wss:" : "ws:";
-        this.conn = new WebSocket(proto + '//' + document.location.host + document.location.pathname + '/api/v1/ws');
+        const path = document.location.pathname.endsWith('/') ? document.location.pathname : document.location.pathname + '/';
+        this.conn = new WebSocket(proto + '//' + document.location.host + path + 'api/v1/ws');
         this.conn.open = this.open.bind(this);
         this.conn.onmessage = this.process.bind(this);
         this.conn.onclose = this.close.bind(this);

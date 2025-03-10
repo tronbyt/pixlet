@@ -25,10 +25,10 @@ export default function Main() {
 
     return (
         <ErrorSnackbar >
+            <WatcherManager />
             <ParamSetter />
             <ConfigManager />
             <ErrorManager />
-            <WatcherManager />
 
             <AppBar />
             <Container maxWidth='xl' sx={{ marginTop: '32px' }}>
