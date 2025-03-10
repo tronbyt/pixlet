@@ -16,15 +16,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tronbyt/pixlet.git"
+    "url": "git+https://github.com/tronbyt/pixlet.git"
   },
   "keywords": [],
   "author": "Tidbyt, Inc.",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/Tronbyt/pixlet/issues"
+    "url": "https://github.com/tronbyt/pixlet/issues"
   },
-  "homepage": "https://github.com/Tronbyt/pixlet#readme",
+  "homepage": "https://github.com/tronbyt/pixlet#readme",
   "browserslist": [
     "defaults and fully supports es6-module"
   ],
