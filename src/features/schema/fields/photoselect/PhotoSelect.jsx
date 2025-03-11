@@ -1,4 +1,4 @@
-import Fragment, { useState, useCallback, useEffect } from 'react';
+import { Fragment, useState, useCallback, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import { useDispatch } from 'react-redux';
 
@@ -40,7 +40,7 @@ export default function PhotoSelect({ field }) {
         }
     }, [croppedImage]);
 
-    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    const onCropComplete = useCallback((_, croppedAreaPixels) => {
         setCroppedAreaPixels(croppedAreaPixels)
     }, []);
 
