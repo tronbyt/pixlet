@@ -22,6 +22,14 @@ import (
 	"tidbyt.dev/pixlet/tools"
 )
 
+type ImageFormat int
+
+const (
+	ImageWebP ImageFormat = iota
+	ImageGIF
+	ImageAVIF
+)
+
 // Loader is a structure to provide applet loading when a file changes or on
 // demand.
 type Loader struct {
@@ -36,7 +44,7 @@ type Loader struct {
 	maxDuration      int
 	initialLoad      chan bool
 	timeout          int
-	renderGif        bool
+	imageFormat      ImageFormat
 	configOutFile    string
 }
 
@@ -58,7 +66,7 @@ func NewLoader(
 	updatesChan chan Update,
 	maxDuration int,
 	timeout int,
-	renderGif bool,
+	imageFormat ImageFormat,
 	configOutFile string,
 ) (*Loader, error) {
 	l := &Loader{
@@ -73,7 +81,7 @@ func NewLoader(
 		maxDuration:      maxDuration,
 		initialLoad:      make(chan bool),
 		timeout:          timeout,
-		renderGif:        renderGif,
+		imageFormat:      imageFormat,
 		configOutFile:    configOutFile,
 	}
 
@@ -128,9 +136,15 @@ func (l *Loader) Run() error {
 				up.Err = err
 			} else {
 				up.Image = img
-				up.ImageType = "webp"
-				if l.renderGif {
+				switch l.imageFormat {
+				default:
+					fallthrough
+				case ImageWebP:
+					up.ImageType = "webp"
+				case ImageGIF:
 					up.ImageType = "gif"
+				case ImageAVIF:
+					up.ImageType = "avif"
 				}
 			}
 
@@ -146,9 +160,15 @@ func (l *Loader) Run() error {
 				up.Err = err
 			} else {
 				up.Image = img
-				up.ImageType = "webp"
-				if l.renderGif {
+				switch l.imageFormat {
+				default:
+					fallthrough
+				case ImageWebP:
+					up.ImageType = "webp"
+				case ImageGIF:
 					up.ImageType = "gif"
+				case ImageAVIF:
+					up.ImageType = "avif"
 				}
 				up.Schema = string(l.applet.SchemaJSON)
 			}
@@ -219,10 +239,15 @@ func (l *Loader) loadApplet(config map[string]string) (string, error) {
 	}
 
 	var img []byte
-	if l.renderGif {
-		img, err = screens.EncodeGIF(maxDuration)
-	} else {
+	switch l.imageFormat {
+	default:
+		fallthrough
+	case ImageWebP:
 		img, err = screens.EncodeWebP(maxDuration)
+	case ImageGIF:
+		img, err = screens.EncodeGIF(maxDuration)
+	case ImageAVIF:
+		img, err = screens.EncodeAVIF(maxDuration)
 	}
 	if err != nil {
 		return "", fmt.Errorf("error rendering: %w", err)
@@ -239,7 +264,7 @@ func (l *Loader) markInitialLoadComplete() {
 	}
 }
 
-func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, renderGif, silenceOutput bool) ([]byte, error) {
+func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool) ([]byte, error) {
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(path)
 	if err != nil {
@@ -334,10 +359,15 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		maxDuration = 0
 	}
 
-	if renderGif {
-		buf, err = screens.EncodeGIF(maxDuration, filter)
-	} else {
+	switch imageFormat {
+	default:
+		fallthrough
+	case ImageWebP:
 		buf, err = screens.EncodeWebP(maxDuration, filter)
+	case ImageGIF:
+		buf, err = screens.EncodeGIF(maxDuration, filter)
+	case ImageAVIF:
+		buf, err = screens.EncodeAVIF(maxDuration, filter)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("error rendering: %w", err)

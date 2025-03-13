@@ -15,9 +15,11 @@ import (
 func init() {
 	ApiCmd.Flags().StringVarP(&host, "host", "i", "127.0.0.1", "Host interface for serving rendered images")
 	ApiCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
-	ApiCmd.Flags().BoolVarP(&renderGif, "gif", "", false, "Generate GIF instead of WebP")
+	ApiCmd.Flags().StringVarP(&imageOutputFormat, "format", "", "webp", "Output format. One of webp|gif|avif")
 	ApiCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
 }
+
+var imageFormat loader.ImageFormat
 
 var ApiCmd = &cobra.Command{
 	Use:   "api",
@@ -61,16 +63,21 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	buf, err := loader.RenderApplet(r.Path, r.Config, r.Width, r.Height, r.Magnify, maxDuration, timeout, renderGif, silenceOutput)
+	buf, err := loader.RenderApplet(r.Path, r.Config, r.Width, r.Height, r.Magnify, maxDuration, timeout, imageFormat, silenceOutput)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error rendering: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	if renderGif {
-		w.Header().Set("Content-Type", "image/gif")
-	} else {
+	switch imageFormat {
+	default:
+		fallthrough
+	case loader.ImageWebP:
 		w.Header().Set("Content-Type", "image/webp")
+	case loader.ImageGIF:
+		w.Header().Set("Content-Type", "image/gif")
+	case loader.ImageAVIF:
+		w.Header().Set("Content-Type", "image/avif")
 	}
 	w.Write(buf)
 }
@@ -79,6 +86,18 @@ func api(cmd *cobra.Command, args []string) error {
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
+
+	imageFormat = loader.ImageWebP
+	switch imageOutputFormat {
+	case "webp":
+		imageFormat = loader.ImageWebP
+	case "gif":
+		imageFormat = loader.ImageGIF
+	case "avif":
+		imageFormat = loader.ImageAVIF
+	default:
+		log.Printf("Invalid image format %q. Defaulting to WebP.", imageOutputFormat)
+	}
 
 	addr := fmt.Sprintf("%s:%d", host, port)
 	log.Printf("listening at http://%s\n", addr)
