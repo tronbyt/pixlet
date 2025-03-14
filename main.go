@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"tidbyt.dev/pixlet/cmd"
 	"tidbyt.dev/pixlet/cmd/community"
+	"tidbyt.dev/pixlet/cmd/private"
 )
 
 var (
@@ -19,20 +20,23 @@ var (
 
 func init() {
 	rootCmd.AddCommand(cmd.ApiCmd)
-	rootCmd.AddCommand(cmd.RenderCmd)
-	rootCmd.AddCommand(cmd.PushCmd)
-	rootCmd.AddCommand(cmd.EncryptCmd)
-	rootCmd.AddCommand(cmd.VersionCmd)
-	rootCmd.AddCommand(cmd.ProfileCmd)
-	rootCmd.AddCommand(cmd.LoginCmd)
-	rootCmd.AddCommand(cmd.DevicesCmd)
-	rootCmd.AddCommand(cmd.ListCmd)
+	rootCmd.AddCommand(cmd.CheckCmd)
+	rootCmd.AddCommand(cmd.CreateCmd)
 	rootCmd.AddCommand(cmd.DeleteCmd)
+	rootCmd.AddCommand(cmd.DevicesCmd)
+	rootCmd.AddCommand(cmd.EncryptCmd)
 	rootCmd.AddCommand(cmd.FormatCmd)
 	rootCmd.AddCommand(cmd.LintCmd)
-	rootCmd.AddCommand(cmd.CheckCmd)
+	rootCmd.AddCommand(cmd.ListCmd)
+	rootCmd.AddCommand(cmd.LoginCmd)
+	rootCmd.AddCommand(cmd.ProfileCmd)
+	rootCmd.AddCommand(cmd.PushCmd)
+	rootCmd.AddCommand(cmd.RenderCmd)
+	rootCmd.AddCommand(cmd.ServeCmd)
 	rootCmd.AddCommand(cmd.SetAuthCmd)
+	rootCmd.AddCommand(cmd.VersionCmd)
 	rootCmd.AddCommand(community.CommunityCmd)
+	rootCmd.AddCommand(private.PrivateCmd)
 }
 
 func main() {
