@@ -17,8 +17,8 @@ type Vector struct {
 	Widget
 
 	Children   []Widget
-	MainAlign  string `starlark:"main_align"`
-	CrossAlign string `starlark:"cross_align"`
+	MainAlign  string `starlark: "main_align"`
+	CrossAlign string `starlark: "cross_align"`
 	Expanded   bool
 	Vertical   bool
 }

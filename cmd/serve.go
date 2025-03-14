@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 	"tidbyt.dev/pixlet/server"
-	"tidbyt.dev/pixlet/server/loader"
 )
 
 var (
@@ -13,7 +10,7 @@ var (
 	port          int
 	path          string
 	watch         bool
-	serveFormat   string
+	serveGif      bool
 	configOutFile string
 )
 
@@ -24,7 +21,7 @@ func init() {
 	ServeCmd.Flags().BoolVarP(&watch, "watch", "w", true, "Reload scripts on change. Does not recurse sub-directories.")
 	ServeCmd.Flags().IntVarP(&maxDuration, "max_duration", "d", 15000, "Maximum allowed animation duration (ms)")
 	ServeCmd.Flags().IntVarP(&timeout, "timeout", "", 30000, "Timeout for execution (ms)")
-	ServeCmd.Flags().StringVarP(&serveFormat, "format", "", "webp", "Image format. One of webp|gif|avif")
+	ServeCmd.Flags().BoolVarP(&serveGif, "gif", "", false, "Generate GIF instead of WebP")
 	ServeCmd.Flags().StringVarP(&path, "path", "", "/", "Path to serve the app on")
 }
 
@@ -41,19 +38,7 @@ containing multiple Starlark files and resources.`,
 }
 
 func serve(cmd *cobra.Command, args []string) error {
-	imageFormat := loader.ImageWebP
-	switch serveFormat {
-	case "webp":
-		imageFormat = loader.ImageWebP
-	case "gif":
-		imageFormat = loader.ImageGIF
-	case "avif":
-		imageFormat = loader.ImageAVIF
-	default:
-		log.Printf("Invalid image format %q. Defaulting to WebP.", serveFormat)
-	}
-
-	s, err := server.NewServer(host, port, path, watch, args[0], maxDuration, timeout, imageFormat, configOutFile)
+	s, err := server.NewServer(host, port, path, watch, args[0], maxDuration, timeout, serveGif, configOutFile)
 	if err != nil {
 		return err
 	}

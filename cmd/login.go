@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"time"
 
 	"tidbyt.dev/pixlet/cmd/config"
 
@@ -117,6 +118,7 @@ func login(cmd *cobra.Command, args []string) {
 		cowsay.Type("turtle"),
 	)
 	if err == nil {
+		rand.Seed(time.Now().Unix())
 		w := decoration.NewWriter(os.Stdout, decoration.WithAurora(rand.Intn(256)), decoration.WithBold())
 		fmt.Fprintln(w, say)
 	} else {

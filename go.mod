@@ -7,7 +7,6 @@ require (
 	github.com/antchfx/xmlquery v1.4.4
 	github.com/bazelbuild/buildtools v0.0.0-20250306161121-931d76d6a639
 	github.com/dustin/go-humanize v1.0.1
-	github.com/ebitengine/purego v0.8.2
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4
 	github.com/fatih/color v1.18.0
 	github.com/fsnotify/fsnotify v1.8.0

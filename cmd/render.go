@@ -14,21 +14,21 @@ import (
 )
 
 var (
-	configJson        string
-	output            string
-	magnify           int
-	imageOutputFormat string
-	maxDuration       int
-	silenceOutput     bool
-	width             int
-	height            int
-	timeout           int
+	configJson    string
+	output        string
+	magnify       int
+	renderGif     bool
+	maxDuration   int
+	silenceOutput bool
+	width         int
+	height        int
+	timeout       int
 )
 
 func init() {
 	RenderCmd.Flags().StringVarP(&configJson, "config", "c", "", "Config file in json format")
 	RenderCmd.Flags().StringVarP(&output, "output", "o", "", "Path for rendered image")
-	RenderCmd.Flags().StringVarP(&imageOutputFormat, "format", "", "webp", "Output format. One of webp|gif|avif")
+	RenderCmd.Flags().BoolVarP(&renderGif, "gif", "", false, "Generate GIF instead of WebP")
 	RenderCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
 	RenderCmd.Flags().IntVarP(
 		&magnify,
@@ -100,19 +100,10 @@ func render(cmd *cobra.Command, args []string) error {
 		outPath = strings.TrimSuffix(path, ".star")
 	}
 
-	imageFormat = loader.ImageWebP
-	switch imageOutputFormat {
-	case "webp":
-		imageFormat = loader.ImageWebP
-		outPath += ".webp"
-	case "gif":
-		imageFormat = loader.ImageGIF
+	if renderGif {
 		outPath += ".gif"
-	case "avif":
-		imageFormat = loader.ImageAVIF
-		outPath += ".avif"
-	default:
-		fmt.Printf("Invalid image format %q. Defaulting to WebP.", imageOutputFormat)
+	} else {
+		outPath += ".webp"
 	}
 	if output != "" {
 		outPath = output
@@ -136,6 +127,7 @@ func render(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return fmt.Errorf("something wrong with json %v", configJson)
 		}
+
 	}
 
 	for _, param := range args[1:] {
@@ -143,14 +135,14 @@ func render(cmd *cobra.Command, args []string) error {
 		if len(split) < 2 {
 			return fmt.Errorf("parameters must be on form <key>=<value>, found %s", param)
 		}
-		config[split[0]] = strings.Join(split[1:], "=")
+		config[split[0]] = strings.Join(split[1:len(split)], "=")
 	}
 
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	buf, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput)
+	buf, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, renderGif, silenceOutput)
 	if err != nil {
 		return fmt.Errorf("error rendering: %w", err)
 	}
