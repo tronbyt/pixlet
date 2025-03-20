@@ -26,7 +26,7 @@ require (
 	github.com/nlepage/go-tarfs v1.2.1
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/qri-io/starlib v0.5.1-0.20220611014110-7fb7ff9ec804
-	github.com/redis/go-redis/v9 v9.7.1
+	github.com/redis/go-redis/v9 v9.7.3
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
