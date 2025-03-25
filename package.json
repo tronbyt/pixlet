@@ -53,7 +53,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@mui/icons-material": "^6.0.0",
+    "@mui/icons-material": "^6.4.8",
     "@mui/material": "^6.4.8",
     "@mui/styles": "^6.4.8",
     "@mui/x-date-pickers": "^7.26.0",
