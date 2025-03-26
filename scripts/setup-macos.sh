@@ -2,6 +2,4 @@
 
 set -e
 
-brew install \
-    webp \
-    gnupg
+brew install webp
