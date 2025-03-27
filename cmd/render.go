@@ -134,14 +134,14 @@ func render(cmd *cobra.Command, args []string) error {
 		}
 		err = json.Unmarshal(fileData, &config)
 		if err != nil {
-			return fmt.Errorf("something wrong with json %v", configJson)
+			return fmt.Errorf("failed to unmarshal JSON %v: %w", configJson, err)
 		}
 	}
 
 	for _, param := range args[1:] {
 		split := strings.Split(param, "=")
 		if len(split) < 2 {
-			return fmt.Errorf("parameters must be on form <key>=<value>, found %s", param)
+			return fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
 		}
 		config[split[0]] = strings.Join(split[1:], "=")
 	}
