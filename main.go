@@ -32,6 +32,7 @@ func init() {
 	rootCmd.AddCommand(cmd.ProfileCmd)
 	rootCmd.AddCommand(cmd.PushCmd)
 	rootCmd.AddCommand(cmd.RenderCmd)
+	rootCmd.AddCommand(cmd.SchemaCmd)
 	rootCmd.AddCommand(cmd.ServeCmd)
 	rootCmd.AddCommand(cmd.SetAuthCmd)
 	rootCmd.AddCommand(cmd.VersionCmd)
