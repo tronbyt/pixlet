@@ -8,6 +8,7 @@ package main
 import "C"
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -41,10 +42,7 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 	return (*C.uchar)(C.CBytes(result)), C.int(len(result))
 }
 
-//export get_schema
-func get_schema(pathPtr *C.char) (*C.uchar, C.int) {
-	path := C.GoString(pathPtr)
-
+func appletFromPath(path string) (*runtime.Applet, int) {
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(path)
 	if err != nil {
@@ -67,7 +65,36 @@ func get_schema(pathPtr *C.char) (*C.uchar, C.int) {
 		return nil, -3
 	}
 
+	return applet, 0
+}
+
+//export get_schema
+func get_schema(pathPtr *C.char) (*C.uchar, C.int) {
+	path := C.GoString(pathPtr)
+
+	applet, status := appletFromPath(path)
+	if status != 0 {
+		return nil, C.int(status)
+	}
+
 	return (*C.uchar)(C.CBytes(applet.SchemaJSON)), C.int(len(applet.SchemaJSON))
+}
+
+//export call_handler
+func call_handler(pathPtr, handlerName, parameter *C.char) (*C.char, C.int) {
+	path := C.GoString(pathPtr)
+
+	applet, status := appletFromPath(path)
+	if status != 0 {
+		return nil, C.int(status)
+	}
+
+	result, err := applet.CallSchemaHandler(context.Background(), C.GoString(handlerName), C.GoString(parameter))
+	if err != nil {
+		return nil, -1
+	}
+
+	return (*C.char)(C.CString(result)), C.int(len(result))
 }
 
 //export free_bytes
