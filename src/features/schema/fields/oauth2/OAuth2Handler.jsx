@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 
 export default function OAuth2Handler() {

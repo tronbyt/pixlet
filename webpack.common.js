@@ -4,6 +4,7 @@ module.exports = {
     },
     resolve: {
         extensions: ['*', '.js', '.jsx'],
+        conditionNames: ['mui-modern', '...'],
     },
     module: {
         rules: [

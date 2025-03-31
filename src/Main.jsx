@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 import AppBar from './features/appbar/AppBar';
 import ConfigManager from './features/config/ConfigManager';
