@@ -34,7 +34,7 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 		return nil, -1
 	}
 
-	result, err := loader.RenderApplet(path, config, int(width), int(height), int(magnify), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0)
+	result, _, err := loader.RenderApplet(path, config, int(width), int(height), int(magnify), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0)
 	if err != nil {
 		fmt.Printf("error rendering: %v\n", err)
 		return nil, -2
