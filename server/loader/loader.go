@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"go.starlark.net/starlark"
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/globals"
 	"tidbyt.dev/pixlet/runtime"
@@ -264,11 +265,11 @@ func (l *Loader) markInitialLoadComplete() {
 	}
 }
 
-func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool) ([]byte, error) {
+func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool) ([]byte, []string, error) {
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to stat %s: %w", path, err)
+		return nil, nil, fmt.Errorf("failed to stat %s: %w", path, err)
 	}
 
 	var fs fs.FS
@@ -276,7 +277,7 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		fs = os.DirFS(path)
 	} else {
 		if !strings.HasSuffix(path, ".star") {
-			return nil, fmt.Errorf("script file must have suffix .star: %s", path)
+			return nil, nil, fmt.Errorf("script file must have suffix .star: %s", path)
 		}
 
 		fs = tools.NewSingleFileFS(path)
@@ -292,11 +293,14 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		magnify = 1
 	}
 
-	// Remove the print function from the starlark thread if the silent flag is
+	// Replace the print function from the starlark thread if the silent flag is
 	// passed.
 	var opts []runtime.AppletOption
+	var output []string
 	if silenceOutput {
-		opts = append(opts, runtime.WithPrintDisabled())
+		opts = append(opts, runtime.WithPrintFunc(func(thread *starlark.Thread, msg string) {
+			output = append(output, msg)
+		}))
 	}
 
 	ctx := context.Background()
@@ -312,12 +316,12 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 
 	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load applet: %w", err)
+		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}
 
 	roots, err := applet.RunWithConfig(ctx, config)
 	if err != nil {
-		return nil, fmt.Errorf("error running script: %w", err)
+		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
 	screens := encode.ScreensFromRoots(roots)
 
@@ -370,8 +374,8 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		buf, err = screens.EncodeAVIF(maxDuration, filter)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("error rendering: %w", err)
+		return nil, output, fmt.Errorf("error rendering: %w", err)
 	}
 
-	return buf, nil
+	return buf, output, nil
 }
