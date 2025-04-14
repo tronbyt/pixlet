@@ -22,24 +22,42 @@ import (
 	"tidbyt.dev/pixlet/tools"
 )
 
+// render_app renders an applet based on the provided parameters.
+//
+// Arguments:
+//   - pathPtr (*C.char): A C string representing the path to the applet file or directory.
+//   - configPtr (*C.char): A C string containing a JSON-encoded configuration map.
+//   - width (C.int): The width of the rendered output.
+//   - height (C.int): The height of the rendered output.
+//   - magnify (C.int): The magnification level for the rendered output.
+//   - maxDuration (C.int): The maximum duration (in milliseconds) for rendering.
+//   - timeout (C.int): The timeout (in milliseconds) for rendering.
+//   - imageFormat (C.int): The format of the rendered image (e.g., PNG, GIF).
+//   - silenceOutput (C.int): A flag to suppress output (non-zero to silence).
+//
+// Returns:
+//   - (*C.uchar): A pointer to the rendered image bytes.
+//   - (C.int): The length of the rendered image bytes, or a negative status code on error.
+//   - (*C.char): A pointer to a JSON-encoded array containing messages printed by the application.
+//   - (*C.char): A pointer to an error message (if any).
+
 //export render_app
-func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput C.int) (*C.uchar, C.int) {
+func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput C.int) (*C.uchar, C.int, *C.char, *C.char) {
 	path := C.GoString(pathPtr)
 	configStr := C.GoString(configPtr)
 
 	var config map[string]string
 	err := json.Unmarshal([]byte(configStr), &config)
 	if err != nil {
-		fmt.Printf("error parsing config: %v\n", err)
-		return nil, -1
+		return nil, -1, nil, C.CString(fmt.Sprintf("error parsing config: %v", err))
 	}
 
-	result, _, err := loader.RenderApplet(path, config, int(width), int(height), int(magnify), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0)
+	result, messages, err := loader.RenderApplet(path, config, int(width), int(height), int(magnify), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0)
+	messagesJSON, _ := json.Marshal(messages)
 	if err != nil {
-		fmt.Printf("error rendering: %v\n", err)
-		return nil, -2
+		return nil, -2, C.CString(string(messagesJSON)), C.CString(fmt.Sprintf("error rendering: %v", err))
 	}
-	return (*C.uchar)(C.CBytes(result)), C.int(len(result))
+	return (*C.uchar)(C.CBytes(result)), C.int(len(result)), C.CString(string(messagesJSON)), nil
 }
 
 func appletFromPath(path string) (*runtime.Applet, int) {
@@ -69,7 +87,7 @@ func appletFromPath(path string) (*runtime.Applet, int) {
 }
 
 //export get_schema
-func get_schema(pathPtr *C.char) (*C.uchar, C.int) {
+func get_schema(pathPtr *C.char) (*C.char, C.int) {
 	path := C.GoString(pathPtr)
 
 	applet, status := appletFromPath(path)
@@ -77,7 +95,7 @@ func get_schema(pathPtr *C.char) (*C.uchar, C.int) {
 		return nil, C.int(status)
 	}
 
-	return (*C.uchar)(C.CBytes(applet.SchemaJSON)), C.int(len(applet.SchemaJSON))
+	return (*C.char)(C.CString(string(applet.SchemaJSON))), 0
 }
 
 //export call_handler
@@ -94,7 +112,7 @@ func call_handler(pathPtr, handlerName, parameter *C.char) (*C.char, C.int) {
 		return nil, -1
 	}
 
-	return (*C.char)(C.CString(result)), C.int(len(result))
+	return (*C.char)(C.CString(result)), 0
 }
 
 //export free_bytes
