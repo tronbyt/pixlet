@@ -57,7 +57,7 @@
     "@mui/material": "^7.0.1",
     "@mui/styles": "^6.4.11",
     "@mui/x-date-pickers": "^8.0.0",
-    "@reduxjs/toolkit": "^2.6.0",
+    "@reduxjs/toolkit": "^2.7.0",
     "@uiw/react-color": "^2.5.0",
     "axios": "^1.8.4",
     "axios-retry": "^4.5.0",
