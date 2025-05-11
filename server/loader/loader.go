@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"image"
 	"io/fs"
 	"log"
 	"os"
@@ -265,7 +264,7 @@ func (l *Loader) markInitialLoadComplete() {
 	}
 }
 
-func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool) ([]byte, []string, error) {
+func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool, filters *encode.RenderFilters) ([]byte, []string, error) {
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(path)
 	if err != nil {
@@ -288,9 +287,6 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 	}
 	if height > 0 {
 		globals.Height = height
-	}
-	if magnify == 0 {
-		magnify = 1
 	}
 
 	// Replace the print function from the starlark thread if the silent flag is
@@ -324,37 +320,21 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
 	screens := encode.ScreensFromRoots(roots)
-
-	filter := func(input image.Image) (image.Image, error) {
-		if magnify <= 1 {
-			return input, nil
+	filter := encode.ImageFilter(nil)
+	var chain []encode.ImageFilter
+	if filters != nil {
+		if filters.Magnify > 1 {
+			chain = append(chain, encode.Magnify(filters.Magnify))
 		}
-		in, ok := input.(*image.RGBA)
-		if !ok {
-			return nil, fmt.Errorf("image not RGBA, very weird")
+		if f, err := encode.FromFilterType(filters.ColorFilter); err == nil && f != nil {
+			chain = append(chain, f)
 		}
+	} else if magnify > 1 {
+		chain = append(chain, encode.Magnify(magnify))
+	}
 
-		out := image.NewRGBA(
-			image.Rect(
-				0, 0,
-				in.Bounds().Dx()*magnify,
-				in.Bounds().Dy()*magnify),
-		)
-		for x := range in.Bounds().Dx() {
-			for y := range in.Bounds().Dy() {
-				for xx := range magnify {
-					for yy := 0; yy < magnify; yy++ {
-						out.SetRGBA(
-							x*magnify+xx,
-							y*magnify+yy,
-							in.RGBAAt(x, y),
-						)
-					}
-				}
-			}
-		}
-
-		return out, nil
+	if len(chain) > 0 {
+		filter = encode.Chain(chain...)
 	}
 
 	var buf []byte

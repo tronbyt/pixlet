@@ -104,6 +104,9 @@ func (s *Screens) render(filters ...ImageFilter) ([]image.Image, error) {
 		images = []image.Image{}
 		for _, im := range s.images {
 			for _, f := range filters {
+				if f == nil {
+					continue
+				}
 				imFiltered, err := f(im)
 				if err != nil {
 					return nil, err
