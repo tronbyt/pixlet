@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/server/loader"
 )
@@ -31,11 +32,12 @@ var ApiCmd = &cobra.Command{
 }
 
 type renderRequest struct {
-	Path    string            `json:"path"`
-	Config  map[string]string `json:"config"`
-	Width   int               `json:"width"`
-	Height  int               `json:"height"`
-	Magnify int               `json:"magnify"`
+	Path        string            `json:"path"`
+	Config      map[string]string `json:"config"`
+	Width       int               `json:"width"`
+	Height      int               `json:"height"`
+	Magnify     int               `json:"magnify"`
+	ColorFilter string            `json:"color_filter,omitempty"`
 }
 
 func validatePath(path string) bool {
@@ -63,7 +65,24 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	buf, _, err := loader.RenderApplet(r.Path, r.Config, r.Width, r.Height, r.Magnify, maxDuration, timeout, imageFormat, silenceOutput)
+	// Default to "none" if color_filter is missing
+	filterType := encode.ColorFilterType(r.ColorFilter)
+	if r.ColorFilter == "" {
+		filterType = encode.ColorNone
+	} else if !filterType.IsValid() {
+		http.Error(w, fmt.Sprintf("invalid color filter: %q\nSupported filters: %s",
+			r.ColorFilter,
+			strings.Join(encode.SupportedColorFilters(), ", "),
+		), http.StatusBadRequest)
+		return
+	}
+
+	filters := &encode.RenderFilters{
+		Magnify:     r.Magnify,
+		ColorFilter: filterType,
+	}
+
+	buf, _, err := loader.RenderApplet(r.Path, r.Config, r.Width, r.Height, r.Magnify, maxDuration, timeout, imageFormat, silenceOutput, filters)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error rendering: %v", err), http.StatusInternalServerError)
 		return

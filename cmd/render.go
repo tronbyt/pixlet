@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/server/loader"
 )
@@ -23,6 +24,8 @@ var (
 	width             int
 	height            int
 	timeout           int
+	colorFilter       string
+	listColorFilters  bool
 )
 
 func init() {
@@ -36,6 +39,12 @@ func init() {
 		"m",
 		1,
 		"Increase image dimension by a factor (useful for debugging)",
+	)
+	RenderCmd.Flags().StringVar(
+		&colorFilter,
+		"color_filter",
+		"",
+		"Apply a color filter (warm, cool, etc)",
 	)
 	RenderCmd.Flags().IntVarP(
 		&width,
@@ -65,6 +74,12 @@ func init() {
 		30000,
 		"Timeout for execution (ms)",
 	)
+	RenderCmd.Flags().BoolVar(
+		&listColorFilters,
+		"list-color-filters",
+		false,
+		"List available color filters",
+	)
 }
 
 var RenderCmd = &cobra.Command{
@@ -81,6 +96,13 @@ containing multiple Starlark files and resources.
 }
 
 func render(cmd *cobra.Command, args []string) error {
+	if listColorFilters {
+		fmt.Println("Supported color filters:")
+		for _, f := range encode.SupportedColorFilters() {
+			fmt.Println(" -", f)
+		}
+		return nil
+	}
 	path := args[0]
 
 	// check if path exists, and whether it is a directory or a file
@@ -150,7 +172,22 @@ func render(cmd *cobra.Command, args []string) error {
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	buf, _, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput)
+	filterType := encode.ColorFilterType(colorFilter)
+	if colorFilter == "" {
+		filterType = encode.ColorNone
+	} else if !filterType.IsValid() {
+		return fmt.Errorf("invalid color filter: %q\nSupported filters: %s",
+			colorFilter,
+			strings.Join(encode.SupportedColorFilters(), ", "),
+		)
+	}
+
+	filters := &encode.RenderFilters{
+		Magnify:     magnify,
+		ColorFilter: filterType,
+	}
+
+	buf, _, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput, filters)
 	if err != nil {
 		return fmt.Errorf("error rendering: %w", err)
 	}
