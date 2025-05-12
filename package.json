@@ -62,7 +62,7 @@
     "axios": "^1.9.0",
     "axios-retry": "^4.5.0",
     "copy-webpack-plugin": "^13.0.0",
-    "core-js": "^3.41.0",
+    "core-js": "^3.42.0",
     "date-fns": "4.1.0",
     "dayjs": "^1.11.10",
     "notistack": "^3.0.2",
