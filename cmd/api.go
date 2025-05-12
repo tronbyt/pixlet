@@ -66,14 +66,9 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Default to "none" if color_filter is missing
-	filterType := encode.ColorFilterType(r.ColorFilter)
-	if r.ColorFilter == "" {
-		filterType = encode.ColorNone
-	} else if !filterType.IsValid() {
-		http.Error(w, fmt.Sprintf("invalid color filter: %q\nSupported filters: %s",
-			r.ColorFilter,
-			strings.Join(encode.SupportedColorFilters(), ", "),
-		), http.StatusBadRequest)
+	filterType, err := encode.ValidateColorFilter(encode.ColorFilterType(r.ColorFilter))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

@@ -60,11 +60,8 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 		if err := json.Unmarshal([]byte(filtersStr), &parsed); err != nil {
 			return nil, -3, nil, C.CString(fmt.Sprintf("invalid filters JSON: %v", err))
 		}
-		if parsed.ColorFilter != "" && !encode.ColorFilterType(parsed.ColorFilter).IsValid() {
-			return nil, -4, nil, C.CString(fmt.Sprintf("invalid color filter: %q\nSupported filters: %s",
-				parsed.ColorFilter,
-				strings.Join(encode.SupportedColorFilters(), ", "),
-			))
+		if _, err := encode.ValidateColorFilter(parsed.ColorFilter); err != nil {
+			return nil, -4, nil, C.CString(err.Error())
 		}
 		filters = &parsed
 	}
