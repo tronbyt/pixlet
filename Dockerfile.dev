@@ -3,7 +3,7 @@ FROM golang:latest
 RUN echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list && \
     apt update && \
     apt upgrade -y && \
-    apt install -y unzip libwebp-dev python3-venv python3-pip curl gnupg && \
+    apt install -y unzip libwebp-dev python3-venv python3-pip clang && \
     apt install -y -t bookworm-backports libsharpyuv-dev && \
     rm -rf /var/lib/apt/lists/*
 
