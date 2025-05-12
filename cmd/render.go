@@ -172,14 +172,9 @@ func render(cmd *cobra.Command, args []string) error {
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	filterType := encode.ColorFilterType(colorFilter)
-	if colorFilter == "" {
-		filterType = encode.ColorNone
-	} else if !filterType.IsValid() {
-		return fmt.Errorf("invalid color filter: %q\nSupported filters: %s",
-			colorFilter,
-			strings.Join(encode.SupportedColorFilters(), ", "),
-		)
+	filterType, err := encode.ValidateColorFilter(encode.ColorFilterType(colorFilter))
+	if err != nil {
+		return err
 	}
 
 	filters := &encode.RenderFilters{

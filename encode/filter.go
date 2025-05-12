@@ -148,10 +148,21 @@ func (f *ColorFilterType) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	*f = ColorFilterType(s)
-	if !f.IsValid() {
-		return fmt.Errorf("invalid color filter: %q:\nSupported filters: %s", s, strings.Join(SupportedColorFilters(), ", "))
-	}
 	return nil
+}
+
+func ValidateColorFilter(input ColorFilterType) (ColorFilterType, error) {
+	if input == "" {
+		return ColorNone, nil
+	}
+	filterType := ColorFilterType(input)
+	if !filterType.IsValid() {
+		return "", fmt.Errorf("invalid color filter: %q\nSupported filters: %s",
+			input,
+			strings.Join(SupportedColorFilters(), ", "),
+		)
+	}
+	return filterType, nil
 }
 
 func FromFilterType(f ColorFilterType) (ImageFilter, error) {
