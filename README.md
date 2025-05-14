@@ -33,7 +33,7 @@ GIF animations, or pushed to a physical Tidbyt device.
 ### Install on macOS
 
 ```
-brew install tidbyt/tidbyt/pixlet
+brew install tronbyt/tronbyt/pixlet
 ```
 
 ### Install on Linux
