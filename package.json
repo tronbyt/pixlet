@@ -70,7 +70,7 @@
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.5.0",
     "react-redux": "^9.2.0",
-    "react-router": "^7.6.3",
+    "react-router": "^7.7.0",
     "react-router-dom": "^7.6.3",
     "react-simple-oauth2-login": "^0.5.4"
   }
