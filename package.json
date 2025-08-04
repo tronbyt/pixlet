@@ -66,7 +66,7 @@
     "date-fns": "4.1.0",
     "dayjs": "^1.11.10",
     "notistack": "^3.0.2",
-    "react": "^19.0.0",
+    "react": "^19.1.1",
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.5.0",
     "react-redux": "^9.2.0",
