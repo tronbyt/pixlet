@@ -97,12 +97,10 @@ func (r Root) Paint(solidBackground bool, opts ...RootPaintOption) []image.Image
 		parallelism = runtime.NumCPU()
 	}
 
-	if globals.Width != DefaultFrameWidth {
-		FrameWidth = globals.Width
-	}
-	if globals.Height != DefaultFrameHeight {
-		FrameHeight = globals.Height
-	}
+	// Always update frame dimensions from globals to ensure consistency
+	// across library calls, regardless of whether they match defaults
+	FrameWidth = globals.Width
+	FrameHeight = globals.Height
 
 	var wg sync.WaitGroup
 	sem := make(chan bool, parallelism)
