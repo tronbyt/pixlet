@@ -11,7 +11,7 @@ type Widget interface {
 	// PaintBounds Returns the bounds of the area that will actually be drawn to when Paint() is called
 	PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle
 	Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int)
-	FrameCount() int
+	FrameCount(bounds image.Rectangle) int
 }
 
 // Widgets can require initialization
@@ -35,11 +35,11 @@ func ModInt(a, m int) int {
 }
 
 // Computes the maximum frame count of a slice of widgets.
-func MaxFrameCount(widgets []Widget) int {
+func MaxFrameCount(widgets []Widget, bounds image.Rectangle) int {
 	m := 1
 
 	for _, w := range widgets {
-		if c := w.FrameCount(); c > m {
+		if c := w.FrameCount(bounds); c > m {
 			m = c
 		}
 	}

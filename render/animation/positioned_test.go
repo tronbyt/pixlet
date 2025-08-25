@@ -28,7 +28,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 	// 5), one pixel per frame (since Duration is 6, which equals
 	// the number of positions).
 
-	assert.Equal(t, 6, o.FrameCount())
+	assert.Equal(t, 6, o.FrameCount(image.Rect(0, 0, 0, 0)))
 
 	im := render.PaintWidget(o, image.Rect(0, 0, 10, 6), 0)
 	assert.Equal(t, nil, render.CheckImage([]string{
@@ -209,7 +209,7 @@ func TestPositionedDelayAndHold(t *testing.T) {
 	// Duration is 5 frames. On top of that, there's a 3 frame
 	// delay before it starts, and it's held in its final position
 	// for 2 frames, so we expect 13 frames in total.
-	assert.Equal(t, 10, o.FrameCount())
+	assert.Equal(t, 10, o.FrameCount(image.Rect(0, 0, 0, 0)))
 
 	// No movement during delay
 	im := render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 0)
@@ -307,7 +307,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 		Hold:     1,
 	}
 
-	assert.Equal(t, 8, o.FrameCount())
+	assert.Equal(t, 8, o.FrameCount(image.Rect(0, 0, 10, 6)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 0)
 	assert.Equal(t, nil, render.CheckImage([]string{

@@ -97,9 +97,9 @@ func (b Box) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	}
 }
 
-func (b Box) FrameCount() int {
+func (b Box) FrameCount(bounds image.Rectangle) int {
 	if b.Child != nil {
-		return b.Child.FrameCount()
+		return b.Child.FrameCount(bounds)
 	}
 	return 1
 }

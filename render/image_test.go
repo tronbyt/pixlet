@@ -129,7 +129,7 @@ func TestImageAnimatedGif(t *testing.T) {
 	assert.Equal(t, 1230, img.Delay)
 
 	// 4 frames in this animation
-	assert.Equal(t, 4, img.FrameCount())
+	assert.Equal(t, 4, img.FrameCount(image.Rect(0, 0, 0, 0)))
 
 	// black pixels moving right
 	assert.Equal(t, nil, checkImage([]string{

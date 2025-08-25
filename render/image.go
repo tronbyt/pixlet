@@ -56,7 +56,7 @@ func (p *Image) Size() (int, int) {
 	return p.imgs[0].Bounds().Dx(), p.imgs[0].Bounds().Dy()
 }
 
-func (p *Image) FrameCount() int {
+func (p *Image) FrameCount(bounds image.Rectangle) int {
 	return len(p.imgs)
 }
 
