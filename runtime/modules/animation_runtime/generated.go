@@ -52,11 +52,15 @@ func LoadAnimationModule() (starlark.StringDict, error) {
 }
 
 type AnimatedPositioned struct {
+	render_runtime.Widget
+
 	animation.AnimatedPositioned
 
 	starlarkChild starlark.Value
 
 	starlarkCurve starlark.Value
+
+	frame_count *starlark.Builtin
 }
 
 func newAnimatedPositioned(
@@ -131,7 +135,13 @@ func newAnimatedPositioned(
 
 	w.Hold = int(hold.BigInt().Int64())
 
+	w.frame_count = starlark.NewBuiltin("frame_count", animatedpositionedFrameCount)
+
 	return w, nil
+}
+
+func (w *AnimatedPositioned) AsRenderWidget() render.Widget {
+	return &w.AnimatedPositioned
 }
 
 func (w *AnimatedPositioned) AttrNames() []string {
@@ -179,6 +189,9 @@ func (w *AnimatedPositioned) Attr(name string) (starlark.Value, error) {
 
 		return starlark.MakeInt(int(w.Hold)), nil
 
+	case "frame_count":
+		return w.frame_count.BindReceiver(w), nil
+
 	default:
 		return nil, nil
 	}
@@ -192,6 +205,51 @@ func (w *AnimatedPositioned) Truth() starlark.Bool { return true }
 func (w *AnimatedPositioned) Hash() (uint32, error) {
 	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
+}
+
+func animatedpositionedFrameCount(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+
+	var (
+		bounds starlark.Tuple
+	)
+
+	if err := starlark.UnpackArgs(
+		"frame_count",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for frame_count: %s", err)
+	}
+
+	r := image.Rect(0, 0, 64, 32)
+	if bounds != nil && bounds.Len() == 4 {
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
+	w := b.Receiver().(*AnimatedPositioned)
+	count := w.FrameCount(r)
+
+	return starlark.MakeInt(count), nil
 }
 
 type Keyframe struct {
@@ -758,8 +816,41 @@ func transformationFrameCount(
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
+	var (
+		bounds starlark.Tuple
+	)
+
+	if err := starlark.UnpackArgs(
+		"frame_count",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for frame_count: %s", err)
+	}
+
+	r := image.Rect(0, 0, 64, 32)
+	if bounds != nil && bounds.Len() == 4 {
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
 	w := b.Receiver().(*Transformation)
-	count := w.FrameCount(image.Rect(0, 0, 0, 0))
+	count := w.FrameCount(r)
 
 	return starlark.MakeInt(count), nil
 }
