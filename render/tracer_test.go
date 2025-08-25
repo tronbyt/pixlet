@@ -102,5 +102,5 @@ func TestTracerCircularPath(t *testing.T) {
 	}, PaintWidget(tr, image.Rect(0, 0, 100, 100), 25)))
 
 	// All in all, we should have 24 frames
-	assert.Equal(t, 24, tr.FrameCount())
+	assert.Equal(t, 24, tr.FrameCount(image.Rect(0, 0, 0, 0)))
 }

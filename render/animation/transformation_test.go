@@ -46,7 +46,7 @@ func TestTransformationTranslate(t *testing.T) {
 	}
 
 	// These frames should show the box moving diagonally out of frame.
-	assert.Equal(t, 6, o.FrameCount())
+	assert.Equal(t, 6, o.FrameCount(image.Rect(0, 0, 5, 5)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 5, 5), 0)
 	assert.Equal(t, nil, render.CheckImage([]string{
@@ -142,7 +142,7 @@ func TestTransformationScale(t *testing.T) {
 	}
 
 	// These frames should show the box scaling from 1x to 3x.
-	assert.Equal(t, 3, o.FrameCount())
+	assert.Equal(t, 3, o.FrameCount(image.Rect(0, 0, 9, 9)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 9, 9), 0)
 	assert.Equal(t, nil, render.CheckImage([]string{
@@ -222,7 +222,7 @@ func TestTransformationRotate(t *testing.T) {
 	}
 
 	// These frames should show the box rotating 90 degrees each frame.
-	assert.Equal(t, 5, o.FrameCount())
+	assert.Equal(t, 5, o.FrameCount(image.Rect(0, 0, 3, 3)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 0)
 	assert.Equal(t, nil, render.CheckImage([]string{
@@ -342,7 +342,7 @@ func TestTransformationAll(t *testing.T) {
 
 	// These frames should show the four "corners" being,
 	// translated, rotated and in the end scaled to 2x.
-	assert.Equal(t, 5, o.FrameCount())
+	assert.Equal(t, 5, o.FrameCount(image.Rect(0, 0, 9, 9)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 9, 9), 0)
 	assert.Equal(t, nil, ic.Check([]string{

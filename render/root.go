@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/tidbyt/gg"
-	"tidbyt.dev/pixlet/globals"
 )
 
 const (
@@ -20,9 +19,6 @@ const (
 	// DefaultMaxFrameCount is the default maximum number of frames to render.
 	DefaultMaxFrameCount = 2000
 )
-
-var FrameWidth = DefaultFrameWidth
-var FrameHeight = DefaultFrameHeight
 
 // Every Widget tree has a Root.
 //
@@ -76,7 +72,7 @@ func WithMaxFrameCount(max int) RootPaintOption {
 
 // Paint renders the child widget onto the frame. It doesn't do
 // any resizing or alignment.
-func (r Root) Paint(solidBackground bool, opts ...RootPaintOption) []image.Image {
+func (r Root) Paint(width, height int, solidBackground bool, opts ...RootPaintOption) []image.Image {
 	for _, opt := range opts {
 		opt(&r)
 	}
@@ -85,7 +81,7 @@ func (r Root) Paint(solidBackground bool, opts ...RootPaintOption) []image.Image
 		r.maxFrameCount = DefaultMaxFrameCount
 	}
 
-	numFrames := r.Child.FrameCount()
+	numFrames := r.Child.FrameCount(image.Rect(0, 0, width, height))
 	if numFrames > r.maxFrameCount {
 		numFrames = r.maxFrameCount
 	}
@@ -96,11 +92,6 @@ func (r Root) Paint(solidBackground bool, opts ...RootPaintOption) []image.Image
 	if parallelism <= 0 {
 		parallelism = runtime.NumCPU()
 	}
-
-	// Always update frame dimensions from globals to ensure consistency
-	// across library calls, regardless of whether they match defaults
-	FrameWidth = globals.Width
-	FrameHeight = globals.Height
 
 	var wg sync.WaitGroup
 	sem := make(chan bool, parallelism)
@@ -114,14 +105,14 @@ func (r Root) Paint(solidBackground bool, opts ...RootPaintOption) []image.Image
 				wg.Done()
 			}()
 
-			dc := gg.NewContext(FrameWidth, FrameHeight)
+			dc := gg.NewContext(width, height)
 			if solidBackground {
 				dc.SetColor(color.Black)
 				dc.Clear()
 			}
 
 			dc.Push()
-			r.Child.Paint(dc, image.Rect(0, 0, FrameWidth, FrameHeight), i)
+			r.Child.Paint(dc, image.Rect(0, 0, width, height), i)
 			dc.Pop()
 			frames[i] = dc.Image()
 		}(i)
@@ -132,10 +123,10 @@ func (r Root) Paint(solidBackground bool, opts ...RootPaintOption) []image.Image
 }
 
 // PaintRoots draws >=1 Roots which must all have the same dimensions.
-func PaintRoots(solidBackground bool, roots ...Root) []image.Image {
+func PaintRoots(width, height int, solidBackground bool, roots ...Root) []image.Image {
 	var images []image.Image
 	for _, r := range roots {
-		images = append(images, r.Paint(solidBackground)...)
+		images = append(images, r.Paint(width, height, solidBackground)...)
 	}
 
 	return images

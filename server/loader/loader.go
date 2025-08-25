@@ -16,7 +16,6 @@ import (
 
 	"go.starlark.net/starlark"
 	"tidbyt.dev/pixlet/encode"
-	"tidbyt.dev/pixlet/globals"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/schema"
 	"tidbyt.dev/pixlet/tools"
@@ -231,7 +230,7 @@ func (l *Loader) loadApplet(config map[string]string) (string, error) {
 		return "", fmt.Errorf("error running script: %w", err)
 	}
 
-	screens := encode.ScreensFromRoots(roots)
+	screens := encode.ScreensFromRoots(roots, 0, 0)
 
 	maxDuration := l.maxDuration
 	if screens.ShowFullAnimation {
@@ -282,13 +281,6 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		fs = tools.NewSingleFileFS(path)
 	}
 
-	if width > 0 {
-		globals.Width = width
-	}
-	if height > 0 {
-		globals.Height = height
-	}
-
 	// Replace the print function from the starlark thread if the silent flag is
 	// passed.
 	var opts []runtime.AppletOption
@@ -319,7 +311,7 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 	if err != nil {
 		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
-	screens := encode.ScreensFromRoots(roots)
+	screens := encode.ScreensFromRoots(roots, width, height)
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
 	if filters != nil {

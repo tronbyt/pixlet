@@ -55,6 +55,6 @@ func (c PieChart) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	}
 }
 
-func (c PieChart) FrameCount() int {
+func (c PieChart) FrameCount(bounds image.Rectangle) int {
 	return 1
 }

@@ -72,6 +72,6 @@ func (o AnimatedPositioned) Paint(dc *gg.Context, bounds image.Rectangle, frameI
 	dc.Pop()
 }
 
-func (o AnimatedPositioned) FrameCount() int {
+func (o AnimatedPositioned) FrameCount(bounds image.Rectangle) int {
 	return o.Duration + o.Delay + o.Hold
 }

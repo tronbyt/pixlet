@@ -148,6 +148,6 @@ func (tw *WrappedText) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx in
 	)
 }
 
-func (tw *WrappedText) FrameCount() int {
+func (tw *WrappedText) FrameCount(bounds image.Rectangle) int {
 	return 1
 }

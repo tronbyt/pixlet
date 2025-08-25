@@ -78,7 +78,7 @@ def main():
 			panic(err)
 		}
 
-		gif, err := encode.ScreensFromRoots(roots).EncodeGIF(15000, Magnify)
+		gif, err := encode.ScreensFromRoots(roots, 64, 32).EncodeGIF(15000, Magnify)
 		if err != nil {
 			panic(err)
 		}

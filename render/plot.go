@@ -273,6 +273,6 @@ func (p Plot) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	}
 }
 
-func (p Plot) FrameCount() int {
+func (p Plot) FrameCount(bounds image.Rectangle) int {
 	return 1
 }

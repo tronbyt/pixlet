@@ -23,15 +23,19 @@ type Screens struct {
 	delay             int32
 	MaxAge            int32
 	ShowFullAnimation bool
+	width             int
+	height            int
 }
 
 type ImageFilter func(image.Image) (image.Image, error)
 
-func ScreensFromRoots(roots []render.Root) *Screens {
+func ScreensFromRoots(roots []render.Root, width int, height int) *Screens {
 	screens := Screens{
 		roots:  roots,
 		delay:  DefaultScreenDelayMillis,
 		MaxAge: DefaultMaxAgeSeconds,
+		width:  width,
+		height: height,
 	}
 	if len(roots) > 0 {
 		if roots[0].Delay > 0 {
@@ -91,7 +95,7 @@ func (s *Screens) Hash() ([]byte, error) {
 
 func (s *Screens) render(filters ...ImageFilter) ([]image.Image, error) {
 	if s.images == nil {
-		s.images = render.PaintRoots(true, s.roots...)
+		s.images = render.PaintRoots(s.width, s.height, true, s.roots...)
 	}
 
 	if len(s.images) == 0 {

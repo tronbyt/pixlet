@@ -149,6 +149,6 @@ func (s *Starfield) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) 
 	dc.SetColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
 }
 
-func (s *Starfield) FrameCount() int {
+func (s *Starfield) FrameCount(bounds image.Rectangle) int {
 	return 300
 }

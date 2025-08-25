@@ -183,9 +183,9 @@ func (self *Transformation) Init() error {
 	return nil
 }
 
-func (self *Transformation) FrameCount() int {
+func (self *Transformation) FrameCount(bounds image.Rectangle) int {
 	fc := self.Direction.FrameCount(self.Delay, self.Duration)
-	cfc := self.Child.FrameCount()
+	cfc := self.Child.FrameCount(bounds)
 
 	if self.WaitForChild && cfc > fc {
 		return cfc

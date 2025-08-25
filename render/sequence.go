@@ -33,11 +33,11 @@ type Sequence struct {
 	Children []Widget `starlark:"children,required"`
 }
 
-func (s Sequence) FrameCount() int {
+func (s Sequence) FrameCount(bounds image.Rectangle) int {
 	fc := 0
 
 	for _, c := range s.Children {
-		fc += c.FrameCount()
+		fc += c.FrameCount(bounds)
 	}
 
 	return fc
@@ -47,11 +47,11 @@ func (s Sequence) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectan
 	fc := 0
 
 	for _, c := range s.Children {
-		if frameIdx < fc+c.FrameCount() {
+		if frameIdx < fc+c.FrameCount(bounds) {
 			return c.PaintBounds(bounds, frameIdx-fc)
 		}
 
-		fc += c.FrameCount()
+		fc += c.FrameCount(bounds)
 	}
 
 	return image.Rect(0, 0, 0, 0)
@@ -61,13 +61,13 @@ func (s Sequence) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	fc := 0
 
 	for _, c := range s.Children {
-		if frameIdx < fc+c.FrameCount() {
+		if frameIdx < fc+c.FrameCount(bounds) {
 			dc.Push()
 			c.Paint(dc, bounds, frameIdx-fc)
 			dc.Pop()
 			break
 		}
 
-		fc += c.FrameCount()
+		fc += c.FrameCount(bounds)
 	}
 }
