@@ -98,6 +98,6 @@ func (t *Text) Init() error {
 	return nil
 }
 
-func (t Text) FrameCount() int {
+func (t Text) FrameCount(bounds image.Rectangle) int {
 	return 1
 }

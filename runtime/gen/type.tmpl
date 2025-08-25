@@ -144,7 +144,7 @@ func {{.GoName|ToLower}}FrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*{{.GoName}})
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }

@@ -235,6 +235,6 @@ func (v Vector) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	}
 }
 
-func (v Vector) FrameCount() int {
-	return MaxFrameCount(v.Children)
+func (v Vector) FrameCount(bounds image.Rectangle) int {
+	return MaxFrameCount(v.Children, bounds)
 }

@@ -83,7 +83,7 @@ func BenchmarkRunAndRender(b *testing.B) {
 			b.Error(err)
 		}
 
-		webp, err := ScreensFromRoots(roots).EncodeWebP(15000)
+		webp, err := ScreensFromRoots(roots, 64, 32).EncodeWebP(15000)
 		if err != nil {
 			b.Error(err)
 		}

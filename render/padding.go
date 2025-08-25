@@ -100,9 +100,9 @@ func (p Padding) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	dc.Pop()
 }
 
-func (p Padding) FrameCount() int {
+func (p Padding) FrameCount(bounds image.Rectangle) int {
 	if p.Child != nil {
-		return p.Child.FrameCount()
+		return p.Child.FrameCount(bounds)
 	}
 	return 1
 }

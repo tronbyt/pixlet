@@ -4,6 +4,7 @@ package render_runtime
 
 import (
 	"fmt"
+	"image"
 	"sync"
 
 	"github.com/mitchellh/hashstructure/v2"
@@ -178,7 +179,7 @@ func animationFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Animation)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -314,7 +315,7 @@ func boxFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Box)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -434,7 +435,7 @@ func circleFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Circle)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -562,7 +563,7 @@ func columnFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Column)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -691,7 +692,7 @@ func imageFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Image)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -842,7 +843,7 @@ func marqueeFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Marquee)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -1002,7 +1003,7 @@ func paddingFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Padding)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -1115,7 +1116,7 @@ func piechartFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*PieChart)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -1335,7 +1336,7 @@ func plotFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Plot)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -1569,7 +1570,7 @@ func rowFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Row)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -1673,7 +1674,7 @@ func sequenceFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Sequence)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -1777,7 +1778,7 @@ func stackFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Stack)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -1927,7 +1928,7 @@ func textFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Text)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
@@ -2071,7 +2072,7 @@ func wrappedtextFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*WrappedText)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }

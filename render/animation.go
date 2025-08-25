@@ -30,7 +30,7 @@ type Animation struct {
 	Children []Widget
 }
 
-func (a Animation) FrameCount() int {
+func (a Animation) FrameCount(bounds image.Rectangle) int {
 	return len(a.Children)
 }
 

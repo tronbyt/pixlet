@@ -13,8 +13,8 @@ type Tracer struct {
 	TraceLength int
 }
 
-func (t Tracer) FrameCount() int {
-	return t.Path.Length()
+func (tr Tracer) FrameCount(bounds image.Rectangle) int {
+	return tr.Path.Length()
 }
 
 func (t Tracer) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

@@ -63,9 +63,9 @@ func (c Circle) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	}
 }
 
-func (c Circle) FrameCount() int {
+func (c Circle) FrameCount(bounds image.Rectangle) int {
 	if c.Child != nil {
-		return c.Child.FrameCount()
+		return c.Child.FrameCount(bounds)
 	}
 	return 1
 }

@@ -289,25 +289,27 @@ Plot is a widget that draws a data series.
 #### Example
 ```
 render.Plot(
-  data = [
-    (0, 3.35),
-    (1, 2.15),
-    (2, 2.37),
-    (3, -0.31),
-    (4, -3.53),
-    (5, 1.31),
-    (6, -1.3),
-    (7, 4.60),
-    (8, 3.33),
-    (9, 5.92),
-  ],
-  width = 64,
-  height = 32,
-  color = "#0f0",
-  color_inverted = "#f00",
-  x_lim = (0, 9),
-  y_lim = (-5, 7),
-  fill = True,
+
+	data = [
+	  (0, 3.35),
+	  (1, 2.15),
+	  (2, 2.37),
+	  (3, -0.31),
+	  (4, -3.53),
+	  (5, 1.31),
+	  (6, -1.3),
+	  (7, 4.60),
+	  (8, 3.33),
+	  (9, 5.92),
+	],
+	width = 64,
+	height = 32,
+	color = "#0f0",
+	color_inverted = "#f00",
+	x_lim = (0, 9),
+	y_lim = (-5, 7),
+	fill = True,
+
 ),
 ```
 ![](img/widget_Plot_0.gif)
@@ -440,11 +442,13 @@ fit all its children.
 #### Example
 ```
 render.Stack(
-     children=[
-          render.Box(width=50, height=25, color="#911"),
-          render.Text("hello there"),
-          render.Box(width=4, height=32, color="#119"),
-     ],
+
+	children=[
+	     render.Box(width=50, height=25, color="#911"),
+	     render.Text("hello there"),
+	     render.Box(width=4, height=32, color="#119"),
+	],
+
 )
 ```
 ![](img/widget_Stack_0.gif)
@@ -501,9 +505,11 @@ Alignment of the text is controlled by passing one of the following `align` valu
 #### Example
 ```
 render.WrappedText(
-      content="this is a multi-line text string",
-      width=50,
-      color="#fa0",
+
+	content="this is a multi-line text string",
+	width=50,
+	color="#fa0",
+
 )
 ```
 ![](img/widget_WrappedText_0.gif)

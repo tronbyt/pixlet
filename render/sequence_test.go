@@ -106,7 +106,7 @@ func TestSequenceWithAnimatedChildren(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, 12, seq.FrameCount())
+	assert.Equal(t, 12, seq.FrameCount(image.Rect(0, 0, 2, 2)))
 
 	expected := [][]string{
 		{
@@ -159,7 +159,7 @@ func TestSequenceWithAnimatedChildren(t *testing.T) {
 		},
 	}
 
-	for i := 0; i < seq.FrameCount(); i++ {
+	for i := 0; i < seq.FrameCount(image.Rect(0, 0, 2, 2)); i++ {
 		im := PaintWidget(seq, image.Rect(0, 0, 2, 2), i)
 		assert.Equal(t, nil, checkImage(expected[i], im))
 	}

@@ -4,6 +4,7 @@ package animation_runtime
 
 import (
 	"fmt"
+	"image"
 	"sync"
 
 	"github.com/mitchellh/hashstructure/v2"
@@ -51,15 +52,11 @@ func LoadAnimationModule() (starlark.StringDict, error) {
 }
 
 type AnimatedPositioned struct {
-	render_runtime.Widget
-
 	animation.AnimatedPositioned
 
 	starlarkChild starlark.Value
 
 	starlarkCurve starlark.Value
-
-	frame_count *starlark.Builtin
 }
 
 func newAnimatedPositioned(
@@ -134,13 +131,7 @@ func newAnimatedPositioned(
 
 	w.Hold = int(hold.BigInt().Int64())
 
-	w.frame_count = starlark.NewBuiltin("frame_count", animatedpositionedFrameCount)
-
 	return w, nil
-}
-
-func (w *AnimatedPositioned) AsRenderWidget() render.Widget {
-	return &w.AnimatedPositioned
 }
 
 func (w *AnimatedPositioned) AttrNames() []string {
@@ -188,9 +179,6 @@ func (w *AnimatedPositioned) Attr(name string) (starlark.Value, error) {
 
 		return starlark.MakeInt(int(w.Hold)), nil
 
-	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
-
 	default:
 		return nil, nil
 	}
@@ -204,18 +192,6 @@ func (w *AnimatedPositioned) Truth() starlark.Bool { return true }
 func (w *AnimatedPositioned) Hash() (uint32, error) {
 	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
-}
-
-func animatedpositionedFrameCount(
-	thread *starlark.Thread,
-	b *starlark.Builtin,
-	args starlark.Tuple,
-	kwargs []starlark.Tuple) (starlark.Value, error) {
-
-	w := b.Receiver().(*AnimatedPositioned)
-	count := w.FrameCount()
-
-	return starlark.MakeInt(count), nil
 }
 
 type Keyframe struct {
@@ -783,7 +759,7 @@ func transformationFrameCount(
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
 	w := b.Receiver().(*Transformation)
-	count := w.FrameCount()
+	count := w.FrameCount(image.Rect(0, 0, 0, 0))
 
 	return starlark.MakeInt(count), nil
 }
