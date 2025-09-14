@@ -23,3 +23,5 @@ dist/
 # Dependency directories
 node_modules
 src/go
+
+.vscode/

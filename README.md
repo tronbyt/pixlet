@@ -42,7 +42,7 @@ Download the `pixlet` binary from [the latest release][1].
 
 Alternatively you can [build from source](docs/BUILD.md).
 
-[1]: https://github.com/tidbyt/pixlet/releases/latest
+[1]: https://github.com/tronbyt/pixlet/releases/latest
 
 ### Hello, World!
 
