@@ -1,3 +1,3 @@
 #!/bin/bash
 
-export LIBWEBP_VERSION="libwebp-1.5.0"
+export LIBWEBP_VERSION="libwebp-1.6.0"

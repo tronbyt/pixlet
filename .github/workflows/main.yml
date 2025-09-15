@@ -20,7 +20,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24.1"
+          go-version: "1.25.1"
 
       - name: Install buildifier
         run: make install-buildifier
@@ -43,7 +43,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24.1"
+          go-version: "1.25.1"
 
       - name: Install Node
         uses: actions/setup-node@v5
@@ -75,8 +75,8 @@ jobs:
         shell: msys2 {0}
         run: |
           set MSYSTEM=MINGW64
-          curl -LO https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-libwebp-1.5.0-1-any.pkg.tar.zst
-          pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.5.0-1-any.pkg.tar.zst
+          curl -LO https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-libwebp-1.6.0-1-any.pkg.tar.zst
+          pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.6.0-1-any.pkg.tar.zst
 
       - name: Install frontend dependencies
         run: npm install

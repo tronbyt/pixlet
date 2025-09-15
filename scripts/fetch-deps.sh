@@ -12,7 +12,7 @@ fi
 
 rm -rf "/tmp/${LIBWEBP_VERSION}"
 mkdir -p "/tmp/$LIBWEBP_VERSION"
-pushd "/tmp/$LIBWEBP_VERSION" > /dev/null
+pushd "/tmp/$LIBWEBP_VERSION" > /dev/null || exit
 
 echo "Fetching WebP Binaries"
 for ARCH in $RELEASE_ARCHS
@@ -29,4 +29,4 @@ do
 	echo "Fetched /tmp/${LIBWEBP_VERSION}/${ARCH} successfully"
 done
 
-popd > /dev/null
+popd > /dev/null || exit
