@@ -64,7 +64,7 @@
     "copy-webpack-plugin": "^13.0.1",
     "core-js": "^3.45.1",
     "date-fns": "4.1.0",
-    "dayjs": "^1.11.10",
+    "dayjs": "^1.11.18",
     "notistack": "^3.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.1.1",
