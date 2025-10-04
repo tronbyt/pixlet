@@ -45,6 +45,8 @@ type Loader struct {
 	timeout          int
 	imageFormat      ImageFormat
 	configOutFile    string
+	width            int
+	height           int
 }
 
 type Update struct {
@@ -63,7 +65,7 @@ func NewLoader(
 	watch bool,
 	fileChanges chan bool,
 	updatesChan chan Update,
-	maxDuration int,
+	width, height, maxDuration int,
 	timeout int,
 	imageFormat ImageFormat,
 	configOutFile string,
@@ -82,6 +84,8 @@ func NewLoader(
 		timeout:          timeout,
 		imageFormat:      imageFormat,
 		configOutFile:    configOutFile,
+		width:            width,
+		height:           height,
 	}
 
 	cache := runtime.NewInMemoryCache()
@@ -230,7 +234,7 @@ func (l *Loader) loadApplet(config map[string]string) (string, error) {
 		return "", fmt.Errorf("error running script: %w", err)
 	}
 
-	screens := encode.ScreensFromRoots(roots, 0, 0)
+	screens := encode.ScreensFromRoots(roots, l.width, l.height)
 
 	maxDuration := l.maxDuration
 	if screens.ShowFullAnimation {
