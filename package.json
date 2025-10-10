@@ -1,6 +1,6 @@
 {
   "name": "pixlet",
-  "version": "0.40.0",
+  "version": "0.45.0",
   "description": "[![Build & test](https://github.com/tidbyt/pixlet/workflows/Build%20&%20test/badge.svg)](https://github.com/tidbyt/pixlet/actions?query=workflow%3A%22Build+%26+test%22+branch%3Amain) [![GoDoc](https://godoc.org/github.com/tidbyt/pixlet/runtime?status.svg)](https://godoc.org/github.com/tidbyt/pixlet/runtime)",
   "main": "src/index.js",
   "directories": {
@@ -67,7 +67,7 @@
     "dayjs": "^1.11.18",
     "notistack": "^3.0.2",
     "react": "^19.2.0",
-    "react-dom": "^19.1.1",
+    "react-dom": "^19.2.0",
     "react-easy-crop": "^5.5.2",
     "react-redux": "^9.2.0",
     "react-router": "^7.8.2",
