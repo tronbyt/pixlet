@@ -12,6 +12,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      react-related:
+        patterns:
+          - "react"
+          - "react-dom"
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
