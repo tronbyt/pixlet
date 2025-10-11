@@ -1,0 +1,1753 @@
+#️⃣ - keycap: # - U+0023_U+FE0F_U+20E3.png
+*️⃣ - keycap: * - U+002A_U+FE0F_U+20E3.png
+0️⃣ - keycap: 0 - U+0030_U+FE0F_U+20E3.png
+1️⃣ - keycap: 1 - U+0031_U+FE0F_U+20E3.png
+2️⃣ - keycap: 2 - U+0032_U+FE0F_U+20E3.png
+3️⃣ - keycap: 3 - U+0033_U+FE0F_U+20E3.png
+4️⃣ - keycap: 4 - U+0034_U+FE0F_U+20E3.png
+5️⃣ - keycap: 5 - U+0035_U+FE0F_U+20E3.png
+6️⃣ - keycap: 6 - U+0036_U+FE0F_U+20E3.png
+7️⃣ - keycap: 7 - U+0037_U+FE0F_U+20E3.png
+8️⃣ - keycap: 8 - U+0038_U+FE0F_U+20E3.png
+9️⃣ - keycap: 9 - U+0039_U+FE0F_U+20E3.png
+© - copyright - U+00A9.png
+® - registered - U+00AE.png
+🀄 - mahjong red dragon - U+1F004.png
+🃏 - joker - U+1F0CF.png
+🅰 - A button (blood type) - U+1F170.png
+🅱 - B button (blood type) - U+1F171.png
+🅾 - O button (blood type) - U+1F17E.png
+🅿 - P button - U+1F17F.png
+🆎 - AB button (blood type) - U+1F18E.png
+🆑 - CL button - U+1F191.png
+🆒 - COOL button - U+1F192.png
+🆓 - FREE button - U+1F193.png
+🆔 - ID button - U+1F194.png
+🆕 - NEW button - U+1F195.png
+🆖 - NG button - U+1F196.png
+🆗 - OK button - U+1F197.png
+🆘 - SOS button - U+1F198.png
+🆙 - UP! button - U+1F199.png
+🆚 - VS button - U+1F19A.png
+🇦🇨 - flag: Ascension Island - U+1F1E6_U+1F1E8.png
+🇦🇩 - flag: Andorra - U+1F1E6_U+1F1E9.png
+🇦🇪 - flag: United Arab Emirates - U+1F1E6_U+1F1EA.png
+🇦🇫 - flag: Afghanistan - U+1F1E6_U+1F1EB.png
+🇦🇬 - flag: Antigua &amp; Barbuda - U+1F1E6_U+1F1EC.png
+🇦🇮 - flag: Anguilla - U+1F1E6_U+1F1EE.png
+🇦🇱 - flag: Albania - U+1F1E6_U+1F1F1.png
+🇦🇲 - flag: Armenia - U+1F1E6_U+1F1F2.png
+🇦🇴 - flag: Angola - U+1F1E6_U+1F1F4.png
+🇦🇶 - flag: Antarctica - U+1F1E6_U+1F1F6.png
+🇦🇷 - flag: Argentina - U+1F1E6_U+1F1F7.png
+🇦🇸 - flag: American Samoa - U+1F1E6_U+1F1F8.png
+🇦🇹 - flag: Austria - U+1F1E6_U+1F1F9.png
+🇦🇺 - flag: Australia - U+1F1E6_U+1F1FA.png
+🇦🇼 - flag: Aruba - U+1F1E6_U+1F1FC.png
+🇦🇽 - flag: Åland Islands - U+1F1E6_U+1F1FD.png
+🇦🇿 - flag: Azerbaijan - U+1F1E6_U+1F1FF.png
+🇧🇦 - flag: Bosnia &amp; Herzegovina - U+1F1E7_U+1F1E6.png
+🇧🇧 - flag: Barbados - U+1F1E7_U+1F1E7.png
+🇧🇩 - flag: Bangladesh - U+1F1E7_U+1F1E9.png
+🇧🇪 - flag: Belgium - U+1F1E7_U+1F1EA.png
+🇧🇫 - flag: Burkina Faso - U+1F1E7_U+1F1EB.png
+🇧🇬 - flag: Bulgaria - U+1F1E7_U+1F1EC.png
+🇧🇭 - flag: Bahrain - U+1F1E7_U+1F1ED.png
+🇧🇮 - flag: Burundi - U+1F1E7_U+1F1EE.png
+🇧🇯 - flag: Benin - U+1F1E7_U+1F1EF.png
+🇧🇱 - flag: St. Barthélemy - U+1F1E7_U+1F1F1.png
+🇧🇲 - flag: Bermuda - U+1F1E7_U+1F1F2.png
+🇧🇳 - flag: Brunei - U+1F1E7_U+1F1F3.png
+🇧🇴 - flag: Bolivia - U+1F1E7_U+1F1F4.png
+🇧🇶 - flag: Caribbean Netherlands - U+1F1E7_U+1F1F6.png
+🇧🇷 - flag: Brazil - U+1F1E7_U+1F1F7.png
+🇧🇸 - flag: Bahamas - U+1F1E7_U+1F1F8.png
+🇧🇹 - flag: Bhutan - U+1F1E7_U+1F1F9.png
+🇧🇻 - flag: Bouvet Island - U+1F1E7_U+1F1FB.png
+🇧🇼 - flag: Botswana - U+1F1E7_U+1F1FC.png
+🇧🇾 - flag: Belarus - U+1F1E7_U+1F1FE.png
+🇧🇿 - flag: Belize - U+1F1E7_U+1F1FF.png
+🇨🇦 - flag: Canada - U+1F1E8_U+1F1E6.png
+🇨🇨 - flag: Cocos (Keeling) Islands - U+1F1E8_U+1F1E8.png
+🇨🇩 - flag: Congo - Kinshasa - U+1F1E8_U+1F1E9.png
+🇨🇫 - flag: Central African Republic - U+1F1E8_U+1F1EB.png
+🇨🇬 - flag: Congo - Brazzaville - U+1F1E8_U+1F1EC.png
+🇨🇭 - flag: Switzerland - U+1F1E8_U+1F1ED.png
+🇨🇮 - flag: Côte d’Ivoire - U+1F1E8_U+1F1EE.png
+🇨🇰 - flag: Cook Islands - U+1F1E8_U+1F1F0.png
+🇨🇱 - flag: Chile - U+1F1E8_U+1F1F1.png
+🇨🇲 - flag: Cameroon - U+1F1E8_U+1F1F2.png
+🇨🇳 - flag: China - U+1F1E8_U+1F1F3.png
+🇨🇴 - flag: Colombia - U+1F1E8_U+1F1F4.png
+🇨🇵 - flag: Clipperton Island - U+1F1E8_U+1F1F5.png
+🇨🇷 - flag: Costa Rica - U+1F1E8_U+1F1F7.png
+🇨🇺 - flag: Cuba - U+1F1E8_U+1F1FA.png
+🇨🇻 - flag: Cape Verde - U+1F1E8_U+1F1FB.png
+🇨🇼 - flag: Curaçao - U+1F1E8_U+1F1FC.png
+🇨🇽 - flag: Christmas Island - U+1F1E8_U+1F1FD.png
+🇨🇾 - flag: Cyprus - U+1F1E8_U+1F1FE.png
+🇨🇿 - flag: Czechia - U+1F1E8_U+1F1FF.png
+🇩🇪 - flag: Germany - U+1F1E9_U+1F1EA.png
+🇩🇬 - flag: Diego Garcia - U+1F1E9_U+1F1EC.png
+🇩🇯 - flag: Djibouti - U+1F1E9_U+1F1EF.png
+🇩🇰 - flag: Denmark - U+1F1E9_U+1F1F0.png
+🇩🇲 - flag: Dominica - U+1F1E9_U+1F1F2.png
+🇩🇴 - flag: Dominican Republic - U+1F1E9_U+1F1F4.png
+🇩🇿 - flag: Algeria - U+1F1E9_U+1F1FF.png
+🇪🇦 - flag: Ceuta &amp; Melilla - U+1F1EA_U+1F1E6.png
+🇪🇨 - flag: Ecuador - U+1F1EA_U+1F1E8.png
+🇪🇪 - flag: Estonia - U+1F1EA_U+1F1EA.png
+🇪🇬 - flag: Egypt - U+1F1EA_U+1F1EC.png
+🇪🇭 - flag: Western Sahara - U+1F1EA_U+1F1ED.png
+🇪🇷 - flag: Eritrea - U+1F1EA_U+1F1F7.png
+🇪🇸 - flag: Spain - U+1F1EA_U+1F1F8.png
+🇪🇹 - flag: Ethiopia - U+1F1EA_U+1F1F9.png
+🇪🇺 - flag: European Union - U+1F1EA_U+1F1FA.png
+🇫🇮 - flag: Finland - U+1F1EB_U+1F1EE.png
+🇫🇯 - flag: Fiji - U+1F1EB_U+1F1EF.png
+🇫🇰 - flag: Falkland Islands - U+1F1EB_U+1F1F0.png
+🇫🇲 - flag: Micronesia - U+1F1EB_U+1F1F2.png
+🇫🇴 - flag: Faroe Islands - U+1F1EB_U+1F1F4.png
+🇫🇷 - flag: France - U+1F1EB_U+1F1F7.png
+🇬🇦 - flag: Gabon - U+1F1EC_U+1F1E6.png
+🇬🇧 - flag: United Kingdom - U+1F1EC_U+1F1E7.png
+🇬🇩 - flag: Grenada - U+1F1EC_U+1F1E9.png
+🇬🇪 - flag: Georgia - U+1F1EC_U+1F1EA.png
+🇬🇫 - flag: French Guiana - U+1F1EC_U+1F1EB.png
+🇬🇬 - flag: Guernsey - U+1F1EC_U+1F1EC.png
+🇬🇭 - flag: Ghana - U+1F1EC_U+1F1ED.png
+🇬🇮 - flag: Gibraltar - U+1F1EC_U+1F1EE.png
+🇬🇱 - flag: Greenland - U+1F1EC_U+1F1F1.png
+🇬🇲 - flag: Gambia - U+1F1EC_U+1F1F2.png
+🇬🇳 - flag: Guinea - U+1F1EC_U+1F1F3.png
+🇬🇵 - flag: Guadeloupe - U+1F1EC_U+1F1F5.png
+🇬🇶 - flag: Equatorial Guinea - U+1F1EC_U+1F1F6.png
+🇬🇷 - flag: Greece - U+1F1EC_U+1F1F7.png
+🇬🇸 - flag: South Georgia &amp; South Sandwich Islands - U+1F1EC_U+1F1F8.png
+🇬🇹 - flag: Guatemala - U+1F1EC_U+1F1F9.png
+🇬🇺 - flag: Guam - U+1F1EC_U+1F1FA.png
+🇬🇼 - flag: Guinea-Bissau - U+1F1EC_U+1F1FC.png
+🇬🇾 - flag: Guyana - U+1F1EC_U+1F1FE.png
+🇭🇰 - flag: Hong Kong SAR China - U+1F1ED_U+1F1F0.png
+🇭🇲 - flag: Heard &amp; McDonald Islands - U+1F1ED_U+1F1F2.png
+🇭🇳 - flag: Honduras - U+1F1ED_U+1F1F3.png
+🇭🇷 - flag: Croatia - U+1F1ED_U+1F1F7.png
+🇭🇹 - flag: Haiti - U+1F1ED_U+1F1F9.png
+🇭🇺 - flag: Hungary - U+1F1ED_U+1F1FA.png
+🇮🇨 - flag: Canary Islands - U+1F1EE_U+1F1E8.png
+🇮🇩 - flag: Indonesia - U+1F1EE_U+1F1E9.png
+🇮🇪 - flag: Ireland - U+1F1EE_U+1F1EA.png
+🇮🇱 - flag: Israel - U+1F1EE_U+1F1F1.png
+🇮🇲 - flag: Isle of Man - U+1F1EE_U+1F1F2.png
+🇮🇳 - flag: India - U+1F1EE_U+1F1F3.png
+🇮🇴 - flag: British Indian Ocean Territory - U+1F1EE_U+1F1F4.png
+🇮🇶 - flag: Iraq - U+1F1EE_U+1F1F6.png
+🇮🇷 - flag: Iran - U+1F1EE_U+1F1F7.png
+🇮🇸 - flag: Iceland - U+1F1EE_U+1F1F8.png
+🇮🇹 - flag: Italy - U+1F1EE_U+1F1F9.png
+🇯🇪 - flag: Jersey - U+1F1EF_U+1F1EA.png
+🇯🇲 - flag: Jamaica - U+1F1EF_U+1F1F2.png
+🇯🇴 - flag: Jordan - U+1F1EF_U+1F1F4.png
+🇯🇵 - flag: Japan - U+1F1EF_U+1F1F5.png
+🇰🇪 - flag: Kenya - U+1F1F0_U+1F1EA.png
+🇰🇬 - flag: Kyrgyzstan - U+1F1F0_U+1F1EC.png
+🇰🇭 - flag: Cambodia - U+1F1F0_U+1F1ED.png
+🇰🇮 - flag: Kiribati - U+1F1F0_U+1F1EE.png
+🇰🇲 - flag: Comoros - U+1F1F0_U+1F1F2.png
+🇰🇳 - flag: St. Kitts &amp; Nevis - U+1F1F0_U+1F1F3.png
+🇰🇵 - flag: North Korea - U+1F1F0_U+1F1F5.png
+🇰🇷 - flag: South Korea - U+1F1F0_U+1F1F7.png
+🇰🇼 - flag: Kuwait - U+1F1F0_U+1F1FC.png
+🇰🇾 - flag: Cayman Islands - U+1F1F0_U+1F1FE.png
+🇰🇿 - flag: Kazakhstan - U+1F1F0_U+1F1FF.png
+🇱🇦 - flag: Laos - U+1F1F1_U+1F1E6.png
+🇱🇧 - flag: Lebanon - U+1F1F1_U+1F1E7.png
+🇱🇨 - flag: St. Lucia - U+1F1F1_U+1F1E8.png
+🇱🇮 - flag: Liechtenstein - U+1F1F1_U+1F1EE.png
+🇱🇰 - flag: Sri Lanka - U+1F1F1_U+1F1F0.png
+🇱🇷 - flag: Liberia - U+1F1F1_U+1F1F7.png
+🇱🇸 - flag: Lesotho - U+1F1F1_U+1F1F8.png
+🇱🇹 - flag: Lithuania - U+1F1F1_U+1F1F9.png
+🇱🇺 - flag: Luxembourg - U+1F1F1_U+1F1FA.png
+🇱🇻 - flag: Latvia - U+1F1F1_U+1F1FB.png
+🇱🇾 - flag: Libya - U+1F1F1_U+1F1FE.png
+🇲🇦 - flag: Morocco - U+1F1F2_U+1F1E6.png
+🇲🇨 - flag: Monaco - U+1F1F2_U+1F1E8.png
+🇲🇩 - flag: Moldova - U+1F1F2_U+1F1E9.png
+🇲🇪 - flag: Montenegro - U+1F1F2_U+1F1EA.png
+🇲🇫 - flag: St. Martin - U+1F1F2_U+1F1EB.png
+🇲🇬 - flag: Madagascar - U+1F1F2_U+1F1EC.png
+🇲🇭 - flag: Marshall Islands - U+1F1F2_U+1F1ED.png
+🇲🇰 - flag: North Macedonia - U+1F1F2_U+1F1F0.png
+🇲🇱 - flag: Mali - U+1F1F2_U+1F1F1.png
+🇲🇲 - flag: Myanmar (Burma) - U+1F1F2_U+1F1F2.png
+🇲🇳 - flag: Mongolia - U+1F1F2_U+1F1F3.png
+🇲🇴 - flag: Macao SAR China - U+1F1F2_U+1F1F4.png
+🇲🇵 - flag: Northern Mariana Islands - U+1F1F2_U+1F1F5.png
+🇲🇶 - flag: Martinique - U+1F1F2_U+1F1F6.png
+🇲🇷 - flag: Mauritania - U+1F1F2_U+1F1F7.png
+🇲🇸 - flag: Montserrat - U+1F1F2_U+1F1F8.png
+🇲🇹 - flag: Malta - U+1F1F2_U+1F1F9.png
+🇲🇺 - flag: Mauritius - U+1F1F2_U+1F1FA.png
+🇲🇻 - flag: Maldives - U+1F1F2_U+1F1FB.png
+🇲🇼 - flag: Malawi - U+1F1F2_U+1F1FC.png
+🇲🇽 - flag: Mexico - U+1F1F2_U+1F1FD.png
+🇲🇾 - flag: Malaysia - U+1F1F2_U+1F1FE.png
+🇲🇿 - flag: Mozambique - U+1F1F2_U+1F1FF.png
+🇳🇦 - flag: Namibia - U+1F1F3_U+1F1E6.png
+🇳🇨 - flag: New Caledonia - U+1F1F3_U+1F1E8.png
+🇳🇪 - flag: Niger - U+1F1F3_U+1F1EA.png
+🇳🇫 - flag: Norfolk Island - U+1F1F3_U+1F1EB.png
+🇳🇬 - flag: Nigeria - U+1F1F3_U+1F1EC.png
+🇳🇮 - flag: Nicaragua - U+1F1F3_U+1F1EE.png
+🇳🇱 - flag: Netherlands - U+1F1F3_U+1F1F1.png
+🇳🇴 - flag: Norway - U+1F1F3_U+1F1F4.png
+🇳🇵 - flag: Nepal - U+1F1F3_U+1F1F5.png
+🇳🇷 - flag: Nauru - U+1F1F3_U+1F1F7.png
+🇳🇺 - flag: Niue - U+1F1F3_U+1F1FA.png
+🇳🇿 - flag: New Zealand - U+1F1F3_U+1F1FF.png
+🇴🇲 - flag: Oman - U+1F1F4_U+1F1F2.png
+🇵🇦 - flag: Panama - U+1F1F5_U+1F1E6.png
+🇵🇪 - flag: Peru - U+1F1F5_U+1F1EA.png
+🇵🇫 - flag: French Polynesia - U+1F1F5_U+1F1EB.png
+🇵🇬 - flag: Papua New Guinea - U+1F1F5_U+1F1EC.png
+🇵🇭 - flag: Philippines - U+1F1F5_U+1F1ED.png
+🇵🇰 - flag: Pakistan - U+1F1F5_U+1F1F0.png
+🇵🇱 - flag: Poland - U+1F1F5_U+1F1F1.png
+🇵🇲 - flag: St. Pierre &amp; Miquelon - U+1F1F5_U+1F1F2.png
+🇵🇳 - flag: Pitcairn Islands - U+1F1F5_U+1F1F3.png
+🇵🇷 - flag: Puerto Rico - U+1F1F5_U+1F1F7.png
+🇵🇸 - flag: Palestinian Territories - U+1F1F5_U+1F1F8.png
+🇵🇹 - flag: Portugal - U+1F1F5_U+1F1F9.png
+🇵🇼 - flag: Palau - U+1F1F5_U+1F1FC.png
+🇵🇾 - flag: Paraguay - U+1F1F5_U+1F1FE.png
+🇶🇦 - flag: Qatar - U+1F1F6_U+1F1E6.png
+🇷🇪 - flag: Réunion - U+1F1F7_U+1F1EA.png
+🇷🇴 - flag: Romania - U+1F1F7_U+1F1F4.png
+🇷🇸 - flag: Serbia - U+1F1F7_U+1F1F8.png
+🇷🇺 - flag: Russia - U+1F1F7_U+1F1FA.png
+🇷🇼 - flag: Rwanda - U+1F1F7_U+1F1FC.png
+🇸🇦 - flag: Saudi Arabia - U+1F1F8_U+1F1E6.png
+🇸🇧 - flag: Solomon Islands - U+1F1F8_U+1F1E7.png
+🇸🇨 - flag: Seychelles - U+1F1F8_U+1F1E8.png
+🇸🇩 - flag: Sudan - U+1F1F8_U+1F1E9.png
+🇸🇪 - flag: Sweden - U+1F1F8_U+1F1EA.png
+🇸🇬 - flag: Singapore - U+1F1F8_U+1F1EC.png
+🇸🇭 - flag: St. Helena - U+1F1F8_U+1F1ED.png
+🇸🇮 - flag: Slovenia - U+1F1F8_U+1F1EE.png
+🇸🇯 - flag: Svalbard &amp; Jan Mayen - U+1F1F8_U+1F1EF.png
+🇸🇰 - flag: Slovakia - U+1F1F8_U+1F1F0.png
+🇸🇱 - flag: Sierra Leone - U+1F1F8_U+1F1F1.png
+🇸🇲 - flag: San Marino - U+1F1F8_U+1F1F2.png
+🇸🇳 - flag: Senegal - U+1F1F8_U+1F1F3.png
+🇸🇴 - flag: Somalia - U+1F1F8_U+1F1F4.png
+🇸🇷 - flag: Suriname - U+1F1F8_U+1F1F7.png
+🇸🇸 - flag: South Sudan - U+1F1F8_U+1F1F8.png
+🇸🇹 - flag: São Tomé &amp; Príncipe - U+1F1F8_U+1F1F9.png
+🇸🇻 - flag: El Salvador - U+1F1F8_U+1F1FB.png
+🇸🇽 - flag: Sint Maarten - U+1F1F8_U+1F1FD.png
+🇸🇾 - flag: Syria - U+1F1F8_U+1F1FE.png
+🇸🇿 - flag: Eswatini - U+1F1F8_U+1F1FF.png
+🇹🇦 - flag: Tristan da Cunha - U+1F1F9_U+1F1E6.png
+🇹🇨 - flag: Turks &amp; Caicos Islands - U+1F1F9_U+1F1E8.png
+🇹🇩 - flag: Chad - U+1F1F9_U+1F1E9.png
+🇹🇫 - flag: French Southern Territories - U+1F1F9_U+1F1EB.png
+🇹🇬 - flag: Togo - U+1F1F9_U+1F1EC.png
+🇹🇭 - flag: Thailand - U+1F1F9_U+1F1ED.png
+🇹🇯 - flag: Tajikistan - U+1F1F9_U+1F1EF.png
+🇹🇰 - flag: Tokelau - U+1F1F9_U+1F1F0.png
+🇹🇱 - flag: Timor-Leste - U+1F1F9_U+1F1F1.png
+🇹🇲 - flag: Turkmenistan - U+1F1F9_U+1F1F2.png
+🇹🇳 - flag: Tunisia - U+1F1F9_U+1F1F3.png
+🇹🇴 - flag: Tonga - U+1F1F9_U+1F1F4.png
+🇹🇷 - flag: Turkey - U+1F1F9_U+1F1F7.png
+🇹🇹 - flag: Trinidad &amp; Tobago - U+1F1F9_U+1F1F9.png
+🇹🇻 - flag: Tuvalu - U+1F1F9_U+1F1FB.png
+🇹🇼 - flag: Taiwan - U+1F1F9_U+1F1FC.png
+🇹🇿 - flag: Tanzania - U+1F1F9_U+1F1FF.png
+🇺🇦 - flag: Ukraine - U+1F1FA_U+1F1E6.png
+🇺🇬 - flag: Uganda - U+1F1FA_U+1F1EC.png
+🇺🇲 - flag: U.S. Outlying Islands - U+1F1FA_U+1F1F2.png
+🇺🇳 - flag: United Nations - U+1F1FA_U+1F1F3.png
+🇺🇸 - flag: United States - U+1F1FA_U+1F1F8.png
+🇺🇾 - flag: Uruguay - U+1F1FA_U+1F1FE.png
+🇺🇿 - flag: Uzbekistan - U+1F1FA_U+1F1FF.png
+🇻🇦 - flag: Vatican City - U+1F1FB_U+1F1E6.png
+🇻🇨 - flag: St. Vincent &amp; Grenadines - U+1F1FB_U+1F1E8.png
+🇻🇪 - flag: Venezuela - U+1F1FB_U+1F1EA.png
+🇻🇬 - flag: British Virgin Islands - U+1F1FB_U+1F1EC.png
+🇻🇮 - flag: U.S. Virgin Islands - U+1F1FB_U+1F1EE.png
+🇻🇳 - flag: Vietnam - U+1F1FB_U+1F1F3.png
+🇻🇺 - flag: Vanuatu - U+1F1FB_U+1F1FA.png
+🇼🇫 - flag: Wallis &amp; Futuna - U+1F1FC_U+1F1EB.png
+🇼🇸 - flag: Samoa - U+1F1FC_U+1F1F8.png
+🇽🇰 - flag: Kosovo - U+1F1FD_U+1F1F0.png
+🇾🇪 - flag: Yemen - U+1F1FE_U+1F1EA.png
+🇾🇹 - flag: Mayotte - U+1F1FE_U+1F1F9.png
+🇿🇦 - flag: South Africa - U+1F1FF_U+1F1E6.png
+🇿🇲 - flag: Zambia - U+1F1FF_U+1F1F2.png
+🇿🇼 - flag: Zimbabwe - U+1F1FF_U+1F1FC.png
+🈁 - Japanese “here” button - U+1F201.png
+🈂 - Japanese “service charge” button - U+1F202.png
+🈚 - Japanese “free of charge” button - U+1F21A.png
+🈯 - Japanese “reserved” button - U+1F22F.png
+🈲 - Japanese “prohibited” button - U+1F232.png
+🈳 - Japanese “vacancy” button - U+1F233.png
+🈴 - Japanese “passing grade” button - U+1F234.png
+🈵 - Japanese “no vacancy” button - U+1F235.png
+🈶 - Japanese “not free of charge” button - U+1F236.png
+🈷 - Japanese “monthly amount” button - U+1F237.png
+🈸 - Japanese “application” button - U+1F238.png
+🈹 - Japanese “discount” button - U+1F239.png
+🈺 - Japanese “open for business” button - U+1F23A.png
+🉐 - Japanese “bargain” button - U+1F250.png
+🉑 - Japanese “acceptable” button - U+1F251.png
+🌀 - cyclone - U+1F300.png
+🌁 - foggy - U+1F301.png
+🌂 - closed umbrella - U+1F302.png
+🌃 - night with stars - U+1F303.png
+🌄 - sunrise over mountains - U+1F304.png
+🌅 - sunrise - U+1F305.png
+🌆 - cityscape at dusk - U+1F306.png
+🌇 - sunset - U+1F307.png
+🌈 - rainbow - U+1F308.png
+🌉 - bridge at night - U+1F309.png
+🌊 - water wave - U+1F30A.png
+🌋 - volcano - U+1F30B.png
+🌌 - milky way - U+1F30C.png
+🌍 - globe showing Europe-Africa - U+1F30D.png
+🌎 - globe showing Americas - U+1F30E.png
+🌏 - globe showing Asia-Australia - U+1F30F.png
+🌐 - globe with meridians - U+1F310.png
+🌑 - new moon - U+1F311.png
+🌒 - waxing crescent moon - U+1F312.png
+🌓 - first quarter moon - U+1F313.png
+🌔 - waxing gibbous moon - U+1F314.png
+🌕 - full moon - U+1F315.png
+🌖 - waning gibbous moon - U+1F316.png
+🌗 - last quarter moon - U+1F317.png
+🌘 - waning crescent moon - U+1F318.png
+🌙 - crescent moon - U+1F319.png
+🌚 - new moon face - U+1F31A.png
+🌛 - first quarter moon face - U+1F31B.png
+🌜 - last quarter moon face - U+1F31C.png
+🌝 - full moon face - U+1F31D.png
+🌞 - sun with face - U+1F31E.png
+🌟 - glowing star - U+1F31F.png
+🌠 - shooting star - U+1F320.png
+🌡 - thermometer - U+1F321.png
+🌤 - sun behind small cloud - U+1F324.png
+🌥 - sun behind large cloud - U+1F325.png
+🌦 - sun behind rain cloud - U+1F326.png
+🌧 - cloud with rain - U+1F327.png
+🌨 - cloud with snow - U+1F328.png
+🌩 - cloud with lightning - U+1F329.png
+🌪 - tornado - U+1F32A.png
+🌫 - fog - U+1F32B.png
+🌬 - wind face - U+1F32C.png
+🌭 - hot dog - U+1F32D.png
+🌮 - taco - U+1F32E.png
+🌯 - burrito - U+1F32F.png
+🌰 - chestnut - U+1F330.png
+🌱 - seedling - U+1F331.png
+🌲 - evergreen tree - U+1F332.png
+🌳 - deciduous tree - U+1F333.png
+🌴 - palm tree - U+1F334.png
+🌵 - cactus - U+1F335.png
+🌶 - hot pepper - U+1F336.png
+🌷 - tulip - U+1F337.png
+🌸 - cherry blossom - U+1F338.png
+🌹 - rose - U+1F339.png
+🌺 - hibiscus - U+1F33A.png
+🌻 - sunflower - U+1F33B.png
+🌼 - blossom - U+1F33C.png
+🌽 - ear of corn - U+1F33D.png
+🌾 - sheaf of rice - U+1F33E.png
+🌿 - herb - U+1F33F.png
+🍀 - four leaf clover - U+1F340.png
+🍁 - maple leaf - U+1F341.png
+🍂 - fallen leaf - U+1F342.png
+🍃 - leaf fluttering in wind - U+1F343.png
+🍄 - mushroom - U+1F344.png
+🍅 - tomato - U+1F345.png
+🍆 - eggplant - U+1F346.png
+🍇 - grapes - U+1F347.png
+🍈 - melon - U+1F348.png
+🍉 - watermelon - U+1F349.png
+🍊 - tangerine - U+1F34A.png
+🍋 - lemon - U+1F34B.png
+🍌 - banana - U+1F34C.png
+🍍 - pineapple - U+1F34D.png
+🍎 - red apple - U+1F34E.png
+🍏 - green apple - U+1F34F.png
+🍐 - pear - U+1F350.png
+🍑 - peach - U+1F351.png
+🍒 - cherries - U+1F352.png
+🍓 - strawberry - U+1F353.png
+🍔 - hamburger - U+1F354.png
+🍕 - pizza - U+1F355.png
+🍖 - meat on bone - U+1F356.png
+🍗 - poultry leg - U+1F357.png
+🍘 - rice cracker - U+1F358.png
+🍙 - rice ball - U+1F359.png
+🍚 - cooked rice - U+1F35A.png
+🍛 - curry rice - U+1F35B.png
+🍜 - steaming bowl - U+1F35C.png
+🍝 - spaghetti - U+1F35D.png
+🍞 - bread - U+1F35E.png
+🍟 - french fries - U+1F35F.png
+🍠 - roasted sweet potato - U+1F360.png
+🍡 - dango - U+1F361.png
+🍢 - oden - U+1F362.png
+🍣 - sushi - U+1F363.png
+🍤 - fried shrimp - U+1F364.png
+🍥 - fish cake with swirl - U+1F365.png
+🍦 - soft ice cream - U+1F366.png
+🍧 - shaved ice - U+1F367.png
+🍨 - ice cream - U+1F368.png
+🍩 - doughnut - U+1F369.png
+🍪 - cookie - U+1F36A.png
+🍫 - chocolate bar - U+1F36B.png
+🍬 - candy - U+1F36C.png
+🍭 - lollipop - U+1F36D.png
+🍮 - custard - U+1F36E.png
+🍯 - honey pot - U+1F36F.png
+🍰 - shortcake - U+1F370.png
+🍱 - bento box - U+1F371.png
+🍲 - pot of food - U+1F372.png
+🍳 - cooking - U+1F373.png
+🍴 - fork and knife - U+1F374.png
+🍵 - teacup without handle - U+1F375.png
+🍶 - sake - U+1F376.png
+🍷 - wine glass - U+1F377.png
+🍸 - cocktail glass - U+1F378.png
+🍹 - tropical drink - U+1F379.png
+🍺 - beer mug - U+1F37A.png
+🍻 - clinking beer mugs - U+1F37B.png
+🍼 - baby bottle - U+1F37C.png
+🍽 - fork and knife with plate - U+1F37D.png
+🍾 - bottle with popping cork - U+1F37E.png
+🍿 - popcorn - U+1F37F.png
+🎀 - ribbon - U+1F380.png
+🎁 - wrapped gift - U+1F381.png
+🎂 - birthday cake - U+1F382.png
+🎃 - jack-o-lantern - U+1F383.png
+🎄 - Christmas tree - U+1F384.png
+🎅 - Santa Claus - U+1F385.png
+🎆 - fireworks - U+1F386.png
+🎇 - sparkler - U+1F387.png
+🎈 - balloon - U+1F388.png
+🎉 - party popper - U+1F389.png
+🎊 - confetti ball - U+1F38A.png
+🎋 - tanabata tree - U+1F38B.png
+🎌 - crossed flags - U+1F38C.png
+🎍 - pine decoration - U+1F38D.png
+🎎 - Japanese dolls - U+1F38E.png
+🎏 - carp streamer - U+1F38F.png
+🎐 - wind chime - U+1F390.png
+🎑 - moon viewing ceremony - U+1F391.png
+🎒 - backpack - U+1F392.png
+🎓 - graduation cap - U+1F393.png
+🎖 - military medal - U+1F396.png
+🎗 - reminder ribbon - U+1F397.png
+🎙 - studio microphone - U+1F399.png
+🎚 - level slider - U+1F39A.png
+🎛 - control knobs - U+1F39B.png
+🎞 - film frames - U+1F39E.png
+🎟 - admission tickets - U+1F39F.png
+🎠 - carousel horse - U+1F3A0.png
+🎡 - ferris wheel - U+1F3A1.png
+🎢 - roller coaster - U+1F3A2.png
+🎣 - fishing pole - U+1F3A3.png
+🎤 - microphone - U+1F3A4.png
+🎥 - movie camera - U+1F3A5.png
+🎦 - cinema - U+1F3A6.png
+🎧 - headphone - U+1F3A7.png
+🎨 - artist palette - U+1F3A8.png
+🎩 - top hat - U+1F3A9.png
+🎪 - circus tent - U+1F3AA.png
+🎫 - ticket - U+1F3AB.png
+🎬 - clapper board - U+1F3AC.png
+🎭 - performing arts - U+1F3AD.png
+🎮 - video game - U+1F3AE.png
+🎯 - bullseye - U+1F3AF.png
+🎰 - slot machine - U+1F3B0.png
+🎱 - pool 8 ball - U+1F3B1.png
+🎲 - game die - U+1F3B2.png
+🎳 - bowling - U+1F3B3.png
+🎴 - flower playing cards - U+1F3B4.png
+🎵 - musical note - U+1F3B5.png
+🎶 - musical notes - U+1F3B6.png
+🎷 - saxophone - U+1F3B7.png
+🎸 - guitar - U+1F3B8.png
+🎹 - musical keyboard - U+1F3B9.png
+🎺 - trumpet - U+1F3BA.png
+🎻 - violin - U+1F3BB.png
+🎼 - musical score - U+1F3BC.png
+🎽 - running shirt - U+1F3BD.png
+🎾 - tennis - U+1F3BE.png
+🎿 - skis - U+1F3BF.png
+🏀 - basketball - U+1F3C0.png
+🏁 - chequered flag - U+1F3C1.png
+🏂 - snowboarder - U+1F3C2.png
+🏃 - person running - U+1F3C3.png
+🏃‍♀️ - woman running - U+1F3C3_U+200D_U+2640_U+FE0F.png
+🏃‍♂️ - man running - U+1F3C3_U+200D_U+2642_U+FE0F.png
+🏄 - person surfing - U+1F3C4.png
+🏄‍♀️ - woman surfing - U+1F3C4_U+200D_U+2640_U+FE0F.png
+🏄‍♂️ - man surfing - U+1F3C4_U+200D_U+2642_U+FE0F.png
+🏅 - sports medal - U+1F3C5.png
+🏆 - trophy - U+1F3C6.png
+🏇 - horse racing - U+1F3C7.png
+🏈 - american football - U+1F3C8.png
+🏉 - rugby football - U+1F3C9.png
+🏊 - person swimming - U+1F3CA.png
+🏊‍♀️ - woman swimming - U+1F3CA_U+200D_U+2640_U+FE0F.png
+🏊‍♂️ - man swimming - U+1F3CA_U+200D_U+2642_U+FE0F.png
+🏋 - person lifting weights - U+1F3CB.png
+🏋️‍♀️ - woman lifting weights - U+1F3CB_U+FE0F_U+200D_U+2640_U+FE0F.png
+🏋️‍♂️ - man lifting weights - U+1F3CB_U+FE0F_U+200D_U+2642_U+FE0F.png
+🏌 - person golfing - U+1F3CC.png
+🏌️‍♀️ - woman golfing - U+1F3CC_U+FE0F_U+200D_U+2640_U+FE0F.png
+🏌️‍♂️ - man golfing - U+1F3CC_U+FE0F_U+200D_U+2642_U+FE0F.png
+🏎 - racing car - U+1F3CE.png
+🏏 - cricket game - U+1F3CF.png
+🏐 - volleyball - U+1F3D0.png
+🏑 - field hockey - U+1F3D1.png
+🏒 - ice hockey - U+1F3D2.png
+🏓 - ping pong - U+1F3D3.png
+🏔 - snow-capped mountain - U+1F3D4.png
+🏕 - camping - U+1F3D5.png
+🏖 - beach with umbrella - U+1F3D6.png
+🏗 - building construction - U+1F3D7.png
+🏘 - houses - U+1F3D8.png
+🏙 - cityscape - U+1F3D9.png
+🏚 - derelict house - U+1F3DA.png
+🏛 - classical building - U+1F3DB.png
+🏜 - desert - U+1F3DC.png
+🏝 - desert island - U+1F3DD.png
+🏞 - national park - U+1F3DE.png
+🏟 - stadium - U+1F3DF.png
+🏠 - house - U+1F3E0.png
+🏡 - house with garden - U+1F3E1.png
+🏢 - office building - U+1F3E2.png
+🏣 - Japanese post office - U+1F3E3.png
+🏤 - post office - U+1F3E4.png
+🏥 - hospital - U+1F3E5.png
+🏦 - bank - U+1F3E6.png
+🏧 - ATM sign - U+1F3E7.png
+🏨 - hotel - U+1F3E8.png
+🏩 - love hotel - U+1F3E9.png
+🏪 - convenience store - U+1F3EA.png
+🏫 - school - U+1F3EB.png
+🏬 - department store - U+1F3EC.png
+🏭 - factory - U+1F3ED.png
+🏮 - red paper lantern - U+1F3EE.png
+🏯 - Japanese castle - U+1F3EF.png
+🏰 - castle - U+1F3F0.png
+🏳 - white flag - U+1F3F3.png
+🏳️‍🌈 - rainbow flag - U+1F3F3_U+FE0F_U+200D_U+1F308.png
+🏳️‍⚧️ - transgender flag - U+1F3F3_U+FE0F_U+200D_U+26A7_U+FE0F.png
+🏴 - black flag - U+1F3F4.png
+🏴‍☠️ - pirate flag - U+1F3F4_U+200D_U+2620_U+FE0F.png
+🏴󠁧󠁢󠁥󠁮󠁧󠁿 - flag: England - U+1F3F4_U+E0067_U+E0062_U+E0065_U+E006E_U+E0067_U+E007F.png
+🏴󠁧󠁢󠁳󠁣󠁴󠁿 - flag: Scotland - U+1F3F4_U+E0067_U+E0062_U+E0073_U+E0063_U+E0074_U+E007F.png
+🏴󠁧󠁢󠁷󠁬󠁳󠁿 - flag: Wales - U+1F3F4_U+E0067_U+E0062_U+E0077_U+E006C_U+E0073_U+E007F.png
+🏵 - rosette - U+1F3F5.png
+🏷 - label - U+1F3F7.png
+🏸 - badminton - U+1F3F8.png
+🏹 - bow and arrow - U+1F3F9.png
+🏺 - amphora - U+1F3FA.png
+🐀 - rat - U+1F400.png
+🐁 - mouse - U+1F401.png
+🐂 - ox - U+1F402.png
+🐃 - water buffalo - U+1F403.png
+🐄 - cow - U+1F404.png
+🐅 - tiger - U+1F405.png
+🐆 - leopard - U+1F406.png
+🐇 - rabbit - U+1F407.png
+🐈 - cat - U+1F408.png
+🐈‍⬛ - black cat - U+1F408_U+200D_U+2B1B.png
+🐉 - dragon - U+1F409.png
+🐊 - crocodile - U+1F40A.png
+🐋 - whale - U+1F40B.png
+🐌 - snail - U+1F40C.png
+🐍 - snake - U+1F40D.png
+🐎 - horse - U+1F40E.png
+🐏 - ram - U+1F40F.png
+🐐 - goat - U+1F410.png
+🐑 - ewe - U+1F411.png
+🐒 - monkey - U+1F412.png
+🐓 - rooster - U+1F413.png
+🐔 - chicken - U+1F414.png
+🐕 - dog - U+1F415.png
+🐕‍🦺 - service dog - U+1F415_U+200D_U+1F9BA.png
+🐖 - pig - U+1F416.png
+🐗 - boar - U+1F417.png
+🐘 - elephant - U+1F418.png
+🐙 - octopus - U+1F419.png
+🐚 - spiral shell - U+1F41A.png
+🐛 - bug - U+1F41B.png
+🐜 - ant - U+1F41C.png
+🐝 - honeybee - U+1F41D.png
+🐞 - lady beetle - U+1F41E.png
+🐟 - fish - U+1F41F.png
+🐠 - tropical fish - U+1F420.png
+🐡 - blowfish - U+1F421.png
+🐢 - turtle - U+1F422.png
+🐣 - hatching chick - U+1F423.png
+🐤 - baby chick - U+1F424.png
+🐥 - front-facing baby chick - U+1F425.png
+🐦 - bird - U+1F426.png
+🐦‍⬛ - black bird - U+1F426_U+200D_U+2B1B.png
+🐧 - penguin - U+1F427.png
+🐨 - koala - U+1F428.png
+🐩 - poodle - U+1F429.png
+🐪 - camel - U+1F42A.png
+🐫 - two-hump camel - U+1F42B.png
+🐬 - dolphin - U+1F42C.png
+🐭 - mouse face - U+1F42D.png
+🐮 - cow face - U+1F42E.png
+🐯 - tiger face - U+1F42F.png
+🐰 - rabbit face - U+1F430.png
+🐱 - cat face - U+1F431.png
+🐲 - dragon face - U+1F432.png
+🐳 - spouting whale - U+1F433.png
+🐴 - horse face - U+1F434.png
+🐵 - monkey face - U+1F435.png
+🐶 - dog face - U+1F436.png
+🐷 - pig face - U+1F437.png
+🐸 - frog - U+1F438.png
+🐹 - hamster - U+1F439.png
+🐺 - wolf - U+1F43A.png
+🐻 - bear - U+1F43B.png
+🐻‍❄️ - polar bear - U+1F43B_U+200D_U+2744_U+FE0F.png
+🐼 - panda - U+1F43C.png
+🐽 - pig nose - U+1F43D.png
+🐾 - paw prints - U+1F43E.png
+🐿 - chipmunk - U+1F43F.png
+👀 - eyes - U+1F440.png
+👁 - eye - U+1F441.png
+👁️‍🗨️ - eye in speech bubble - U+1F441_U+FE0F_U+200D_U+1F5E8_U+FE0F.png
+👂 - ear - U+1F442.png
+👃 - nose - U+1F443.png
+👄 - mouth - U+1F444.png
+👅 - tongue - U+1F445.png
+👆 - backhand index pointing up - U+1F446.png
+👇 - backhand index pointing down - U+1F447.png
+👈 - backhand index pointing left - U+1F448.png
+👉 - backhand index pointing right - U+1F449.png
+👊 - oncoming fist - U+1F44A.png
+👋 - waving hand - U+1F44B.png
+👌 - OK hand - U+1F44C.png
+👍 - thumbs up - U+1F44D.png
+👎 - thumbs down - U+1F44E.png
+👏 - clapping hands - U+1F44F.png
+👐 - open hands - U+1F450.png
+👑 - crown - U+1F451.png
+👒 - woman’s hat - U+1F452.png
+👓 - glasses - U+1F453.png
+👔 - necktie - U+1F454.png
+👕 - t-shirt - U+1F455.png
+👖 - jeans - U+1F456.png
+👗 - dress - U+1F457.png
+👘 - kimono - U+1F458.png
+👙 - bikini - U+1F459.png
+👚 - woman’s clothes - U+1F45A.png
+👛 - purse - U+1F45B.png
+👜 - handbag - U+1F45C.png
+👝 - clutch bag - U+1F45D.png
+👞 - man’s shoe - U+1F45E.png
+👟 - running shoe - U+1F45F.png
+👠 - high-heeled shoe - U+1F460.png
+👡 - woman’s sandal - U+1F461.png
+👢 - woman’s boot - U+1F462.png
+👣 - footprints - U+1F463.png
+👤 - bust in silhouette - U+1F464.png
+👥 - busts in silhouette - U+1F465.png
+👨 - man - U+1F468.png
+👨‍👦 - family: man, boy - U+1F468_U+200D_U+1F466.png
+👨‍👦‍👦 - family: man, boy, boy - U+1F468_U+200D_U+1F466_U+200D_U+1F466.png
+👨‍👧 - family: man, girl - U+1F468_U+200D_U+1F467.png
+👨‍👧‍👦 - family: man, girl, boy - U+1F468_U+200D_U+1F467_U+200D_U+1F466.png
+👨‍👧‍👧 - family: man, girl, girl - U+1F468_U+200D_U+1F467_U+200D_U+1F467.png
+👨‍👨‍👦 - family: man, man, boy - U+1F468_U+200D_U+1F468_U+200D_U+1F466.png
+👨‍👨‍👦‍👦 - family: man, man, boy, boy - U+1F468_U+200D_U+1F468_U+200D_U+1F466_U+200D_U+1F466.png
+👨‍👨‍👧 - family: man, man, girl - U+1F468_U+200D_U+1F468_U+200D_U+1F467.png
+👨‍👨‍👧‍👦 - family: man, man, girl, boy - U+1F468_U+200D_U+1F468_U+200D_U+1F467_U+200D_U+1F466.png
+👨‍👨‍👧‍👧 - family: man, man, girl, girl - U+1F468_U+200D_U+1F468_U+200D_U+1F467_U+200D_U+1F467.png
+👨‍👩‍👦 - family: man, woman, boy - U+1F468_U+200D_U+1F469_U+200D_U+1F466.png
+👨‍👩‍👦‍👦 - family: man, woman, boy, boy - U+1F468_U+200D_U+1F469_U+200D_U+1F466_U+200D_U+1F466.png
+👨‍👩‍👧 - family: man, woman, girl - U+1F468_U+200D_U+1F469_U+200D_U+1F467.png
+👨‍👩‍👧‍👦 - family: man, woman, girl, boy - U+1F468_U+200D_U+1F469_U+200D_U+1F467_U+200D_U+1F466.png
+👨‍👩‍👧‍👧 - family: man, woman, girl, girl - U+1F468_U+200D_U+1F469_U+200D_U+1F467_U+200D_U+1F467.png
+👨‍💻 - man technologist - U+1F468_U+200D_U+1F4BB.png
+👨‍💼 - man office worker - U+1F468_U+200D_U+1F4BC.png
+👨‍🔧 - man mechanic - U+1F468_U+200D_U+1F527.png
+👨‍🔬 - man scientist - U+1F468_U+200D_U+1F52C.png
+👨‍🚀 - man astronaut - U+1F468_U+200D_U+1F680.png
+👨‍🚒 - man firefighter - U+1F468_U+200D_U+1F692.png
+👨‍🦯 - man with white cane - U+1F468_U+200D_U+1F9AF.png
+👨‍🦰 - man: red hair - U+1F468_U+200D_U+1F9B0.png
+👨‍🦱 - man: curly hair - U+1F468_U+200D_U+1F9B1.png
+👨‍🦲 - man: bald - U+1F468_U+200D_U+1F9B2.png
+👨‍🦳 - man: white hair - U+1F468_U+200D_U+1F9B3.png
+👨‍🦽 - man in manual wheelchair - U+1F468_U+200D_U+1F9BD.png
+👨‍⚕️ - man health worker - U+1F468_U+200D_U+2695_U+FE0F.png
+👨‍⚖️ - man judge - U+1F468_U+200D_U+2696_U+FE0F.png
+👨‍❤️‍👨 - couple with heart: man, man - U+1F468_U+200D_U+2764_U+FE0F_U+200D_U+1F468.png
+👩 - woman - U+1F469.png
+👩‍👦 - family: woman, boy - U+1F469_U+200D_U+1F466.png
+👩‍👦‍👦 - family: woman, boy, boy - U+1F469_U+200D_U+1F466_U+200D_U+1F466.png
+👩‍👧 - family: woman, girl - U+1F469_U+200D_U+1F467.png
+👩‍👧‍👦 - family: woman, girl, boy - U+1F469_U+200D_U+1F467_U+200D_U+1F466.png
+👩‍👧‍👧 - family: woman, girl, girl - U+1F469_U+200D_U+1F467_U+200D_U+1F467.png
+👩‍👩‍👦 - family: woman, woman, boy - U+1F469_U+200D_U+1F469_U+200D_U+1F466.png
+👩‍👩‍👦‍👦 - family: woman, woman, boy, boy - U+1F469_U+200D_U+1F469_U+200D_U+1F466_U+200D_U+1F466.png
+👩‍👩‍👧 - family: woman, woman, girl - U+1F469_U+200D_U+1F469_U+200D_U+1F467.png
+👩‍👩‍👧‍👦 - family: woman, woman, girl, boy - U+1F469_U+200D_U+1F469_U+200D_U+1F467_U+200D_U+1F466.png
+👩‍👩‍👧‍👧 - family: woman, woman, girl, girl - U+1F469_U+200D_U+1F469_U+200D_U+1F467_U+200D_U+1F467.png
+👩‍💻 - woman technologist - U+1F469_U+200D_U+1F4BB.png
+👩‍💼 - woman office worker - U+1F469_U+200D_U+1F4BC.png
+👩‍🔧 - woman mechanic - U+1F469_U+200D_U+1F527.png
+👩‍🔬 - woman scientist - U+1F469_U+200D_U+1F52C.png
+👩‍🚀 - woman astronaut - U+1F469_U+200D_U+1F680.png
+👩‍🚒 - woman firefighter - U+1F469_U+200D_U+1F692.png
+👩‍🦯 - woman with white cane - U+1F469_U+200D_U+1F9AF.png
+👩‍🦰 - woman: red hair - U+1F469_U+200D_U+1F9B0.png
+👩‍🦱 - woman: curly hair - U+1F469_U+200D_U+1F9B1.png
+👩‍🦲 - woman: bald - U+1F469_U+200D_U+1F9B2.png
+👩‍🦳 - woman: white hair - U+1F469_U+200D_U+1F9B3.png
+👩‍🦽 - woman in manual wheelchair - U+1F469_U+200D_U+1F9BD.png
+👩‍⚕️ - woman health worker - U+1F469_U+200D_U+2695_U+FE0F.png
+👩‍⚖️ - woman judge - U+1F469_U+200D_U+2696_U+FE0F.png
+👩‍❤️‍👨 - couple with heart: woman, man - U+1F469_U+200D_U+2764_U+FE0F_U+200D_U+1F468.png
+👩‍❤️‍👩 - couple with heart: woman, woman - U+1F469_U+200D_U+2764_U+FE0F_U+200D_U+1F469.png
+👯 - people with bunny ears - U+1F46F.png
+👱 - person: blond hair - U+1F471.png
+👱‍♀️ - woman: blond hair - U+1F471_U+200D_U+2640_U+FE0F.png
+👱‍♂️ - man: blond hair - U+1F471_U+200D_U+2642_U+FE0F.png
+👳 - person wearing turban - U+1F473.png
+👳‍♀️ - woman wearing turban - U+1F473_U+200D_U+2640_U+FE0F.png
+👳‍♂️ - man wearing turban - U+1F473_U+200D_U+2642_U+FE0F.png
+👸 - princess - U+1F478.png
+👹 - ogre - U+1F479.png
+👺 - goblin - U+1F47A.png
+👻 - ghost - U+1F47B.png
+👼 - baby angel - U+1F47C.png
+👽 - alien - U+1F47D.png
+👾 - alien monster - U+1F47E.png
+👿 - angry face with horns - U+1F47F.png
+💀 - skull - U+1F480.png
+💁 - person tipping hand - U+1F481.png
+💁‍♀️ - woman tipping hand - U+1F481_U+200D_U+2640_U+FE0F.png
+💁‍♂️ - man tipping hand - U+1F481_U+200D_U+2642_U+FE0F.png
+💂 - guard - U+1F482.png
+💂‍♀️ - woman guard - U+1F482_U+200D_U+2640_U+FE0F.png
+💂‍♂️ - man guard - U+1F482_U+200D_U+2642_U+FE0F.png
+💃 - woman dancing - U+1F483.png
+💄 - lipstick - U+1F484.png
+💅 - nail polish - U+1F485.png
+💆 - person getting massage - U+1F486.png
+💆‍♀️ - woman getting massage - U+1F486_U+200D_U+2640_U+FE0F.png
+💆‍♂️ - man getting massage - U+1F486_U+200D_U+2642_U+FE0F.png
+💇 - person getting haircut - U+1F487.png
+💇‍♀️ - woman getting haircut - U+1F487_U+200D_U+2640_U+FE0F.png
+💇‍♂️ - man getting haircut - U+1F487_U+200D_U+2642_U+FE0F.png
+💈 - barber pole - U+1F488.png
+💉 - syringe - U+1F489.png
+💊 - pill - U+1F48A.png
+💋 - kiss mark - U+1F48B.png
+💌 - love letter - U+1F48C.png
+💍 - ring - U+1F48D.png
+💎 - gem stone - U+1F48E.png
+💐 - bouquet - U+1F490.png
+💒 - wedding - U+1F492.png
+💓 - beating heart - U+1F493.png
+💔 - broken heart - U+1F494.png
+💕 - two hearts - U+1F495.png
+💖 - sparkling heart - U+1F496.png
+💗 - growing heart - U+1F497.png
+💘 - heart with arrow - U+1F498.png
+💙 - blue heart - U+1F499.png
+💚 - green heart - U+1F49A.png
+💛 - yellow heart - U+1F49B.png
+💜 - purple heart - U+1F49C.png
+💝 - heart with ribbon - U+1F49D.png
+💞 - revolving hearts - U+1F49E.png
+💟 - heart decoration - U+1F49F.png
+💠 - diamond with a dot - U+1F4A0.png
+💡 - light bulb - U+1F4A1.png
+💢 - anger symbol - U+1F4A2.png
+💣 - bomb - U+1F4A3.png
+💤 - zzz - U+1F4A4.png
+💥 - collision - U+1F4A5.png
+💦 - sweat droplets - U+1F4A6.png
+💧 - droplet - U+1F4A7.png
+💨 - dashing away - U+1F4A8.png
+💩 - pile of poo - U+1F4A9.png
+💪 - flexed biceps - U+1F4AA.png
+💫 - dizzy - U+1F4AB.png
+💬 - speech balloon - U+1F4AC.png
+💭 - thought balloon - U+1F4AD.png
+💮 - white flower - U+1F4AE.png
+💯 - hundred points - U+1F4AF.png
+💰 - money bag - U+1F4B0.png
+💱 - currency exchange - U+1F4B1.png
+💲 - heavy dollar sign - U+1F4B2.png
+💳 - credit card - U+1F4B3.png
+💴 - yen banknote - U+1F4B4.png
+💵 - dollar banknote - U+1F4B5.png
+💶 - euro banknote - U+1F4B6.png
+💷 - pound banknote - U+1F4B7.png
+💸 - money with wings - U+1F4B8.png
+💹 - chart increasing with yen - U+1F4B9.png
+💺 - seat - U+1F4BA.png
+💻 - laptop - U+1F4BB.png
+💼 - briefcase - U+1F4BC.png
+💽 - computer disk - U+1F4BD.png
+💾 - floppy disk - U+1F4BE.png
+💿 - optical disk - U+1F4BF.png
+📀 - dvd - U+1F4C0.png
+📁 - file folder - U+1F4C1.png
+📂 - open file folder - U+1F4C2.png
+📃 - page with curl - U+1F4C3.png
+📄 - page facing up - U+1F4C4.png
+📅 - calendar - U+1F4C5.png
+📆 - tear-off calendar - U+1F4C6.png
+📇 - card index - U+1F4C7.png
+📈 - chart increasing - U+1F4C8.png
+📉 - chart decreasing - U+1F4C9.png
+📊 - bar chart - U+1F4CA.png
+📋 - clipboard - U+1F4CB.png
+📌 - pushpin - U+1F4CC.png
+📍 - round pushpin - U+1F4CD.png
+📎 - paperclip - U+1F4CE.png
+📏 - straight ruler - U+1F4CF.png
+📐 - triangular ruler - U+1F4D0.png
+📑 - bookmark tabs - U+1F4D1.png
+📒 - ledger - U+1F4D2.png
+📓 - notebook - U+1F4D3.png
+📔 - notebook with decorative cover - U+1F4D4.png
+📕 - closed book - U+1F4D5.png
+📖 - open book - U+1F4D6.png
+📗 - green book - U+1F4D7.png
+📘 - blue book - U+1F4D8.png
+📙 - orange book - U+1F4D9.png
+📚 - books - U+1F4DA.png
+📛 - name badge - U+1F4DB.png
+📜 - scroll - U+1F4DC.png
+📝 - memo - U+1F4DD.png
+📞 - telephone receiver - U+1F4DE.png
+📟 - pager - U+1F4DF.png
+📠 - fax machine - U+1F4E0.png
+📡 - satellite antenna - U+1F4E1.png
+📢 - loudspeaker - U+1F4E2.png
+📣 - megaphone - U+1F4E3.png
+📤 - outbox tray - U+1F4E4.png
+📥 - inbox tray - U+1F4E5.png
+📦 - package - U+1F4E6.png
+📧 - e-mail - U+1F4E7.png
+📨 - incoming envelope - U+1F4E8.png
+📩 - envelope with arrow - U+1F4E9.png
+📪 - closed mailbox with lowered flag - U+1F4EA.png
+📫 - closed mailbox with raised flag - U+1F4EB.png
+📬 - open mailbox with raised flag - U+1F4EC.png
+📭 - open mailbox with lowered flag - U+1F4ED.png
+📮 - postbox - U+1F4EE.png
+📯 - postal horn - U+1F4EF.png
+📰 - newspaper - U+1F4F0.png
+📱 - mobile phone - U+1F4F1.png
+📲 - mobile phone with arrow - U+1F4F2.png
+📳 - vibration mode - U+1F4F3.png
+📴 - mobile phone off - U+1F4F4.png
+📵 - no mobile phones - U+1F4F5.png
+📶 - antenna bars - U+1F4F6.png
+📷 - camera - U+1F4F7.png
+📸 - camera with flash - U+1F4F8.png
+📹 - video camera - U+1F4F9.png
+📺 - television - U+1F4FA.png
+📻 - radio - U+1F4FB.png
+📼 - videocassette - U+1F4FC.png
+📽 - film projector - U+1F4FD.png
+🔀 - shuffle tracks button - U+1F500.png
+🔁 - repeat button - U+1F501.png
+🔂 - repeat single button - U+1F502.png
+🔃 - clockwise vertical arrows - U+1F503.png
+🔄 - counterclockwise arrows button - U+1F504.png
+🔅 - dim button - U+1F505.png
+🔆 - bright button - U+1F506.png
+🔇 - muted speaker - U+1F507.png
+🔈 - speaker low volume - U+1F508.png
+🔉 - speaker medium volume - U+1F509.png
+🔊 - speaker high volume - U+1F50A.png
+🔋 - battery - U+1F50B.png
+🔌 - electric plug - U+1F50C.png
+🔍 - magnifying glass tilted left - U+1F50D.png
+🔎 - magnifying glass tilted right - U+1F50E.png
+🔏 - locked with pen - U+1F50F.png
+🔐 - locked with key - U+1F510.png
+🔑 - key - U+1F511.png
+🔒 - locked - U+1F512.png
+🔓 - unlocked - U+1F513.png
+🔔 - bell - U+1F514.png
+🔕 - bell with slash - U+1F515.png
+🔖 - bookmark - U+1F516.png
+🔗 - link - U+1F517.png
+🔘 - radio button - U+1F518.png
+🔙 - BACK arrow - U+1F519.png
+🔚 - END arrow - U+1F51A.png
+🔛 - ON! arrow - U+1F51B.png
+🔜 - SOON arrow - U+1F51C.png
+🔝 - TOP arrow - U+1F51D.png
+🔞 - no one under eighteen - U+1F51E.png
+🔟 - keycap: 10 - U+1F51F.png
+🔠 - input latin uppercase - U+1F520.png
+🔡 - input latin lowercase - U+1F521.png
+🔢 - input numbers - U+1F522.png
+🔣 - input symbols - U+1F523.png
+🔤 - input latin letters - U+1F524.png
+🔥 - fire - U+1F525.png
+🔦 - flashlight - U+1F526.png
+🔧 - wrench - U+1F527.png
+🔨 - hammer - U+1F528.png
+🔩 - nut and bolt - U+1F529.png
+🔪 - kitchen knife - U+1F52A.png
+🔫 - water pistol - U+1F52B.png
+🔬 - microscope - U+1F52C.png
+🔭 - telescope - U+1F52D.png
+🔮 - crystal ball - U+1F52E.png
+🔯 - dotted six-pointed star - U+1F52F.png
+🔰 - Japanese symbol for beginner - U+1F530.png
+🔱 - trident emblem - U+1F531.png
+🔲 - black square button - U+1F532.png
+🔳 - white square button - U+1F533.png
+🔴 - red circle - U+1F534.png
+🔵 - blue circle - U+1F535.png
+🔶 - large orange diamond - U+1F536.png
+🔷 - large blue diamond - U+1F537.png
+🔸 - small orange diamond - U+1F538.png
+🔹 - small blue diamond - U+1F539.png
+🔺 - red triangle pointed up - U+1F53A.png
+🔻 - red triangle pointed down - U+1F53B.png
+🔼 - upwards button - U+1F53C.png
+🔽 - downwards button - U+1F53D.png
+🕉 - om - U+1F549.png
+🕊 - dove - U+1F54A.png
+🕋 - kaaba - U+1F54B.png
+🕍 - synagogue - U+1F54D.png
+🕎 - menorah - U+1F54E.png
+🕐 - one o’clock - U+1F550.png
+🕑 - two o’clock - U+1F551.png
+🕒 - three o’clock - U+1F552.png
+🕓 - four o’clock - U+1F553.png
+🕔 - five o’clock - U+1F554.png
+🕕 - six o’clock - U+1F555.png
+🕖 - seven o’clock - U+1F556.png
+🕗 - eight o’clock - U+1F557.png
+🕘 - nine o’clock - U+1F558.png
+🕙 - ten o’clock - U+1F559.png
+🕚 - eleven o’clock - U+1F55A.png
+🕛 - twelve o’clock - U+1F55B.png
+🕜 - one-thirty - U+1F55C.png
+🕝 - two-thirty - U+1F55D.png
+🕞 - three-thirty - U+1F55E.png
+🕟 - four-thirty - U+1F55F.png
+🕠 - five-thirty - U+1F560.png
+🕡 - six-thirty - U+1F561.png
+🕢 - seven-thirty - U+1F562.png
+🕣 - eight-thirty - U+1F563.png
+🕤 - nine-thirty - U+1F564.png
+🕥 - ten-thirty - U+1F565.png
+🕦 - eleven-thirty - U+1F566.png
+🕧 - twelve-thirty - U+1F567.png
+🕯 - candle - U+1F56F.png
+🕰 - mantelpiece clock - U+1F570.png
+🕳 - hole - U+1F573.png
+🕴 - person in suit levitating - U+1F574.png
+🕵 - detective - U+1F575.png
+🕶 - sunglasses - U+1F576.png
+🕷 - spider - U+1F577.png
+🕸 - spider web - U+1F578.png
+🕹 - joystick - U+1F579.png
+🕺 - man dancing - U+1F57A.png
+🖇 - linked paperclips - U+1F587.png
+🖊 - pen - U+1F58A.png
+🖋 - fountain pen - U+1F58B.png
+🖌 - paintbrush - U+1F58C.png
+🖍 - crayon - U+1F58D.png
+🖐 - hand with fingers splayed - U+1F590.png
+🖕 - middle finger - U+1F595.png
+🖖 - vulcan salute - U+1F596.png
+🖤 - black heart - U+1F5A4.png
+🖥 - desktop computer - U+1F5A5.png
+🖨 - printer - U+1F5A8.png
+🖱 - computer mouse - U+1F5B1.png
+🖲 - trackball - U+1F5B2.png
+🖼 - framed picture - U+1F5BC.png
+🗂 - card index dividers - U+1F5C2.png
+🗃 - card file box - U+1F5C3.png
+🗄 - file cabinet - U+1F5C4.png
+🗑 - wastebasket - U+1F5D1.png
+🗒 - spiral notepad - U+1F5D2.png
+🗓 - spiral calendar - U+1F5D3.png
+🗜 - clamp - U+1F5DC.png
+🗝 - old key - U+1F5DD.png
+🗞 - rolled-up newspaper - U+1F5DE.png
+🗡 - dagger - U+1F5E1.png
+🗣 - speaking head - U+1F5E3.png
+🗨 - left speech bubble - U+1F5E8.png
+🗯 - right anger bubble - U+1F5EF.png
+🗳 - ballot box with ballot - U+1F5F3.png
+🗺 - world map - U+1F5FA.png
+🗻 - mount fuji - U+1F5FB.png
+🗼 - Tokyo tower - U+1F5FC.png
+🗽 - Statue of Liberty - U+1F5FD.png
+🗾 - map of Japan - U+1F5FE.png
+🗿 - moai - U+1F5FF.png
+😀 - grinning face - U+1F600.png
+😁 - beaming face with smiling eyes - U+1F601.png
+😂 - face with tears of joy - U+1F602.png
+😃 - grinning face with big eyes - U+1F603.png
+😄 - grinning face with smiling eyes - U+1F604.png
+😅 - grinning face with sweat - U+1F605.png
+😆 - grinning squinting face - U+1F606.png
+😇 - smiling face with halo - U+1F607.png
+😈 - smiling face with horns - U+1F608.png
+😉 - winking face - U+1F609.png
+😊 - smiling face with smiling eyes - U+1F60A.png
+😋 - face savoring food - U+1F60B.png
+😌 - relieved face - U+1F60C.png
+😍 - smiling face with heart-eyes - U+1F60D.png
+😎 - smiling face with sunglasses - U+1F60E.png
+😏 - smirking face - U+1F60F.png
+😐 - neutral face - U+1F610.png
+😑 - expressionless face - U+1F611.png
+😒 - unamused face - U+1F612.png
+😓 - downcast face with sweat - U+1F613.png
+😔 - pensive face - U+1F614.png
+😕 - confused face - U+1F615.png
+😖 - confounded face - U+1F616.png
+😗 - kissing face - U+1F617.png
+😘 - face blowing a kiss - U+1F618.png
+😙 - kissing face with smiling eyes - U+1F619.png
+😚 - kissing face with closed eyes - U+1F61A.png
+😛 - face with tongue - U+1F61B.png
+😜 - winking face with tongue - U+1F61C.png
+😝 - squinting face with tongue - U+1F61D.png
+😞 - disappointed face - U+1F61E.png
+😟 - worried face - U+1F61F.png
+😠 - angry face - U+1F620.png
+😡 - pouting face - U+1F621.png
+😢 - crying face - U+1F622.png
+😣 - persevering face - U+1F623.png
+😤 - face with steam from nose - U+1F624.png
+😥 - sad but relieved face - U+1F625.png
+😦 - frowning face with open mouth - U+1F626.png
+😧 - anguished face - U+1F627.png
+😨 - fearful face - U+1F628.png
+😩 - weary face - U+1F629.png
+😪 - sleepy face - U+1F62A.png
+😫 - tired face - U+1F62B.png
+😬 - grimacing face - U+1F62C.png
+😭 - loudly crying face - U+1F62D.png
+😮 - face with open mouth - U+1F62E.png
+😮‍💨 - face exhaling - U+1F62E_U+200D_U+1F4A8.png
+😯 - hushed face - U+1F62F.png
+😰 - anxious face with sweat - U+1F630.png
+😱 - face screaming in fear - U+1F631.png
+😲 - astonished face - U+1F632.png
+😳 - flushed face - U+1F633.png
+😴 - sleeping face - U+1F634.png
+😵 - face with crossed-out eyes - U+1F635.png
+😵‍💫 - face with spiral eyes - U+1F635_U+200D_U+1F4AB.png
+😶 - face without mouth - U+1F636.png
+😶‍🌫️ - face in clouds - U+1F636_U+200D_U+1F32B_U+FE0F.png
+😷 - face with medical mask - U+1F637.png
+😸 - grinning cat with smiling eyes - U+1F638.png
+😹 - cat with tears of joy - U+1F639.png
+😺 - grinning cat - U+1F63A.png
+😻 - smiling cat with heart-eyes - U+1F63B.png
+😼 - cat with wry smile - U+1F63C.png
+😽 - kissing cat - U+1F63D.png
+😾 - pouting cat - U+1F63E.png
+😿 - crying cat - U+1F63F.png
+🙀 - weary cat - U+1F640.png
+🙁 - slightly frowning face - U+1F641.png
+🙂 - slightly smiling face - U+1F642.png
+🙃 - upside-down face - U+1F643.png
+🙄 - face with rolling eyes - U+1F644.png
+🙅 - person gesturing NO - U+1F645.png
+🙅‍♀️ - woman gesturing NO - U+1F645_U+200D_U+2640_U+FE0F.png
+🙅‍♂️ - man gesturing NO - U+1F645_U+200D_U+2642_U+FE0F.png
+🙆 - person gesturing OK - U+1F646.png
+🙆‍♀️ - woman gesturing OK - U+1F646_U+200D_U+2640_U+FE0F.png
+🙆‍♂️ - man gesturing OK - U+1F646_U+200D_U+2642_U+FE0F.png
+🙇 - person bowing - U+1F647.png
+🙇‍♀️ - woman bowing - U+1F647_U+200D_U+2640_U+FE0F.png
+🙇‍♂️ - man bowing - U+1F647_U+200D_U+2642_U+FE0F.png
+🙈 - see-no-evil monkey - U+1F648.png
+🙉 - hear-no-evil monkey - U+1F649.png
+🙊 - speak-no-evil monkey - U+1F64A.png
+🙋 - person raising hand - U+1F64B.png
+🙋‍♀️ - woman raising hand - U+1F64B_U+200D_U+2640_U+FE0F.png
+🙋‍♂️ - man raising hand - U+1F64B_U+200D_U+2642_U+FE0F.png
+🙌 - raising hands - U+1F64C.png
+🙏 - folded hands - U+1F64F.png
+🚀 - rocket - U+1F680.png
+🚁 - helicopter - U+1F681.png
+🚂 - locomotive - U+1F682.png
+🚃 - railway car - U+1F683.png
+🚄 - high-speed train - U+1F684.png
+🚅 - bullet train - U+1F685.png
+🚆 - train - U+1F686.png
+🚇 - metro - U+1F687.png
+🚉 - station - U+1F689.png
+🚊 - tram - U+1F68A.png
+🚋 - tram car - U+1F68B.png
+🚌 - bus - U+1F68C.png
+🚍 - oncoming bus - U+1F68D.png
+🚎 - trolleybus - U+1F68E.png
+🚏 - bus stop - U+1F68F.png
+🚐 - minibus - U+1F690.png
+🚑 - ambulance - U+1F691.png
+🚒 - fire engine - U+1F692.png
+🚓 - police car - U+1F693.png
+🚔 - oncoming police car - U+1F694.png
+🚕 - taxi - U+1F695.png
+🚖 - oncoming taxi - U+1F696.png
+🚗 - automobile - U+1F697.png
+🚘 - oncoming automobile - U+1F698.png
+🚙 - sport utility vehicle - U+1F699.png
+🚚 - delivery truck - U+1F69A.png
+🚛 - articulated lorry - U+1F69B.png
+🚜 - tractor - U+1F69C.png
+🚝 - monorail - U+1F69D.png
+🚟 - suspension railway - U+1F69F.png
+🚠 - mountain cableway - U+1F6A0.png
+🚡 - aerial tramway - U+1F6A1.png
+🚢 - ship - U+1F6A2.png
+🚣 - person rowing boat - U+1F6A3.png
+🚣‍♀️ - woman rowing boat - U+1F6A3_U+200D_U+2640_U+FE0F.png
+🚣‍♂️ - man rowing boat - U+1F6A3_U+200D_U+2642_U+FE0F.png
+🚤 - speedboat - U+1F6A4.png
+🚥 - horizontal traffic light - U+1F6A5.png
+🚦 - vertical traffic light - U+1F6A6.png
+🚧 - construction - U+1F6A7.png
+🚨 - police car light - U+1F6A8.png
+🚩 - triangular flag - U+1F6A9.png
+🚪 - door - U+1F6AA.png
+🚫 - prohibited - U+1F6AB.png
+🚬 - cigarette - U+1F6AC.png
+🚭 - no smoking - U+1F6AD.png
+🚮 - litter in bin sign - U+1F6AE.png
+🚯 - no littering - U+1F6AF.png
+🚰 - potable water - U+1F6B0.png
+🚱 - non-potable water - U+1F6B1.png
+🚲 - bicycle - U+1F6B2.png
+🚳 - no bicycles - U+1F6B3.png
+🚴 - person biking - U+1F6B4.png
+🚴‍♀️ - woman biking - U+1F6B4_U+200D_U+2640_U+FE0F.png
+🚴‍♂️ - man biking - U+1F6B4_U+200D_U+2642_U+FE0F.png
+🚵 - person mountain biking - U+1F6B5.png
+🚵‍♀️ - woman mountain biking - U+1F6B5_U+200D_U+2640_U+FE0F.png
+🚵‍♂️ - man mountain biking - U+1F6B5_U+200D_U+2642_U+FE0F.png
+🚶 - person walking - U+1F6B6.png
+🚶‍♀️ - woman walking - U+1F6B6_U+200D_U+2640_U+FE0F.png
+🚶‍♂️ - man walking - U+1F6B6_U+200D_U+2642_U+FE0F.png
+🚷 - no pedestrians - U+1F6B7.png
+🚸 - children crossing - U+1F6B8.png
+🚹 - men’s room - U+1F6B9.png
+🚺 - women’s room - U+1F6BA.png
+🚻 - restroom - U+1F6BB.png
+🚼 - baby symbol - U+1F6BC.png
+🚽 - toilet - U+1F6BD.png
+🚾 - water closet - U+1F6BE.png
+🚿 - shower - U+1F6BF.png
+🛀 - person taking bath - U+1F6C0.png
+🛁 - bathtub - U+1F6C1.png
+🛂 - passport control - U+1F6C2.png
+🛃 - customs - U+1F6C3.png
+🛄 - baggage claim - U+1F6C4.png
+🛅 - left luggage - U+1F6C5.png
+🛋 - couch and lamp - U+1F6CB.png
+🛌 - person in bed - U+1F6CC.png
+🛍 - shopping bags - U+1F6CD.png
+🛎 - bellhop bell - U+1F6CE.png
+🛏 - bed - U+1F6CF.png
+🛐 - place of worship - U+1F6D0.png
+🛑 - stop sign - U+1F6D1.png
+🛒 - shopping cart - U+1F6D2.png
+🛖 - hut - U+1F6D6.png
+🛗 - elevator - U+1F6D7.png
+🛜 - wireless - U+1F6DC.png
+🛝 - playground slide - U+1F6DD.png
+🛞 - wheel - U+1F6DE.png
+🛟 - ring buoy - U+1F6DF.png
+🛠 - hammer and wrench - U+1F6E0.png
+🛡 - shield - U+1F6E1.png
+🛢 - oil drum - U+1F6E2.png
+🛣 - motorway - U+1F6E3.png
+🛤 - railway track - U+1F6E4.png
+🛥 - motor boat - U+1F6E5.png
+🛩 - small airplane - U+1F6E9.png
+🛫 - airplane departure - U+1F6EB.png
+🛬 - airplane arrival - U+1F6EC.png
+🛰 - satellite - U+1F6F0.png
+🛳 - passenger ship - U+1F6F3.png
+🛴 - kick scooter - U+1F6F4.png
+🛵 - motor scooter - U+1F6F5.png
+🛶 - canoe - U+1F6F6.png
+🛷 - sled - U+1F6F7.png
+🛸 - flying saucer - U+1F6F8.png
+🛹 - skateboard - U+1F6F9.png
+🛺 - auto rickshaw - U+1F6FA.png
+🛻 - pickup truck - U+1F6FB.png
+🛼 - roller skate - U+1F6FC.png
+🟠 - orange circle - U+1F7E0.png
+🟡 - yellow circle - U+1F7E1.png
+🟢 - green circle - U+1F7E2.png
+🟣 - purple circle - U+1F7E3.png
+🟤 - brown circle - U+1F7E4.png
+🟥 - red square - U+1F7E5.png
+🟦 - blue square - U+1F7E6.png
+🟧 - orange square - U+1F7E7.png
+🟨 - yellow square - U+1F7E8.png
+🟩 - green square - U+1F7E9.png
+🟪 - purple square - U+1F7EA.png
+🟫 - brown square - U+1F7EB.png
+🟰 - heavy equals sign - U+1F7F0.png
+🤌 - pinched fingers - U+1F90C.png
+🤍 - white heart - U+1F90D.png
+🤎 - brown heart - U+1F90E.png
+🤏 - pinching hand - U+1F90F.png
+🤐 - zipper-mouth face - U+1F910.png
+🤑 - money-mouth face - U+1F911.png
+🤒 - face with thermometer - U+1F912.png
+🤓 - nerd face - U+1F913.png
+🤔 - thinking face - U+1F914.png
+🤕 - face with head-bandage - U+1F915.png
+🤖 - robot - U+1F916.png
+🤗 - smiling face with open hands - U+1F917.png
+🤘 - sign of the horns - U+1F918.png
+🤙 - call me hand - U+1F919.png
+🤚 - raised back of hand - U+1F91A.png
+🤛 - left-facing fist - U+1F91B.png
+🤜 - right-facing fist - U+1F91C.png
+🤝 - handshake - U+1F91D.png
+🤞 - crossed fingers - U+1F91E.png
+🤟 - love-you gesture - U+1F91F.png
+🤠 - cowboy hat face - U+1F920.png
+🤡 - clown face - U+1F921.png
+🤢 - nauseated face - U+1F922.png
+🤣 - rolling on the floor laughing - U+1F923.png
+🤤 - drooling face - U+1F924.png
+🤥 - lying face - U+1F925.png
+🤦 - person facepalming - U+1F926.png
+🤧 - sneezing face - U+1F927.png
+🤨 - face with raised eyebrow - U+1F928.png
+🤩 - star-struck - U+1F929.png
+🤪 - zany face - U+1F92A.png
+🤫 - shushing face - U+1F92B.png
+🤬 - face with symbols on mouth - U+1F92C.png
+🤭 - face with hand over mouth - U+1F92D.png
+🤮 - face vomiting - U+1F92E.png
+🤯 - exploding head - U+1F92F.png
+🤰 - pregnant woman - U+1F930.png
+🤱 - breast-feeding - U+1F931.png
+🤳 - selfie - U+1F933.png
+🤸 - person cartwheeling - U+1F938.png
+🤸‍♀️ - woman cartwheeling - U+1F938_U+200D_U+2640_U+FE0F.png
+🤸‍♂️ - man cartwheeling - U+1F938_U+200D_U+2642_U+FE0F.png
+🤹 - person juggling - U+1F939.png
+🤹‍♀️ - woman juggling - U+1F939_U+200D_U+2640_U+FE0F.png
+🤹‍♂️ - man juggling - U+1F939_U+200D_U+2642_U+FE0F.png
+🤺 - person fencing - U+1F93A.png
+🤽 - person playing water polo - U+1F93D.png
+🤽‍♀️ - woman playing water polo - U+1F93D_U+200D_U+2640_U+FE0F.png
+🤽‍♂️ - man playing water polo - U+1F93D_U+200D_U+2642_U+FE0F.png
+🤾 - person playing handball - U+1F93E.png
+🤾‍♀️ - woman playing handball - U+1F93E_U+200D_U+2640_U+FE0F.png
+🤾‍♂️ - man playing handball - U+1F93E_U+200D_U+2642_U+FE0F.png
+🤿 - diving mask - U+1F93F.png
+🥀 - wilted flower - U+1F940.png
+🥁 - drum - U+1F941.png
+🥂 - clinking glasses - U+1F942.png
+🥃 - tumbler glass - U+1F943.png
+🥄 - spoon - U+1F944.png
+🥅 - goal net - U+1F945.png
+🥇 - 1st place medal - U+1F947.png
+🥈 - 2nd place medal - U+1F948.png
+🥉 - 3rd place medal - U+1F949.png
+🥊 - boxing glove - U+1F94A.png
+🥋 - martial arts uniform - U+1F94B.png
+🥌 - curling stone - U+1F94C.png
+🥍 - lacrosse - U+1F94D.png
+🥎 - softball - U+1F94E.png
+🥏 - flying disc - U+1F94F.png
+🥐 - croissant - U+1F950.png
+🥑 - avocado - U+1F951.png
+🥒 - cucumber - U+1F952.png
+🥓 - bacon - U+1F953.png
+🥔 - potato - U+1F954.png
+🥕 - carrot - U+1F955.png
+🥖 - baguette bread - U+1F956.png
+🥗 - green salad - U+1F957.png
+🥘 - shallow pan of food - U+1F958.png
+🥙 - stuffed flatbread - U+1F959.png
+🥚 - egg - U+1F95A.png
+🥛 - glass of milk - U+1F95B.png
+🥜 - peanuts - U+1F95C.png
+🥝 - kiwi fruit - U+1F95D.png
+🥞 - pancakes - U+1F95E.png
+🥟 - dumpling - U+1F95F.png
+🥠 - fortune cookie - U+1F960.png
+🥡 - takeout box - U+1F961.png
+🥢 - chopsticks - U+1F962.png
+🥣 - bowl with spoon - U+1F963.png
+🥤 - cup with straw - U+1F964.png
+🥥 - coconut - U+1F965.png
+🥦 - broccoli - U+1F966.png
+🥧 - pie - U+1F967.png
+🥨 - pretzel - U+1F968.png
+🥩 - cut of meat - U+1F969.png
+🥪 - sandwich - U+1F96A.png
+🥫 - canned food - U+1F96B.png
+🥬 - leafy green - U+1F96C.png
+🥭 - mango - U+1F96D.png
+🥯 - bagel - U+1F96F.png
+🥰 - smiling face with hearts - U+1F970.png
+🥱 - yawning face - U+1F971.png
+🥲 - smiling face with tear - U+1F972.png
+🥳 - partying face - U+1F973.png
+🥴 - woozy face - U+1F974.png
+🥵 - hot face - U+1F975.png
+🥶 - cold face - U+1F976.png
+🥷 - ninja - U+1F977.png
+🥸 - disguised face - U+1F978.png
+🥹 - face holding back tears - U+1F979.png
+🥺 - pleading face - U+1F97A.png
+🥻 - sari - U+1F97B.png
+🥼 - lab coat - U+1F97C.png
+🥽 - goggles - U+1F97D.png
+🥾 - hiking boot - U+1F97E.png
+🥿 - flat shoe - U+1F97F.png
+🦀 - crab - U+1F980.png
+🦁 - lion - U+1F981.png
+🦂 - scorpion - U+1F982.png
+🦃 - turkey - U+1F983.png
+🦄 - unicorn - U+1F984.png
+🦅 - eagle - U+1F985.png
+🦆 - duck - U+1F986.png
+🦇 - bat - U+1F987.png
+🦈 - shark - U+1F988.png
+🦉 - owl - U+1F989.png
+🦊 - fox - U+1F98A.png
+🦋 - butterfly - U+1F98B.png
+🦌 - deer - U+1F98C.png
+🦍 - gorilla - U+1F98D.png
+🦎 - lizard - U+1F98E.png
+🦐 - shrimp - U+1F990.png
+🦑 - squid - U+1F991.png
+🦒 - giraffe - U+1F992.png
+🦓 - zebra - U+1F993.png
+🦔 - hedgehog - U+1F994.png
+🦕 - sauropod - U+1F995.png
+🦖 - T-Rex - U+1F996.png
+🦗 - cricket - U+1F997.png
+🦘 - kangaroo - U+1F998.png
+🦙 - llama - U+1F999.png
+🦚 - peacock - U+1F99A.png
+🦜 - parrot - U+1F99C.png
+🦝 - raccoon - U+1F99D.png
+🦞 - lobster - U+1F99E.png
+🦟 - mosquito - U+1F99F.png
+🦠 - microbe - U+1F9A0.png
+🦡 - badger - U+1F9A1.png
+🦢 - swan - U+1F9A2.png
+🦣 - mammoth - U+1F9A3.png
+🦤 - dodo - U+1F9A4.png
+🦥 - sloth - U+1F9A5.png
+🦦 - otter - U+1F9A6.png
+🦧 - orangutan - U+1F9A7.png
+🦨 - skunk - U+1F9A8.png
+🦩 - flamingo - U+1F9A9.png
+🦪 - oyster - U+1F9AA.png
+🦫 - beaver - U+1F9AB.png
+🦬 - bison - U+1F9AC.png
+🦭 - seal - U+1F9AD.png
+🦮 - guide dog - U+1F9AE.png
+🦯 - white cane - U+1F9AF.png
+🦰 - red hair - U+1F9B0.png
+🦱 - curly hair - U+1F9B1.png
+🦲 - bald - U+1F9B2.png
+🦳 - white hair - U+1F9B3.png
+🦴 - bone - U+1F9B4.png
+🦵 - leg - U+1F9B5.png
+🦶 - foot - U+1F9B6.png
+🦷 - tooth - U+1F9B7.png
+🦸 - superhero - U+1F9B8.png
+🦹 - supervillain - U+1F9B9.png
+🦺 - safety vest - U+1F9BA.png
+🦻 - ear with hearing aid - U+1F9BB.png
+🦾 - mechanical arm - U+1F9BE.png
+🦿 - mechanical leg - U+1F9BF.png
+🧀 - cheese wedge - U+1F9C0.png
+🧁 - cupcake - U+1F9C1.png
+🧂 - salt - U+1F9C2.png
+🧃 - beverage box - U+1F9C3.png
+🧄 - garlic - U+1F9C4.png
+🧅 - onion - U+1F9C5.png
+🧆 - falafel - U+1F9C6.png
+🧇 - waffle - U+1F9C7.png
+🧈 - butter - U+1F9C8.png
+🧉 - mate - U+1F9C9.png
+🧊 - ice - U+1F9CA.png
+🧋 - bubble tea - U+1F9CB.png
+🧌 - troll - U+1F9CC.png
+🧍 - person standing - U+1F9CD.png
+🧍‍♀️ - woman standing - U+1F9CD_U+200D_U+2640_U+FE0F.png
+🧍‍♂️ - man standing - U+1F9CD_U+200D_U+2642_U+FE0F.png
+🧎 - person kneeling - U+1F9CE.png
+🧎‍♀️ - woman kneeling - U+1F9CE_U+200D_U+2640_U+FE0F.png
+🧎‍♂️ - man kneeling - U+1F9CE_U+200D_U+2642_U+FE0F.png
+🧐 - face with monocle - U+1F9D0.png
+🧑 - person - U+1F9D1.png
+🧑‍🌾 - farmer - U+1F9D1_U+200D_U+1F33E.png
+🧑‍🍳 - cook - U+1F9D1_U+200D_U+1F373.png
+🧑‍🎓 - student - U+1F9D1_U+200D_U+1F393.png
+🧑‍💻 - technologist - U+1F9D1_U+200D_U+1F4BB.png
+🧑‍💼 - office worker - U+1F9D1_U+200D_U+1F4BC.png
+🧑‍🔧 - mechanic - U+1F9D1_U+200D_U+1F527.png
+🧑‍🔬 - scientist - U+1F9D1_U+200D_U+1F52C.png
+🧑‍🚀 - astronaut - U+1F9D1_U+200D_U+1F680.png
+🧑‍🚒 - firefighter - U+1F9D1_U+200D_U+1F692.png
+🧑‍🦯 - person with white cane - U+1F9D1_U+200D_U+1F9AF.png
+🧑‍🦰 - person: red hair - U+1F9D1_U+200D_U+1F9B0.png
+🧑‍🦱 - person: curly hair - U+1F9D1_U+200D_U+1F9B1.png
+🧑‍🦲 - person: bald - U+1F9D1_U+200D_U+1F9B2.png
+🧑‍🦳 - person: white hair - U+1F9D1_U+200D_U+1F9B3.png
+🧑‍🦽 - person in manual wheelchair - U+1F9D1_U+200D_U+1F9BD.png
+🧑‍⚕️ - health worker - U+1F9D1_U+200D_U+2695_U+FE0F.png
+🧑‍⚖️ - judge - U+1F9D1_U+200D_U+2696_U+FE0F.png
+🧔 - person: beard - U+1F9D4.png
+🧔‍♀️ - woman: beard - U+1F9D4_U+200D_U+2640_U+FE0F.png
+🧔‍♂️ - man: beard - U+1F9D4_U+200D_U+2642_U+FE0F.png
+🧗 - person climbing - U+1F9D7.png
+🧗‍♀️ - woman climbing - U+1F9D7_U+200D_U+2640_U+FE0F.png
+🧗‍♂️ - man climbing - U+1F9D7_U+200D_U+2642_U+FE0F.png
+🧙 - mage - U+1F9D9.png
+🧙‍♀️ - woman mage - U+1F9D9_U+200D_U+2640_U+FE0F.png
+🧙‍♂️ - man mage - U+1F9D9_U+200D_U+2642_U+FE0F.png
+🧜‍♀️ - mermaid - U+1F9DC_U+200D_U+2640_U+FE0F.png
+🧝‍♂️ - man elf - U+1F9DD_U+200D_U+2642_U+FE0F.png
+🧞 - genie - U+1F9DE.png
+🧟 - zombie - U+1F9DF.png
+🧠 - brain - U+1F9E0.png
+🧡 - orange heart - U+1F9E1.png
+🧣 - scarf - U+1F9E3.png
+🧤 - gloves - U+1F9E4.png
+🧥 - coat - U+1F9E5.png
+🧦 - socks - U+1F9E6.png
+🧧 - red envelope - U+1F9E7.png
+🧨 - firecracker - U+1F9E8.png
+🧩 - puzzle piece - U+1F9E9.png
+🧪 - test tube - U+1F9EA.png
+🧫 - petri dish - U+1F9EB.png
+🧬 - dna - U+1F9EC.png
+🧭 - compass - U+1F9ED.png
+🧮 - abacus - U+1F9EE.png
+🧯 - fire extinguisher - U+1F9EF.png
+🧰 - toolbox - U+1F9F0.png
+🧱 - brick - U+1F9F1.png
+🧲 - magnet - U+1F9F2.png
+🧳 - luggage - U+1F9F3.png
+🧴 - lotion bottle - U+1F9F4.png
+🧵 - thread - U+1F9F5.png
+🧶 - yarn - U+1F9F6.png
+🧷 - safety pin - U+1F9F7.png
+🧸 - teddy bear - U+1F9F8.png
+🧹 - broom - U+1F9F9.png
+🧺 - basket - U+1F9FA.png
+🧻 - roll of paper - U+1F9FB.png
+🧼 - soap - U+1F9FC.png
+🧽 - sponge - U+1F9FD.png
+🧾 - receipt - U+1F9FE.png
+🧿 - nazar amulet - U+1F9FF.png
+🩰 - ballet shoes - U+1FA70.png
+🩱 - one-piece swimsuit - U+1FA71.png
+🩲 - briefs - U+1FA72.png
+🩳 - shorts - U+1FA73.png
+🩴 - thong sandal - U+1FA74.png
+🩵 - light blue heart - U+1FA75.png
+🩶 - grey heart - U+1FA76.png
+🩷 - pink heart - U+1FA77.png
+🩸 - drop of blood - U+1FA78.png
+🩹 - adhesive bandage - U+1FA79.png
+🩺 - stethoscope - U+1FA7A.png
+🩻 - x-ray - U+1FA7B.png
+🩼 - crutch - U+1FA7C.png
+🪀 - yo-yo - U+1FA80.png
+🪁 - kite - U+1FA81.png
+🪂 - parachute - U+1FA82.png
+🪃 - boomerang - U+1FA83.png
+🪄 - magic wand - U+1FA84.png
+🪅 - piñata - U+1FA85.png
+🪇 - maracas - U+1FA87.png
+🪈 - flute - U+1FA88.png
+🪐 - ringed planet - U+1FA90.png
+🪑 - chair - U+1FA91.png
+🪒 - razor - U+1FA92.png
+🪓 - axe - U+1FA93.png
+🪔 - diya lamp - U+1FA94.png
+🪕 - banjo - U+1FA95.png
+🪖 - military helmet - U+1FA96.png
+🪗 - accordion - U+1FA97.png
+🪘 - long drum - U+1FA98.png
+🪙 - coin - U+1FA99.png
+🪚 - carpentry saw - U+1FA9A.png
+🪛 - screwdriver - U+1FA9B.png
+🪜 - ladder - U+1FA9C.png
+🪝 - hook - U+1FA9D.png
+🪞 - mirror - U+1FA9E.png
+🪟 - window - U+1FA9F.png
+🪠 - plunger - U+1FAA0.png
+🪡 - sewing needle - U+1FAA1.png
+🪢 - knot - U+1FAA2.png
+🪣 - bucket - U+1FAA3.png
+🪤 - mouse trap - U+1FAA4.png
+🪥 - toothbrush - U+1FAA5.png
+🪦 - headstone - U+1FAA6.png
+🪧 - placard - U+1FAA7.png
+🪨 - rock - U+1FAA8.png
+🪩 - mirror ball - U+1FAA9.png
+🪪 - identification card - U+1FAAA.png
+🪫 - low battery - U+1FAAB.png
+🪬 - hamsa - U+1FAAC.png
+🪭 - folding hand fan - U+1FAAD.png
+🪮 - hair pick - U+1FAAE.png
+🪯 - khanda - U+1FAAF.png
+🪰 - fly - U+1FAB0.png
+🪱 - worm - U+1FAB1.png
+🪲 - beetle - U+1FAB2.png
+🪳 - cockroach - U+1FAB3.png
+🪴 - potted plant - U+1FAB4.png
+🪵 - wood - U+1FAB5.png
+🪶 - feather - U+1FAB6.png
+🪷 - lotus - U+1FAB7.png
+🪸 - coral - U+1FAB8.png
+🪹 - empty nest - U+1FAB9.png
+🪺 - nest with eggs - U+1FABA.png
+🪻 - hyacinth - U+1FABB.png
+🪼 - jellyfish - U+1FABC.png
+🪽 - wing - U+1FABD.png
+🪿 - goose - U+1FABF.png
+🫀 - anatomical heart - U+1FAC0.png
+🫁 - lungs - U+1FAC1.png
+🫂 - people hugging - U+1FAC2.png
+🫃 - pregnant man - U+1FAC3.png
+🫄 - pregnant person - U+1FAC4.png
+🫅 - person with crown - U+1FAC5.png
+🫎 - moose - U+1FACE.png
+🫏 - donkey - U+1FACF.png
+🫐 - blueberries - U+1FAD0.png
+🫑 - bell pepper - U+1FAD1.png
+🫒 - olive - U+1FAD2.png
+🫓 - flatbread - U+1FAD3.png
+🫔 - tamale - U+1FAD4.png
+🫕 - fondue - U+1FAD5.png
+🫖 - teapot - U+1FAD6.png
+🫗 - pouring liquid - U+1FAD7.png
+🫘 - beans - U+1FAD8.png
+🫙 - jar - U+1FAD9.png
+🫚 - ginger root - U+1FADA.png
+🫛 - pea pod - U+1FADB.png
+🫠 - melting face - U+1FAE0.png
+🫡 - saluting face - U+1FAE1.png
+🫢 - face with open eyes and hand over mouth - U+1FAE2.png
+🫣 - face with peeking eye - U+1FAE3.png
+🫤 - face with diagonal mouth - U+1FAE4.png
+🫥 - dotted line face - U+1FAE5.png
+🫦 - biting lip - U+1FAE6.png
+🫧 - bubbles - U+1FAE7.png
+🫨 - shaking face - U+1FAE8.png
+🫰 - hand with index finger and thumb crossed - U+1FAF0.png
+🫱 - rightwards hand - U+1FAF1.png
+🫲 - leftwards hand - U+1FAF2.png
+🫳 - palm down hand - U+1FAF3.png
+🫴 - palm up hand - U+1FAF4.png
+🫵 - index pointing at the viewer - U+1FAF5.png
+🫶 - heart hands - U+1FAF6.png
+🫷 - leftwards pushing hand - U+1FAF7.png
+🫸 - rightwards pushing hand - U+1FAF8.png
+‼ - double exclamation mark - U+203C.png
+⁉ - exclamation question mark - U+2049.png
+™ - trade mark - U+2122.png
+ℹ - information - U+2139.png
+↔ - left-right arrow - U+2194.png
+↕ - up-down arrow - U+2195.png
+↖ - up-left arrow - U+2196.png
+↗ - up-right arrow - U+2197.png
+↘ - down-right arrow - U+2198.png
+↙ - down-left arrow - U+2199.png
+↩ - right arrow curving left - U+21A9.png
+↪ - left arrow curving right - U+21AA.png
+⌚ - watch - U+231A.png
+⌛ - hourglass done - U+231B.png
+⌨ - keyboard - U+2328.png
+⏏ - eject button - U+23CF.png
+⏩ - fast-forward button - U+23E9.png
+⏪ - fast reverse button - U+23EA.png
+⏫ - fast up button - U+23EB.png
+⏬ - fast down button - U+23EC.png
+⏭ - next track button - U+23ED.png
+⏮ - last track button - U+23EE.png
+⏯ - play or pause button - U+23EF.png
+⏰ - alarm clock - U+23F0.png
+⏱ - stopwatch - U+23F1.png
+⏲ - timer clock - U+23F2.png
+⏳ - hourglass not done - U+23F3.png
+⏸ - pause button - U+23F8.png
+⏹ - stop button - U+23F9.png
+⏺ - record button - U+23FA.png
+Ⓜ - circled M - U+24C2.png
+▪ - black small square - U+25AA.png
+▫ - white small square - U+25AB.png
+▶ - play button - U+25B6.png
+◀ - reverse button - U+25C0.png
+◻ - white medium square - U+25FB.png
+◼ - black medium square - U+25FC.png
+◽ - white medium-small square - U+25FD.png
+◾ - black medium-small square - U+25FE.png
+☀ - sun - U+2600.png
+☁ - cloud - U+2601.png
+☂ - umbrella - U+2602.png
+☃ - snowman - U+2603.png
+☄ - comet - U+2604.png
+☎ - telephone - U+260E.png
+☑ - check box with check - U+2611.png
+☔ - umbrella with rain drops - U+2614.png
+☕ - hot beverage - U+2615.png
+☘ - shamrock - U+2618.png
+☝ - index pointing up - U+261D.png
+☠ - skull and crossbones - U+2620.png
+☢ - radioactive - U+2622.png
+☣ - biohazard - U+2623.png
+☦ - orthodox cross - U+2626.png
+☪ - star and crescent - U+262A.png
+☮ - peace symbol - U+262E.png
+☯ - yin yang - U+262F.png
+☸ - wheel of dharma - U+2638.png
+☹ - frowning face - U+2639.png
+☺ - smiling face - U+263A.png
+♀ - female sign - U+2640.png
+♂ - male sign - U+2642.png
+♈ - Aries - U+2648.png
+♉ - Taurus - U+2649.png
+♊ - Gemini - U+264A.png
+♋ - Cancer - U+264B.png
+♌ - Leo - U+264C.png
+♍ - Virgo - U+264D.png
+♎ - Libra - U+264E.png
+♏ - Scorpio - U+264F.png
+♐ - Sagittarius - U+2650.png
+♑ - Capricorn - U+2651.png
+♒ - Aquarius - U+2652.png
+♓ - Pisces - U+2653.png
+♟ - chess pawn - U+265F.png
+♠ - spade suit - U+2660.png
+♣ - club suit - U+2663.png
+♥ - heart suit - U+2665.png
+♦ - diamond suit - U+2666.png
+♨ - hot springs - U+2668.png
+♻ - recycling symbol - U+267B.png
+♾ - infinity - U+267E.png
+♿ - wheelchair symbol - U+267F.png
+⚒ - hammer and pick - U+2692.png
+⚓ - anchor - U+2693.png
+⚔ - crossed swords - U+2694.png
+⚕ - medical symbol - U+2695.png
+⚖ - balance scale - U+2696.png
+⚗ - alembic - U+2697.png
+⚙ - gear - U+2699.png
+⚛ - atom symbol - U+269B.png
+⚜ - fleur-de-lis - U+269C.png
+⚠ - warning - U+26A0.png
+⚡ - high voltage - U+26A1.png
+⚧ - transgender symbol - U+26A7.png
+⚪ - white circle - U+26AA.png
+⚫ - black circle - U+26AB.png
+⚰ - coffin - U+26B0.png
+⚱ - funeral urn - U+26B1.png
+⚽ - soccer ball - U+26BD.png
+⚾ - baseball - U+26BE.png
+⛄ - snowman without snow - U+26C4.png
+⛅ - sun behind cloud - U+26C5.png
+⛈ - cloud with lightning and rain - U+26C8.png
+⛎ - Ophiuchus - U+26CE.png
+⛏ - pick - U+26CF.png
+⛑ - rescue worker’s helmet - U+26D1.png
+⛓ - chains - U+26D3.png
+⛔ - no entry - U+26D4.png
+⛩ - shinto shrine - U+26E9.png
+⛪ - church - U+26EA.png
+⛰ - mountain - U+26F0.png
+⛱ - umbrella on ground - U+26F1.png
+⛲ - fountain - U+26F2.png
+⛳ - flag in hole - U+26F3.png
+⛴ - ferry - U+26F4.png
+⛵ - sailboat - U+26F5.png
+⛷ - skier - U+26F7.png
+⛸ - ice skate - U+26F8.png
+⛹ - person bouncing ball - U+26F9.png
+⛹️‍♀️ - woman bouncing ball - U+26F9_U+FE0F_U+200D_U+2640_U+FE0F.png
+⛹️‍♂️ - man bouncing ball - U+26F9_U+FE0F_U+200D_U+2642_U+FE0F.png
+⛺ - tent - U+26FA.png
+⛽ - fuel pump - U+26FD.png
+✂ - scissors - U+2702.png
+✅ - check mark button - U+2705.png
+✈ - airplane - U+2708.png
+✉ - envelope - U+2709.png
+✊ - raised fist - U+270A.png
+✋ - raised hand - U+270B.png
+✌ - victory hand - U+270C.png
+✍ - writing hand - U+270D.png
+✏ - pencil - U+270F.png
+✒ - black nib - U+2712.png
+✔ - check mark - U+2714.png
+✖ - multiply - U+2716.png
+✝ - latin cross - U+271D.png
+✡ - star of David - U+2721.png
+✨ - sparkles - U+2728.png
+✳ - eight-spoked asterisk - U+2733.png
+✴ - eight-pointed star - U+2734.png
+❄ - snowflake - U+2744.png
+❇ - sparkle - U+2747.png
+❌ - cross mark - U+274C.png
+❎ - cross mark button - U+274E.png
+❓ - red question mark - U+2753.png
+❔ - white question mark - U+2754.png
+❕ - white exclamation mark - U+2755.png
+❗ - red exclamation mark - U+2757.png
+❣ - heart exclamation - U+2763.png
+❤ - red heart - U+2764.png
+❤️‍🔥 - heart on fire - U+2764_U+FE0F_U+200D_U+1F525.png
+❤️‍🩹 - mending heart - U+2764_U+FE0F_U+200D_U+1FA79.png
+➕ - plus - U+2795.png
+➖ - minus - U+2796.png
+➗ - divide - U+2797.png
+➡ - right arrow - U+27A1.png
+➰ - curly loop - U+27B0.png
+➿ - double curly loop - U+27BF.png
+⤴ - right arrow curving up - U+2934.png
+⤵ - right arrow curving down - U+2935.png
+⬅ - left arrow - U+2B05.png
+⬆ - up arrow - U+2B06.png
+⬇ - down arrow - U+2B07.png
+⬛ - black large square - U+2B1B.png
+⬜ - white large square - U+2B1C.png
+⭐ - star - U+2B50.png
+⭕ - hollow red circle - U+2B55.png
+〰 - wavy dash - U+3030.png
+〽 - part alternation mark - U+303D.png
+㊗ - Japanese “congratulations” button - U+3297.png
