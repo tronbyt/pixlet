@@ -31,6 +31,48 @@ To cover Latin-1 Supplement, we need more space. At least one
 additional pixel in the _ascent_ for characters with diacritics to be
 legible.
 
+## Unicode Emoji Support
+
+The Pixlet Text widget automatically detects and renders Unicode emojis alongside regular text. You can include emojis directly in your text strings with any font:
+
+```python
+# Single emoji
+render.Text("😀", font="6x10")
+
+# Multiple emojis
+render.Text("😀😂😍😉😎", font="5x8")
+
+# Mixed text and emojis
+render.Text("Hello 😀 World!", font="tb-8")
+
+# Flag emojis
+render.Text("🇺🇸🇬🇧🇫🇷", font="6x10")
+```
+
+### How Emoji Rendering Works
+
+- **Automatic Detection**: The Text widget automatically detects Unicode emoji sequences
+- **Built-in Support**: Uses Pixlet's built-in emoji sprite sheet with 1753+ emojis
+- **Seamless Integration**: Emojis render alongside text using any font
+- **Standard Size**: All emojis render at 10x10 pixels regardless of text font
+
+### Scalable Emojis
+
+For large emojis or standalone emoji graphics, use the dedicated `render.Emoji` widget:
+
+```python
+# Create emojis at any size
+render.Emoji(emoji="🚀", height=32)   # 32px tall rocket
+render.Emoji(emoji="⚡", height=64)   # 64px tall lightning
+```
+
+The Emoji widget provides:
+- **Custom sizing**: Any height from 1 to hundreds of pixels
+- **High quality scaling**: Smooth interpolation for large sizes
+- **Performance**: Optimized rendering at any scale
+
+For a complete list of supported emojis and detailed usage, see [emoji.md](emoji.md).
+
 ## The fonts
 
 Note that all of these are free or public domain fonts created by

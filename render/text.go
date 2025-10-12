@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"github.com/tidbyt/gg"
+	"golang.org/x/image/font"
 )
 
 var (
@@ -62,6 +63,11 @@ func (t *Text) Init() error {
 		return err
 	}
 
+	// Check if content contains emojis
+	if hasAnyEmojiSequence(t.Content) {
+		return t.initWithEmojis(face)
+	}
+
 	dc := gg.NewContext(0, 0)
 	dc.SetFontFace(face)
 
@@ -95,6 +101,86 @@ func (t *Text) Init() error {
 
 	t.img = dc.Image()
 
+	return nil
+}
+
+func (t *Text) initWithEmojis(face font.Face) error {
+	segments := segmentEmoji(t.Content)
+	if len(segments) == 0 {
+		return nil
+	}
+
+	// Calculate total width and height needed
+	metrics := face.Metrics()
+	ascent := metrics.Ascent.Floor()
+	descent := metrics.Descent.Floor()
+	textHeight := ascent + descent
+
+	// Emoji height is typically emojiCellH (10px)
+	height := textHeight
+	if emojiCellH > textHeight {
+		height = emojiCellH
+	}
+	if t.Height != 0 {
+		height = t.Height
+	}
+
+	// Calculate total width by measuring each segment
+	totalWidth := 0
+	dc := gg.NewContext(0, 0)
+	dc.SetFontFace(face)
+
+	for _, seg := range segments {
+		if seg.emoji {
+			totalWidth += emojiCellW // emoji width is emojiCellW (10px)
+		} else {
+			w, _ := dc.MeasureString(seg.text)
+			totalWidth += int(w)
+		}
+	}
+
+	// Limit width if needed
+	if totalWidth > MaxWidth {
+		totalWidth = MaxWidth
+	}
+
+	// Create the rendering context
+	dc = gg.NewContext(totalWidth, height)
+
+	// Create RGBA image to support drawing emojis with transparency
+	rgba := image.NewRGBA(image.Rect(0, 0, totalWidth, height))
+	dc = gg.NewContextForRGBA(rgba)
+	dc.SetFontFace(face)
+
+	if t.Color != nil {
+		dc.SetColor(t.Color)
+	} else {
+		dc.SetColor(DefaultFontColor)
+	}
+
+	// Render each segment
+	x := 0
+	baselineY := height - descent - t.Offset
+
+	for _, seg := range segments {
+		if seg.emoji {
+			// Draw emoji using the emoji system
+			advance := drawEmojiSequence(rgba, seg.text, x, baselineY)
+			x += advance
+		} else {
+			// Draw regular text
+			dc.DrawString(seg.text, float64(x), float64(baselineY))
+			w, _ := dc.MeasureString(seg.text)
+			x += int(w)
+		}
+
+		// Stop if we exceed max width
+		if x >= MaxWidth {
+			break
+		}
+	}
+
+	t.img = rgba
 	return nil
 }
 
