@@ -2,7 +2,6 @@ package render
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 	"strings"
 	"sync"
@@ -16,7 +15,7 @@ var fontCache = map[string]font.Face{}
 var fontMutex = &sync.Mutex{}
 
 func GetFontList() []string {
-	entries, err := fs.ReadDir(fonts.Fonts, ".")
+	entries, err := fonts.Fonts.ReadDir(".")
 	if err != nil {
 		panic(err)
 	}
@@ -41,9 +40,9 @@ func GetFont(name string) (font.Face, error) {
 		return font, nil
 	}
 
-	entries, err := fs.ReadDir(fonts.Fonts, ".")
+	entries, err := fonts.Fonts.ReadDir(".")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("listing fonts: %w", err)
 	}
 
 	var found string
@@ -63,7 +62,7 @@ func GetFont(name string) (font.Face, error) {
 
 	data, err := fonts.Fonts.ReadFile(found)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("reading font %q: %w", found, err)
 	}
 
 	f, err := bdf.Parse(data)
