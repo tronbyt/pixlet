@@ -23,8 +23,13 @@ type RenderModule struct {
 var renderModule = RenderModule{}
 
 func LoadRenderModule() (starlark.StringDict, error) {
+	var err error
+
 	renderModule.once.Do(func() {
-		fontList := render.GetFontList()
+		var fontList []string
+		if fontList, err = render.GetFontList(); err != nil {
+			return
+		}
 		fnt := starlark.NewDict(len(fontList))
 		for _, name := range fontList {
 			fnt.SetKey(starlark.String(name), starlark.String(name))
@@ -44,7 +49,7 @@ func LoadRenderModule() (starlark.StringDict, error) {
 		}
 	})
 
-	return renderModule.module, nil
+	return renderModule.module, err
 }
 
 type Rootable interface {

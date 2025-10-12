@@ -16,10 +16,10 @@ import (
 var fontCache = map[string]font.Face{}
 var fontMutex = &sync.Mutex{}
 
-func GetFontList() []string {
+func GetFontList() ([]string, error) {
 	entries, err := fonts.Fonts.ReadDir(".")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	fontNames := make([]string, 0, len(entries))
@@ -31,7 +31,7 @@ func GetFontList() []string {
 		fontNames = append(fontNames, trimExt(e.Name()))
 	}
 
-	return fontNames
+	return fontNames, nil
 }
 
 func GetFont(name string) (font.Face, error) {
