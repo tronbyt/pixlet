@@ -1,0 +1,196 @@
+package render
+
+import (
+	"testing"
+)
+
+func TestEmojiWidget(t *testing.T) {
+	tests := []struct {
+		name    string
+		emoji   string
+		height  int
+		wantErr bool
+	}{
+		{
+			name:    "valid emoji with small height",
+			emoji:   "😀",
+			height:  8,
+			wantErr: false,
+		},
+		{
+			name:    "valid emoji with medium height",
+			emoji:   "🚀",
+			height:  16,
+			wantErr: false,
+		},
+		{
+			name:    "valid emoji with large height",
+			emoji:   "🎉",
+			height:  32,
+			wantErr: false,
+		},
+		{
+			name:    "complex emoji sequence",
+			emoji:   "👨‍👩‍👧‍👦",
+			height:  20,
+			wantErr: false,
+		},
+		{
+			name:    "flag emoji",
+			emoji:   "🇺🇸",
+			height:  12,
+			wantErr: false,
+		},
+		{
+			name:    "empty emoji string",
+			emoji:   "",
+			height:  16,
+			wantErr: true,
+		},
+		{
+			name:    "zero height",
+			emoji:   "😀",
+			height:  0,
+			wantErr: true,
+		},
+		{
+			name:    "negative height",
+			emoji:   "😀",
+			height:  -5,
+			wantErr: true,
+		},
+		{
+			name:    "unknown emoji",
+			emoji:   "🤷‍♀️",
+			height:  16,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			emoji := &Emoji{
+				EmojiStr: tt.emoji,
+				Height:   tt.height,
+			}
+
+			err := emoji.Init()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Emoji.Init() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if err == nil {
+				// Verify that the image was created
+				if emoji.img == nil {
+					t.Error("Emoji.Init() succeeded but img is nil")
+				}
+
+				// Verify image has correct dimensions
+				width, height := emoji.Size()
+				if height != tt.height {
+					t.Errorf("Expected height %d, got %d", tt.height, height)
+				}
+
+				// For square emojis, width should equal height
+				if width != tt.height {
+					t.Errorf("Expected width %d (same as height), got %d", tt.height, width)
+				}
+
+				// Verify dimensions are positive
+				if width <= 0 || height <= 0 {
+					t.Errorf("Emoji has invalid dimensions: %dx%d", width, height)
+				}
+			}
+		})
+	}
+}
+
+func TestEmojiWidgetSize(t *testing.T) {
+	tests := []struct {
+		name   string
+		emoji  string
+		height int
+	}{
+		{"small emoji", "😀", 8},
+		{"medium emoji", "🚀", 16},
+		{"large emoji", "🎉", 32},
+		{"very large emoji", "⚡", 48},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			emoji := &Emoji{
+				EmojiStr: tt.emoji,
+				Height:   tt.height,
+			}
+
+			err := emoji.Init()
+			if err != nil {
+				t.Fatalf("Emoji.Init() failed: %v", err)
+			}
+
+			width, height := emoji.Size()
+
+			// Both dimensions should match the requested height (square emojis)
+			if width != tt.height || height != tt.height {
+				t.Errorf("Emoji.Size() = (%d, %d), want (%d, %d)",
+					width, height, tt.height, tt.height)
+			}
+
+			// Size should match image bounds
+			bounds := emoji.img.Bounds()
+			if width != bounds.Dx() || height != bounds.Dy() {
+				t.Errorf("Emoji.Size() = (%d, %d), but image bounds = %dx%d",
+					width, height, bounds.Dx(), bounds.Dy())
+			}
+		})
+	}
+}
+
+func TestEmojiWidgetFrameCount(t *testing.T) {
+	emoji := &Emoji{
+		EmojiStr: "😀",
+		Height:   16,
+	}
+
+	err := emoji.Init()
+	if err != nil {
+		t.Fatalf("Emoji.Init() failed: %v", err)
+	}
+
+	// Emoji widgets should always have exactly 1 frame
+	frames := emoji.FrameCount(emoji.img.Bounds())
+	if frames != 1 {
+		t.Errorf("Expected 1 frame, got %d", frames)
+	}
+}
+
+func BenchmarkEmojiWidget(b *testing.B) {
+	tests := []struct {
+		name   string
+		emoji  string
+		height int
+	}{
+		{"small_emoji", "😀", 8},
+		{"medium_emoji", "🚀", 16},
+		{"large_emoji", "🎉", 32},
+		{"xlarge_emoji", "⚡", 64},
+	}
+
+	for _, tt := range tests {
+		b.Run(tt.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				emoji := &Emoji{
+					EmojiStr: tt.emoji,
+					Height:   tt.height,
+				}
+
+				err := emoji.Init()
+				if err != nil {
+					b.Fatalf("Emoji.Init() failed: %v", err)
+				}
+			}
+		})
+	}
+}

@@ -71,6 +71,7 @@ var Packages = []Package{
 			reflect.ValueOf(new(render.Box)),
 			reflect.ValueOf(new(render.Circle)),
 			reflect.ValueOf(new(render.Column)),
+			reflect.ValueOf(new(render.Emoji)),
 			reflect.ValueOf(new(render.Image)),
 			reflect.ValueOf(new(render.Marquee)),
 			reflect.ValueOf(new(render.Padding)),

@@ -156,6 +156,23 @@ render.Column(
 ```
 ![](img/widget_Column_1.gif)
 
+## Emoji
+Emoji renders a single emoji at a specified height, maintaining aspect ratio.
+This allows for rendering emojis much larger than the standard 10x10 pixel size
+used in text rendering.
+#### Attributes
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| `emoji` | `str` |  | **Y** |
+| `height` | `int` | Desired height in pixels (width will be calculated to maintain aspect ratio) | **Y** |
+
+
+#### Example
+```
+render.Emoji(emoji="😀", height=32)  // Large smiley face
+```
+![](img/widget_Emoji_0.gif)
+
 ## Image
 Image renders the binary image data passed via `src`. Supported
 formats include PNG, JPEG, GIF, and SVG.

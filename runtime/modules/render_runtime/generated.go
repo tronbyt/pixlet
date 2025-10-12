@@ -44,6 +44,8 @@ func LoadRenderModule() (starlark.StringDict, error) {
 
 					"Column": starlark.NewBuiltin("Column", newColumn),
 
+					"Emoji": starlark.NewBuiltin("Emoji", newEmoji),
+
 					"Image": starlark.NewBuiltin("Image", newImage),
 
 					"Marquee": starlark.NewBuiltin("Marquee", newMarquee),
@@ -695,6 +697,156 @@ func columnFrameCount(
 	}
 
 	w := b.Receiver().(*Column)
+	count := w.FrameCount(r)
+
+	return starlark.MakeInt(count), nil
+}
+
+type Emoji struct {
+	Widget
+
+	render.Emoji
+
+	size *starlark.Builtin
+
+	frame_count *starlark.Builtin
+}
+
+func newEmoji(
+	thread *starlark.Thread,
+	_ *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple,
+) (starlark.Value, error) {
+
+	var (
+		emoji  starlark.String
+		height starlark.Int
+	)
+
+	if err := starlark.UnpackArgs(
+		"Emoji",
+		args, kwargs,
+		"emoji", &emoji,
+		"height", &height,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for Emoji: %s", err)
+	}
+
+	w := &Emoji{}
+
+	w.EmojiStr = emoji.GoString()
+
+	w.Height = int(height.BigInt().Int64())
+
+	w.size = starlark.NewBuiltin("size", emojiSize)
+
+	w.frame_count = starlark.NewBuiltin("frame_count", emojiFrameCount)
+
+	if err := w.Init(); err != nil {
+		return nil, err
+	}
+
+	return w, nil
+}
+
+func (w *Emoji) AsRenderWidget() render.Widget {
+	return &w.Emoji
+}
+
+func (w *Emoji) AttrNames() []string {
+	return []string{
+		"emoji", "height",
+	}
+}
+
+func (w *Emoji) Attr(name string) (starlark.Value, error) {
+	switch name {
+
+	case "emoji":
+
+		return starlark.String(w.EmojiStr), nil
+
+	case "height":
+
+		return starlark.MakeInt(int(w.Height)), nil
+
+	case "size":
+		return w.size.BindReceiver(w), nil
+
+	case "frame_count":
+		return w.frame_count.BindReceiver(w), nil
+
+	default:
+		return nil, nil
+	}
+}
+
+func (w *Emoji) String() string       { return "Emoji(...)" }
+func (w *Emoji) Type() string         { return "Emoji" }
+func (w *Emoji) Freeze()              {}
+func (w *Emoji) Truth() starlark.Bool { return true }
+
+func (w *Emoji) Hash() (uint32, error) {
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	return uint32(sum), err
+}
+
+func emojiSize(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+
+	w := b.Receiver().(*Emoji)
+	width, height := w.Size()
+
+	return starlark.Tuple([]starlark.Value{
+		starlark.MakeInt(width),
+		starlark.MakeInt(height),
+	}), nil
+}
+
+func emojiFrameCount(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+
+	var (
+		bounds starlark.Tuple
+	)
+
+	if err := starlark.UnpackArgs(
+		"frame_count",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for frame_count: %s", err)
+	}
+
+	r := image.Rect(0, 0, 64, 32)
+	if bounds != nil && bounds.Len() == 4 {
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
+	w := b.Receiver().(*Emoji)
 	count := w.FrameCount(r)
 
 	return starlark.MakeInt(count), nil
