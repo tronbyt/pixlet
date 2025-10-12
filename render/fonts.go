@@ -1,7 +1,9 @@
 package render
 
 import (
+	"errors"
 	"fmt"
+	"os"
 	"path"
 	"strings"
 	"sync"
@@ -40,29 +42,12 @@ func GetFont(name string) (font.Face, error) {
 		return font, nil
 	}
 
-	entries, err := fonts.Fonts.ReadDir(".")
+	data, err := fonts.Fonts.ReadFile(name + ".bdf")
 	if err != nil {
-		return nil, fmt.Errorf("listing fonts: %w", err)
-	}
-
-	var found string
-	for _, e := range entries {
-		if e.IsDir() {
-			continue
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, fmt.Errorf("unknown font %q", name)
 		}
-
-		if trimExt(e.Name()) == name {
-			found = e.Name()
-			break
-		}
-	}
-	if found == "" {
-		return nil, fmt.Errorf("unknown font %q", name)
-	}
-
-	data, err := fonts.Fonts.ReadFile(found)
-	if err != nil {
-		return nil, fmt.Errorf("reading font %q: %w", found, err)
+		return nil, fmt.Errorf("reading font %q: %w", name, err)
 	}
 
 	f, err := bdf.Parse(data)
