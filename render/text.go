@@ -64,15 +64,7 @@ func (t *Text) Init() error {
 	}
 
 	// Check if content contains emojis
-	var segments []segment
-	hasEmoji := containsEmoji(t.Content)
-	if hasEmoji {
-		if segments = segmentEmoji(t.Content); len(segments) == 0 {
-			return nil
-		}
-	} else {
-		segments = []segment{{text: t.Content}}
-	}
+	segments, hasEmoji := segmentEmoji(t.Content)
 
 	dc := gg.NewContext(0, 0)
 	dc.SetFontFace(face)
