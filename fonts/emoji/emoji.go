@@ -13,11 +13,11 @@ import (
 var spritesPNG []byte
 
 var (
-	sheetImg *image.RGBA
+	sheetImg *image.NRGBA
 	mu       sync.Mutex
 )
 
-func Sheet() (*image.RGBA, error) {
+func Sheet() (*image.NRGBA, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -26,10 +26,10 @@ func Sheet() (*image.RGBA, error) {
 		if err != nil {
 			return nil, err
 		}
-		if rgba, ok := img.(*image.RGBA); ok {
-			sheetImg = rgba
+		if nrgba, ok := img.(*image.NRGBA); ok {
+			sheetImg = nrgba
 		} else {
-			rb := image.NewRGBA(img.Bounds())
+			rb := image.NewNRGBA(img.Bounds())
 			draw.Draw(rb, rb.Bounds(), img, image.Point{}, draw.Src)
 			sheetImg = rb
 		}
