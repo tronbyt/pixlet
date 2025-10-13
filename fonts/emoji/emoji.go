@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/rivo/uniseg"
+	"github.com/tidbyt/gg"
 )
 
 //go:embed sprites.png
@@ -70,6 +71,29 @@ func Get(s string) (*image.NRGBA, error) {
 type Segment struct {
 	Text    string // either a plain text run or the exact emoji sequence string
 	IsEmoji bool
+}
+
+func (s Segment) Width(dc *gg.Context) int {
+	if s.IsEmoji {
+		return CellW // emoji width is CellW (10px)
+	} else {
+		w, _ := dc.MeasureString(s.Text)
+		return int(w)
+	}
+}
+
+func (s Segment) Draw(dc *gg.Context, x, y int) int {
+	if s.IsEmoji {
+		if srcImg, err := Get(s.Text); err == nil {
+			dc.DrawImage(srcImg, x, y-srcImg.Bounds().Dy())
+			return srcImg.Bounds().Dx()
+		}
+	} else {
+		dc.DrawString(s.Text, float64(x), float64(y))
+		w, _ := dc.MeasureString(s.Text)
+		return int(w)
+	}
+	return 0
 }
 
 // SegmentString breaks a string into a sequence of tokens, where each token is either

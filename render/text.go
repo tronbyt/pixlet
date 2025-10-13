@@ -71,12 +71,7 @@ func (t *Text) Init() error {
 
 	var width int
 	for _, seg := range segments {
-		if seg.IsEmoji {
-			width += emoji.CellW // emoji width is CellW (10px)
-		} else {
-			w, _ := dc.MeasureString(seg.Text)
-			width += int(w)
-		}
+		width += seg.Width(dc)
 	}
 
 	// If the width of the text is longer than the max, cut off the size of the
@@ -106,22 +101,9 @@ func (t *Text) Init() error {
 	}
 
 	// Render each segment
-	var x int
-	baselineY := height - descent - t.Offset
-
+	x, y := 0, height-descent-t.Offset
 	for _, seg := range segments {
-		if seg.IsEmoji {
-			// Draw emoji using the emoji system
-			if srcImg, err := emoji.Get(seg.Text); err == nil {
-				dc.DrawImage(srcImg, x, baselineY-srcImg.Bounds().Dy())
-				x += srcImg.Bounds().Dx()
-			}
-		} else {
-			// Draw regular text
-			dc.DrawString(seg.Text, float64(x), float64(baselineY))
-			w, _ := dc.MeasureString(seg.Text)
-			x += int(w)
-		}
+		x += seg.Draw(dc, x, y)
 
 		// Stop if we exceed max width
 		if x >= MaxWidth {
@@ -130,7 +112,6 @@ func (t *Text) Init() error {
 	}
 
 	t.img = dc.Image()
-
 	return nil
 }
 
