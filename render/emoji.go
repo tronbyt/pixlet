@@ -5,7 +5,7 @@ import (
 	"image"
 
 	"github.com/tidbyt/gg"
-	"tidbyt.dev/pixlet/fonts/emoji"
+	"tidbyt.dev/pixlet/render/emoji"
 )
 
 // Emoji renders a single emoji at a specified height, maintaining aspect ratio.
@@ -69,8 +69,8 @@ func (e *Emoji) Init() error {
 	dc := gg.NewContext(scaledWidth, scaledHeight)
 
 	// Scale and draw the emoji
-	scaleX := float64(scaledWidth) / float64(emoji.CellW)
-	scaleY := float64(scaledHeight) / float64(emoji.CellH)
+	scaleX := float64(scaledWidth) / float64(srcImg.Bounds().Dx())
+	scaleY := float64(scaledHeight) / float64(srcImg.Bounds().Dy())
 
 	dc.Scale(scaleX, scaleY)
 	dc.DrawImage(srcImg, 0, 0)

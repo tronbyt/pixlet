@@ -5,7 +5,7 @@ import (
 	"image/color"
 
 	"github.com/tidbyt/gg"
-	"tidbyt.dev/pixlet/fonts/emoji"
+	"tidbyt.dev/pixlet/render/emoji"
 )
 
 var (

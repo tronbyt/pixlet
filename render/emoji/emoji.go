@@ -12,10 +12,10 @@ import (
 
 	"github.com/rivo/uniseg"
 	"github.com/tidbyt/gg"
+	font "tidbyt.dev/pixlet/fonts/emoji"
 )
 
-//go:embed sprites.png
-var spritesPNG []byte
+const CellH = font.CellH
 
 var (
 	sheetImg *image.NRGBA
@@ -27,7 +27,7 @@ func Sheet() (*image.NRGBA, error) {
 	defer mu.Unlock()
 
 	if sheetImg == nil {
-		img, err := png.Decode(bytes.NewReader(spritesPNG))
+		img, err := png.Decode(bytes.NewReader(font.Sprites))
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +45,7 @@ func Sheet() (*image.NRGBA, error) {
 
 func Get(s string) (*image.NRGBA, error) {
 	// Check if the emoji exists in our index
-	point, exists := Index[s]
+	point, exists := font.Index[s]
 	if !exists {
 		return nil, fmt.Errorf("emoji %q not found in emoji index", s)
 	}
@@ -58,12 +58,12 @@ func Get(s string) (*image.NRGBA, error) {
 
 	// Extract the emoji from the sprite sheet
 	srcRect := image.Rect(
-		point.X*CellW, point.Y*CellH,
-		(point.X+1)*CellW, (point.Y+1)*CellH,
+		point.X*font.CellW, point.Y*font.CellH,
+		(point.X+1)*font.CellW, (point.Y+1)*font.CellH,
 	)
 
 	// Create source image for this emoji
-	srcImg := image.NewNRGBA(image.Rect(0, 0, CellW, CellH))
+	srcImg := image.NewNRGBA(image.Rect(0, 0, font.CellW, font.CellH))
 	draw.Draw(srcImg, srcImg.Bounds(), sheet, srcRect.Min, draw.Src)
 	return srcImg, nil
 }
@@ -75,7 +75,7 @@ type Segment struct {
 
 func (s Segment) Width(dc *gg.Context) int {
 	if s.IsEmoji {
-		return CellW // emoji width is CellW (10px)
+		return font.CellW // emoji width is CellW (10px)
 	} else {
 		w, _ := dc.MeasureString(s.Text)
 		return int(w)
@@ -109,7 +109,7 @@ func SegmentString(s string) ([]Segment, bool) {
 	for len(s) != 0 {
 		var cluster string
 		cluster, s, _, state = uniseg.FirstGraphemeClusterInString(s, state)
-		if _, ok := Index[cluster]; ok {
+		if _, ok := font.Index[cluster]; ok {
 			if buf.Len() != 0 {
 				segments = append(segments, Segment{Text: buf.String()})
 				buf.Reset()
