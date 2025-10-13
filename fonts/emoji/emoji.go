@@ -12,8 +12,6 @@ import (
 //go:embed sprites.png
 var spritesPNG []byte
 
-type Glyph struct{ X, Y int }
-
 var (
 	sheetOnce sync.Once
 	sheetImg  *image.RGBA

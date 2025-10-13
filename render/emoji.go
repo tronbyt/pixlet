@@ -57,7 +57,7 @@ func (e *Emoji) Init() error {
 	}
 
 	// Check if the emoji exists in our index
-	glyph, exists := emoji.Index[e.EmojiStr]
+	point, exists := emoji.Index[e.EmojiStr]
 	if !exists {
 		return fmt.Errorf("emoji %q not found in emoji index", e.EmojiStr)
 	}
@@ -70,8 +70,8 @@ func (e *Emoji) Init() error {
 
 	// Extract the emoji from the sprite sheet
 	srcRect := image.Rect(
-		glyph.X*emoji.CellW, glyph.Y*emoji.CellH,
-		(glyph.X+1)*emoji.CellW, (glyph.Y+1)*emoji.CellH,
+		point.X*emoji.CellW, point.Y*emoji.CellH,
+		(point.X+1)*emoji.CellW, (point.Y+1)*emoji.CellH,
 	)
 
 	// Create source image for this emoji
