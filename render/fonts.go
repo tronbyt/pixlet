@@ -24,10 +24,6 @@ func GetFontList() ([]string, error) {
 
 	fontNames := make([]string, 0, len(entries))
 	for _, e := range entries {
-		if e.IsDir() {
-			continue
-		}
-
 		fontNames = append(fontNames, trimExt(e.Name()))
 	}
 
