@@ -14,9 +14,9 @@
 //	U+1F1FA_U+1F1F8.png (multi-codepoint sequence)
 //
 // Packs all images into a uniform cell sprite sheet (10x10) and emits
-// `render/emoji_assets.go` containing:
-//   - compressed sprite sheet bytes
-//   - a map[string]EmojiGlyph (keys are the actual Unicode sequence string)
+// `fonts/emoji/sprites.go` containing:
+//   - embedded sprite sheet bytes
+//   - a map[string]Glyph (keys are the actual Unicode sequence string)
 //   - constants for cell size, columns, max sequence length
 //
 // Multi-codepoint sequences (e.g. flags, keycap sequences) are supported.
@@ -75,7 +75,7 @@ func main() {
 		panic(err)
 	}
 	rawDir = filepath.Join(projectRoot, "assets", "emoji", "raw")
-	outFile = filepath.Join(emojiDir, "emoji.go")
+	outFile = filepath.Join(emojiDir, "sprites.go")
 	pngFile = filepath.Join(emojiDir, "sprites.png")
 
 	glyphs, maxSeq, err := collect()
@@ -186,13 +186,9 @@ func writeOutput(pngFileName string, index map[string][2]int, count, maxSeq int)
 	var b bytes.Buffer
 	b.WriteString(headerComment)
 	b.WriteString("package emoji\n\n")
-	b.WriteString("import (\n\t_ \"embed\"\n\t\"bytes\"\n\t\"image\"\n\t\"image/draw\"\n\t\"image/png\"\n\t\"sync\"\n)\n\n")
 	b.WriteString(fmt.Sprintf("// Packed %d emoji at %dx%d cells, columns=%d, generated %s\n", count, cellW, cellH, columns, time.Now().UTC().Format(time.RFC3339)))
 	b.WriteString(fmt.Sprintf("const CellW = %d\nconst CellH = %d\nconst SheetCols = %d\nconst MaxSequence = %d\n\n", cellW, cellH, columns, maxSeq))
-	b.WriteString(fmt.Sprintf("//go:embed %s\n", pngFileName))
-	b.WriteString("var spritesPNG []byte\n\n")
 
-	b.WriteString("type Glyph struct { X, Y int }\n\n")
 	b.WriteString("// Index maps a Unicode sequence (string of runes) to sprite sheet cell coordinates.\n")
 	b.WriteString("var Index = map[string]Glyph{\n")
 	// For deterministic output, gather keys and sort by length desc then lexicographically by bytes.
@@ -212,23 +208,6 @@ func writeOutput(pngFileName string, index map[string][2]int, count, maxSeq int)
 		b.WriteString(fmt.Sprintf("\t%q: {X:%d, Y:%d},\n", k, xy[0], xy[1]))
 	}
 	b.WriteString("}\n\n")
-
-	b.WriteString("var (\n\tsheetOnce sync.Once\n\tsheetImg *image.RGBA\n)\n\n")
-	b.WriteString("func Sheet() *image.RGBA {\n")
-	b.WriteString("\tsheetOnce.Do(func() {\n")
-	b.WriteString("\t\timg, err := png.Decode(bytes.NewReader(spritesPNG))\n")
-	b.WriteString("\t\tif err != nil {\n")
-	b.WriteString("\t\t\treturn\n")
-	b.WriteString("\t\t}\n")
-	b.WriteString("\t\tif rgba, ok := img.(*image.RGBA); ok {\n")
-	b.WriteString("\t\t\tsheetImg = rgba\n")
-	b.WriteString("\t\t} else {\n")
-	b.WriteString("\t\t\trb := image.NewRGBA(img.Bounds())\n")
-	b.WriteString("\t\t\tdraw.Draw(rb, rb.Bounds(), img, image.Point{}, draw.Src)\n")
-	b.WriteString("\t\t\tsheetImg = rb\n")
-	b.WriteString("\t\t}\n")
-	b.WriteString("\t})\n")
-	b.WriteString("\treturn sheetImg\n}\n")
 
 	return os.WriteFile(outFile, b.Bytes(), 0o644)
 }
