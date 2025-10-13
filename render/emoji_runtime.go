@@ -5,38 +5,23 @@ package render
 import (
 	"image"
 	"image/draw"
-	"sync"
 
 	"tidbyt.dev/pixlet/fonts/emoji"
 )
 
-// hasAnyEmojiSequence returns true if content contains any sequence that could be an emoji.
-// Cheap prefilter to decide whether to invoke the more expensive segmentation.
-var (
-	buildFirstRuneIndexOnce sync.Once
-	emojiFirstRune          map[rune]struct{}
-)
-
-// hasAnyEmojiSequence quickly determines if a string contains at least one
-// candidate emoji start rune (including multi-codepoint sequences) by
-// consulting a precomputed first-rune index built from Index keys.
-func hasAnyEmojiSequence(s string) bool {
+// containsEmoji determines if a string contains at least one supported emoji
+func containsEmoji(s string) bool {
 	idx := emoji.Index
 	if len(s) == 0 || len(idx) == 0 {
 		return false
 	}
-	buildFirstRuneIndexOnce.Do(func() {
-		emojiFirstRune = make(map[rune]struct{})
-		for k := range idx {
-			rs := []rune(k)
-			if len(rs) > 0 {
-				emojiFirstRune[rs[0]] = struct{}{}
+	runes := []rune(s)
+	for i := range len(runes) {
+		maxL := min(len(runes)-i, emoji.MaxSequence)
+		for l := maxL; l >= 1; l-- {
+			if _, ok := idx[string(runes[i:i+l])]; ok {
+				return true
 			}
-		}
-	})
-	for _, r := range s {
-		if _, ok := emojiFirstRune[r]; ok {
-			return true
 		}
 	}
 	return false

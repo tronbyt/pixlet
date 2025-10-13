@@ -10,67 +10,72 @@ import (
 
 func TestTextEmojiDetection(t *testing.T) {
 	tests := []struct {
-		name        string
-		content     string
+		name         string
+		content      string
 		shouldDetect bool
 	}{
 		{
-			name:        "plain text",
-			content:     "Hello World",
+			name:         "plain text",
+			content:      "Hello World",
 			shouldDetect: false,
 		},
 		{
-			name:        "single emoji",
-			content:     "😀",
-			shouldDetect: true,
-		},
-		{
-			name:        "multiple emojis",
-			content:     "😀😂😍",
-			shouldDetect: true,
-		},
-		{
-			name:        "mixed text and emoji",
-			content:     "Hello 😀 World",
-			shouldDetect: true,
-		},
-		{
-			name:        "emoji at start",
-			content:     "😎 Cool text",
-			shouldDetect: true,
-		},
-		{
-			name:        "emoji at end",
-			content:     "Cool text 😎",
-			shouldDetect: true,
-		},
-		{
-			name:        "flag emojis",
-			content:     "🇺🇸🇬🇧🇫🇷",
-			shouldDetect: true,
-		},
-		{
-			name:        "complex emoji sequences",
-			content:     "👨‍👩‍👧‍👦",
-			shouldDetect: true,
-		},
-		{
-			name:        "empty string",
-			content:     "",
+			name:         "numbers",
+			content:      "123",
 			shouldDetect: false,
 		},
 		{
-			name:        "only letters and spaces",
-			content:     "abc def ghi",
+			name:         "single emoji",
+			content:      "😀",
+			shouldDetect: true,
+		},
+		{
+			name:         "multiple emojis",
+			content:      "😀😂😍",
+			shouldDetect: true,
+		},
+		{
+			name:         "mixed text and emoji",
+			content:      "Hello 😀 World",
+			shouldDetect: true,
+		},
+		{
+			name:         "emoji at start",
+			content:      "😎 Cool text",
+			shouldDetect: true,
+		},
+		{
+			name:         "emoji at end",
+			content:      "Cool text 😎",
+			shouldDetect: true,
+		},
+		{
+			name:         "flag emojis",
+			content:      "🇺🇸🇬🇧🇫🇷",
+			shouldDetect: true,
+		},
+		{
+			name:         "complex emoji sequences",
+			content:      "👨‍👩‍👧‍👦",
+			shouldDetect: true,
+		},
+		{
+			name:         "empty string",
+			content:      "",
+			shouldDetect: false,
+		},
+		{
+			name:         "only letters and spaces",
+			content:      "abc def ghi",
 			shouldDetect: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			detected := hasAnyEmojiSequence(tt.content)
+			detected := containsEmoji(tt.content)
 			if detected != tt.shouldDetect {
-				t.Errorf("hasAnyEmojiSequence(%q) = %v, want %v", tt.content, detected, tt.shouldDetect)
+				t.Errorf("containsEmoji(%q) = %v, want %v", tt.content, detected, tt.shouldDetect)
 			}
 		})
 	}
@@ -78,10 +83,10 @@ func TestTextEmojiDetection(t *testing.T) {
 
 func TestTextWidgetWithEmojis(t *testing.T) {
 	tests := []struct {
-		name     string
-		content  string
-		font     string
-		wantErr  bool
+		name    string
+		content string
+		font    string
+		wantErr bool
 	}{
 		{
 			name:    "single emoji with default font",
@@ -332,7 +337,7 @@ func BenchmarkEmojiDetection(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		for _, s := range testStrings {
-			hasAnyEmojiSequence(s)
+			containsEmoji(s)
 		}
 	}
 }

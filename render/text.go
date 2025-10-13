@@ -65,7 +65,7 @@ func (t *Text) Init() error {
 	}
 
 	// Check if content contains emojis
-	if hasAnyEmojiSequence(t.Content) {
+	if containsEmoji(t.Content) {
 		return t.initWithEmojis(face)
 	}
 
