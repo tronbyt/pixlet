@@ -3,9 +3,6 @@ package render
 //go:generate go run ./gen/emoji_pack.go
 
 import (
-	"image"
-	"image/draw"
-
 	"tidbyt.dev/pixlet/fonts/emoji"
 )
 
@@ -72,23 +69,4 @@ func segmentEmoji(s string) []segment {
 type segment struct {
 	emoji bool
 	text  string // either a plain text run or the exact emoji sequence string
-}
-
-// drawEmojiSequence renders an emoji (sequence) at x, baseline-aligned.
-// Returns advance width in pixels.
-func drawEmojiSequence(dst draw.Image, seq string, x, baselineY int) int {
-	g, ok := emoji.Index[seq]
-	if !ok {
-		return 0
-	}
-	sheet, err := emoji.Sheet()
-	if err != nil {
-		return 0
-	}
-	cellX := g.X * emoji.CellW
-	cellY := g.Y * emoji.CellH
-	y := baselineY - emoji.CellH
-	r := image.Rect(cellX, cellY, cellX+emoji.CellW, cellY+emoji.CellH)
-	draw.Draw(dst, r.Add(image.Pt(x, y)).Sub(r.Min), sheet, r.Min, draw.Over)
-	return emoji.CellW
 }

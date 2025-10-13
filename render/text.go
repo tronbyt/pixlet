@@ -166,8 +166,10 @@ func (t *Text) initWithEmojis(face font.Face) error {
 	for _, seg := range segments {
 		if seg.emoji {
 			// Draw emoji using the emoji system
-			advance := drawEmojiSequence(rgba, seg.text, x, baselineY)
-			x += advance
+			if srcImg, err := emoji.Get(seg.text); err == nil {
+				dc.DrawImage(srcImg, x, baselineY-srcImg.Bounds().Dy())
+				x += srcImg.Bounds().Dx()
+			}
 		} else {
 			// Draw regular text
 			dc.DrawString(seg.text, float64(x), float64(baselineY))

@@ -3,7 +3,6 @@ package render
 import (
 	"fmt"
 	"image"
-	"image/draw"
 
 	"github.com/tidbyt/gg"
 	"tidbyt.dev/pixlet/fonts/emoji"
@@ -56,27 +55,10 @@ func (e *Emoji) Init() error {
 		return fmt.Errorf("emoji string cannot be empty")
 	}
 
-	// Check if the emoji exists in our index
-	point, exists := emoji.Index[e.EmojiStr]
-	if !exists {
-		return fmt.Errorf("emoji %q not found in emoji index", e.EmojiStr)
-	}
-
-	// Get the emoji sprite sheet
-	sheet, err := emoji.Sheet()
+	srcImg, err := emoji.Get(e.EmojiStr)
 	if err != nil {
-		return fmt.Errorf("failed to load emoji sheet: %w", err)
+		return fmt.Errorf("failed to get emoji: %w", err)
 	}
-
-	// Extract the emoji from the sprite sheet
-	srcRect := image.Rect(
-		point.X*emoji.CellW, point.Y*emoji.CellH,
-		(point.X+1)*emoji.CellW, (point.Y+1)*emoji.CellH,
-	)
-
-	// Create source image for this emoji
-	srcImg := image.NewRGBA(image.Rect(0, 0, emoji.CellW, emoji.CellH))
-	draw.Draw(srcImg, srcImg.Bounds(), sheet, srcRect.Min, draw.Src)
 
 	// Calculate scaled dimensions (maintaining aspect ratio)
 	// Emojis are square (CellW == CellH), so width = height
