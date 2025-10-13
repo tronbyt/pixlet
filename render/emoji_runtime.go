@@ -7,7 +7,7 @@ import (
 	"image/draw"
 	"sync"
 
-	emoji "tidbyt.dev/pixlet/fonts/emoji"
+	"tidbyt.dev/pixlet/fonts/emoji"
 )
 
 // hasAnyEmojiSequence returns true if content contains any sequence that could be an emoji.
@@ -96,8 +96,8 @@ func drawEmojiSequence(dst draw.Image, seq string, x, baselineY int) int {
 	if !ok {
 		return 0
 	}
-	sheet := emoji.Sheet()
-	if sheet == nil {
+	sheet, err := emoji.Sheet()
+	if err != nil {
 		return 0
 	}
 	cellX := g.X * emoji.CellW

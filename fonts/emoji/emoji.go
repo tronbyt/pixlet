@@ -13,15 +13,18 @@ import (
 var spritesPNG []byte
 
 var (
-	sheetOnce sync.Once
-	sheetImg  *image.RGBA
+	sheetImg *image.RGBA
+	mu       sync.Mutex
 )
 
-func Sheet() *image.RGBA {
-	sheetOnce.Do(func() {
+func Sheet() (*image.RGBA, error) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if sheetImg == nil {
 		img, err := png.Decode(bytes.NewReader(spritesPNG))
 		if err != nil {
-			return
+			return nil, err
 		}
 		if rgba, ok := img.(*image.RGBA); ok {
 			sheetImg = rgba
@@ -30,6 +33,7 @@ func Sheet() *image.RGBA {
 			draw.Draw(rb, rb.Bounds(), img, image.Point{}, draw.Src)
 			sheetImg = rb
 		}
-	})
-	return sheetImg
+	}
+
+	return sheetImg, nil
 }

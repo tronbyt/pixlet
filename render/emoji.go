@@ -63,9 +63,9 @@ func (e *Emoji) Init() error {
 	}
 
 	// Get the emoji sprite sheet
-	sheet := emoji.Sheet()
-	if sheet == nil {
-		return fmt.Errorf("failed to load emoji sheet")
+	sheet, err := emoji.Sheet()
+	if err != nil {
+		return fmt.Errorf("failed to load emoji sheet: %w", err)
 	}
 
 	// Extract the emoji from the sprite sheet
