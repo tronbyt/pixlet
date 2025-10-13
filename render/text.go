@@ -64,17 +64,17 @@ func (t *Text) Init() error {
 	}
 
 	// Check if content contains emojis
-	segments, hasEmoji := segmentEmoji(t.Content)
+	segments, hasEmoji := emoji.SegmentString(t.Content)
 
 	dc := gg.NewContext(0, 0)
 	dc.SetFontFace(face)
 
 	var width int
 	for _, seg := range segments {
-		if seg.emoji {
+		if seg.IsEmoji {
 			width += emoji.CellW // emoji width is CellW (10px)
 		} else {
-			w, _ := dc.MeasureString(seg.text)
+			w, _ := dc.MeasureString(seg.Text)
 			width += int(w)
 		}
 	}
@@ -110,16 +110,16 @@ func (t *Text) Init() error {
 	baselineY := height - descent - t.Offset
 
 	for _, seg := range segments {
-		if seg.emoji {
+		if seg.IsEmoji {
 			// Draw emoji using the emoji system
-			if srcImg, err := emoji.Get(seg.text); err == nil {
+			if srcImg, err := emoji.Get(seg.Text); err == nil {
 				dc.DrawImage(srcImg, x, baselineY-srcImg.Bounds().Dy())
 				x += srcImg.Bounds().Dx()
 			}
 		} else {
 			// Draw regular text
-			dc.DrawString(seg.text, float64(x), float64(baselineY))
-			w, _ := dc.MeasureString(seg.text)
+			dc.DrawString(seg.Text, float64(x), float64(baselineY))
+			w, _ := dc.MeasureString(seg.Text)
 			x += int(w)
 		}
 
