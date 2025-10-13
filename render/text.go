@@ -6,6 +6,7 @@ import (
 
 	"github.com/tidbyt/gg"
 	"golang.org/x/image/font"
+	"tidbyt.dev/pixlet/fonts/emoji"
 )
 
 var (
@@ -116,10 +117,10 @@ func (t *Text) initWithEmojis(face font.Face) error {
 	descent := metrics.Descent.Floor()
 	textHeight := ascent + descent
 
-	// Emoji height is typically emojiCellH (10px)
+	// Emoji height is typically CellH (10px)
 	height := textHeight
-	if emojiCellH > textHeight {
-		height = emojiCellH
+	if emoji.CellH > textHeight {
+		height = emoji.CellH
 	}
 	if t.Height != 0 {
 		height = t.Height
@@ -132,7 +133,7 @@ func (t *Text) initWithEmojis(face font.Face) error {
 
 	for _, seg := range segments {
 		if seg.emoji {
-			totalWidth += emojiCellW // emoji width is emojiCellW (10px)
+			totalWidth += emoji.CellW // emoji width is CellW (10px)
 		} else {
 			w, _ := dc.MeasureString(seg.text)
 			totalWidth += int(w)
