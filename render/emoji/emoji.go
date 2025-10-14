@@ -18,19 +18,19 @@ import (
 const CellH = font.CellH
 
 var (
-	sheetImg *image.NRGBA
-	mu       sync.Mutex
+	sheetImg  *image.NRGBA
+	sheetOnce sync.Once
 )
 
 func Sheet() (*image.NRGBA, error) {
-	mu.Lock()
-	defer mu.Unlock()
+	var err error
 
-	if sheetImg == nil {
-		img, err := png.Decode(bytes.NewReader(font.Sprites))
-		if err != nil {
-			return nil, err
+	sheetOnce.Do(func() {
+		var img image.Image
+		if img, err = png.Decode(bytes.NewReader(font.Sprites)); err != nil {
+			return
 		}
+
 		if nrgba, ok := img.(*image.NRGBA); ok {
 			sheetImg = nrgba
 		} else {
@@ -38,9 +38,9 @@ func Sheet() (*image.NRGBA, error) {
 			draw.Draw(rb, rb.Bounds(), img, image.Point{}, draw.Src)
 			sheetImg = rb
 		}
-	}
+	})
 
-	return sheetImg, nil
+	return sheetImg, err
 }
 
 func Get(s string) (*image.NRGBA, error) {
