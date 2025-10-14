@@ -85,8 +85,8 @@ func (t *Text) Init() error {
 	descent := metrics.Descent.Floor()
 
 	height := ascent + descent
-	if hasEmoji && emoji.CellH > height {
-		height = emoji.CellH
+	if hasEmoji && emoji.MaxHeight > height {
+		height = emoji.MaxHeight
 	}
 	if t.Height != 0 {
 		height = t.Height

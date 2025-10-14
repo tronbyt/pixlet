@@ -3,6 +3,7 @@ package render
 import (
 	"fmt"
 	"image"
+	"math"
 
 	"github.com/tidbyt/gg"
 	"tidbyt.dev/pixlet/render/emoji"
@@ -60,17 +61,22 @@ func (e *Emoji) Init() error {
 		return fmt.Errorf("failed to get emoji: %w", err)
 	}
 
-	// Calculate scaled dimensions (maintaining aspect ratio)
-	// Emojis are square (CellW == CellH), so width = height
-	scaledWidth := e.Height
+	// Calculate scaled dimensions while maintaining the source aspect ratio.
 	scaledHeight := e.Height
+	srcBounds := srcImg.Bounds()
+	srcW, srcH := srcBounds.Dx(), srcBounds.Dy()
+	scaleRatio := float64(scaledHeight) / float64(srcH)
+	scaledWidth := int(math.Round(float64(srcW) * scaleRatio))
+	if scaledWidth <= 0 {
+		scaledWidth = 1
+	}
 
 	// Create the scaled image using gg for high-quality scaling
 	dc := gg.NewContext(scaledWidth, scaledHeight)
 
 	// Scale and draw the emoji
-	scaleX := float64(scaledWidth) / float64(srcImg.Bounds().Dx())
-	scaleY := float64(scaledHeight) / float64(srcImg.Bounds().Dy())
+	scaleX := float64(scaledWidth) / float64(srcW)
+	scaleY := float64(scaledHeight) / float64(srcH)
 
 	dc.Scale(scaleX, scaleY)
 	dc.DrawImage(srcImg, 0, 0)
