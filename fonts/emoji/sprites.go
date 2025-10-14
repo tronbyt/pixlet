@@ -6,7 +6,7 @@ import (
 	"image"
 )
 
-// Packed 1753 emoji at 10x10 cells, columns=64, generated 2025-10-13T02:15:09Z
+// Packed 1753 emoji at 10x10 cells, columns=64
 const CellW = 10
 const CellH = 10
 const SheetCols = 64

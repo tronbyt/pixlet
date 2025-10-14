@@ -36,7 +36,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
@@ -187,7 +186,7 @@ func writeOutput(pngFileName string, index map[string][2]int, count, maxSeq int)
 	b.WriteString(headerComment)
 	b.WriteString("package emoji\n\n")
 	b.WriteString("import (\n\t_ \"embed\"\n\t\"image\"\n)\n\n")
-	b.WriteString(fmt.Sprintf("// Packed %d emoji at %dx%d cells, columns=%d, generated %s\n", count, cellW, cellH, columns, time.Now().UTC().Format(time.RFC3339)))
+	b.WriteString(fmt.Sprintf("// Packed %d emoji at %dx%d cells, columns=%d\n", count, cellW, cellH, columns))
 	b.WriteString(fmt.Sprintf("const CellW = %d\nconst CellH = %d\nconst SheetCols = %d\nconst MaxSequence = %d\n\n", cellW, cellH, columns, maxSeq))
 
 	b.WriteString(fmt.Sprintf("//go:embed %s\n", pngFileName))
