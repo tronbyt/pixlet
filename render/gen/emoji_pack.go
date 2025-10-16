@@ -26,6 +26,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"fmt"
 	"image"
 	"image/draw"
@@ -33,9 +34,10 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 const (
@@ -135,17 +137,11 @@ func collect() ([]glyph, int, error) {
 		return nil
 	})
 	// Stable ordering: by sequence length (desc) then lexicographically by runes.
-	sort.Slice(out, func(i, j int) bool {
-		if len(out[i].Runes) != len(out[j].Runes) {
-			return len(out[i].Runes) > len(out[j].Runes)
+	slices.SortFunc(out, func(a, b glyph) int {
+		if c := cmp.Compare(len(b.Runes), len(a.Runes)); c != 0 {
+			return c // longer first
 		}
-		ri, rj := out[i].Runes, out[j].Runes
-		for k := 0; k < len(ri) && k < len(rj); k++ {
-			if ri[k] != rj[k] {
-				return ri[k] < rj[k]
-			}
-		}
-		return len(ri) < len(rj)
+		return slices.Compare(a.Runes, b.Runes) // lexicographic on rune slices
 	})
 	return out, maxSeq, err
 }
@@ -271,11 +267,11 @@ func writeOutput(pngFileName string, index map[string]image.Rectangle, count, ma
 	for k := range index {
 		keys = append(keys, k)
 	}
-	sort.Slice(keys, func(i, j int) bool {
-		if len([]rune(keys[i])) != len([]rune(keys[j])) {
-			return len([]rune(keys[i])) > len([]rune(keys[j]))
+	slices.SortFunc(keys, func(a, b string) int {
+		if c := cmp.Compare(utf8.RuneCountInString(b), utf8.RuneCountInString(a)); c != 0 {
+			return c // longer first
 		}
-		return keys[i] < keys[j]
+		return cmp.Compare(a, b) // lexicographic
 	})
 	for _, k := range keys {
 		xy := index[k]
