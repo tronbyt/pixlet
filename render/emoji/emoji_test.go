@@ -21,6 +21,14 @@ func TestSegmentString(t *testing.T) {
 			wantHasEmoji: false,
 		},
 		{
+			name:  "numbers",
+			input: "1234567890",
+			want: []Segment{
+				{Text: "1234567890"},
+			},
+			wantHasEmoji: false,
+		},
+		{
 			name:  "single emoji",
 			input: "😀",
 			want: []Segment{
