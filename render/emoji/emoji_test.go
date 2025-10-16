@@ -65,6 +65,22 @@ func TestSegmentString(t *testing.T) {
 			wantHasEmoji: true,
 		},
 		{
+			name:  "plain arrow",
+			input: "↗",
+			want: []Segment{
+				{Text: "↗"},
+			},
+			wantHasEmoji: false,
+		},
+		{
+			name:  "emoji arrow",
+			input: "↗️",
+			want: []Segment{
+				{Text: "↗️", IsEmoji: true},
+			},
+			wantHasEmoji: true,
+		},
+		{
 			name:  "unknown emoji stays in text",
 			input: "Hi 🤷‍♀️ there",
 			want: []Segment{

@@ -136,7 +136,7 @@ func TestEmojiWidgetSize(t *testing.T) {
 		{"small emoji", "😀", 8},
 		{"medium emoji", "🚀", 16},
 		{"large emoji", "🎉", 32},
-		{"very large emoji", "⚡", 48},
+		{"very large emoji", "😁", 48},
 	}
 
 	for _, tt := range tests {

@@ -25,6 +25,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"cmp"
 	"fmt"
@@ -48,10 +49,11 @@ const (
 
 // Computed at runtime.
 var (
-	projectRoot string
-	rawDir      string
-	outFile     string
-	pngFile     string
+	projectRoot    string
+	rawDir         string
+	variationsFile string
+	outFile        string
+	pngFile        string
 )
 
 type glyph struct {
@@ -75,10 +77,16 @@ func main() {
 		panic(err)
 	}
 	rawDir = filepath.Join(projectRoot, "assets", "emoji", "raw")
+	variationsFile = filepath.Join(projectRoot, "assets", "emoji", "emoji-variation-sequences.txt")
 	outFile = filepath.Join(emojiDir, "sprites.go")
 	pngFile = filepath.Join(emojiDir, "sprites.png")
 
-	glyphs, maxSeq, err := collect()
+	emojiVariations, err := collectEmojiVariations()
+	if err != nil {
+		panic(err)
+	}
+
+	glyphs, maxSeq, err := collect(emojiVariations)
 	if err != nil {
 		panic(err)
 	}
@@ -102,7 +110,7 @@ func main() {
 }
 
 // collect scans rawDir for U+....png names.
-func collect() ([]glyph, int, error) {
+func collect(emojiVariations map[string]struct{}) ([]glyph, int, error) {
 	out := []glyph{}
 	maxSeq := 1
 	err := filepath.WalkDir(rawDir, func(path string, d fs.DirEntry, err error) error {
@@ -129,6 +137,12 @@ func collect() ([]glyph, int, error) {
 				return nil
 			}
 			runes = append(runes, rune(v))
+		}
+		if len(runes) > 0 {
+			originalSeq := string(runes)
+			if _, ok := emojiVariations[originalSeq]; ok && runes[len(runes)-1] != '\uFE0F' {
+				runes = append(runes, '\uFE0F')
+			}
 		}
 		if l := len(runes); l > maxSeq {
 			maxSeq = l
@@ -247,6 +261,55 @@ func buildSheet(glyphs []glyph) (*image.NRGBA, map[string]image.Rectangle, int, 
 	}
 
 	return sheet, index, sheetWidth, sheetHeight, maxHeight, maxGlyphWidth
+}
+
+func collectEmojiVariations() (map[string]struct{}, error) {
+	f, err := os.Open(variationsFile)
+	if err != nil {
+		return nil, fmt.Errorf("open emoji variation sequences: %w", err)
+	}
+	defer f.Close()
+
+	sequences := make(map[string]struct{})
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		parts := strings.Split(line, ";")
+		if len(parts) < 2 {
+			continue
+		}
+		if strings.TrimSpace(parts[1]) != "emoji style" {
+			continue
+		}
+		codepoints := strings.Fields(parts[0])
+		if len(codepoints) == 0 {
+			continue
+		}
+		if !strings.EqualFold(codepoints[len(codepoints)-1], "FE0F") {
+			continue
+		}
+		runes := make([]rune, 0, len(codepoints)-1)
+		valid := true
+		for _, cp := range codepoints[:len(codepoints)-1] {
+			v, err := strconv.ParseUint(cp, 16, 32)
+			if err != nil {
+				valid = false
+				break
+			}
+			runes = append(runes, rune(v))
+		}
+		if valid && len(runes) != 0 {
+			sequences[string(runes)] = struct{}{}
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("parse emoji variation sequences: %w", err)
+	}
+	return sequences, nil
 }
 
 func writeOutput(pngFileName string, index map[string]image.Rectangle, count, maxSeq, sheetW, sheetH, maxHeight, maxWidth int) error {
