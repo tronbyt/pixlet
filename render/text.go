@@ -5,7 +5,7 @@ import (
 	"image/color"
 
 	"github.com/tidbyt/gg"
-	"golang.org/x/image/font"
+	"tidbyt.dev/pixlet/render/emoji"
 )
 
 var (
@@ -64,17 +64,17 @@ func (t *Text) Init() error {
 	}
 
 	// Check if content contains emojis
-	if hasAnyEmojiSequence(t.Content) {
-		return t.initWithEmojis(face)
-	}
+	segments, hasEmoji := emoji.SegmentString(t.Content)
 
 	dc := gg.NewContext(0, 0)
 	dc.SetFontFace(face)
 
-	w, _ := dc.MeasureString(t.Content)
-	width := int(w)
+	var width int
+	for _, seg := range segments {
+		width += seg.Width(dc)
+	}
 
-	// If the width of the text is longer then the max, cut off the size of the
+	// If the width of the text is longer than the max, cut off the size of the
 	// image so it's not unbounded.
 	if width > MaxWidth {
 		width = MaxWidth
@@ -85,6 +85,9 @@ func (t *Text) Init() error {
 	descent := metrics.Descent.Floor()
 
 	height := ascent + descent
+	if hasEmoji && emoji.MaxHeight > height {
+		height = emoji.MaxHeight
+	}
 	if t.Height != 0 {
 		height = t.Height
 	}
@@ -97,82 +100,10 @@ func (t *Text) Init() error {
 		dc.SetColor(DefaultFontColor)
 	}
 
-	dc.DrawString(t.Content, 0, float64(height-descent-t.Offset))
-
-	t.img = dc.Image()
-
-	return nil
-}
-
-func (t *Text) initWithEmojis(face font.Face) error {
-	segments := segmentEmoji(t.Content)
-	if len(segments) == 0 {
-		return nil
-	}
-
-	// Calculate total width and height needed
-	metrics := face.Metrics()
-	ascent := metrics.Ascent.Floor()
-	descent := metrics.Descent.Floor()
-	textHeight := ascent + descent
-
-	// Emoji height is typically emojiCellH (10px)
-	height := textHeight
-	if emojiCellH > textHeight {
-		height = emojiCellH
-	}
-	if t.Height != 0 {
-		height = t.Height
-	}
-
-	// Calculate total width by measuring each segment
-	totalWidth := 0
-	dc := gg.NewContext(0, 0)
-	dc.SetFontFace(face)
-
-	for _, seg := range segments {
-		if seg.emoji {
-			totalWidth += emojiCellW // emoji width is emojiCellW (10px)
-		} else {
-			w, _ := dc.MeasureString(seg.text)
-			totalWidth += int(w)
-		}
-	}
-
-	// Limit width if needed
-	if totalWidth > MaxWidth {
-		totalWidth = MaxWidth
-	}
-
-	// Create the rendering context
-	dc = gg.NewContext(totalWidth, height)
-
-	// Create RGBA image to support drawing emojis with transparency
-	rgba := image.NewRGBA(image.Rect(0, 0, totalWidth, height))
-	dc = gg.NewContextForRGBA(rgba)
-	dc.SetFontFace(face)
-
-	if t.Color != nil {
-		dc.SetColor(t.Color)
-	} else {
-		dc.SetColor(DefaultFontColor)
-	}
-
 	// Render each segment
-	x := 0
-	baselineY := height - descent - t.Offset
-
+	x, y := 0, height-descent-t.Offset
 	for _, seg := range segments {
-		if seg.emoji {
-			// Draw emoji using the emoji system
-			advance := drawEmojiSequence(rgba, seg.text, x, baselineY)
-			x += advance
-		} else {
-			// Draw regular text
-			dc.DrawString(seg.text, float64(x), float64(baselineY))
-			w, _ := dc.MeasureString(seg.text)
-			x += int(w)
-		}
+		x += seg.Draw(dc, x, y)
 
 		// Stop if we exceed max width
 		if x >= MaxWidth {
@@ -180,7 +111,7 @@ func (t *Text) initWithEmojis(face font.Face) error {
 		}
 	}
 
-	t.img = rgba
+	t.img = dc.Image()
 	return nil
 }
 

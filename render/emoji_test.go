@@ -1,8 +1,29 @@
 package render
 
 import (
+	"math"
 	"testing"
+
+	font "tidbyt.dev/pixlet/fonts/emoji"
 )
+
+func scaledWidth(seq string, height int) int {
+	glyph, ok := font.Index[seq]
+	if !ok || glyph.Empty() {
+		return height
+	}
+	innerH := glyph.Dy()
+	if innerH == 0 {
+		return height
+	}
+	totalW := glyph.Dx()
+	ratio := float64(totalW) / float64(innerH)
+	width := int(math.Round(float64(height) * ratio))
+	if width <= 0 {
+		width = 1
+	}
+	return width
+}
 
 func TestEmojiWidget(t *testing.T) {
 	tests := []struct {
@@ -92,9 +113,9 @@ func TestEmojiWidget(t *testing.T) {
 					t.Errorf("Expected height %d, got %d", tt.height, height)
 				}
 
-				// For square emojis, width should equal height
-				if width != tt.height {
-					t.Errorf("Expected width %d (same as height), got %d", tt.height, width)
+				expectedWidth := scaledWidth(tt.emoji, tt.height)
+				if width != expectedWidth {
+					t.Errorf("Expected width %d based on glyph aspect ratio, got %d", expectedWidth, width)
 				}
 
 				// Verify dimensions are positive
@@ -115,7 +136,7 @@ func TestEmojiWidgetSize(t *testing.T) {
 		{"small emoji", "😀", 8},
 		{"medium emoji", "🚀", 16},
 		{"large emoji", "🎉", 32},
-		{"very large emoji", "⚡", 48},
+		{"very large emoji", "😁", 48},
 	}
 
 	for _, tt := range tests {
@@ -132,10 +153,13 @@ func TestEmojiWidgetSize(t *testing.T) {
 
 			width, height := emoji.Size()
 
-			// Both dimensions should match the requested height (square emojis)
-			if width != tt.height || height != tt.height {
-				t.Errorf("Emoji.Size() = (%d, %d), want (%d, %d)",
-					width, height, tt.height, tt.height)
+			if height != tt.height {
+				t.Errorf("Emoji.Size() height = %d, want %d", height, tt.height)
+			}
+
+			expectedWidth := scaledWidth(tt.emoji, tt.height)
+			if width != expectedWidth {
+				t.Errorf("Emoji.Size() width = %d, want %d", width, expectedWidth)
 			}
 
 			// Size should match image bounds

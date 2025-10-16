@@ -8,80 +8,12 @@ import (
 	"github.com/tidbyt/gg"
 )
 
-func TestTextEmojiDetection(t *testing.T) {
-	tests := []struct {
-		name        string
-		content     string
-		shouldDetect bool
-	}{
-		{
-			name:        "plain text",
-			content:     "Hello World",
-			shouldDetect: false,
-		},
-		{
-			name:        "single emoji",
-			content:     "😀",
-			shouldDetect: true,
-		},
-		{
-			name:        "multiple emojis",
-			content:     "😀😂😍",
-			shouldDetect: true,
-		},
-		{
-			name:        "mixed text and emoji",
-			content:     "Hello 😀 World",
-			shouldDetect: true,
-		},
-		{
-			name:        "emoji at start",
-			content:     "😎 Cool text",
-			shouldDetect: true,
-		},
-		{
-			name:        "emoji at end",
-			content:     "Cool text 😎",
-			shouldDetect: true,
-		},
-		{
-			name:        "flag emojis",
-			content:     "🇺🇸🇬🇧🇫🇷",
-			shouldDetect: true,
-		},
-		{
-			name:        "complex emoji sequences",
-			content:     "👨‍👩‍👧‍👦",
-			shouldDetect: true,
-		},
-		{
-			name:        "empty string",
-			content:     "",
-			shouldDetect: false,
-		},
-		{
-			name:        "only letters and spaces",
-			content:     "abc def ghi",
-			shouldDetect: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			detected := hasAnyEmojiSequence(tt.content)
-			if detected != tt.shouldDetect {
-				t.Errorf("hasAnyEmojiSequence(%q) = %v, want %v", tt.content, detected, tt.shouldDetect)
-			}
-		})
-	}
-}
-
 func TestTextWidgetWithEmojis(t *testing.T) {
 	tests := []struct {
-		name     string
-		content  string
-		font     string
-		wantErr  bool
+		name    string
+		content string
+		font    string
+		wantErr bool
 	}{
 		{
 			name:    "single emoji with default font",
@@ -317,22 +249,5 @@ func BenchmarkTextWithEmojis(b *testing.B) {
 				}
 			}
 		})
-	}
-}
-
-func BenchmarkEmojiDetection(b *testing.B) {
-	testStrings := []string{
-		"Plain text with no emojis at all",
-		"😀",
-		"Hello 😀 World",
-		"😀😂😍😎🌈🎉🎊🎁🎈🎂🍰🎉",
-		"Mixed content with 😀 emoji 😂 in 😍 between 😎 words",
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		for _, s := range testStrings {
-			hasAnyEmojiSequence(s)
-		}
 	}
 }

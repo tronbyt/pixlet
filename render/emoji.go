@@ -3,9 +3,10 @@ package render
 import (
 	"fmt"
 	"image"
-	"image/draw"
+	"math"
 
 	"github.com/tidbyt/gg"
+	"tidbyt.dev/pixlet/render/emoji"
 )
 
 // Emoji renders a single emoji at a specified height, maintaining aspect ratio.
@@ -55,39 +56,27 @@ func (e *Emoji) Init() error {
 		return fmt.Errorf("emoji string cannot be empty")
 	}
 
-	// Check if the emoji exists in our index
-	glyph, exists := emojiIndex[e.EmojiStr]
-	if !exists {
-		return fmt.Errorf("emoji %q not found in emoji index", e.EmojiStr)
+	srcImg, err := emoji.Get(e.EmojiStr)
+	if err != nil {
+		return fmt.Errorf("failed to get emoji: %w", err)
 	}
 
-	// Get the emoji sprite sheet
-	sheet := getEmojiSheet()
-	if sheet == nil {
-		return fmt.Errorf("failed to load emoji sheet")
-	}
-
-	// Extract the emoji from the sprite sheet
-	srcRect := image.Rect(
-		glyph.X*emojiCellW, glyph.Y*emojiCellH,
-		(glyph.X+1)*emojiCellW, (glyph.Y+1)*emojiCellH,
-	)
-
-	// Create source image for this emoji
-	srcImg := image.NewRGBA(image.Rect(0, 0, emojiCellW, emojiCellH))
-	draw.Draw(srcImg, srcImg.Bounds(), sheet, srcRect.Min, draw.Src)
-
-	// Calculate scaled dimensions (maintaining aspect ratio)
-	// Emojis are square (emojiCellW == emojiCellH), so width = height
-	scaledWidth := e.Height
+	// Calculate scaled dimensions while maintaining the source aspect ratio.
 	scaledHeight := e.Height
+	srcBounds := srcImg.Bounds()
+	srcW, srcH := srcBounds.Dx(), srcBounds.Dy()
+	scaleRatio := float64(scaledHeight) / float64(srcH)
+	scaledWidth := int(math.Round(float64(srcW) * scaleRatio))
+	if scaledWidth <= 0 {
+		scaledWidth = 1
+	}
 
 	// Create the scaled image using gg for high-quality scaling
 	dc := gg.NewContext(scaledWidth, scaledHeight)
 
 	// Scale and draw the emoji
-	scaleX := float64(scaledWidth) / float64(emojiCellW)
-	scaleY := float64(scaledHeight) / float64(emojiCellH)
+	scaleX := float64(scaledWidth) / float64(srcW)
+	scaleY := float64(scaledHeight) / float64(srcH)
 
 	dc.Scale(scaleX, scaleY)
 	dc.DrawImage(srcImg, 0, 0)
