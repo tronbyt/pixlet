@@ -230,3 +230,73 @@ out the 3x5 version if you are also constrained on width.
 - Cap height: 4
 - Ascent: 5
 - Descent: 0
+
+### Terminus Variable
+By [Dimitar Toshkov Zhekov](https://terminus-font.sourceforge.net/)
+
+![Terminus Variable](img/terminus-variable.png)
+
+Terminus Variable is a family of bitmap fonts that supports multiple pixel sizes. Each size ships in a normal weight, with matching light weight variants at 14px and larger. All styles include 1356 glyphs (ISO10646-1 coverage). Numeric glyphs, the colon, and the space character share the same width, so clock layouts and other tabular number displays stay aligned.
+
+#### terminus-12
+- Advance: 2-7
+- Height: 12
+- Cap height: 8
+- Ascent: 10
+- Descent: 2
+
+#### terminus-14 / terminus-14-light
+- Advance: 3-10
+- Height: 14
+- Cap height: 10
+- Ascent: 12
+- Descent: 2
+
+#### terminus-16 / terminus-16-light
+- Advance: 3-10
+- Height: 16
+- Cap height: 10
+- Ascent: 12
+- Descent: 4
+
+#### terminus-18 / terminus-18-light
+- Advance: 3-12
+- Height: 18
+- Cap height: 12
+- Ascent: 15
+- Descent: 3
+
+#### terminus-20 / terminus-20-light
+- Advance: 3-12
+- Height: 20
+- Cap height: 13
+- Ascent: 16
+- Descent: 4
+
+#### terminus-22 / terminus-22-light
+- Advance: 3-13
+- Height: 22
+- Cap height: 14
+- Ascent: 17
+- Descent: 5
+
+#### terminus-24 / terminus-24-light
+- Advance: 3-14
+- Height: 24
+- Cap height: 15
+- Ascent: 19
+- Descent: 5
+
+#### terminus-28 / terminus-28-light
+- Advance: 4-16
+- Height: 28
+- Cap height: 18
+- Ascent: 22
+- Descent: 6
+
+#### terminus-32 / terminus-32-light
+- Advance: 4-18
+- Height: 32
+- Cap height: 20
+- Ascent: 26
+- Descent: 6
