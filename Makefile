@@ -40,10 +40,6 @@ build:
 	$(GO_CMD) build $(LDFLAGS) $(TAGS) -o $(BINARY) tidbyt.dev/pixlet
 	CGO_LDFLAGS=$(CGO_LDFLAGS) $(GO_CMD) build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared library/library.go
 
-embedfonts:
-	$(GO_CMD) run render/gen/embedfonts.go
-	gofmt -s -w ./
-
 widgets:
 	 $(GO_CMD) run runtime/gen/main.go
 	 gofmt -s -w ./
