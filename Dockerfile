@@ -1,27 +1,51 @@
+# syntax=docker/dockerfile:1
+
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.7.0 AS xx
+
+FROM --platform=$BUILDPLATFORM node:24-alpine AS frontend
+WORKDIR /app
+
+COPY package.json package-lock.json .
+RUN npm ci
+
+COPY src src
+COPY public public
+COPY webpack.*.js .babelrc.json .
+RUN npm run build
+
 # Can't use Alpine because of
 # - https://github.com/golang/go/issues/54805: libpixlet.so can't be loaded dynamically
 # - https://github.com/python/cpython/issues/109332: CPython doesn't support musl
-FROM debian:trixie-slim AS builder
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl && \
-    curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        clang \
-        git \
-        golang-go \
-        libwebp-dev \
-        make \
-        nodejs \
-        tzdata && \
-    rm -rf /var/lib/apt/lists/*
-COPY . /pixlet
+FROM --platform=$BUILDPLATFORM golang:1.25.1 AS builder
 WORKDIR /pixlet
-RUN npm install && npm run build && STATIC=1 CC=clang make build
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN --mount=type=cache,target=/var/lib/apt/lists <<EOT
+  set -eux
+  apt-get update
+  apt-get install -y --no-install-recommends \
+    ca-certificates \
+    clang \
+    git \
+    make \
+    tzdata
+EOT
+
+COPY go.mod go.sum .
+RUN go mod download
+
+COPY --from=xx / /
+
+ARG TARGETPLATFORM
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=private <<EOT
+  set -eux
+  apt-get update
+  xx-apt-get install -y --no-install-recommends gcc g++ libwebp-dev
+EOT
+
+COPY . .
+COPY --from=frontend /app/dist dist
+RUN STATIC=1 CC=xx-clang CGO_ENABLED=1 make build GO_CMD=xx-go
 
 FROM scratch
 

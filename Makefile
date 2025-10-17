@@ -1,6 +1,7 @@
 GIT_COMMIT = $(shell git rev-list -1 HEAD)
 ARCH = $(shell uname -m)
 OS = $(shell uname -s)
+GO_CMD = go
 
 ifeq ($(OS),Windows_NT)
 	BINARY = pixlet.exe
@@ -25,7 +26,7 @@ endif
 all: build
 
 test:
-	go test $(TAGS) -v -cover ./...
+	$(GO_CMD) test $(TAGS) -v -cover ./...
 
 clean:
 	rm -f $(BINARY)
@@ -33,18 +34,14 @@ clean:
 	rm -rf ./out
 
 bench:
-	go test -benchmem -benchtime=20s -bench BenchmarkRunAndRender tidbyt.dev/pixlet/encode
+	$(GO_CMD) test -benchmem -benchtime=20s -bench BenchmarkRunAndRender tidbyt.dev/pixlet/encode
 
 build:
-	go build $(LDFLAGS) $(TAGS) -o $(BINARY) tidbyt.dev/pixlet
-	CGO_LDFLAGS=$(CGO_LDFLAGS) go build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared library/library.go
-
-embedfonts:
-	go run render/gen/embedfonts.go
-	gofmt -s -w ./
+	$(GO_CMD) build $(LDFLAGS) $(TAGS) -o $(BINARY) tidbyt.dev/pixlet
+	CGO_LDFLAGS=$(CGO_LDFLAGS) $(GO_CMD) build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared library/library.go
 
 widgets:
-	 go run runtime/gen/main.go
+	 $(GO_CMD) run runtime/gen/main.go
 	 gofmt -s -w ./
 
 release-macos: clean
@@ -57,7 +54,7 @@ release-windows: clean
 	./scripts/release-windows.sh
 
 install-buildifier:
-	go install github.com/bazelbuild/buildtools/buildifier@latest
+	$(GO_CMD) install github.com/bazelbuild/buildtools/buildifier@latest
 
 lint:
 	@ buildifier --version >/dev/null 2>&1 || $(MAKE) install-buildifier

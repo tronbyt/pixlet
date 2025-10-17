@@ -1,0 +1,12 @@
+.github/
+Dockerfile*
+LICENSE.txt
+README.md
+assets/
+dist/_headers
+dist/static
+dist/index.html
+docs/
+examples/
+node_modules/
+scripts/
