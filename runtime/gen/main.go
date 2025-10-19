@@ -280,10 +280,17 @@ type GeneratedType struct {
 	Examples          []string
 }
 
-func nilOrPanic(err error) {
+func must(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func must2[T any](v T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return v
 }
 
 // Given a `reflect.Value`, return all its fields, including fields of anonymous composed types.
@@ -413,26 +420,22 @@ func loadTemplate(path string) *template.Template {
 		"ToLower": strings.ToLower,
 	}
 
-	content, err := tmplFS.ReadFile(path)
-	nilOrPanic(err)
+	content := must2(tmplFS.ReadFile(path))
 
-	tmpl, err := template.New(path).Funcs(funcMap).Parse(string(content))
-	nilOrPanic(err)
-
+	tmpl := must2(template.New(path).Funcs(funcMap).Parse(string(content)))
 	return tmpl
 }
 
 func renderTemplateToFile(tmpl *template.Template, data interface{}, path string) {
-	outf, err := os.Create(path)
-	nilOrPanic(err)
-	defer outf.Close()
-	err = tmpl.Execute(outf, data)
-	nilOrPanic(err)
+	outf := must2(os.Create(path))
+	defer func() {
+		must(outf.Close())
+	}()
+	must(tmpl.Execute(outf, data))
 }
 
 func renderTemplateToBuffer(tmpl *template.Template, data interface{}, buf *bytes.Buffer) {
-	err := tmpl.Execute(buf, data)
-	nilOrPanic(err)
+	must(tmpl.Execute(buf, data))
 }
 
 func renderTemplateToString(tmpl *template.Template, data interface{}) string {
@@ -446,19 +449,15 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 	fset := token.NewFileSet()
 	docs := map[string]string{}
 
-	astPkgs, err := parser.ParseDir(fset, pkg.Directory, nil, parser.ParseComments)
-	nilOrPanic(err)
+	astPkgs := must2(parser.ParseDir(fset, pkg.Directory, nil, parser.ParseComments))
 	pkgDoc := doc.New(astPkgs[pkg.Name], pkg.ImportPath, 0)
-	nilOrPanic(err)
 	for _, type_ := range pkgDoc.Types {
 		docs[type_.Name] = type_.Doc
 	}
 
 	// These match our attribute docs and example blocks
-	docRe, err := regexp.Compile(`(?m)^DOC\(([^)]+)\): +(.+)$`)
-	nilOrPanic(err)
-	exampleRe, err := regexp.Compile(`(?s)EXAMPLE BEGIN(.*?)EXAMPLE END`)
-	nilOrPanic(err)
+	docRe := must2(regexp.Compile(`(?m)^DOC\(([^)]+)\): +(.+)$`))
+	exampleRe := must2(regexp.Compile(`(?s)EXAMPLE BEGIN(.*?)EXAMPLE END`))
 
 	for _, type_ := range types {
 		// Widget doc is full comment sans attribute docs and examples
@@ -500,9 +499,10 @@ func generateCode(pkg Package, types []*GeneratedType) {
 	headerTmpl := loadTemplate(pkg.HeaderTemplate)
 	typeTmpl := loadTemplate(pkg.TypeTemplate)
 
-	outf, err := os.Create(pkg.CodePath)
-	nilOrPanic(err)
-	defer outf.Close()
+	outf := must2(os.Create(pkg.CodePath))
+	defer func() {
+		must(outf.Close())
+	}()
 
 	var buf bytes.Buffer
 	renderTemplateToBuffer(headerTmpl, types, &buf)
@@ -512,9 +512,8 @@ func generateCode(pkg Package, types []*GeneratedType) {
 	}
 
 	// Format and write the source to disk.
-	source, err := format.Source(buf.Bytes())
-	nilOrPanic(err)
-	outf.Write(source)
+	source := must2(format.Source(buf.Bytes()))
+	must2(outf.Write(source))
 }
 
 func generateDocs(pkg Package, types []*GeneratedType) {
