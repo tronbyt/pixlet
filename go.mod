@@ -1,6 +1,6 @@
 module tidbyt.dev/pixlet
 
-go 1.25.1
+go 1.25.2
 
 require (
 	github.com/Code-Hex/Neo-cowsay/v2 v2.0.4
