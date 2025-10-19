@@ -16,7 +16,7 @@ RUN npm run build
 # Can't use Alpine because of
 # - https://github.com/golang/go/issues/54805: libpixlet.so can't be loaded dynamically
 # - https://github.com/python/cpython/issues/109332: CPython doesn't support musl
-FROM --platform=$BUILDPLATFORM golang:1.25.1 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25.3 AS builder
 WORKDIR /pixlet
 
 ARG DEBIAN_FRONTEND=noninteractive
