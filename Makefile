@@ -63,7 +63,7 @@ lint:
 format: lint
 
 gzip_fonts:
-	$(GO_CMD) generate -x -tags gzip_fonts ./fonts
+	$(GO_CMD) generate -x ./fonts
 
 emoji:
 	$(GO_CMD) run ./render/gen
