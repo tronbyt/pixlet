@@ -41,7 +41,7 @@ build: gzip_fonts
 	CGO_LDFLAGS=$(CGO_LDFLAGS) $(GO_CMD) build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared library/library.go
 
 widgets:
-	 $(GO_CMD) run runtime/gen/main.go
+	 $(GO_CMD) run ./runtime/gen
 	 gofmt -s -w ./
 
 release-macos: clean
