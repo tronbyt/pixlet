@@ -8,8 +8,6 @@ import (
 	"io"
 )
 
-//go:generate sh -c "gzip -nkf *.bdf"
-
 //go:embed *.bdf.gz
 var FS embed.FS
 
