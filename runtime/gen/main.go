@@ -8,6 +8,7 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"go/doc"
 	"go/format"
@@ -24,6 +25,9 @@ import (
 	"tidbyt.dev/pixlet/render"
 	"tidbyt.dev/pixlet/render/animation"
 )
+
+//go:embed *.tmpl */*.tmpl
+var tmplFS embed.FS
 
 // Given a `reflect.Type` representing a pointer or slice, get the pointed-to or element type.
 func decay(t reflect.Type) reflect.Type {
@@ -59,10 +63,10 @@ var Packages = []Package{
 		Name:           "render",
 		Directory:      "./render",
 		ImportPath:     "tidbyt.dev/pixlet/render",
-		HeaderTemplate: "./runtime/gen/header/render.tmpl",
-		TypeTemplate:   "./runtime/gen/type.tmpl",
+		HeaderTemplate: "header/render.tmpl",
+		TypeTemplate:   "type.tmpl",
 		CodePath:       "./runtime/modules/render_runtime/generated.go",
-		DocTemplate:    "./runtime/gen/docs/render.tmpl",
+		DocTemplate:    "docs/render.tmpl",
 		DocPath:        "./docs/widgets.md",
 		GoRootName:     "Root",
 		GoWidgetName:   "Widget",
@@ -89,10 +93,10 @@ var Packages = []Package{
 		Name:           "animation",
 		Directory:      "./render/animation",
 		ImportPath:     "tidbyt.dev/pixlet/render/animation",
-		HeaderTemplate: "./runtime/gen/header/animation.tmpl",
-		TypeTemplate:   "./runtime/gen/type.tmpl",
+		HeaderTemplate: "header/animation.tmpl",
+		TypeTemplate:   "type.tmpl",
 		CodePath:       "./runtime/modules/animation_runtime/generated.go",
-		DocTemplate:    "./runtime/gen/docs/animation.tmpl",
+		DocTemplate:    "docs/animation.tmpl",
 		DocPath:        "./docs/animation.md",
 		GoRootName:     "render_runtime.Root",
 		GoWidgetName:   "render_runtime.Widget",
@@ -124,49 +128,49 @@ var TypeMap = map[reflect.Type]Type{
 	toDecayedType(new(string)): {
 		GoType:       "starlark.String",
 		DocType:      "str",
-		TemplatePath: "./runtime/gen/attr/string.tmpl",
+		TemplatePath: "attr/string.tmpl",
 	},
 	toDecayedType(new(int)): {
 		GoType:       "starlark.Int",
 		DocType:      "int",
-		TemplatePath: "./runtime/gen/attr/int.tmpl",
+		TemplatePath: "attr/int.tmpl",
 	},
 	toDecayedType(new(int32)): {
 		GoType:       "starlark.Int",
 		DocType:      "int",
-		TemplatePath: "./runtime/gen/attr/int32.tmpl",
+		TemplatePath: "attr/int32.tmpl",
 	},
 	toDecayedType(new(float64)): {
 		GoType:       "starlark.Value",
 		DocType:      "float / int",
-		TemplatePath: "./runtime/gen/attr/float.tmpl",
+		TemplatePath: "attr/float.tmpl",
 	},
 	toDecayedType(new(bool)): {
 		GoType:       "starlark.Bool",
 		DocType:      "bool",
-		TemplatePath: "./runtime/gen/attr/bool.tmpl",
+		TemplatePath: "attr/bool.tmpl",
 	},
 
 	// Render types
 	toDecayedType(new(render.Insets)): {
 		GoType:       "starlark.Value",
 		DocType:      "int / (int, int, int, int)",
-		TemplatePath: "./runtime/gen/attr/insets.tmpl",
+		TemplatePath: "attr/insets.tmpl",
 	},
 	toDecayedType(new(render.Widget)): {
 		GoType:       "starlark.Value",
 		DocType:      "Widget",
-		TemplatePath: "./runtime/gen/attr/child.tmpl",
+		TemplatePath: "attr/child.tmpl",
 	},
 	toDecayedType(new([]render.Widget)): {
 		GoType:       "*starlark.List",
 		DocType:      "[Widget]",
-		TemplatePath: "./runtime/gen/attr/children.tmpl",
+		TemplatePath: "attr/children.tmpl",
 	},
 	toDecayedType(new(color.Color)): {
 		GoType:        "starlark.String",
 		DocType:       `color`,
-		TemplatePath:  "./runtime/gen/attr/color.tmpl",
+		TemplatePath:  "attr/color.tmpl",
 		GenerateField: true,
 	},
 
@@ -174,13 +178,13 @@ var TypeMap = map[reflect.Type]Type{
 	toDecayedType(new([]color.Color)): {
 		GoType:        "*starlark.List",
 		DocType:       `[color]`,
-		TemplatePath:  "./runtime/gen/attr/colors.tmpl",
+		TemplatePath:  "attr/colors.tmpl",
 		GenerateField: true,
 	},
 	toDecayedType(new([]float64)): {
 		GoType:        "*starlark.List",
 		DocType:       `[float]`,
-		TemplatePath:  "./runtime/gen/attr/weights.tmpl",
+		TemplatePath:  "attr/weights.tmpl",
 		GenerateField: true,
 	},
 
@@ -188,57 +192,57 @@ var TypeMap = map[reflect.Type]Type{
 	toDecayedType(new([2]float64)): {
 		GoType:       "starlark.Tuple",
 		DocType:      "(float, float)",
-		TemplatePath: "./runtime/gen/attr/datapoint.tmpl",
+		TemplatePath: "attr/datapoint.tmpl",
 	},
 	toDecayedType(new([][2]float64)): {
 		GoType:       "*starlark.List",
 		DocType:      "[(float, float)]",
-		TemplatePath: "./runtime/gen/attr/dataseries.tmpl",
+		TemplatePath: "attr/dataseries.tmpl",
 	},
 
 	// Animation types
 	toDecayedType(new(animation.Origin)): {
 		GoType:       "starlark.Value",
 		DocType:      "Origin",
-		TemplatePath: "./runtime/gen/attr/origin.tmpl",
+		TemplatePath: "attr/origin.tmpl",
 	},
 	toDecayedType(new(animation.Curve)): {
 		GoType:       "starlark.Value",
 		DocType:      `str / function`,
-		TemplatePath: "./runtime/gen/attr/curve.tmpl",
+		TemplatePath: "attr/curve.tmpl",
 	},
 	toDecayedType(new(animation.Direction)): {
 		GoType:        "starlark.String",
 		DocType:       `str`,
-		TemplatePath:  "./runtime/gen/attr/direction.tmpl",
+		TemplatePath:  "attr/direction.tmpl",
 		GenerateField: true,
 	},
 	toDecayedType(new(animation.FillMode)): {
 		GoType:        "starlark.String",
 		DocType:       `str`,
-		TemplatePath:  "./runtime/gen/attr/fill_mode.tmpl",
+		TemplatePath:  "attr/fill_mode.tmpl",
 		GenerateField: true,
 	},
 	toDecayedType(new(animation.Rounding)): {
 		GoType:        "starlark.String",
 		DocType:       `str`,
-		TemplatePath:  "./runtime/gen/attr/rounding.tmpl",
+		TemplatePath:  "attr/rounding.tmpl",
 		GenerateField: true,
 	},
 	toDecayedType(new(animation.Percentage)): {
 		GoType:       "starlark.Value",
 		DocType:      `float`,
-		TemplatePath: "./runtime/gen/attr/percentage.tmpl",
+		TemplatePath: "attr/percentage.tmpl",
 	},
 	toDecayedType(new([]animation.Keyframe)): {
 		GoType:       "*starlark.List",
 		DocType:      "[Keyframe]",
-		TemplatePath: "./runtime/gen/attr/keyframes.tmpl",
+		TemplatePath: "attr/keyframes.tmpl",
 	},
 	toDecayedType(new([]animation.Transform)): {
 		GoType:       "*starlark.List",
 		DocType:      "[Transform]",
-		TemplatePath: "./runtime/gen/attr/transforms.tmpl",
+		TemplatePath: "attr/transforms.tmpl",
 	},
 }
 
@@ -379,15 +383,15 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 			continue
 		}
 
-		if attr, err := toGeneratedAttribute(typ, field); err == nil {
-			result.Attributes = append(result.Attributes, attr)
+		if attribute, err := toGeneratedAttribute(typ, field); err == nil {
+			result.Attributes = append(result.Attributes, attribute)
 
 			if t, ok := TypeMap[field.Type]; ok {
-				attr.GoType = t.GoType
-				attr.GoWidgetName = pkg.GoWidgetName
-				attr.DocType = t.DocType
-				attr.Template = loadTemplate("attr", t.TemplatePath)
-				attr.GenerateField = t.GenerateField
+				attribute.GoType = t.GoType
+				attribute.GoWidgetName = pkg.GoWidgetName
+				attribute.DocType = t.DocType
+				attribute.Template = loadTemplate(t.TemplatePath)
+				attribute.GenerateField = t.GenerateField
 			} else {
 				return nil, fmt.Errorf("%s.%s has unsupported type", typ.Name(), field.Name)
 			}
@@ -404,18 +408,18 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 	return result, nil
 }
 
-func loadTemplate(name, path string) *template.Template {
+func loadTemplate(path string) *template.Template {
 	funcMap := template.FuncMap{
 		"ToLower": strings.ToLower,
 	}
 
-	content, err := os.ReadFile(path)
+	content, err := tmplFS.ReadFile(path)
 	nilOrPanic(err)
 
-	template, err := template.New(name).Funcs(funcMap).Parse(string(content))
+	tmpl, err := template.New(path).Funcs(funcMap).Parse(string(content))
 	nilOrPanic(err)
 
-	return template
+	return tmpl
 }
 
 func renderTemplateToFile(tmpl *template.Template, data interface{}, path string) {
@@ -493,8 +497,8 @@ func generateCode(pkg Package, types []*GeneratedType) {
 	}
 
 	// Then render templates for the header and for each type.
-	headerTmpl := loadTemplate("header", pkg.HeaderTemplate)
-	typeTmpl := loadTemplate("type", pkg.TypeTemplate)
+	headerTmpl := loadTemplate(pkg.HeaderTemplate)
+	typeTmpl := loadTemplate(pkg.TypeTemplate)
 
 	outf, err := os.Create(pkg.CodePath)
 	nilOrPanic(err)
@@ -514,9 +518,8 @@ func generateCode(pkg Package, types []*GeneratedType) {
 }
 
 func generateDocs(pkg Package, types []*GeneratedType) {
-	template := loadTemplate("docs", pkg.DocTemplate)
-
-	renderTemplateToFile(template, types, pkg.DocPath)
+	tmpl := loadTemplate(pkg.DocTemplate)
+	renderTemplateToFile(tmpl, types, pkg.DocPath)
 }
 
 func main() {
