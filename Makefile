@@ -7,18 +7,18 @@ ifeq ($(OS),Windows_NT)
 	BINARY = pixlet.exe
 	LIBRARY = pixlet.dll
 	LDFLAGS = -ldflags="-s '-extldflags=-static -lsharpyuv' -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
-	TAGS = -tags timetzdata
+	TAGS = -tags timetzdata,gzip_fonts
 else
 	BINARY = pixlet
 	LIBRARY = libpixlet.so
 	ifeq ($(STATIC),1)
-		TAGS = -tags netgo,osusergo
+		TAGS = -tags netgo,osusergo,gzip_fonts
 		LDFLAGS = -ldflags="-s -w -linkmode=external '-extldflags=-static -lsharpyuv -lm' -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
 		ifeq ($(OS),Linux)
 			CGO_LDFLAGS="-Wl,-Bstatic -lwebp -lwebpdemux -lwebpmux -lsharpyuv -Wl,-Bdynamic"
 		endif
 	else
-		TAGS =
+		TAGS = -tags gzip_fonts
 		LDFLAGS = -ldflags="-s -w -X 'tidbyt.dev/pixlet/cmd.Version=$(GIT_COMMIT)'"
 	endif
 endif
@@ -36,7 +36,7 @@ clean:
 bench:
 	$(GO_CMD) test -benchmem -benchtime=20s -bench BenchmarkRunAndRender tidbyt.dev/pixlet/encode
 
-build:
+build: gzip_fonts
 	$(GO_CMD) build $(LDFLAGS) $(TAGS) -o $(BINARY) tidbyt.dev/pixlet
 	CGO_LDFLAGS=$(CGO_LDFLAGS) $(GO_CMD) build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared library/library.go
 
@@ -61,3 +61,6 @@ lint:
 	buildifier -r ./
 
 format: lint
+
+gzip_fonts:
+	$(GO_CMD) generate -x -tags gzip_fonts ./fonts
