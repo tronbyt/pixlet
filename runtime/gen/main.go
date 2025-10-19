@@ -61,13 +61,13 @@ type Package struct {
 var Packages = []Package{
 	{
 		Name:           "render",
-		Directory:      "./render",
+		Directory:      "render",
 		ImportPath:     "tidbyt.dev/pixlet/render",
 		HeaderTemplate: "header/render.tmpl",
 		TypeTemplate:   "type.tmpl",
-		CodePath:       "./runtime/modules/render_runtime/generated.go",
+		CodePath:       "runtime/modules/render_runtime/generated.go",
 		DocTemplate:    "docs/render.tmpl",
-		DocPath:        "./docs/widgets.md",
+		DocPath:        "docs/widgets.md",
 		GoRootName:     "Root",
 		GoWidgetName:   "Widget",
 		Types: []reflect.Value{
@@ -91,13 +91,13 @@ var Packages = []Package{
 	},
 	{
 		Name:           "animation",
-		Directory:      "./render/animation",
+		Directory:      "render/animation",
 		ImportPath:     "tidbyt.dev/pixlet/render/animation",
 		HeaderTemplate: "header/animation.tmpl",
 		TypeTemplate:   "type.tmpl",
-		CodePath:       "./runtime/modules/animation_runtime/generated.go",
+		CodePath:       "runtime/modules/animation_runtime/generated.go",
 		DocTemplate:    "docs/animation.tmpl",
-		DocPath:        "./docs/animation.md",
+		DocPath:        "docs/animation.md",
 		GoRootName:     "render_runtime.Root",
 		GoWidgetName:   "render_runtime.Widget",
 		Types: []reflect.Value{
