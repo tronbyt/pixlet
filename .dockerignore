@@ -4,9 +4,10 @@ LICENSE.txt
 README.md
 assets/
 dist/_headers
-dist/static
 dist/index.html
+dist/static
 docs/
 examples/
+fonts/*.gz
 node_modules/
 scripts/
