@@ -120,9 +120,9 @@ func collect(emojiVariations map[string]struct{}) ([]glyph, int, error) {
 				return nil
 			}
 			hexPart := strings.TrimPrefix(p, "U+")
-			v, err := strconv.ParseUint(hexPart, 16, 32)
+			v, err := strconv.ParseInt(hexPart, 16, 32)
 			if err != nil {
-				return nil
+				return err
 			}
 			runes = append(runes, rune(v))
 		}
@@ -285,7 +285,7 @@ func collectEmojiVariations() (map[string]struct{}, error) {
 		runes := make([]rune, 0, len(codepoints)-1)
 		valid := true
 		for _, cp := range codepoints[:len(codepoints)-1] {
-			v, err := strconv.ParseUint(cp, 16, 32)
+			v, err := strconv.ParseInt(cp, 16, 32)
 			if err != nil {
 				valid = false
 				break
