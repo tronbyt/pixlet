@@ -726,6 +726,7 @@ func newEmoji(
 
 	var (
 		emoji  starlark.String
+		width  starlark.Int
 		height starlark.Int
 	)
 
@@ -733,7 +734,8 @@ func newEmoji(
 		"Emoji",
 		args, kwargs,
 		"emoji", &emoji,
-		"height", &height,
+		"width?", &width,
+		"height?", &height,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Emoji: %s", err)
 	}
@@ -741,6 +743,8 @@ func newEmoji(
 	w := &Emoji{}
 
 	w.EmojiStr = emoji.GoString()
+
+	w.Width = int(width.BigInt().Int64())
 
 	w.Height = int(height.BigInt().Int64())
 
@@ -761,7 +765,7 @@ func (w *Emoji) AsRenderWidget() render.Widget {
 
 func (w *Emoji) AttrNames() []string {
 	return []string{
-		"emoji", "height",
+		"emoji", "width", "height",
 	}
 }
 
@@ -771,6 +775,10 @@ func (w *Emoji) Attr(name string) (starlark.Value, error) {
 	case "emoji":
 
 		return starlark.String(w.EmojiStr), nil
+
+	case "width":
+
+		return starlark.MakeInt(int(w.Width)), nil
 
 	case "height":
 

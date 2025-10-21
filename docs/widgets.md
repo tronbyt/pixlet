@@ -164,12 +164,13 @@ used in text rendering.
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `emoji` | `str` |  | **Y** |
-| `height` | `int` | Desired height in pixels (width will be calculated to maintain aspect ratio) | **Y** |
+| `width` | `int` | Scale emoji to this width | N |
+| `height` | `int` | Scale emoji to this height | N |
 
 
 #### Example
 ```
-render.Emoji(emoji="😀", height=32)  // Large smiley face
+render.Emoji(emoji="😀", height=32) // Large smiley face
 ```
 ![](img/widget_Emoji_0.gif)
 

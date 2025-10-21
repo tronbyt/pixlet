@@ -12,6 +12,9 @@ func scaledWidth(seq string, height int) int {
 	if !ok || glyph.Empty() {
 		return height
 	}
+	if height == 0 {
+		return glyph.Dx()
+	}
 	innerH := glyph.Dy()
 	if innerH == 0 {
 		return height
@@ -72,7 +75,7 @@ func TestEmojiWidget(t *testing.T) {
 			name:    "zero height",
 			emoji:   "😀",
 			height:  0,
-			wantErr: true,
+			wantErr: false,
 		},
 		{
 			name:    "negative height",
@@ -109,7 +112,7 @@ func TestEmojiWidget(t *testing.T) {
 
 				// Verify image has correct dimensions
 				width, height := emoji.Size()
-				if height != tt.height {
+				if tt.height != 0 && height != tt.height {
 					t.Errorf("Expected height %d, got %d", tt.height, height)
 				}
 

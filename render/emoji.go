@@ -5,6 +5,7 @@ import (
 	"image"
 	"math"
 
+	"github.com/nfnt/resize"
 	"github.com/tidbyt/gg"
 	"tidbyt.dev/pixlet/render/emoji"
 )
@@ -14,15 +15,16 @@ import (
 // used in text rendering.
 //
 // DOC(Emoji): The Unicode emoji sequence to render
-// DOC(Height): Desired height in pixels (width will be calculated to maintain aspect ratio)
+// DOC(Width): Scale emoji to this width
+// DOC(Height): Scale emoji to this height
 //
 // EXAMPLE BEGIN
-// render.Emoji(emoji="😀", height=32)  // Large smiley face
+// render.Emoji(emoji="😀", height=32) // Large smiley face
 // EXAMPLE END
 type Emoji struct {
 	Widget
-	EmojiStr string `starlark:"emoji,required"`
-	Height   int    `starlark:"height,required"`
+	EmojiStr      string `starlark:"emoji,required"`
+	Width, Height int
 
 	img image.Image
 }
@@ -48,8 +50,8 @@ func (e *Emoji) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangl
 }
 
 func (e *Emoji) Init() error {
-	if e.Height <= 0 {
-		return fmt.Errorf("emoji height must be positive, got %d", e.Height)
+	if e.Height < 0 {
+		return fmt.Errorf("emoji height must not be negative, got %d", e.Height)
 	}
 
 	if e.EmojiStr == "" {
@@ -61,27 +63,42 @@ func (e *Emoji) Init() error {
 		return fmt.Errorf("failed to get emoji: %w", err)
 	}
 
-	// Calculate scaled dimensions while maintaining the source aspect ratio.
-	scaledHeight := e.Height
-	srcBounds := srcImg.Bounds()
-	srcW, srcH := srcBounds.Dx(), srcBounds.Dy()
-	scaleRatio := float64(scaledHeight) / float64(srcH)
-	scaledWidth := int(math.Round(float64(srcW) * scaleRatio))
-	if scaledWidth <= 0 {
-		scaledWidth = 1
+	w, h := srcImg.Bounds().Dx(), srcImg.Bounds().Dy()
+
+	nw, nh := e.Width, e.Height
+	if nw == 0 {
+		nw = int(math.Round(float64(nh) * float64(w) / float64(h)))
+	}
+	if nh == 0 {
+		nh = int(math.Round(float64(nw) * float64(h) / float64(w)))
 	}
 
-	// Create the scaled image using gg for high-quality scaling
-	dc := gg.NewContext(scaledWidth, scaledHeight)
+	// Fast path: exact integer scaling
+	if nw%w == 0 && nh%h == 0 {
+		e.img = resize.Resize(uint(nw), uint(nh), srcImg, resize.NearestNeighbor)
+		return nil
+	}
 
-	// Scale and draw the emoji
-	scaleX := float64(scaledWidth) / float64(srcW)
-	scaleY := float64(scaledHeight) / float64(srcH)
+	// Compute the desired scale and choose the smallest integer >= it.
+	sx := float64(nw) / float64(w)
+	sy := float64(nh) / float64(h)
+	upFactor := int(math.Ceil(math.Max(sx, sy)))
+	if upFactor < 2 {
+		upFactor = 2 // oversample a bit to improve output quality
+	}
 
-	dc.Scale(scaleX, scaleY)
-	dc.DrawImage(srcImg, 0, 0)
+	// Cap to avoid large intermediates
+	const maxFactor = 10
+	if upFactor > maxFactor {
+		upFactor = maxFactor
+	}
 
-	e.img = dc.Image()
+	// Step 1: integer upscale (nearest) to preserve pixel edges
+	upW, upH := w*upFactor, h*upFactor
+	up := resize.Resize(uint(upW), uint(upH), srcImg, resize.NearestNeighbor)
+
+	// Step 2: downscale to final with a smooth filter
+	e.img = resize.Resize(uint(nw), uint(nh), up, resize.Lanczos2)
 	return nil
 }
 
