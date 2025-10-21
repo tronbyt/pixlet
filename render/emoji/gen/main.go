@@ -122,7 +122,7 @@ func collect(emojiVariations map[string]struct{}) ([]glyph, int, error) {
 			hexPart := strings.TrimPrefix(p, "U+")
 			v, err := strconv.ParseInt(hexPart, 16, 32)
 			if err != nil {
-				return nil
+				return err
 			}
 			runes = append(runes, rune(v))
 		}
