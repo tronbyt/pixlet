@@ -165,7 +165,7 @@ jobs:
           PIXLET_VERSION: ${{ steps.windowsvars.outputs.tag }}
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-artifacts-${{ matrix.os }}
           path: build
