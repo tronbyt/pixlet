@@ -38,6 +38,7 @@ type renderRequest struct {
 	Height      int               `json:"height"`
 	Magnify     int               `json:"magnify"`
 	ColorFilter string            `json:"color_filter,omitempty"`
+	Output2x    bool              `json:"2x,omitempty"`
 }
 
 func validatePath(path string) bool {
@@ -75,6 +76,7 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 	filters := &encode.RenderFilters{
 		Magnify:     r.Magnify,
 		ColorFilter: filterType,
+		Output2x:    r.Output2x,
 	}
 
 	buf, _, err := loader.RenderApplet(r.Path, r.Config, r.Width, r.Height, r.Magnify, maxDuration, timeout, imageFormat, silenceOutput, filters)

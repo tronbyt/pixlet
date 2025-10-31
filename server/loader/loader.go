@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,6 +29,8 @@ const (
 	ImageGIF
 	ImageAVIF
 )
+
+const Config2x = "$2x"
 
 // Loader is a structure to provide applet loading when a file changes or on
 // demand.
@@ -311,22 +314,43 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}
 
+	if filters == nil {
+		filters = &encode.RenderFilters{}
+	}
+	if filters.Magnify == 0 {
+		filters.Magnify = magnify
+	}
+
+	if _, ok := config[Config2x]; !ok {
+		config[Config2x] = strconv.FormatBool(filters.Output2x)
+	}
+
 	roots, err := applet.RunWithConfig(ctx, config)
 	if err != nil {
 		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
+
+	if filters.Output2x && len(roots) != 0 {
+		if roots[0].Supports2x {
+			width *= 2
+			height *= 2
+		} else {
+			if filters.Magnify == 0 {
+				filters.Magnify = 1
+			}
+			filters.Magnify *= 2
+		}
+	}
+
 	screens := encode.ScreensFromRoots(roots, width, height)
+
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
-	if filters != nil {
-		if filters.Magnify > 1 {
-			chain = append(chain, encode.Magnify(filters.Magnify))
-		}
-		if f, err := encode.FromFilterType(filters.ColorFilter); err == nil && f != nil {
-			chain = append(chain, f)
-		}
-	} else if magnify > 1 {
-		chain = append(chain, encode.Magnify(magnify))
+	if filters.Magnify > 1 {
+		chain = append(chain, encode.Magnify(filters.Magnify))
+	}
+	if f, err := encode.FromFilterType(filters.ColorFilter); err == nil && f != nil {
+		chain = append(chain, f)
 	}
 
 	if len(chain) > 0 {
