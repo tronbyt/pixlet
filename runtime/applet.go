@@ -27,6 +27,7 @@ import (
 	"go.starlark.net/starlarkstruct"
 	"go.starlark.net/starlarktest"
 	"go.starlark.net/syntax"
+	"tidbyt.dev/pixlet/runtime/modules/device"
 
 	"tidbyt.dev/pixlet/render"
 	"tidbyt.dev/pixlet/runtime/modules/animation_runtime"
@@ -110,6 +111,16 @@ func WithPrintFunc(print PrintFunc) AppletOption {
 
 func WithPrintDisabled() AppletOption {
 	return WithPrintFunc(func(thread *starlark.Thread, msg string) {})
+}
+
+func WithMetadata(m device.Metadata) AppletOption {
+	return func(a *Applet) error {
+		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
+			device.AttachToThread(t, m)
+			return t
+		})
+		return nil
+	}
 }
 
 func NewApplet(id string, src []byte, opts ...AppletOption) (*Applet, error) {
@@ -599,6 +610,9 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 
 	case "assert.star":
 		return starlarktest.LoadAssertModule()
+
+	case "device.star":
+		return device.LoadModule()
 
 	default:
 		return nil, fmt.Errorf("invalid module: %s", module)

@@ -12,6 +12,7 @@ import (
 type RenderFilters struct {
 	Magnify     int             `json:"magnify,omitempty"`
 	ColorFilter ColorFilterType `json:"color_filter,omitempty"`
+	Output2x    bool            `json:"2x,omitempty"`
 }
 
 type ColorFilterType string
