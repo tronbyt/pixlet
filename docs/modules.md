@@ -278,3 +278,27 @@ def main(config):
         ),
     )
 ```
+
+## Pixlet module: Device
+
+The `device` module provides device information.
+
+| Function   | Description                                        |
+|------------|----------------------------------------------------|
+| `width()`  | Returns the device width in px.                    |
+| `height()` | Returns the device height in px.                   |
+
+Example:
+```starlark
+load("device.star", "device")
+load("render.star", "render")
+
+def main(config):
+    w, h = device.width(), device.height()
+    return render.Root(
+        child = render.Padding(
+            child = render.Text("%dx%d" % (w, h)),
+            pad = 1,
+        ),
+    )
+```
