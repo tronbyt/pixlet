@@ -11,13 +11,13 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
 	"go.starlark.net/starlark"
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/runtime"
+	"tidbyt.dev/pixlet/runtime/modules/device"
 	"tidbyt.dev/pixlet/schema"
 	"tidbyt.dev/pixlet/tools"
 )
@@ -288,10 +288,24 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		fs = tools.NewSingleFileFS(path)
 	}
 
+	if filters == nil {
+		filters = &encode.RenderFilters{}
+	}
+	if filters.Magnify == 0 {
+		filters.Magnify = magnify
+	}
+
+	opts := []runtime.AppletOption{
+		runtime.WithMetadata(device.Metadata{
+			Width:  width,
+			Height: height,
+			Is2x:   filters.Output2x,
+		}),
+	}
+	var output []string
+
 	// Replace the print function from the starlark thread if the silent flag is
 	// passed.
-	var opts []runtime.AppletOption
-	var output []string
 	if silenceOutput {
 		opts = append(opts, runtime.WithPrintFunc(func(thread *starlark.Thread, msg string) {
 			output = append(output, msg)
@@ -312,17 +326,6 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs, opts...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
-	}
-
-	if filters == nil {
-		filters = &encode.RenderFilters{}
-	}
-	if filters.Magnify == 0 {
-		filters.Magnify = magnify
-	}
-
-	if _, ok := config[Config2x]; !ok {
-		config[Config2x] = strconv.FormatBool(filters.Output2x)
 	}
 
 	roots, err := applet.RunWithConfig(ctx, config)
