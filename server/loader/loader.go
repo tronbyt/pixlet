@@ -17,6 +17,7 @@ import (
 	"go.starlark.net/starlark"
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/runtime"
+	"tidbyt.dev/pixlet/runtime/modules/render_runtime"
 	"tidbyt.dev/pixlet/schema"
 	"tidbyt.dev/pixlet/tools"
 )
@@ -285,11 +286,16 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		fs = tools.NewSingleFileFS(path)
 	}
 
-	// Replace the print function from the starlark thread if the silent flag is
-	// passed.
-	var opts []runtime.AppletOption
+	opts := []runtime.AppletOption{
+		runtime.WithMetadata(render_runtime.Metadata{
+			Width:  width,
+			Height: height,
+		}),
+	}
+
 	var output []string
 	if silenceOutput {
+		// Replace the print function from the starlark thread if the silent flag is passed.
 		opts = append(opts, runtime.WithPrintFunc(func(thread *starlark.Thread, msg string) {
 			output = append(output, msg)
 		}))

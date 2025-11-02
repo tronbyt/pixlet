@@ -172,6 +172,29 @@ def main():
     return r.Root(child=r.Box(width=12, height=14, color="#ff0"))
 ```
 
+### Canvas
+
+The `render.star` module also provides `canvas`, which lets an app
+fetch information about the current output configuration.
+
+| Function   | Description                      |
+|------------|----------------------------------|
+| `width()`  | Returns the canvas width in px.  |
+| `height()` | Returns the canvas height in px. |
+
+```starlark
+load("render.star", "render", "canvas")
+
+def main(config):
+    w, h = canvas.width(), canvas.height()
+    return render.Root(
+        child = render.Padding(
+            child = render.Text("%dx%d" % (w, h)),
+            pad = 1,
+        ),
+    )
+```
+
 ## Pixlet module: Schema
 
 The schema module provides configuration options for your app. See the [schema documentation](schema/schema.md) for more details.

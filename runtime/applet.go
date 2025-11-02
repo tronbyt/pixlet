@@ -112,6 +112,16 @@ func WithPrintDisabled() AppletOption {
 	return WithPrintFunc(func(thread *starlark.Thread, msg string) {})
 }
 
+func WithMetadata(m render_runtime.Metadata) AppletOption {
+	return func(a *Applet) error {
+		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
+			render_runtime.AttachToThread(t, m)
+			return t
+		})
+		return nil
+	}
+}
+
 func NewApplet(id string, src []byte, opts ...AppletOption) (*Applet, error) {
 	fn := id
 	if !strings.HasSuffix(fn, ".star") {
