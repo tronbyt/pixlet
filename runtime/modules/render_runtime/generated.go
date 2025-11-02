@@ -74,6 +74,13 @@ func LoadRenderModule() (starlark.StringDict, error) {
 					"WrappedText": starlark.NewBuiltin("WrappedText", newWrappedText),
 				},
 			},
+			"canvas": &starlarkstruct.Module{
+				Name: "canvas",
+				Members: starlark.StringDict{
+					"width":  starlark.NewBuiltin("width", dimension(dimensionWidth)),
+					"height": starlark.NewBuiltin("height", dimension(dimensionHeight)),
+				},
+			},
 		}
 	})
 
