@@ -51,11 +51,13 @@ var (
 	variationsFile string
 	outFile        string
 	pngFile        string
+	fallbackFile   string
 )
 
 type glyph struct {
-	Runes []rune
-	Path  string
+	Runes      []rune
+	Path       string
+	IsFallback bool
 }
 
 func main() {
@@ -66,6 +68,7 @@ func main() {
 	}
 	rawDir = filepath.Join("assets", "emoji", "raw")
 	variationsFile = filepath.Join("assets", "emoji", "emoji-variation-sequences.txt")
+	fallbackFile = filepath.Join("assets", "emoji", "fallback.png")
 	outFile = filepath.Join(emojiDir, "sprites.go")
 	pngFile = filepath.Join(emojiDir, "sprites.png")
 
@@ -82,7 +85,16 @@ func main() {
 		fmt.Println("No emoji assets found; not writing sheet.")
 		return
 	}
-	sheet, index, sheetW, sheetH, maxHeight, maxWidth := buildSheet(glyphs)
+	if _, err := os.Stat(fallbackFile); err != nil {
+		panic(fmt.Errorf("fallback emoji asset missing: %w", err))
+	}
+	glyphs = append(glyphs, glyph{Path: fallbackFile, IsFallback: true})
+
+	sheet, index, fallbackRect, sheetW, sheetH, maxHeight, maxWidth := buildSheet(glyphs)
+	if fallbackRect.Empty() {
+		panic("failed to generate fallback glyph, is fallback.png empty?")
+	}
+
 	var pngBuf bytes.Buffer
 	if err := png.Encode(&pngBuf, sheet); err != nil {
 		panic(err)
@@ -91,10 +103,10 @@ func main() {
 		panic(err)
 	}
 
-	if err := writeOutput(filepath.Base(pngFile), index, len(glyphs), maxSeq, sheetW, sheetH, maxHeight, maxWidth); err != nil {
+	if err := writeOutput(filepath.Base(pngFile), index, fallbackRect, len(index), maxSeq, sheetW, sheetH, maxHeight, maxWidth); err != nil {
 		panic(err)
 	}
-	fmt.Printf("Generated %s and %s with %d emoji (max sequence len %d). PNG=%d bytes\n", outFile, pngFile, len(glyphs), maxSeq, pngBuf.Len())
+	fmt.Printf("Generated %s and %s with %d emoji (max sequence len %d). PNG=%d bytes\n", outFile, pngFile, len(index), maxSeq, pngBuf.Len())
 }
 
 // collect scans rawDir for U+....png names.
@@ -150,7 +162,7 @@ func collect(emojiVariations map[string]struct{}) ([]glyph, int, error) {
 
 // buildSheet packs glyph images into a sprite sheet using each glyph's intrinsic width, returning
 // the sheet along with glyph metadata (pixel coordinates and dimensions) plus aggregate metrics.
-func buildSheet(glyphs []glyph) (*image.NRGBA, map[string]image.Rectangle, int, int, int, int) {
+func buildSheet(glyphs []glyph) (*image.NRGBA, map[string]image.Rectangle, image.Rectangle, int, int, int, int) {
 	type placement struct {
 		glyph      glyph
 		img        image.Image
@@ -223,7 +235,7 @@ func buildSheet(glyphs []glyph) (*image.NRGBA, map[string]image.Rectangle, int, 
 	}
 
 	if len(placements) == 0 {
-		return image.NewNRGBA(image.Rect(0, 0, 0, 0)), map[string]image.Rectangle{}, 0, 0, 0, 0
+		return image.NewNRGBA(image.Rect(0, 0, 0, 0)), map[string]image.Rectangle{}, image.Rectangle{}, 0, 0, 0, 0
 	}
 
 	if rowWidth > maxRowWidth {
@@ -238,17 +250,22 @@ func buildSheet(glyphs []glyph) (*image.NRGBA, map[string]image.Rectangle, int, 
 
 	sheet := image.NewNRGBA(image.Rect(0, 0, sheetWidth, sheetHeight))
 	index := make(map[string]image.Rectangle, len(placements))
+	var fallbackRect image.Rectangle
 
 	for _, p := range placements {
 		boxRect := image.Rect(p.x-glyphPadding, p.y, p.x-glyphPadding+p.boxW, p.y+p.boxH)
 		draw.Draw(sheet, boxRect, image.Transparent, image.Point{}, draw.Src)
 		glyphRect := image.Rect(p.x, p.y, p.x+p.w, p.y+p.h)
 		draw.Draw(sheet, glyphRect, p.img, p.img.Bounds().Min, draw.Over)
+		if p.glyph.IsFallback {
+			fallbackRect = boxRect
+			continue
+		}
 		seqKey := string(p.glyph.Runes)
 		index[seqKey] = boxRect
 	}
 
-	return sheet, index, sheetWidth, sheetHeight, maxHeight, maxGlyphWidth
+	return sheet, index, fallbackRect, sheetWidth, sheetHeight, maxHeight, maxGlyphWidth
 }
 
 func collectEmojiVariations() (map[string]struct{}, error) {
@@ -302,7 +319,7 @@ func collectEmojiVariations() (map[string]struct{}, error) {
 	return sequences, nil
 }
 
-func writeOutput(pngFileName string, index map[string]image.Rectangle, count, maxSeq, sheetW, sheetH, maxHeight, maxWidth int) error {
+func writeOutput(pngFileName string, index map[string]image.Rectangle, fallback image.Rectangle, count, maxSeq, sheetW, sheetH, maxHeight, maxWidth int) error {
 	var b bytes.Buffer
 	b.WriteString(headerComment)
 	b.WriteString("package emoji\n\n")
@@ -312,6 +329,9 @@ func writeOutput(pngFileName string, index map[string]image.Rectangle, count, ma
 
 	b.WriteString(fmt.Sprintf("//go:embed %s\n", pngFileName))
 	b.WriteString(fmt.Sprintf("var Sprites []byte\n\n"))
+
+	b.WriteString("// Fallback is the sprite bounds for the default glyph used when an emoji sequence is missing.\n")
+	b.WriteString(fmt.Sprintf("var Fallback = image.Rectangle{Min: image.Point{X:%d, Y:%d}, Max: image.Point{X:%d, Y:%d}}\n\n", fallback.Min.X, fallback.Min.Y, fallback.Max.X, fallback.Max.Y))
 
 	b.WriteString("// Index maps a Unicode sequence (string of runes) to glyph bounds within the sprite sheet.\n")
 	b.WriteString("var Index = map[string]image.Rectangle{\n")

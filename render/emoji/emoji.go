@@ -15,10 +15,7 @@ import (
 	font "tidbyt.dev/pixlet/fonts/emoji"
 )
 
-const (
-	MaxHeight = font.MaxHeight
-	MaxWidth  = font.MaxWidth
-)
+const MaxHeight = font.MaxHeight
 
 var (
 	sheetImg  *image.NRGBA
@@ -48,7 +45,7 @@ func Sheet() (*image.NRGBA, error) {
 
 const variationSequence = "\uFE0F"
 
-func Get(s string, tryVariation bool) (*image.NRGBA, error) {
+func Get(s string, tryVariation bool) (*image.NRGBA, bool, error) {
 	// Check if the emoji exists in our index
 	bounds, exists := font.Index[s]
 	if !exists {
@@ -56,20 +53,20 @@ func Get(s string, tryVariation bool) (*image.NRGBA, error) {
 			bounds, exists = font.Index[s+variationSequence]
 		}
 		if !exists {
-			return nil, fmt.Errorf("emoji %q not found in emoji index", s)
+			bounds = font.Fallback
 		}
 	}
 
 	// Get the emoji sprite sheet
 	sheet, err := Sheet()
 	if err != nil {
-		return nil, fmt.Errorf("failed to load emoji sheet: %w", err)
+		return nil, exists, fmt.Errorf("failed to load emoji sheet: %w", err)
 	}
 
 	// Create source image for this emoji with padding applied horizontally.
 	srcImg := image.NewNRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
 	draw.Draw(srcImg, srcImg.Bounds(), sheet, bounds.Min, draw.Src)
-	return srcImg, nil
+	return srcImg, exists, nil
 }
 
 type Segment struct {
@@ -82,7 +79,7 @@ func (s Segment) Width(dc *gg.Context) int {
 		if glyph, ok := font.Index[s.Text]; ok {
 			return glyph.Dx()
 		}
-		return font.MaxWidth
+		return font.Fallback.Dx()
 	} else {
 		w, _ := dc.MeasureString(s.Text)
 		return int(w)
@@ -91,7 +88,7 @@ func (s Segment) Width(dc *gg.Context) int {
 
 func (s Segment) Draw(dc *gg.Context, x, y int) int {
 	if s.IsEmoji {
-		if srcImg, err := Get(s.Text, false); err == nil {
+		if srcImg, _, err := Get(s.Text, false); err == nil {
 			dc.DrawImage(srcImg, x, y-srcImg.Bounds().Dy())
 			return srcImg.Bounds().Dx()
 		}

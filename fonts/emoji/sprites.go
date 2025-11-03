@@ -16,6 +16,9 @@ const MaxSequence = 7
 //go:embed sprites.png
 var Sprites []byte
 
+// Fallback is the sprite bounds for the default glyph used when an emoji sequence is missing.
+var Fallback = image.Rectangle{Min: image.Point{X:42, Y:291}, Max: image.Point{X:51, Y:301}}
+
 // Index maps a Unicode sequence (string of runes) to glyph bounds within the sprite sheet.
 var Index = map[string]image.Rectangle{
 	"🏴\U000e0067\U000e0062\U000e0065\U000e006e\U000e0067\U000e007f": image.Rectangle{Min: image.Point{X:0, Y:0}, Max: image.Point{X:12, Y:10}},

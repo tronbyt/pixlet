@@ -10,7 +10,11 @@ import (
 func scaledWidth(seq string, height int) int {
 	glyph, ok := font.Index[seq]
 	if !ok || glyph.Empty() {
-		return height
+		if fb := font.Fallback; !fb.Empty() {
+			glyph = fb
+		} else {
+			return height
+		}
 	}
 	if height == 0 {
 		return glyph.Dx()
@@ -87,7 +91,7 @@ func TestEmojiWidget(t *testing.T) {
 			name:    "unknown emoji",
 			emoji:   "🤷‍♀️",
 			height:  16,
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 

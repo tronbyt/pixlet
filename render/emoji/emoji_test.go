@@ -3,6 +3,8 @@ package emoji
 import (
 	"reflect"
 	"testing"
+
+	font "tidbyt.dev/pixlet/fonts/emoji"
 )
 
 func TestSegmentString(t *testing.T) {
@@ -109,5 +111,23 @@ func TestSegmentString(t *testing.T) {
 				t.Fatalf("SegmentString(%q) hasEmoji = %v, want %v", tt.input, hasEmoji, tt.wantHasEmoji)
 			}
 		})
+	}
+}
+
+func TestGetUsesFallback(t *testing.T) {
+	if font.Fallback.Empty() {
+		t.Fatal("fallback sprite is empty")
+	}
+	img, exists, err := Get("not-a-real-emoji", false)
+	if err != nil {
+		t.Fatalf("Get() returned error: %v", err)
+	}
+	if exists {
+		t.Fatalf("Get() returned true for non-existent emoji")
+	}
+	got := img.Bounds()
+	want := font.Fallback
+	if got.Dx() != want.Dx() || got.Dy() != want.Dy() {
+		t.Fatalf("fallback image has bounds %v, want %v", got, want)
 	}
 }
