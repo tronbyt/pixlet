@@ -58,7 +58,7 @@ func (e *Emoji) Init() error {
 		return fmt.Errorf("emoji string cannot be empty")
 	}
 
-	srcImg, err := emoji.Get(e.EmojiStr, true)
+	srcImg, _, err := emoji.Get(e.EmojiStr, true)
 	if err != nil {
 		return fmt.Errorf("failed to get emoji: %w", err)
 	}
