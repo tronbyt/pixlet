@@ -26,6 +26,7 @@ var (
 	timeout           int
 	colorFilter       string
 	listColorFilters  bool
+	output2x          bool
 )
 
 func init() {
@@ -79,6 +80,13 @@ func init() {
 		"list-color-filters",
 		false,
 		"List available color filters",
+	)
+	RenderCmd.Flags().BoolVarP(
+		&output2x,
+		"2x",
+		"2",
+		false,
+		"Render at 2x resolution",
 	)
 }
 
@@ -180,6 +188,7 @@ func render(cmd *cobra.Command, args []string) error {
 	filters := &encode.RenderFilters{
 		Magnify:     magnify,
 		ColorFilter: filterType,
+		Output2x:    output2x,
 	}
 
 	buf, _, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput, filters)

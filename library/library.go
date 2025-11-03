@@ -35,7 +35,7 @@ import (
 //   - timeout (C.int): The timeout (in milliseconds) for rendering.
 //   - imageFormat (C.int): The format of the rendered image (e.g., PNG, GIF).
 //   - silenceOutput (C.int): A flag to suppress output (non-zero to silence).
-//   - filtersPtr (*C.char): A JSON string for optional filters (e.g. {"magnify":2,"color_filter":"warm"})
+//   - filtersPtr (*C.char): A JSON string for optional filters (e.g. {"magnify":2,"color_filter":"warm","2x":true})
 //
 // Returns:
 //   - (*C.uchar): A pointer to the rendered image bytes.

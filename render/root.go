@@ -38,11 +38,13 @@ const (
 // DOC(Delay): Frame delay in milliseconds
 // DOC(MaxAge): Expiration time in seconds
 // DOC(ShowFullAnimation): Request animation is shown in full, regardless of app cycle speed
+// DOC(Supports2x): Indicates that an app supports 2x resolution (if false, 2x displays will show a magnified output)
 type Root struct {
 	Child             Widget `starlark:"child,required"`
 	Delay             int32  `starlark:"delay"`
 	MaxAge            int32  `starlark:"max_age"`
 	ShowFullAnimation bool   `starlark:"show_full_animation"`
+	Supports2x        bool   `starlark:"supports_2x"`
 
 	maxParallelFrames int
 	maxFrameCount     int
