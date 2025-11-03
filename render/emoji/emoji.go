@@ -46,11 +46,18 @@ func Sheet() (*image.NRGBA, error) {
 	return sheetImg, err
 }
 
-func Get(s string) (*image.NRGBA, error) {
+const variationSequence = "\uFE0F"
+
+func Get(s string, tryVariation bool) (*image.NRGBA, error) {
 	// Check if the emoji exists in our index
 	bounds, exists := font.Index[s]
 	if !exists {
-		return nil, fmt.Errorf("emoji %q not found in emoji index", s)
+		if tryVariation {
+			bounds, exists = font.Index[s+variationSequence]
+		}
+		if !exists {
+			return nil, fmt.Errorf("emoji %q not found in emoji index", s)
+		}
 	}
 
 	// Get the emoji sprite sheet
@@ -84,7 +91,7 @@ func (s Segment) Width(dc *gg.Context) int {
 
 func (s Segment) Draw(dc *gg.Context, x, y int) int {
 	if s.IsEmoji {
-		if srcImg, err := Get(s.Text); err == nil {
+		if srcImg, err := Get(s.Text, false); err == nil {
 			dc.DrawImage(srcImg, x, y-srcImg.Bounds().Dy())
 			return srcImg.Bounds().Dx()
 		}
