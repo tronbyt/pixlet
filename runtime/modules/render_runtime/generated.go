@@ -79,6 +79,7 @@ func LoadRenderModule() (starlark.StringDict, error) {
 				Members: starlark.StringDict{
 					"width":  starlark.NewBuiltin("width", dimension(dimensionWidth)),
 					"height": starlark.NewBuiltin("height", dimension(dimensionHeight)),
+					"is2x":   starlark.NewBuiltin("is2x", is2x),
 				},
 			},
 		}
@@ -1828,6 +1829,7 @@ func newRoot(
 		delay               starlark.Int
 		max_age             starlark.Int
 		show_full_animation starlark.Bool
+		supports_2x         starlark.Bool
 	)
 
 	if err := starlark.UnpackArgs(
@@ -1837,6 +1839,7 @@ func newRoot(
 		"delay?", &delay,
 		"max_age?", &max_age,
 		"show_full_animation?", &show_full_animation,
+		"supports_2x?", &supports_2x,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Root: %s", err)
 	}
@@ -1869,6 +1872,8 @@ func newRoot(
 
 	w.ShowFullAnimation = bool(show_full_animation)
 
+	w.Supports2x = bool(supports_2x)
+
 	return w, nil
 }
 
@@ -1878,7 +1883,7 @@ func (w *Root) AsRenderRoot() render.Root {
 
 func (w *Root) AttrNames() []string {
 	return []string{
-		"child", "delay", "max_age", "show_full_animation",
+		"child", "delay", "max_age", "show_full_animation", "supports_2x",
 	}
 }
 
@@ -1900,6 +1905,10 @@ func (w *Root) Attr(name string) (starlark.Value, error) {
 	case "show_full_animation":
 
 		return starlark.Bool(w.ShowFullAnimation), nil
+
+	case "supports_2x":
+
+		return starlark.Bool(w.Supports2x), nil
 
 	default:
 		return nil, nil

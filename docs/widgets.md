@@ -344,6 +344,7 @@ displaying stale data in the event of e.g. connectivity issues.
 | `delay` | `int` | Frame delay in milliseconds | N |
 | `max_age` | `int` | Expiration time in seconds | N |
 | `show_full_animation` | `bool` | Request animation is shown in full, regardless of app cycle speed | N |
+| `supports_2x` | `bool` | Indicates that an app supports 2x resolution (if false, 2x displays will show a magnified output) | N |
 
 
 ## Row

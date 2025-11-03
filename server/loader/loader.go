@@ -286,10 +286,18 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		fs = tools.NewSingleFileFS(path)
 	}
 
+	if filters == nil {
+		filters = &encode.RenderFilters{}
+	}
+	if filters.Magnify == 0 {
+		filters.Magnify = magnify
+	}
+
 	opts := []runtime.AppletOption{
 		runtime.WithMetadata(render_runtime.Metadata{
 			Width:  width,
 			Height: height,
+			Is2x:   filters.Output2x,
 		}),
 	}
 
@@ -321,18 +329,28 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 	if err != nil {
 		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
+
+	if filters.Output2x && len(roots) != 0 {
+		if roots[0].Supports2x {
+			width *= 2
+			height *= 2
+		} else {
+			if filters.Magnify == 0 {
+				filters.Magnify = 1
+			}
+			filters.Magnify *= 2
+		}
+	}
+
 	screens := encode.ScreensFromRoots(roots, width, height)
+
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
-	if filters != nil {
-		if filters.Magnify > 1 {
-			chain = append(chain, encode.Magnify(filters.Magnify))
-		}
-		if f, err := encode.FromFilterType(filters.ColorFilter); err == nil && f != nil {
-			chain = append(chain, f)
-		}
-	} else if magnify > 1 {
-		chain = append(chain, encode.Magnify(magnify))
+	if filters.Magnify > 1 {
+		chain = append(chain, encode.Magnify(filters.Magnify))
+	}
+	if f, err := encode.FromFilterType(filters.ColorFilter); err == nil && f != nil {
+		chain = append(chain, f)
 	}
 
 	if len(chain) > 0 {
