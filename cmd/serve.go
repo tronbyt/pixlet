@@ -22,12 +22,20 @@ func init() {
 	ServeCmd.Flags().StringVarP(&host, "host", "i", "127.0.0.1", "Host interface for serving rendered images")
 	ServeCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
 	ServeCmd.Flags().BoolVarP(&watch, "watch", "w", true, "Reload scripts on change. Does not recurse sub-directories.")
-	ServeCmd.Flags().IntVarP(&maxDuration, "max_duration", "d", 15000, "Maximum allowed animation duration (ms)")
+	ServeCmd.Flags().IntVarP(&maxDuration, "max-duration", "d", 15000, "Maximum allowed animation duration (ms)")
 	ServeCmd.Flags().IntVarP(&timeout, "timeout", "", 30000, "Timeout for execution (ms)")
 	ServeCmd.Flags().StringVarP(&serveFormat, "format", "", "webp", "Image format. One of webp|gif|avif")
 	ServeCmd.Flags().StringVarP(&path, "path", "", "/", "Path to serve the app on")
 	ServeCmd.Flags().IntVar(&width, "width", 64, "Set width")
 	ServeCmd.Flags().IntVarP(&height, "height", "t", 32, "Set height")
+
+	// Deprecated flags
+	ServeCmd.Flags().IntVar(&maxDuration, "max_duration", 15000, "Maximum allowed animation duration (ms)")
+	if err := ServeCmd.Flags().MarkDeprecated(
+		"max_duration", "use --max-duration instead",
+	); err != nil {
+		panic(err)
+	}
 }
 
 var ServeCmd = &cobra.Command{
