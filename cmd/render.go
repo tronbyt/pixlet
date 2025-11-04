@@ -65,7 +65,7 @@ func init() {
 	)
 	RenderCmd.Flags().IntVarP(
 		&maxDuration,
-		"max_duration",
+		"max-duration",
 		"d",
 		15000,
 		"Maximum allowed animation duration (ms)",
@@ -86,6 +86,18 @@ func init() {
 	)
 
 	// Deprecated flags
+	RenderCmd.Flags().IntVar(
+		&maxDuration,
+		"max_duration",
+		15000,
+		"Maximum allowed animation duration (ms)",
+	)
+	if err := RenderCmd.Flags().MarkDeprecated(
+		"max_duration", "use --max-duration instead",
+	); err != nil {
+		panic(err)
+	}
+
 	RenderCmd.Flags().StringVar(
 		&colorFilter,
 		"color_filter",
