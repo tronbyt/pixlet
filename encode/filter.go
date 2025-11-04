@@ -1,56 +1,43 @@
 package encode
 
 import (
-	"encoding/json"
 	"fmt"
 	"image"
 	"image/color"
-	"sort"
-	"strings"
 )
 
-type RenderFilters struct {
-	Magnify     int             `json:"magnify,omitempty"`
-	ColorFilter ColorFilterType `json:"color_filter,omitempty"`
-	Output2x    bool            `json:"2x,omitempty"`
-}
+//go:generate go tool enumer -type ColorFilter -trimprefix Color -transform lower -output filter_string.go
 
-type ColorFilterType string
+type ColorFilter uint8
 
 const (
-	ColorNone      ColorFilterType = "none"      // No transformation
-	ColorDimmed    ColorFilterType = "dimmed"    // Darkens image uniformly while preserving hue
-	ColorRedShift  ColorFilterType = "redshift"  // CCT-derived chromatic adaptation matrix (~3400K target)
-	ColorWarm      ColorFilterType = "warm"      // Adds a subtle warm, orange/yellow hue
-	ColorSunset    ColorFilterType = "sunset"    // Emulates deep pink/orange of a setting sun
-	ColorSepia     ColorFilterType = "sepia"     // Adds a warm, antique brown tone mimicking aged photographs
-	ColorVintage   ColorFilterType = "vintage"   // Muted, brown/green nostalgic tones
-	ColorDusk      ColorFilterType = "dusk"      // Fades brightness, adds reddish cast
-	ColorCool      ColorFilterType = "cool"      // Adds a cool, blue tint
-	ColorBW        ColorFilterType = "bw"        // Converts image to perceptual grayscale using luminance weights
-	ColorIce       ColorFilterType = "ice"       // Pale desaturation with bluish cast
-	ColorMoonlight ColorFilterType = "moonlight" // Dim blue-gray, night lighting effect
-	ColorNeon      ColorFilterType = "neon"      // Boosts contrast, magenta-blue cyberpunk
-	ColorPastel    ColorFilterType = "pastel"    // Softens tones, gentle highlight boost
+	ColorNone ColorFilter = iota
+	ColorDimmed
+	ColorRedShift
+	ColorWarm
+	ColorSunset
+	ColorSepia
+	ColorVintage
+	ColorDusk
+	ColorCool
+	ColorBW
+	ColorIce
+	ColorMoonlight
+	ColorNeon
+	ColorPastel
 )
 
-var colorFilterMatrices = map[ColorFilterType][3][3]float32{
-	// === Neutral ===
-	// No-op identity matrix, avoids altering original colours
+var colorFilters = map[ColorFilter][3][3]float32{
 	ColorNone: {
 		{1, 0, 0},
 		{0, 1, 0},
 		{0, 0, 1},
 	},
-
-	// Uniform intensity reduction, (same hue)
 	ColorDimmed: {
 		{0.25, 0, 0},
 		{0, 0.25, 0},
 		{0, 0, 0.25},
 	},
-
-	// === Warm & Tinted ===
 	ColorRedShift: {
 		// Chromatic adaptation matrix approximating a D65 → 3400K whitepoint shift.
 		// Computed in XYZ space using the Bradford method and projected into linear sRGB.
@@ -59,79 +46,56 @@ var colorFilterMatrices = map[ColorFilterType][3][3]float32{
 		{-0.0164, 0.8985, 0.0098},
 		{-0.0156, -0.0500, 0.4201},
 	},
-
-	// Slight red/yellow push, feels warmer and more "golden hour"
 	ColorWarm: {
 		{1.1, 0.05, 0.0},
 		{0.0, 1.0, 0.0},
 		{0.05, 0.0, 0.9},
 	},
-
-	// Strong warm pink/red sunset vibe
 	ColorSunset: {
 		{1.2, 0.2, 0.0},
 		{0.1, 1.0, 0.1},
 		{0.0, 0.1, 0.6},
 	},
-
-	// Warm, antique brownish tones mimicking aged photographs
 	ColorSepia: {
 		{0.393, 0.769, 0.189},
 		{0.349, 0.686, 0.168},
 		{0.272, 0.534, 0.131},
 	},
-
-	// Classic retro TV look, muted greens and browns
 	ColorVintage: {
 		{1.0, 0.6, 0.2},
 		{0.3, 0.9, 0.2},
 		{0.2, 0.4, 0.6},
 	},
-
-	// Darkens greens and blues, slight red push for evening tones
 	ColorDusk: {
 		{1.1, 0.0, 0.2},
 		{0.0, 0.8, 0.1},
 		{0.0, 0.1, 0.6},
 	},
-
-	// === Cool & Desaturated ===
-	// Adds subtle blue tint for cooler "tech" or night feel
 	ColorCool: {
 		{0.9, 0.0, 0.2},
 		{0.0, 1.0, 0.0},
 		{-0.1, 0.0, 1.1},
 	},
-
-	// Perceptual grayscale using luminance weights
 	ColorBW: {
 		{0.3, 0.59, 0.11},
 		{0.3, 0.59, 0.11},
 		{0.3, 0.59, 0.11},
 	},
-	// Desaturated blues
 	ColorIce: {
 		{0.8, 0.9, 1.0},
 		{0.8, 0.9, 1.0},
 		{1.0, 1.0, 1.2},
 	},
-
-	// Moonlight/night vision vibes
 	ColorMoonlight: {
 		{0.6, 0.2, 0.4},
 		{0.2, 0.7, 0.2},
 		{0.3, 0.3, 0.9},
 	},
-
-	// === Stylized  ===
-	// High contrast, exaggerated hues, magenta-blue cyberpunk/glow aesthetic
 	ColorNeon: {
 		{0.9, 0.0, 1.1},
 		{0.0, 1.0, 0.6},
 		{0.2, 0.5, 1.3},
 	},
-
-	// Boosts all channels lightly
 	ColorPastel: {
 		{1.2, 0.1, 0.1},
 		{0.1, 1.2, 0.1},
@@ -139,64 +103,79 @@ var colorFilterMatrices = map[ColorFilterType][3][3]float32{
 	},
 }
 
-func (f ColorFilterType) String() string {
-	return string(f)
+// MarshalText implements the encoding.TextMarshaler interface for ColorFilter
+func (i ColorFilter) MarshalText() ([]byte, error) {
+	return []byte(i.String()), nil
 }
 
-func (f *ColorFilterType) UnmarshalJSON(b []byte) error {
-	var s string
-	if err := json.Unmarshal(b, &s); err != nil {
-		return err
+// UnmarshalText implements the encoding.TextUnmarshaler interface for ColorFilter
+func (i *ColorFilter) UnmarshalText(text []byte) error {
+	if len(text) == 0 {
+		*i = ColorNone
+		return nil
 	}
-	*f = ColorFilterType(s)
-	return nil
+	var err error
+	*i, err = ColorFilterString(string(text))
+	return err
 }
 
-func ValidateColorFilter(input ColorFilterType) (ColorFilterType, error) {
-	if input == "" {
-		return ColorNone, nil
+var ErrInvalidColorFilter = fmt.Errorf("invalid color filter")
+
+func (i ColorFilter) ImageFilter() (ImageFilter, error) {
+	if i == ColorNone {
+		return nil, nil
 	}
-	filterType := ColorFilterType(input)
-	if !filterType.IsValid() {
-		return "", fmt.Errorf("invalid color filter: %q\nSupported filters: %s",
-			input,
-			strings.Join(SupportedColorFilters(), ", "),
-		)
+	if filter, ok := colorFilters[i]; ok {
+		return ColorMatrix(filter), nil
 	}
-	return filterType, nil
+	return nil, fmt.Errorf("%w: %q", ErrInvalidColorFilter, i)
 }
 
-func FromFilterType(f ColorFilterType) (ImageFilter, error) {
-	if f == ColorNone {
-		return nil, nil // explicit noop skip
+func (f ColorFilter) Description() (string, error) {
+	switch f {
+	case ColorNone:
+		return "No transformation", nil
+	case ColorDimmed:
+		return "Darkens image uniformly while preserving hue", nil
+	case ColorRedShift:
+		return "CCT-derived chromatic adaptation matrix (~3400K target)", nil
+	case ColorWarm:
+		return "Adds a subtle warm, orange/yellow hue", nil
+	case ColorSunset:
+		return "Emulates deep pink/orange of a setting sun", nil
+	case ColorSepia:
+		return "Adds a warm, antique brown tone mimicking aged photographs", nil
+	case ColorVintage:
+		return "Muted, brown/green nostalgic tones", nil
+	case ColorDusk:
+		return "Fades brightness, adds reddish cast", nil
+	case ColorCool:
+		return "Adds a cool, blue tint", nil
+	case ColorBW:
+		return "Converts image to perceptual grayscale using luminance weights", nil
+	case ColorIce:
+		return "Pale desaturation with bluish cast", nil
+	case ColorMoonlight:
+		return "Dim blue-gray, night lighting effect", nil
+	case ColorNeon:
+		return "Boosts contrast, magenta-blue cyberpunk", nil
+	case ColorPastel:
+		return "Softens tones, gentle highlight boost", nil
 	}
-	matrix, ok := colorFilterMatrices[f]
-	if !ok {
-		return nil, fmt.Errorf("unknown color filter: %q", f)
-	}
-	// log.Printf("Applying filter: %s", f)
-	return ColorMatrix(matrix), nil
+	return "", fmt.Errorf("%w: %q", ErrInvalidColorFilter, f)
 }
 
-func (f ColorFilterType) IsValid() bool {
-	_, ok := colorFilterMatrices[f]
-	return ok
-}
-
-func SupportedColorFilters() []string {
-	keys := make([]string, 0, len(colorFilterMatrices))
-	for k := range colorFilterMatrices {
-		keys = append(keys, string(k))
-	}
-	sort.Strings(keys)
-	return keys
+type RenderFilters struct {
+	Magnify     int         `json:"magnify,omitempty"`
+	ColorFilter ColorFilter `json:"color_filter,omitempty"`
+	Output2x    bool        `json:"2x,omitempty"`
 }
 
 func (f RenderFilters) String() string {
-	return fmt.Sprintf("Magnify=%d, ColorFilter=%q", f.Magnify, f.ColorFilter)
+	return fmt.Sprintf("Magnify=%d, ColorFilter=%q, Output2x=%t", f.Magnify, f.ColorFilter, f.Output2x)
 }
 
-// Applies a sequence of ImageFilters in order.
+// Chain applies a sequence of ImageFilters in order.
 func Chain(filters ...ImageFilter) ImageFilter {
 	return func(img image.Image) (image.Image, error) {
 		var err error
@@ -210,7 +189,7 @@ func Chain(filters ...ImageFilter) ImageFilter {
 	}
 }
 
-// Enlarges an image by an integer factor.
+// Magnify enlarges an image by an integer factor.
 func Magnify(factor int) ImageFilter {
 	return func(input image.Image) (image.Image, error) {
 		if factor <= 1 {
@@ -250,7 +229,7 @@ func Magnify(factor int) ImageFilter {
 	}
 }
 
-// Apply a 3x3 color transformation matrix to the RGB values of an image.
+// ColorMatrix applies a 3x3 color transformation matrix to the RGB values of an image.
 func ColorMatrix(matrix [3][3]float32) ImageFilter {
 	return func(img image.Image) (image.Image, error) {
 		bounds := img.Bounds()
