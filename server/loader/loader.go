@@ -349,8 +349,8 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 	if filters.Magnify > 1 {
 		chain = append(chain, encode.Magnify(filters.Magnify))
 	}
-	if f, err := encode.FromFilterType(filters.ColorFilter); err == nil && f != nil {
-		chain = append(chain, f)
+	if imageFilter, err := filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
+		chain = append(chain, imageFilter)
 	}
 
 	if len(chain) > 0 {

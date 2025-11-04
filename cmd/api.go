@@ -66,17 +66,16 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Default to "none" if color_filter is missing
-	filterType, err := encode.ValidateColorFilter(encode.ColorFilterType(r.ColorFilter))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	filters := &encode.RenderFilters{
-		Magnify:     r.Magnify,
-		ColorFilter: filterType,
-		Output2x:    r.Output2x,
+		Magnify:  r.Magnify,
+		Output2x: r.Output2x,
+	}
+	if r.ColorFilter != "" {
+		var err error
+		if filters.ColorFilter, err = encode.ColorFilterString(r.ColorFilter); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 
 	buf, _, err := loader.RenderApplet(r.Path, r.Config, r.Width, r.Height, r.Magnify, maxDuration, timeout, imageFormat, silenceOutput, filters)

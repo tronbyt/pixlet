@@ -60,9 +60,6 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 		if err := json.Unmarshal([]byte(filtersStr), &parsed); err != nil {
 			return nil, -3, nil, C.CString(fmt.Sprintf("invalid filters JSON: %v", err))
 		}
-		if _, err := encode.ValidateColorFilter(parsed.ColorFilter); err != nil {
-			return nil, -4, nil, C.CString(err.Error())
-		}
 		filters = &parsed
 	}
 	result, messages, err := loader.RenderApplet(path, config, int(width), int(height), int(magnify), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)

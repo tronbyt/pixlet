@@ -25,8 +25,10 @@ var (
 	height            int
 	timeout           int
 	colorFilter       string
-	listColorFilters  bool
 	output2x          bool
+
+	// Deprecated: flag behavior has been moved to community.ListColorFiltersCmd
+	listColorFilters bool
 )
 
 func init() {
@@ -43,9 +45,9 @@ func init() {
 	)
 	RenderCmd.Flags().StringVar(
 		&colorFilter,
-		"color_filter",
+		"color-filter",
 		"",
-		"Apply a color filter (warm, cool, etc)",
+		`Apply a color filter. (See "pixlet community list-color-filters")`,
 	)
 	RenderCmd.Flags().IntVarP(
 		&width,
@@ -75,12 +77,6 @@ func init() {
 		30000,
 		"Timeout for execution (ms)",
 	)
-	RenderCmd.Flags().BoolVar(
-		&listColorFilters,
-		"list-color-filters",
-		false,
-		"List available color filters",
-	)
 	RenderCmd.Flags().BoolVarP(
 		&output2x,
 		"2x",
@@ -88,6 +84,31 @@ func init() {
 		false,
 		"Render at 2x resolution",
 	)
+
+	// Deprecated flags
+	RenderCmd.Flags().StringVar(
+		&colorFilter,
+		"color_filter",
+		"",
+		"Apply a color filter (warm, cool, etc)",
+	)
+	if err := RenderCmd.Flags().MarkDeprecated(
+		"color_filter", "use --color-filter instead",
+	); err != nil {
+		panic(err)
+	}
+
+	RenderCmd.Flags().BoolVar(
+		&listColorFilters,
+		"list-color-filters",
+		false,
+		"List available color filters",
+	)
+	if err := RenderCmd.Flags().MarkDeprecated(
+		"list-color-filters", `use "pixlet community list-color-filters" instead`,
+	); err != nil {
+		panic(err)
+	}
 }
 
 var RenderCmd = &cobra.Command{
@@ -106,7 +127,7 @@ containing multiple Starlark files and resources.
 func render(cmd *cobra.Command, args []string) error {
 	if listColorFilters {
 		fmt.Println("Supported color filters:")
-		for _, f := range encode.SupportedColorFilters() {
+		for _, f := range encode.ColorFilterStrings() {
 			fmt.Println(" -", f)
 		}
 		return nil
@@ -180,15 +201,14 @@ func render(cmd *cobra.Command, args []string) error {
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	filterType, err := encode.ValidateColorFilter(encode.ColorFilterType(colorFilter))
-	if err != nil {
-		return err
-	}
-
 	filters := &encode.RenderFilters{
-		Magnify:     magnify,
-		ColorFilter: filterType,
-		Output2x:    output2x,
+		Magnify:  magnify,
+		Output2x: output2x,
+	}
+	if colorFilter != "" {
+		if filters.ColorFilter, err = encode.ColorFilterString(colorFilter); err != nil {
+			return err
+		}
 	}
 
 	buf, _, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput, filters)
