@@ -347,14 +347,20 @@ func (a *Applet) load(fsys fs.FS) (err error) {
 		return fmt.Errorf("reading root directory: %v", err)
 	}
 
-	for _, d := range rootDir {
-		if d.IsDir() || !strings.HasSuffix(d.Name(), ".star") {
-			// only process Starlark files
-			continue
-		}
-
-		if err := a.ensureLoaded(fsys, d.Name()); err != nil {
+	if path.Ext(a.ID) == ".star" {
+		if err := a.ensureLoaded(fsys, a.ID); err != nil {
 			return err
+		}
+	} else {
+		for _, d := range rootDir {
+			if d.IsDir() || !strings.HasSuffix(d.Name(), ".star") {
+				// only process Starlark files
+				continue
+			}
+
+			if err := a.ensureLoaded(fsys, d.Name()); err != nil {
+				return err
+			}
 		}
 	}
 
