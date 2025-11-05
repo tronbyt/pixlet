@@ -54,6 +54,8 @@ type SchemaField struct {
 	ClientID              string   `json:"client_id,omitempty" validate:"required_for=oauth2"`
 	AuthorizationEndpoint string   `json:"authorization_endpoint,omitempty" validate:"required_for=oauth2"`
 	Scopes                []string `json:"scopes,omitempty" validate:"required_for=oauth2"`
+
+	Secret bool `json:"secret,omitempty" validate:"allowed_for=text"`
 }
 
 // SchemaOption represents an option in a field. For example, an item in a drop
@@ -342,22 +344,27 @@ func buildOptions(options interface{}) ([]SchemaOption, error) {
 	return schemaOptions, nil
 }
 
+func isFieldSet(fl validator.FieldLevel) (bool, bool) {
+	switch fl.Field().Kind() {
+	case reflect.Map, reflect.Ptr, reflect.Interface:
+		return !fl.Field().IsNil(), true
+	case reflect.String, reflect.Int, reflect.Slice, reflect.Bool:
+		return fl.Field().IsValid() && !fl.Field().IsZero(), true
+	default:
+		return false, false
+	}
+}
+
 // Validates a Schema object.
 func validateSchema(schema *Schema) error {
 	// This custom validator function implements
 	// "required_for", which makes the tagged field required
 	// whenever SchemaField.Type matches one of the parameters.
 	requiredFor := func(fl validator.FieldLevel) bool {
-		var isSet bool
-		switch fl.Field().Kind() {
-		case reflect.Map, reflect.Ptr, reflect.Interface:
-			isSet = !fl.Field().IsNil()
-		case reflect.String, reflect.Int, reflect.Slice:
-			isSet = fl.Field().IsValid() && !fl.Field().IsZero()
-		default:
+		isSet, ok := isFieldSet(fl)
+		if !ok {
 			return false
 		}
-
 		schemaField := fl.Parent().Interface().(SchemaField)
 		for _, fieldType := range strings.Split(fl.Param(), " ") {
 			if fieldType == schemaField.Type {
@@ -370,16 +377,10 @@ func validateSchema(schema *Schema) error {
 	// This implements "forbidden_for". Same idea as required for,
 	// but the opposite.
 	forbiddenFor := func(fl validator.FieldLevel) bool {
-		var isSet bool
-		switch fl.Field().Kind() {
-		case reflect.Map, reflect.Ptr, reflect.Interface:
-			isSet = !fl.Field().IsNil()
-		case reflect.String, reflect.Int, reflect.Slice:
-			isSet = fl.Field().IsValid() && !fl.Field().IsZero()
-		default:
+		isSet, ok := isFieldSet(fl)
+		if !ok {
 			return false
 		}
-
 		schemaField := fl.Parent().Interface().(SchemaField)
 		for _, fieldType := range strings.Split(fl.Param(), " ") {
 			if fieldType == schemaField.Type {
@@ -389,12 +390,32 @@ func validateSchema(schema *Schema) error {
 		return true
 	}
 
+	allowedFor := func(fl validator.FieldLevel) bool {
+		isSet, ok := isFieldSet(fl)
+		if !ok {
+			return false
+		}
+		if !isSet {
+			// if the field is NOT set, it's fine regardless of type
+			return true
+		}
+		// field IS set — only valid if Type is in the list
+		schemaField := fl.Parent().Interface().(SchemaField)
+		for _, fieldType := range strings.Split(fl.Param(), " ") {
+			if fieldType == schemaField.Type {
+				return true
+			}
+		}
+		return false
+	}
+
 	// NOTE: It could be helpful to also provide an "optional_for"
 	// function, to make sure we catch superfluous tags.
 
 	validate := validator.New()
 	validate.RegisterValidation("required_for", requiredFor)
 	validate.RegisterValidation("forbidden_for", forbiddenFor)
+	validate.RegisterValidation("allowed_for", allowedFor)
 
 	err := validate.Struct(schema)
 	if err != nil {
