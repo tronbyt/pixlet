@@ -3,14 +3,10 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/tools"
 )
 
 var (
@@ -38,24 +34,7 @@ JSON format.
 func schema(cmd *cobra.Command, args []string) error {
 	path := args[0]
 
-	// check if path exists, and whether it is a directory or a file
-	info, err := os.Stat(path)
-	if err != nil {
-		return fmt.Errorf("failed to stat %s: %w", path, err)
-	}
-
-	var fs fs.FS
-	if info.IsDir() {
-		fs = os.DirFS(path)
-	} else {
-		if !strings.HasSuffix(path, ".star") {
-			return fmt.Errorf("script file must have suffix .star: %s", path)
-		}
-
-		fs = tools.NewSingleFileFS(path)
-	}
-
-	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs)
+	applet, err := runtime.NewAppletFromPath(path)
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}
