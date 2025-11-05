@@ -305,6 +305,11 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}
 
+	roots, err := applet.RunWithConfig(ctx, config)
+	if err != nil {
+		return nil, output, fmt.Errorf("error running script: %w", err)
+	}
+
 	if filters.Output2x {
 		if applet.Manifest != nil && applet.Manifest.Supports2x {
 			width *= 2
@@ -315,11 +320,6 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 			}
 			filters.Magnify *= 2
 		}
-	}
-
-	roots, err := applet.RunWithConfig(ctx, config)
-	if err != nil {
-		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
 
 	screens := encode.ScreensFromRoots(roots, width, height)
