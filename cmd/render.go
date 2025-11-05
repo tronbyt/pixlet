@@ -154,7 +154,12 @@ func render(cmd *cobra.Command, args []string) error {
 
 	var outPath string
 	if info.IsDir() {
-		outPath = filepath.Join(path, filepath.Base(path))
+		abs, err := filepath.Abs(path)
+		if err != nil {
+			return fmt.Errorf("failed to get absolute path for %s: %w", path, err)
+		}
+
+		outPath = filepath.Join(path, filepath.Base(abs))
 	} else {
 		if !strings.HasSuffix(path, ".star") {
 			return fmt.Errorf("script file must have suffix .star: %s", path)
