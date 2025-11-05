@@ -35,23 +35,19 @@ type Manifest struct {
 	// Source is the starlark source code for this applet using the go `embed`
 	// module.
 	Source []byte `json:"-" yaml:"-"`
+
+	// Supports2x indicates whether an app supports 2x render scaling.
+	Supports2x bool `json:"supports2x,omitempty" yaml:"supports2x,omitempty"`
 }
 
 // LoadManifest reads a manifest from an io.Reader, with the most common reader
 // being a file from os.Open. It returns a manifest or an error if it could not
 // be parsed.
 func LoadManifest(r io.Reader) (*Manifest, error) {
-	b, err := io.ReadAll(r)
-	if err != nil {
-		return nil, fmt.Errorf("could not read manifest: %w", err)
-	}
-
 	manifest := &Manifest{}
-	err = yaml.Unmarshal(b, manifest)
-	if err != nil {
+	if err := yaml.NewDecoder(r).Decode(manifest); err != nil {
 		return nil, fmt.Errorf("could not unmarshal manifest: %w", err)
 	}
-
 	return manifest, nil
 }
 

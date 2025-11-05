@@ -29,6 +29,7 @@ import (
 	"go.starlark.net/starlarkstruct"
 	"go.starlark.net/starlarktest"
 	"go.starlark.net/syntax"
+	"tidbyt.dev/pixlet/manifest"
 
 	"tidbyt.dev/pixlet/render"
 	"tidbyt.dev/pixlet/runtime/modules/animation_runtime"
@@ -58,6 +59,7 @@ type ThreadInitializer func(thread *starlark.Thread) *starlark.Thread
 
 type Applet struct {
 	ID       string
+	Manifest *manifest.Manifest
 	Globals  map[string]starlark.StringDict
 	MainFile string
 
@@ -371,17 +373,21 @@ func (a *Applet) load(fsys fs.FS) (err error) {
 		return fmt.Errorf("reading root directory: %v", err)
 	}
 
-	if path.Ext(a.ID) == ".star" {
-		if err := a.ensureLoaded(fsys, a.ID); err != nil {
-			return err
-		}
-	} else {
-		for _, d := range rootDir {
-			if d.IsDir() || !strings.HasSuffix(d.Name(), ".star") {
-				// only process Starlark files
+	singleFile := path.Ext(a.ID) == ".star"
+
+	for _, d := range rootDir {
+		switch {
+		case d.IsDir():
+			// Skip dirs
+		case d.Name() == "manifest.yaml", d.Name() == "manifest.yml":
+			if err := a.loadManifest(fsys, d.Name()); err != nil {
+				return err
+			}
+		case path.Ext(d.Name()) == ".star":
+			if singleFile && a.ID != d.Name() {
+				// Skip loading other star files when in single-file mode
 				continue
 			}
-
 			if err := a.ensureLoaded(fsys, d.Name()); err != nil {
 				return err
 			}
@@ -392,6 +398,20 @@ func (a *Applet) load(fsys fs.FS) (err error) {
 		return fmt.Errorf("no main() function found in %s", a.ID)
 	}
 
+	return nil
+}
+
+func (a *Applet) loadManifest(fsys fs.FS, pathToLoad string) (err error) {
+	r, err := fsys.Open(pathToLoad)
+	if err != nil {
+		return fmt.Errorf("opening %s: %w", pathToLoad, err)
+	}
+	defer r.Close()
+
+	a.Manifest, err = manifest.LoadManifest(r)
+	if err != nil {
+		return fmt.Errorf("loading manifest: %w", err)
+	}
 	return nil
 }
 
