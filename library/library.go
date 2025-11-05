@@ -46,10 +46,10 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 	configStr := C.GoString(configPtr)
 
 	var config map[string]string
-	err := json.Unmarshal([]byte(configStr), &config)
-	if err != nil {
+	if err := json.Unmarshal([]byte(configStr), &config); err != nil {
 		return nil, -1, nil, C.CString(fmt.Sprintf("error parsing config: %v", err))
 	}
+
 	var filters *encode.RenderFilters
 	if filtersPtr != nil {
 		var parsed encode.RenderFilters
@@ -59,36 +59,37 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 		}
 		filters = &parsed
 	}
+
 	result, messages, err := loader.RenderApplet(path, config, int(width), int(height), int(magnify), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)
+
 	messagesJSON, _ := json.Marshal(messages)
 	if err != nil {
 		return nil, -2, C.CString(string(messagesJSON)), C.CString(fmt.Sprintf("error rendering: %v", err))
 	}
+
 	return (*C.uchar)(C.CBytes(result)), C.int(len(result)), C.CString(string(messagesJSON)), nil
 }
 
-func appletFromPath(path string) (*runtime.Applet, int) {
-	applet, err := runtime.NewAppletFromPath(path)
+func errorStatus(err error) int {
 	if err != nil {
 		var pathErr *os.PathError
 		switch {
 		case errors.As(err, &pathErr):
-			return nil, -1
+			return -1
 		case errors.Is(err, runtime.ErrStarSuffix):
-			return nil, -2
+			return -2
 		}
-		return nil, -3
 	}
-
-	return applet, 0
+	return -3
 }
 
 //export get_schema
 func get_schema(pathPtr *C.char) (*C.char, C.int) {
 	path := C.GoString(pathPtr)
 
-	applet, status := appletFromPath(path)
-	if status != 0 {
+	applet, err := runtime.NewAppletFromPath(path)
+	if err != nil {
+		status := errorStatus(err)
 		return nil, C.int(status)
 	}
 
@@ -97,19 +98,34 @@ func get_schema(pathPtr *C.char) (*C.char, C.int) {
 
 //export call_handler
 func call_handler(pathPtr, handlerName, parameter *C.char) (*C.char, C.int) {
+	result, status, _ := call_handler_with_config(pathPtr, nil, handlerName, parameter)
+	return result, status
+}
+
+//export call_handler_with_config
+func call_handler_with_config(pathPtr, configPtr *C.char, handlerName, parameter *C.char) (*C.char, C.int, *C.char) {
 	path := C.GoString(pathPtr)
+	configStr := C.GoString(configPtr)
 
-	applet, status := appletFromPath(path)
-	if status != 0 {
-		return nil, C.int(status)
+	var config map[string]string
+	if configStr != "" {
+		if err := json.Unmarshal([]byte(configStr), &config); err != nil {
+			return nil, -4, C.CString(fmt.Sprintf("error parsing config: %v", err))
+		}
 	}
 
-	result, err := applet.CallSchemaHandler(context.Background(), C.GoString(handlerName), C.GoString(parameter))
+	applet, err := runtime.NewAppletFromPath(path)
 	if err != nil {
-		return nil, -1
+		status := errorStatus(err)
+		return nil, C.int(status), C.CString(fmt.Sprintf("error parsing config: %v", err))
 	}
 
-	return (*C.char)(C.CString(result)), 0
+	result, err := applet.CallSchemaHandler(context.Background(), C.GoString(handlerName), C.GoString(parameter), config)
+	if err != nil {
+		return nil, -1, C.CString(err.Error())
+	}
+
+	return (*C.char)(C.CString(result)), 0, nil
 }
 
 //export free_bytes

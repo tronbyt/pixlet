@@ -45,8 +45,9 @@ type previewData struct {
 	Err       string `json:"error,omitempty"`
 }
 type handlerRequest struct {
-	ID    string `json:"id"`
-	Param string `json:"param"`
+	Config map[string]string `json:"config"`
+	ID     string            `json:"id"`
+	Param  string            `json:"param"`
 }
 
 // NewBrowser sets up a browser structure. Call Run() to kick off the main loops.
@@ -141,7 +142,7 @@ func (b *Browser) schemaHandlerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := b.loader.CallSchemaHandler(r.Context(), handler, msg.Param)
+	data, err := b.loader.CallSchemaHandler(r.Context(), msg.Config, handler, msg.Param)
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintln(w, err)
