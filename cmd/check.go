@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/cobra"
 	"tidbyt.dev/pixlet/cmd/community"
 	"tidbyt.dev/pixlet/manifest"
-	"tidbyt.dev/pixlet/tools"
 )
 
 var maxRenderTime = time.Duration(1 * time.Second)
@@ -50,19 +49,15 @@ func checkCmd(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("failed to stat %s: %w", path, err)
 		}
 
-		var fsys fs.FS
-		var baseDir string
-		if info.IsDir() {
-			fsys = os.DirFS(path)
-			baseDir = path
-		} else {
+		baseDir := path
+		if !info.IsDir() {
 			if !strings.HasSuffix(path, ".star") {
 				return fmt.Errorf("script file must have suffix .star: %s", path)
 			}
-
-			fsys = tools.NewSingleFileFS(path)
 			baseDir = filepath.Dir(path)
 		}
+
+		fsys := os.DirFS(baseDir)
 
 		// Check if an app can load.
 		err = community.LoadApp(cmd, []string{path})

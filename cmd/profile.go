@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/fs"
 	"os"
 	"strings"
 	"time"
@@ -15,7 +14,6 @@ import (
 	"go.starlark.net/starlark"
 
 	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/tools"
 )
 
 var (
@@ -95,27 +93,11 @@ func profile(cmd *cobra.Command, args []string) error {
 }
 
 func ProfileApp(path string, config map[string]string) (*pprof_profile.Profile, error) {
-	info, err := os.Stat(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to stat %s: %w", path, err)
-	}
-
-	var fsys fs.FS
-	if info.IsDir() {
-		fsys = os.DirFS(path)
-	} else {
-		if !strings.HasSuffix(path, ".star") {
-			return nil, fmt.Errorf("script file must have suffix .star: %s", path)
-		}
-
-		fsys = tools.NewSingleFileFS(path)
-	}
-
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	applet, err := runtime.NewAppletFromFS(path, fsys, runtime.WithPrintDisabled())
+	applet, err := runtime.NewAppletFromPath(path, runtime.WithPrintDisabled())
 	if err != nil {
 		return nil, fmt.Errorf("failed to load applet: %w", err)
 	}

@@ -10,8 +10,6 @@ import (
 	"io/fs"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"go.starlark.net/starlark"
@@ -19,7 +17,6 @@ import (
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/runtime/modules/render_runtime"
 	"tidbyt.dev/pixlet/schema"
-	"tidbyt.dev/pixlet/tools"
 )
 
 type ImageFormat int
@@ -269,23 +266,6 @@ func (l *Loader) markInitialLoadComplete() {
 }
 
 func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool, filters *encode.RenderFilters) ([]byte, []string, error) {
-	// check if path exists, and whether it is a directory or a file
-	info, err := os.Stat(path)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to stat %s: %w", path, err)
-	}
-
-	var fs fs.FS
-	if info.IsDir() {
-		fs = os.DirFS(path)
-	} else {
-		if !strings.HasSuffix(path, ".star") {
-			return nil, nil, fmt.Errorf("script file must have suffix .star: %s", path)
-		}
-
-		fs = tools.NewSingleFileFS(path)
-	}
-
 	if filters == nil {
 		filters = &encode.RenderFilters{}
 	}
@@ -320,7 +300,7 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 		defer cancel()
 	}
 
-	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs, opts...)
+	applet, err := runtime.NewAppletFromPath(path, opts...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}

@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"os"
 	"path"
+	"path/filepath"
 	"runtime/debug"
 	"slices"
 	"strings"
@@ -155,6 +157,28 @@ func NewAppletFromFS(id string, fsys fs.FS, opts ...AppletOption) (*Applet, erro
 	}
 
 	return a, nil
+}
+
+var ErrStarSuffix = fmt.Errorf("script file must have suffix .star")
+
+func NewAppletFromPath(path string, opts ...AppletOption) (*Applet, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to stat %s: %w", path, err)
+	}
+
+	dir := path
+	if !info.IsDir() {
+		if !strings.HasSuffix(path, ".star") {
+			return nil, fmt.Errorf("%w: %s", ErrStarSuffix, path)
+		}
+
+		dir = filepath.Dir(path)
+	}
+
+	fsys := os.DirFS(dir)
+
+	return NewAppletFromFS(filepath.Base(path), fsys, opts...)
 }
 
 // Run executes the applet's main function. It returns the render roots that are

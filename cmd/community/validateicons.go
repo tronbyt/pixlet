@@ -3,17 +3,12 @@ package community
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
-	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
 
 	"tidbyt.dev/pixlet/icons"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/schema"
-	"tidbyt.dev/pixlet/tools"
 )
 
 var ValidateIconsCmd = &cobra.Command{
@@ -29,28 +24,11 @@ by our mobile app.`,
 func ValidateIcons(cmd *cobra.Command, args []string) error {
 	path := args[0]
 
-	// check if path exists, and whether it is a directory or a file
-	info, err := os.Stat(path)
-	if err != nil {
-		return fmt.Errorf("failed to stat %s: %w", path, err)
-	}
-
-	var fs fs.FS
-	if info.IsDir() {
-		fs = os.DirFS(path)
-	} else {
-		if !strings.HasSuffix(path, ".star") {
-			return fmt.Errorf("script file must have suffix .star: %s", path)
-		}
-
-		fs = tools.NewSingleFileFS(path)
-	}
-
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs, runtime.WithPrintDisabled())
+	applet, err := runtime.NewAppletFromPath(path, runtime.WithPrintDisabled())
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}

@@ -10,17 +10,14 @@ import "C"
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/fs"
 	"os"
-	"path/filepath"
-	"strings"
 	"unsafe"
 
 	"tidbyt.dev/pixlet/encode"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/server/loader"
-	"tidbyt.dev/pixlet/tools"
 )
 
 // render_app renders an applet based on the provided parameters.
@@ -71,25 +68,15 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 }
 
 func appletFromPath(path string) (*runtime.Applet, int) {
-	// check if path exists, and whether it is a directory or a file
-	info, err := os.Stat(path)
+	applet, err := runtime.NewAppletFromPath(path)
 	if err != nil {
-		return nil, -1
-	}
-
-	var fs fs.FS
-	if info.IsDir() {
-		fs = os.DirFS(path)
-	} else {
-		if !strings.HasSuffix(path, ".star") {
+		var pathErr *os.PathError
+		switch {
+		case errors.As(err, &pathErr):
+			return nil, -1
+		case errors.Is(err, runtime.ErrStarSuffix):
 			return nil, -2
 		}
-
-		fs = tools.NewSingleFileFS(path)
-	}
-
-	applet, err := runtime.NewAppletFromFS(filepath.Base(path), fs)
-	if err != nil {
 		return nil, -3
 	}
 
