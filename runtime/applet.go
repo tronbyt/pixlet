@@ -249,17 +249,21 @@ func (a *Applet) RunWithConfig(ctx context.Context, config map[string]string) (r
 
 // CallSchemaHandler calls a schema handler, passing it a single
 // string parameter and returning a single string value.
-func (app *Applet) CallSchemaHandler(ctx context.Context, handlerName, parameter string) (result string, err error) {
+func (app *Applet) CallSchemaHandler(ctx context.Context, handlerName, parameter string, config map[string]string) (result string, err error) {
 	handler, found := app.Schema.Handlers[handlerName]
 	if !found {
 		return "", fmt.Errorf("no exported handler named '%s'", handlerName)
 	}
 
-	resultVal, err := app.Call(
-		ctx,
-		handler.Function,
+	args := starlark.Tuple{
 		starlark.String(parameter),
-	)
+	}
+
+	if handler.Function.NumParams() > 1 {
+		args = append(args, AppletConfig(config))
+	}
+
+	resultVal, err := app.Call(ctx, handler.Function, args...)
 	if err != nil {
 		return "", fmt.Errorf("calling schema handler %s: %v", handlerName, err)
 	}

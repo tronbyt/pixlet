@@ -13,14 +13,27 @@ function parseErrorMessage(handler, error) {
     return msg;
 }
 
+function buildHandlerRequest(payload) {
+    const { config } = store.getState();
+    const configMap = Object.fromEntries(
+        Object.entries(config)
+            .filter(([, entry]) => entry && typeof entry.value !== 'undefined')
+            .map(([id, entry]) => [id, entry.value])
+    );
+
+    return {
+        ...payload,
+        config: configMap,
+    };
+}
+
 export function callHandler(id, handler, param) {
     let data = {
         id: id,
-        param: param
-    }
-
+        param: param,
+    };
     store.dispatch(loading(true));
-    axios.post(`api/v1/handlers/` + handler, JSON.stringify(data))
+    axios.post(`api/v1/handlers/` + handler, buildHandlerRequest(data))
         .then(res => {
             store.dispatch(update({ id: id, value: res.data }));
         })
@@ -38,11 +51,10 @@ export function callHandler(id, handler, param) {
 export function callGeneratedHandler(id, handler, param) {
     let data = {
         id: id,
-        param: param
-    }
-
+        param: param,
+    };
     store.dispatch(loading(true));
-    axios.post(`api/v1/handlers/` + handler, JSON.stringify(data))
+    axios.post(`api/v1/handlers/` + handler, buildHandlerRequest(data))
         .then(res => {
             store.dispatch(updateGenerated(res.data));
         })
@@ -60,11 +72,10 @@ export function callGeneratedHandler(id, handler, param) {
 export function callHandlerSetValue(id, handler, param, valueHandler) {
     let data = {
         id: id,
-        param: JSON.stringify(param)
-    }
-
+        param: JSON.stringify(param),
+    };
     store.dispatch(loading(true));
-    axios.post(`api/v1/handlers/` + handler, JSON.stringify(data))
+    axios.post(`api/v1/handlers/` + handler, buildHandlerRequest(data))
         .then(res => {
             store.dispatch(update({ id: id, value: res.data }));
             valueHandler(res.data);
