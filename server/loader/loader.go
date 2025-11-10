@@ -210,7 +210,14 @@ func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string
 }
 
 func (l *Loader) loadApplet() error {
-	app, err := runtime.NewAppletFromFS(l.id, l.fs)
+	opts := []runtime.AppletOption{
+		runtime.WithMetadata(render_runtime.Metadata{
+			Width:  l.width,
+			Height: l.height,
+		}),
+	}
+
+	app, err := runtime.NewAppletFromFS(l.id, l.fs, opts...)
 	l.markInitialLoadComplete()
 	if err != nil {
 		return err
