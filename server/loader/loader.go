@@ -46,6 +46,7 @@ type Loader struct {
 	configOutFile    string
 	width            int
 	height           int
+	output2x         bool
 }
 
 type Update struct {
@@ -69,6 +70,7 @@ func NewLoader(
 	timeout int,
 	imageFormat ImageFormat,
 	configOutFile string,
+	output2x bool,
 ) (*Loader, error) {
 	l := &Loader{
 		id:               id,
@@ -87,6 +89,7 @@ func NewLoader(
 		configOutFile:    configOutFile,
 		width:            width,
 		height:           height,
+		output2x:         output2x,
 	}
 
 	cache := runtime.NewInMemoryCache()
@@ -214,6 +217,7 @@ func (l *Loader) loadApplet() error {
 		runtime.WithMetadata(render_runtime.Metadata{
 			Width:  l.width,
 			Height: l.height,
+			Is2x:   l.output2x,
 		}),
 	}
 
@@ -245,7 +249,25 @@ func (l *Loader) renderApplet(config map[string]string) (string, error) {
 		return "", fmt.Errorf("error running script: %w", err)
 	}
 
-	screens := encode.ScreensFromRoots(roots, l.width, l.height)
+	width, height := l.width, l.height
+	magnify := 1
+
+	if l.output2x {
+		if l.applet.Manifest != nil && l.applet.Manifest.Supports2x {
+			width *= 2
+			height *= 2
+		} else {
+			magnify = 2
+		}
+	}
+
+	screens := encode.ScreensFromRoots(roots, width, height)
+
+	var chain []encode.ImageFilter
+	if magnify > 1 {
+		chain = append(chain, encode.Magnify(magnify))
+	}
+	filter := encode.Chain(chain...)
 
 	maxDuration := l.maxDuration
 	if screens.ShowFullAnimation {
@@ -257,11 +279,11 @@ func (l *Loader) renderApplet(config map[string]string) (string, error) {
 	default:
 		fallthrough
 	case ImageWebP:
-		img, err = screens.EncodeWebP(maxDuration)
+		img, err = screens.EncodeWebP(maxDuration, filter)
 	case ImageGIF:
-		img, err = screens.EncodeGIF(maxDuration)
+		img, err = screens.EncodeGIF(maxDuration, filter)
 	case ImageAVIF:
-		img, err = screens.EncodeAVIF(maxDuration)
+		img, err = screens.EncodeAVIF(maxDuration, filter)
 	}
 	if err != nil {
 		return "", fmt.Errorf("error rendering: %w", err)

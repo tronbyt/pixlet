@@ -28,6 +28,7 @@ func init() {
 	ServeCmd.Flags().StringVarP(&path, "path", "", "/", "Path to serve the app on")
 	ServeCmd.Flags().IntVar(&width, "width", 64, "Set width")
 	ServeCmd.Flags().IntVarP(&height, "height", "t", 32, "Set height")
+	ServeCmd.Flags().BoolVarP(&output2x, "2x", "2", false, "Render at 2x resolution")
 
 	// Deprecated flags
 	ServeCmd.Flags().IntVar(&maxDuration, "max_duration", 15000, "Maximum allowed animation duration (ms)")
@@ -63,7 +64,7 @@ func serve(cmd *cobra.Command, args []string) error {
 		log.Printf("Invalid image format %q. Defaulting to WebP.", serveFormat)
 	}
 
-	s, err := server.NewServer(host, port, path, watch, args[0], width, height, maxDuration, timeout, imageFormat, configOutFile)
+	s, err := server.NewServer(host, port, path, watch, args[0], width, height, maxDuration, timeout, imageFormat, configOutFile, output2x)
 	if err != nil {
 		return err
 	}
