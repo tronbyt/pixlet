@@ -30,6 +30,7 @@ const (
 // Loader is a structure to provide applet loading when a file changes or on
 // demand.
 type Loader struct {
+	id               string
 	fs               fs.FS
 	fileChanges      chan bool
 	watch            bool
@@ -59,6 +60,7 @@ type Update struct {
 // encoded WebP strings. If watch is enabled, both file changes and on demand
 // requests will send updates over the updatesChan.
 func NewLoader(
+	id string,
 	fs fs.FS,
 	watch bool,
 	fileChanges chan bool,
@@ -69,6 +71,7 @@ func NewLoader(
 	configOutFile string,
 ) (*Loader, error) {
 	l := &Loader{
+		id:               id,
 		fs:               fs,
 		fileChanges:      fileChanges,
 		watch:            watch,
@@ -91,12 +94,8 @@ func NewLoader(
 	runtime.InitCache(cache)
 
 	if !l.watch {
-		app, err := loadScript("app-id", l.fs)
-		l.markInitialLoadComplete()
-		if err != nil {
+		if err := l.loadApplet(); err != nil {
 			return nil, err
-		} else {
-			l.applet = *app
 		}
 	}
 
@@ -131,7 +130,7 @@ func (l *Loader) Run() error {
 				}
 			}
 
-			img, err := l.loadApplet(config)
+			img, err := l.renderApplet(config)
 			if err != nil {
 				log.Printf("error loading applet: %v", err)
 				up.Err = err
@@ -155,7 +154,7 @@ func (l *Loader) Run() error {
 			log.Println("detected updates, reloading")
 			up := Update{}
 
-			img, err := l.loadApplet(config)
+			img, err := l.renderApplet(config)
 			if err != nil {
 				log.Printf("error loading applet: %v", err)
 				up.Err = err
@@ -210,14 +209,21 @@ func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string
 	return l.applet.CallSchemaHandler(ctx, handlerName, parameter, config)
 }
 
-func (l *Loader) loadApplet(config map[string]string) (string, error) {
+func (l *Loader) loadApplet() error {
+	app, err := runtime.NewAppletFromFS(l.id, l.fs)
+	l.markInitialLoadComplete()
+	if err != nil {
+		return err
+	}
+
+	l.applet = *app
+	return nil
+}
+
+func (l *Loader) renderApplet(config map[string]string) (string, error) {
 	if l.watch {
-		app, err := loadScript("app-id", l.fs)
-		l.markInitialLoadComplete()
-		if err != nil {
+		if err := l.loadApplet(); err != nil {
 			return "", err
-		} else {
-			l.applet = *app
 		}
 	}
 
