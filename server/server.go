@@ -2,15 +2,14 @@ package server
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"golang.org/x/sync/errgroup"
+	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/server/browser"
 	"tidbyt.dev/pixlet/server/loader"
-	"tidbyt.dev/pixlet/tools"
 )
 
 // Server provides functionality to serve Starlark over HTTP. It has
@@ -32,22 +31,20 @@ func NewServer(host string, port int, servePath string, watch bool, path string,
 		return nil, fmt.Errorf("stat'ing %s: %w", path, err)
 	}
 
-	var fs fs.FS
-	var w *Watcher
-	if info.IsDir() {
-		fs = os.DirFS(path)
-		w = NewWatcher(path, fileChanges)
-	} else {
+	dir := path
+	if !info.IsDir() {
 		if !strings.HasSuffix(path, ".star") {
-			return nil, fmt.Errorf("script file must have suffix .star: %s", path)
+			return nil, fmt.Errorf("%w: %s", runtime.ErrStarSuffix, path)
 		}
 
-		fs = tools.NewSingleFileFS(path)
-		w = NewWatcher(path, fileChanges)
+		dir = filepath.Dir(path)
 	}
 
+	fsys := os.DirFS(dir)
+	w := NewWatcher(dir, fileChanges)
+
 	updatesChan := make(chan loader.Update, 100)
-	l, err := loader.NewLoader(fs, watch, fileChanges, updatesChan, width, height, maxDuration, timeout, imageFormat, configOutFile)
+	l, err := loader.NewLoader(filepath.Base(path), fsys, watch, fileChanges, updatesChan, width, height, maxDuration, timeout, imageFormat, configOutFile)
 	if err != nil {
 		return nil, err
 	}
