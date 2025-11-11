@@ -7,8 +7,8 @@
 	image-rendering: -moz-crisp-edges;
 	image-rendering: crisp-edges;
 	width: 100%;
-	mask-size: contain;
-	-webkit-mask-size: contain;
-	mask-image: url('./mask.png');
-	-webkit-mask-image: url('./mask.png');
+	-webkit-mask-size: cover;
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	mask-repeat: no-repeat;
 }

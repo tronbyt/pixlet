@@ -43,6 +43,8 @@ type previewData struct {
 	ImageType string `json:"img_type"`
 	Watch     bool   `json:"-"`
 	Err       string `json:"error,omitempty"`
+	Width     int    `json:"width,omitzero"`
+	Height    int    `json:"height,omitzero"`
 }
 type handlerRequest struct {
 	Config map[string]string `json:"config"`
@@ -93,6 +95,7 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 	r.HandleFunc(fmt.Sprintf("GET %sapi/v1/schema", servePath), b.schemaHandler)
 	r.HandleFunc(fmt.Sprintf("POST %sapi/v1/handlers/{handler}", servePath), b.schemaHandlerHandler)
 	r.HandleFunc(servePath+"api/v1/ws", b.websocketHandler)
+	r.HandleFunc(servePath+"api/v1/dots.svg", dotHandler)
 	b.r = r
 
 	return b, nil
@@ -208,6 +211,8 @@ func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 		Image:     img,
 		ImageType: img_type,
 		Title:     b.title,
+		Width:     b.loader.Width(),
+		Height:    b.loader.Height(),
 	}
 	if err != nil {
 		data.Err = err.Error()
