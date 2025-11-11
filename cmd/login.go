@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"os"
 
-	"tidbyt.dev/pixlet/cmd/config"
+	"github.com/tronbyt/pixlet/cmd/config"
 
 	cowsay "github.com/Code-Hex/Neo-cowsay/v2"
 	"github.com/Code-Hex/Neo-cowsay/v2/decoration"

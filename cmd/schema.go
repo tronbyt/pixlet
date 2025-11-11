@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 var (

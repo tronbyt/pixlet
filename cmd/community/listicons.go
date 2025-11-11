@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/icons"
+	"github.com/tronbyt/pixlet/icons"
 )
 
 var ListIconsCmd = &cobra.Command{

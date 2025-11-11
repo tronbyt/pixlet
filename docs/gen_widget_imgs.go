@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"tidbyt.dev/pixlet/encode"
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 const Magnification = 7

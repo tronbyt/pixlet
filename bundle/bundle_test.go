@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"tidbyt.dev/pixlet/bundle"
+	"github.com/tronbyt/pixlet/bundle"
 )
 
 func TestBundleWriteAndLoad(t *testing.T) {

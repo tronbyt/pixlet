@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/cmd/community"
-	"tidbyt.dev/pixlet/tools/generator"
-	"tidbyt.dev/pixlet/tools/repo"
+	"github.com/tronbyt/pixlet/cmd/community"
+	"github.com/tronbyt/pixlet/tools/generator"
+	"github.com/tronbyt/pixlet/tools/repo"
 )
 
 // CreateCmd prompts the user for info and generates a new app.

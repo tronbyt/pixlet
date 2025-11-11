@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/cmd"
-	"tidbyt.dev/pixlet/cmd/community"
-	"tidbyt.dev/pixlet/cmd/private"
+	"github.com/tronbyt/pixlet/cmd"
+	"github.com/tronbyt/pixlet/cmd/community"
+	"github.com/tronbyt/pixlet/cmd/private"
 )
 
 var (

@@ -7,7 +7,7 @@ import (
 
 	"github.com/vmihailenco/msgpack/v5"
 
-	"tidbyt.dev/pixlet/render"
+	"github.com/tronbyt/pixlet/render"
 )
 
 const (

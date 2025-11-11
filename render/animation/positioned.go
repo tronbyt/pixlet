@@ -6,7 +6,7 @@ import (
 
 	"github.com/tidbyt/gg"
 
-	"tidbyt.dev/pixlet/render"
+	"github.com/tronbyt/pixlet/render"
 )
 
 // Animate a widget from start to end coordinates.

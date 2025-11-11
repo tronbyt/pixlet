@@ -11,7 +11,7 @@ import (
 
 	"github.com/nlepage/go-tarfs"
 
-	"tidbyt.dev/pixlet/manifest"
+	"github.com/tronbyt/pixlet/manifest"
 )
 
 const (

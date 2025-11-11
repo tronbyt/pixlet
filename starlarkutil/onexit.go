@@ -5,7 +5,7 @@ import "go.starlark.net/starlark"
 const (
 	// ThreadOnExitKey is the key used to store functions that should be called
 	// when a thread exits.
-	ThreadOnExitKey = "tidbyt.dev/pixlet/runtime/on_exit"
+	ThreadOnExitKey = "github.com/tronbyt/pixlet/runtime/on_exit"
 )
 
 type threadOnExitFunc func()

@@ -7,7 +7,7 @@ import (
 	"go.starlark.net/starlark"
 )
 
-const threadMetadataKey = "tidbyt.dev/pixlet/runtime/$metadata"
+const threadMetadataKey = "github.com/tronbyt/pixlet/runtime/$metadata"
 
 func AttachToThread(t *starlark.Thread, m Metadata) {
 	t.SetLocal(threadMetadataKey, m)

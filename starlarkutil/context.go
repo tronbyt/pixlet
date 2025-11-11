@@ -9,7 +9,7 @@ import (
 const (
 	// ThreadContextKey is the name of the Starlark thread-local that we use to
 	// pass context around.
-	ThreadContextKey = "tidbyt.dev/pixlet/starlarkutil/$ctx"
+	ThreadContextKey = "github.com/tronbyt/pixlet/starlarkutil/$ctx"
 )
 
 // AttachThreadContext attaches context to a Starlark thread so that it can be

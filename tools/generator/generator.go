@@ -7,7 +7,7 @@ import (
 	"path"
 	"text/template"
 
-	"tidbyt.dev/pixlet/manifest"
+	"github.com/tronbyt/pixlet/manifest"
 )
 
 const (

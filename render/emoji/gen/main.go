@@ -39,7 +39,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"tidbyt.dev/pixlet/assets/emoji"
+	"github.com/tronbyt/pixlet/assets/emoji"
 )
 
 const (

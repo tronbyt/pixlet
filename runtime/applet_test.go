@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.starlark.net/starlark"
 
-	"tidbyt.dev/pixlet/schema"
+	"github.com/tronbyt/pixlet/schema"
 )
 
 func TestLoadEmptySrc(t *testing.T) {

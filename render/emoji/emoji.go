@@ -12,7 +12,7 @@ import (
 
 	"github.com/rivo/uniseg"
 	"github.com/tidbyt/gg"
-	font "tidbyt.dev/pixlet/fonts/emoji"
+	font "github.com/tronbyt/pixlet/fonts/emoji"
 )
 
 const MaxHeight = font.MaxHeight

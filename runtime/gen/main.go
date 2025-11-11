@@ -22,8 +22,8 @@ import (
 	"strings"
 	"text/template"
 
-	"tidbyt.dev/pixlet/render"
-	"tidbyt.dev/pixlet/render/animation"
+	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/render/animation"
 )
 
 //go:embed *.tmpl */*.tmpl
@@ -62,7 +62,7 @@ var Packages = []Package{
 	{
 		Name:           "render",
 		Directory:      "render",
-		ImportPath:     "tidbyt.dev/pixlet/render",
+		ImportPath:     "github.com/tronbyt/pixlet/render",
 		HeaderTemplate: "header/render.tmpl",
 		TypeTemplate:   "type.tmpl",
 		CodePath:       "runtime/modules/render_runtime/generated.go",
@@ -92,7 +92,7 @@ var Packages = []Package{
 	{
 		Name:           "animation",
 		Directory:      "render/animation",
-		ImportPath:     "tidbyt.dev/pixlet/render/animation",
+		ImportPath:     "github.com/tronbyt/pixlet/render/animation",
 		HeaderTemplate: "header/animation.tmpl",
 		TypeTemplate:   "type.tmpl",
 		CodePath:       "runtime/modules/animation_runtime/generated.go",

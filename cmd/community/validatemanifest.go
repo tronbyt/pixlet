@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/manifest"
+	"github.com/tronbyt/pixlet/manifest"
 )
 
 var ValidateManifestAppFileName string

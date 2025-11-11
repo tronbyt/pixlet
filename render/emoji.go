@@ -7,7 +7,7 @@ import (
 
 	"github.com/nfnt/resize"
 	"github.com/tidbyt/gg"
-	"tidbyt.dev/pixlet/render/emoji"
+	"github.com/tronbyt/pixlet/render/emoji"
 )
 
 // Emoji renders a single emoji at a specified height, maintaining aspect ratio.

@@ -11,9 +11,9 @@ import (
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 
-	"tidbyt.dev/pixlet/render"
-	"tidbyt.dev/pixlet/render/animation"
-	"tidbyt.dev/pixlet/runtime/modules/render_runtime"
+	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/render/animation"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
 )
 
 type AnimationModule struct {

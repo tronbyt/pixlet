@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/go-libwebp/webp"
-	"tidbyt.dev/pixlet/render"
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 var TestDotStar = `

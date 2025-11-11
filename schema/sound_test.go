@@ -6,7 +6,7 @@ import (
 	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 var soundSource = `

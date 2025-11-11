@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/server/browser"
+	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/sync/errgroup"
-	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/server/browser"
-	"tidbyt.dev/pixlet/server/loader"
 )
 
 // Server provides functionality to serve Starlark over HTTP. It has

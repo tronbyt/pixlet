@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/config"
 	"golang.org/x/oauth2"
-	"tidbyt.dev/pixlet/cmd/config"
 )
 
 var SetAuthCmd = &cobra.Command{

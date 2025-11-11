@@ -5,8 +5,8 @@ import (
 	"image/color"
 	"math"
 
+	"github.com/tronbyt/pixlet/render"
 	"go.starlark.net/starlark"
-	"tidbyt.dev/pixlet/render"
 )
 
 func DataPointElementFromStarlark(value starlark.Value) (float64, error) {

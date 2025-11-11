@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/cmd/config"
+	"github.com/tronbyt/pixlet/cmd/config"
 )
 
 type TidbytApp struct {
