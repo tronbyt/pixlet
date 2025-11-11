@@ -317,9 +317,9 @@ github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
 github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8=
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
-github.com/tidbyt/gg v0.0.0-20220808163829-95806fa1d427 h1:br5WYVw/jr4G0PZpBBx2fBAANVUrI8KKHMSs3LVqO9A=
-github.com/tidbyt/gg v0.0.0-20220808163829-95806fa1d427/go.mod h1:+SCm6iJHe2lfsQzlbLCsd5XsTKYSD0VqtQmWMnNs9OE=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
+github.com/tronbyt/gg v0.0.0-20220808163829-95806fa1d427 h1:ZtI+sSJ6at2TpZXcxnUNrHqeTYbQeYmCEn08+J1vs24=
+github.com/tronbyt/gg v0.0.0-20220808163829-95806fa1d427/go.mod h1:wjdMaUjKINeop89o25+l/doQeDpzXNQdiGpnZxBRRkA=
 github.com/tronbyt/go-libwebp v0.0.0-20250308222421-079fb191728f h1:ygboQdmQbZkgKhkHICbrJ1mgqZQKEY7vTAzF3oEAd+o=
 github.com/tronbyt/go-libwebp v0.0.0-20250308222421-079fb191728f/go.mod h1:d5Q0l+y8kcSncX4xm18IAE8oNSCmnveQxdGEFGNZOBw=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=

@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // PieChart draws a circular pie chart of size `diameter`. It takes two

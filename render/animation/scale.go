@@ -1,7 +1,7 @@
 package animation
 
 import (
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Transform by scaling by a given factor.

@@ -4,7 +4,7 @@ import (
 	"image"
 	"math"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 
 	"github.com/tronbyt/pixlet/render"
 )

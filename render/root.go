@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 const (

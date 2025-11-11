@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 func TestTextWidgetWithEmojis(t *testing.T) {

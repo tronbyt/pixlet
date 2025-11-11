@@ -6,7 +6,7 @@ import (
 	"math"
 
 	"github.com/nfnt/resize"
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render/emoji"
 )
 
