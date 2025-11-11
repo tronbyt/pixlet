@@ -6,9 +6,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"tidbyt.dev/pixlet/icons"
-	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/schema"
+	"github.com/tronbyt/pixlet/icons"
+	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/schema"
 )
 
 var ValidateIconsCmd = &cobra.Command{

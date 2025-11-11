@@ -11,7 +11,7 @@ import (
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 
-	"tidbyt.dev/pixlet/render"
+	"github.com/tronbyt/pixlet/render"
 )
 
 type RenderModule struct {

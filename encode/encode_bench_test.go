@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 var BenchmarkDotStar = `

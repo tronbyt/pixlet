@@ -30,9 +30,9 @@ import (
 	"testing"
 
 	"github.com/qri-io/starlib/testdata"
+	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarktest"
-	"tidbyt.dev/pixlet/runtime/modules/starlarkhttp"
 )
 
 func TestAsString(t *testing.T) {

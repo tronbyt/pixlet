@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"tidbyt.dev/pixlet/runtime/modules/starlarkhttp"
+	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 )
 
 const (

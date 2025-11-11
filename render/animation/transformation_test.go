@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"tidbyt.dev/pixlet/render"
+	"github.com/tronbyt/pixlet/render"
 )
 
 func TestTransformationTranslate(t *testing.T) {

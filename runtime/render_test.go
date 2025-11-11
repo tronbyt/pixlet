@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"tidbyt.dev/pixlet/render"
-	"tidbyt.dev/pixlet/runtime/modules/render_runtime"
+	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
 )
 
 var TestDotStar = `

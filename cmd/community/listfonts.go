@@ -11,8 +11,8 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/fonts"
 	"github.com/zachomedia/go-bdf"
-	"tidbyt.dev/pixlet/fonts"
 )
 
 var ListFontsCmd = &cobra.Command{

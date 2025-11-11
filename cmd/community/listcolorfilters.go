@@ -5,7 +5,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/encode"
+	"github.com/tronbyt/pixlet/encode"
 )
 
 var ListColorFiltersCmd = &cobra.Command{

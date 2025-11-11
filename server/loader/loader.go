@@ -12,11 +12,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
+	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
-	"tidbyt.dev/pixlet/encode"
-	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/runtime/modules/render_runtime"
-	"tidbyt.dev/pixlet/schema"
 )
 
 type ImageFormat int

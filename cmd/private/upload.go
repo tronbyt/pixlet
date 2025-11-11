@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/bundle"
-	"tidbyt.dev/pixlet/cmd/config"
+	"github.com/tronbyt/pixlet/bundle"
+	"github.com/tronbyt/pixlet/cmd/config"
 )
 
 var uploadVersion string

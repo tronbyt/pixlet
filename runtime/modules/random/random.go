@@ -12,7 +12,7 @@ import (
 
 const (
 	ModuleName       = "random"
-	threadRandKey    = "tidbyt.dev/pixlet/runtime/random"
+	threadRandKey    = "github.com/tronbyt/pixlet/runtime/random"
 	randomSeedWindow = 15
 )
 

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/tronbyt/pixlet/fonts"
 	"github.com/zachomedia/go-bdf"
 	"golang.org/x/image/font"
-	"tidbyt.dev/pixlet/fonts"
 )
 
 var fontCache = map[string]font.Face{}

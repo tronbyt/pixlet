@@ -10,8 +10,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/cmd/community"
-	"tidbyt.dev/pixlet/manifest"
+	"github.com/tronbyt/pixlet/cmd/community"
+	"github.com/tronbyt/pixlet/manifest"
 )
 
 var maxRenderTime = time.Duration(1 * time.Second)

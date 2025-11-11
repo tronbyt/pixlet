@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"go.starlark.net/starlark"
 
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 var (

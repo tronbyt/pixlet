@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/cmd/community"
-	"tidbyt.dev/pixlet/cmd/config"
-	"tidbyt.dev/pixlet/tools/generator"
+	"github.com/tronbyt/pixlet/cmd/community"
+	"github.com/tronbyt/pixlet/cmd/config"
+	"github.com/tronbyt/pixlet/tools/generator"
 )
 
 var createOrg string

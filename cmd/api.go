@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/encode"
-	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/server/loader"
+	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/server/loader"
 )
 
 func init() {

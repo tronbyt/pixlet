@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	font "tidbyt.dev/pixlet/fonts/emoji"
+	font "github.com/tronbyt/pixlet/fonts/emoji"
 )
 
 func TestSegmentString(t *testing.T) {

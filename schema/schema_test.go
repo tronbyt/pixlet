@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/schema"
+	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/schema"
 )
 
 func loadApp(code string) (*runtime.Applet, error) {

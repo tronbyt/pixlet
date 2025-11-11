@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"slices"
 
-	"tidbyt.dev/pixlet/manifest"
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/manifest"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 type WriteOption interface{}

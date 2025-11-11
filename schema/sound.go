@@ -6,7 +6,7 @@ import (
 	"github.com/mitchellh/hashstructure/v2"
 	"go.starlark.net/starlark"
 
-	"tidbyt.dev/pixlet/runtime/modules/file"
+	"github.com/tronbyt/pixlet/runtime/modules/file"
 )
 
 type Sound struct {

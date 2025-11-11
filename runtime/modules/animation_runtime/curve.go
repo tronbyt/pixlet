@@ -5,7 +5,7 @@ import (
 
 	"go.starlark.net/starlark"
 
-	"tidbyt.dev/pixlet/render/animation"
+	"github.com/tronbyt/pixlet/render/animation"
 )
 
 func CurveFromStarlark(value starlark.Value) (animation.Curve, error) {

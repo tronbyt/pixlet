@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	threadDecrypterKey = "tidbyt.dev/pixlet/runtime/decrypter"
+	threadDecrypterKey = "github.com/tronbyt/pixlet/runtime/decrypter"
 )
 
 // SecretDecryptionKey is a key that can be used to decrypt secrets.

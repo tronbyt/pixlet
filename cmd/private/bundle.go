@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/bundle"
+	"github.com/tronbyt/pixlet/bundle"
 )
 
 var bundleOutput string

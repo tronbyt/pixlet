@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"tidbyt.dev/pixlet/manifest"
+	"github.com/tronbyt/pixlet/manifest"
 )
 
 //go:embed testdata/source.star

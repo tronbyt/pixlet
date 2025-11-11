@@ -15,9 +15,9 @@ import (
 	"os"
 	"unsafe"
 
-	"tidbyt.dev/pixlet/encode"
-	"tidbyt.dev/pixlet/runtime"
-	"tidbyt.dev/pixlet/server/loader"
+	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/server/loader"
 )
 
 // render_app renders an applet based on the provided parameters.

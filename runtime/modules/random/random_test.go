@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"tidbyt.dev/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime"
 )
 
 var randomSrc = `

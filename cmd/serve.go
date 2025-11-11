@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"tidbyt.dev/pixlet/server"
-	"tidbyt.dev/pixlet/server/loader"
+	"github.com/tronbyt/pixlet/server"
+	"github.com/tronbyt/pixlet/server/loader"
 )
 
 var (

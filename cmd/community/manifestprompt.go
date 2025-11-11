@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/manifoldco/promptui"
-	"tidbyt.dev/pixlet/manifest"
+	"github.com/tronbyt/pixlet/manifest"
 )
 
 func ManifestPrompt() (*manifest.Manifest, error) {

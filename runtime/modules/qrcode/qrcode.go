@@ -6,9 +6,9 @@ import (
 	"sync"
 
 	goqrcode "github.com/skip2/go-qrcode"
+	"github.com/tronbyt/pixlet/render"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
-	"tidbyt.dev/pixlet/render"
 )
 
 const (

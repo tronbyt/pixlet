@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"tidbyt.dev/pixlet/tools/repo"
+	"github.com/tronbyt/pixlet/tools/repo"
 )
 
 func TestIsInRepo(t *testing.T) {

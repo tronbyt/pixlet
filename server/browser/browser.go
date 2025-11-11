@@ -13,10 +13,10 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
+	"github.com/tronbyt/pixlet/dist"
+	"github.com/tronbyt/pixlet/server/fanout"
+	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/sync/errgroup"
-	"tidbyt.dev/pixlet/dist"
-	"tidbyt.dev/pixlet/server/fanout"
-	"tidbyt.dev/pixlet/server/loader"
 )
 
 // Browser provides a structure for serving WebP or GIF images over websockets to
