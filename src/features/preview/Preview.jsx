@@ -68,10 +68,21 @@ export default function Preview() {
         img = preview.value.img;
     }
 
-    let content = <img src={displayType + img} className={styles.image} />
+    let dotsUrl = new URL('./api/v1/dots.svg', document.location);
+    if (preview.value.width) {
+        dotsUrl.searchParams.set('w', preview.value.width);
+    }
+    if (preview.value.height) {
+        dotsUrl.searchParams.set('h', preview.value.height);
+    }
+
     return (
         <Paper sx={{ bgcolor: "black" }}>
-            {content}
+            <img
+                src={displayType + img}
+                className={styles.image}
+                style={{ maskImage: `url("${dotsUrl}")`, WebkitMaskImage: `url("${dotsUrl}")` }}
+            />
         </Paper>
     );
 }

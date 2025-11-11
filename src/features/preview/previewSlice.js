@@ -8,6 +8,8 @@ export const previewSlice = createSlice({
             img: '',
             img_type: '',
             title: 'Pixlet',
+            width: 64,
+            height: 32,
         }
     },
     reducers: {
@@ -24,6 +26,14 @@ export const previewSlice = createSlice({
 
             if ('title' in action.payload) {
                 up.value.title = action.payload.title;
+            }
+
+            if ('width' in action.payload) {
+                up.value.width = action.payload.width;
+            }
+
+            if ('height' in action.payload) {
+                up.value.height = action.payload.height;
             }
 
             return up;

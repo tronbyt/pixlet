@@ -394,3 +394,17 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 
 	return buf, output, nil
 }
+
+func (l *Loader) Width() int {
+	if l.output2x {
+		return l.width * 2
+	}
+	return l.width
+}
+
+func (l *Loader) Height() int {
+	if l.output2x {
+		return l.height * 2
+	}
+	return l.height
+}
