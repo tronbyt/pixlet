@@ -54,7 +54,7 @@ release-windows: clean
 	./scripts/release-windows.sh
 
 install-buildifier:
-	$(GO_CMD) install github.com/bazelbuild/buildtools/buildifier@latest
+	$(GO_CMD) install github.com/bazelbuild/buildtools/buildifier@v0.0.0-20251107112229-e879524f2986
 
 lint:
 	@ buildifier --version >/dev/null 2>&1 || $(MAKE) install-buildifier
