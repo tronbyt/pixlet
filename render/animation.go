@@ -3,7 +3,7 @@ package render
 import (
 	"image"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Animations turns a list of children into an animation, where each

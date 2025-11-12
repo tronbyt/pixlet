@@ -17,7 +17,7 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Image renders the binary image data passed via `src`. Supported

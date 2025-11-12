@@ -3,7 +3,7 @@ package render
 import (
 	"image"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Marquee scrolls its child horizontally or vertically.

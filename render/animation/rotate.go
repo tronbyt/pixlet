@@ -1,7 +1,7 @@
 package animation
 
 import (
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Transform by rotating by a given angle in degrees.

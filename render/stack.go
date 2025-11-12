@@ -3,7 +3,7 @@ package render
 import (
 	"image"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Stack draws its children on top of each other.

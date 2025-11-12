@@ -3,7 +3,7 @@ package render
 import (
 	"image"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Sequence renders a list of child widgets in sequence.

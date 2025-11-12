@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"github.com/rivo/uniseg"
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 	font "github.com/tronbyt/pixlet/fonts/emoji"
 )
 

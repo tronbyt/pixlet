@@ -4,7 +4,7 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // A Box is a rectangular widget that can hold a child widget.

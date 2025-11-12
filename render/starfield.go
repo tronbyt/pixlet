@@ -7,7 +7,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 type Starfield struct {

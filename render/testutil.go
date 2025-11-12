@@ -6,7 +6,7 @@ import (
 	"image/color"
 	"strings"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 var DefaultPalette = map[string]color.RGBA{

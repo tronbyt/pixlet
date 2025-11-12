@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 )
 
 // Circle draws a circle with the given `diameter` and `color`. If a

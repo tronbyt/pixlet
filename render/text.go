@@ -4,7 +4,7 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/tidbyt/gg"
+	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render/emoji"
 )
 
