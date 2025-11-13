@@ -8,12 +8,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/websocket"
-	"github.com/tronbyt/pixlet/dist"
+	"github.com/tronbyt/pixlet/frontend"
 	"github.com/tronbyt/pixlet/server/fanout"
 	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/sync/errgroup"
@@ -82,7 +83,11 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 
 	// This enables the static directory containing JS and CSS to be available
 	// at /static.
-	r.Handle(fmt.Sprintf("GET %sstatic/", servePath), http.StripPrefix(servePath, http.FileServer(http.FS(dist.Static))))
+	subFS, err := fs.Sub(frontend.Dist, "dist")
+	if err != nil {
+		return nil, fmt.Errorf("loading frontend: %w", err)
+	}
+	r.Handle(fmt.Sprintf("GET %sstatic/", servePath), http.StripPrefix(servePath, http.FileServer(http.FS(subFS))))
 
 	r.HandleFunc(servePath+"ws", b.websocketHandler)
 	r.HandleFunc(fmt.Sprintf("GET %sfavicon.png", servePath), b.faviconHandler)
@@ -285,8 +290,14 @@ func (b *Browser) updateWatcher() error {
 	}
 }
 func (b *Browser) rootHandler(w http.ResponseWriter, r *http.Request) {
+	index, err := fs.ReadFile(frontend.Dist, "dist/index.html")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error loading index template: %v", err), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html")
-	t, err := template.New("index").Parse(string(dist.Index))
+	t, err := template.New("index").Parse(string(index))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error loading index template: %v", err), http.StatusInternalServerError)
 		return

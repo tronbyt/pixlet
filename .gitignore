@@ -18,8 +18,6 @@ pixlet.dll
 # Releases
 build/
 out/
-dist/
-!dist/*.go
 
 # Dependency directories
 node_modules

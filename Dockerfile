@@ -5,12 +5,10 @@ FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.8.0 AS xx
 FROM --platform=$BUILDPLATFORM node:25-alpine AS frontend
 WORKDIR /app
 
-COPY package.json package-lock.json .
+COPY frontend/package*.json .
 RUN npm ci
 
-COPY src src
-COPY public public
-COPY index.html vite.config.js .
+COPY frontend .
 RUN npm run build
 
 # Can't use Alpine because of
