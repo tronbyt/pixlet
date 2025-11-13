@@ -1,6 +1,6 @@
 import { createRef } from 'react';
 import { SnackbarProvider } from 'notistack';
-import * as styles from './styles.css';
+import styles from './styles.module.css';
 
 export default function ErrorSnackbar(props) {
     const notistackRef = createRef();

@@ -19,6 +19,7 @@ pixlet.dll
 build/
 out/
 dist/
+!dist/*.go
 
 # Dependency directories
 node_modules

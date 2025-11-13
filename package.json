@@ -2,15 +2,15 @@
   "name": "pixlet",
   "version": "0.47.2",
   "description": "[![Build & test](https://github.com/tidbyt/pixlet/workflows/Build%20&%20test/badge.svg)](https://github.com/tidbyt/pixlet/actions?query=workflow%3A%22Build+%26+test%22+branch%3Amain) [![GoDoc](https://godoc.org/github.com/tidbyt/pixlet/runtime?status.svg)](https://godoc.org/github.com/tidbyt/pixlet/runtime)",
-  "main": "src/index.js",
+  "main": "src/index.jsx",
   "directories": {
     "doc": "docs",
     "example": "examples"
   },
   "scripts": {
-    "start": "webpack serve --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
-    "analyze": "webpack --config webpack.prod.js --profile --json > stats.json",
+    "start": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
     "clean": "rm -rf dist/static/ && git restore dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -29,20 +29,9 @@
     "defaults and fully supports es6-module"
   ],
   "devDependencies": {
-    "@babel/core": "^7.28.4",
-    "@babel/plugin-transform-class-properties": "^7.27.1",
-    "@babel/plugin-transform-runtime": "^7.28.3",
-    "@babel/preset-react": "^7.27.1",
-    "@svgr/webpack": "^8.1.0",
-    "babel-loader": "^10.0.0",
-    "css-loader": "^7.1.2",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.6.4",
-    "style-loader": "^4.0.0",
-    "webpack": "^5.101.3",
-    "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2",
-    "webpack-merge": "^6.0.1"
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.8",
+    "vite-plugin-svgr": "^4.2.0"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -61,7 +50,6 @@
     "@uiw/react-color": "^2.9.2",
     "axios": "^1.13.2",
     "axios-retry": "^4.5.0",
-    "copy-webpack-plugin": "^13.0.1",
     "core-js": "^3.45.1",
     "date-fns": "4.1.0",
     "dayjs": "^1.11.19",

@@ -3,7 +3,7 @@ import { findIconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 import Icon from '@mui/material/Icon';
 
-import * as styles from './styles.css';
+import styles from './styles.module.css';
 
 const { library } = await import('@fortawesome/fontawesome-svg-core');
 const { fab } = await import('@fortawesome/free-brands-svg-icons');
@@ -15,6 +15,10 @@ export default function FieldIcon(props) {
 
     if (!iconName) {
         return null;
+    }
+
+    if (iconName.startsWith('data:image')) {
+        return <img className={styles.dataIcon} src={iconName} alt="" />;
     }
 
     const faIconName = iconName.replace(/[A-Z]/g, m => "-" + m.toLowerCase());
