@@ -10,7 +10,7 @@ RUN npm ci
 
 COPY src src
 COPY public public
-COPY webpack.*.js .babelrc.json .
+COPY index.html vite.config.js .
 RUN npm run build
 
 # Can't use Alpine because of

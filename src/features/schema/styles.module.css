@@ -22,3 +22,9 @@
     /* Support for IE. */
     font-feature-settings: 'liga';
   }
+
+.dataIcon {
+    height: 24px;
+    width: auto;
+    display: inline-block;
+}

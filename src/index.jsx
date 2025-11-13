@@ -5,9 +5,9 @@ import { createRoot } from 'react-dom/client';
 
 import store from './store';
 
-const DevToolsTheme = lazy(() => import(/* webpackChunkName: "devtoolstheme" */ './features/theme/DevToolsTheme'));
-const Main = lazy(() => import(/* webpackChunkName: "main" */ './Main'));
-const OAuth2Handler = lazy(() => import(/* webpackChunkName: "oauth2handler" */ './features/schema/fields/oauth2/OAuth2Handler'));
+const DevToolsTheme = lazy(() => import('./features/theme/DevToolsTheme'));
+const Main = lazy(() => import('./Main'));
+const OAuth2Handler = lazy(() => import('./features/schema/fields/oauth2/OAuth2Handler'));
 
 const App = () => {
     return (

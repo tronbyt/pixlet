@@ -1,8 +1,8 @@
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 
-import Logo from './logo.svg';
-import * as styles from './styles.css';
+import Logo from './logo.svg?react';
+import styles from './styles.module.css';
 import { solarized } from '../theme/colors';
 
 
