@@ -22,8 +22,8 @@ Steps
 	```
 - Build the frontend:
 	```console
-	npm install
-	npm run build
+	npm --prefix=frontend install
+	npm --prefix=frontend run build
 	```
 - Build the binary:
 	```console

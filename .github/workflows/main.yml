@@ -79,9 +79,11 @@ jobs:
           pacman -U --noconfirm mingw-w64-x86_64-libwebp-1.6.0-1-any.pkg.tar.zst
 
       - name: Install frontend dependencies
+        working-directory: frontend
         run: npm install
 
       - name: Build frontend
+        working-directory: frontend
         run: npm run build
 
       - name: Build Linux

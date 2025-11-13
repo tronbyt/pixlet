@@ -9,5 +9,5 @@ dist/static
 docs/
 examples/
 fonts/*.gz
-node_modules/
+frontend/node_modules/
 scripts/
