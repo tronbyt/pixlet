@@ -3,11 +3,10 @@ Dockerfile*
 LICENSE.txt
 README.md
 assets/
-dist/_headers
-dist/index.html
-dist/static
 docs/
 examples/
 fonts/*.gz
+frontend/dist/
 frontend/node_modules/
 scripts/
+node_modules/

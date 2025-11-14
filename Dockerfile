@@ -42,7 +42,7 @@ RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=private <<EOT
 EOT
 
 COPY . .
-COPY --from=frontend /app/dist dist
+COPY --from=frontend /app/dist frontend/dist
 RUN STATIC=1 CC=xx-clang CGO_ENABLED=1 make build GO_CMD=xx-go
 
 FROM scratch
