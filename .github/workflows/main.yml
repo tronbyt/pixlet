@@ -191,6 +191,7 @@ jobs:
           node-version: "lts/Jod"
 
       - name: Update package.json version
+        working-directory: frontend
         env:
           tag: ${{ github.ref_name }}
         run: |
