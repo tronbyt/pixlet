@@ -1,13 +1,11 @@
-import { lazy } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 
 import store from './store';
-
-const DevToolsTheme = lazy(() => import('./features/theme/DevToolsTheme'));
-const Main = lazy(() => import('./Main'));
-const OAuth2Handler = lazy(() => import('./features/schema/fields/oauth2/OAuth2Handler'));
+import DevToolsTheme from "./features/theme/DevToolsTheme";
+import Main from "./Main";
+import OAuth2Handler from "./features/schema/fields/oauth2/OAuth2Handler";
 
 const App = () => {
     return (
