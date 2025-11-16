@@ -14,15 +14,40 @@ import (
 	"go.starlark.net/starlark"
 
 	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
 )
 
 var (
-	pprof_cmd string
+	pprof_cmd       string
+	profileWidth    int
+	profileHeight   int
+	profileOutput2x bool
 )
 
 func init() {
 	ProfileCmd.Flags().StringVarP(
 		&pprof_cmd, "pprof", "", "top 10", "Command to call pprof with",
+	)
+	ProfileCmd.Flags().IntVarP(
+		&profileWidth,
+		"width",
+		"w",
+		64,
+		"Set width",
+	)
+	ProfileCmd.Flags().IntVarP(
+		&profileHeight,
+		"height",
+		"t",
+		32,
+		"Set height",
+	)
+	ProfileCmd.Flags().BoolVarP(
+		&profileOutput2x,
+		"2x",
+		"2",
+		false,
+		"Render at 2x resolution",
 	)
 }
 
@@ -76,7 +101,7 @@ func profile(cmd *cobra.Command, args []string) error {
 		config[split[0]] = split[1]
 	}
 
-	profile, err := ProfileApp(path, config)
+	profile, err := ProfileApp(path, config, profileWidth, profileHeight, profileOutput2x)
 	if err != nil {
 		return err
 	}
@@ -92,12 +117,20 @@ func profile(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func ProfileApp(path string, config map[string]string) (*pprof_profile.Profile, error) {
+func ProfileApp(path string, config map[string]string, width int, height int, is2x bool) (*pprof_profile.Profile, error) {
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	applet, err := runtime.NewAppletFromPath(path, runtime.WithPrintDisabled())
+	applet, err := runtime.NewAppletFromPath(
+		path,
+		runtime.WithPrintDisabled(),
+		runtime.WithMetadata(render_runtime.Metadata{
+			Width:  width,
+			Height: height,
+			Is2x:   is2x,
+		}),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load applet: %w", err)
 	}

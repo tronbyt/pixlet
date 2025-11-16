@@ -110,7 +110,7 @@ func checkCmd(cmd *cobra.Command, args []string) error {
 		}
 
 		// Check performance.
-		p, err := ProfileApp(path, map[string]string{})
+		p, err := ProfileApp(path, map[string]string{}, 64, 32, false)
 		if err != nil {
 			return fmt.Errorf("could not profile app: %w", err)
 		}
