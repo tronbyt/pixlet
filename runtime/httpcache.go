@@ -7,9 +7,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"log/slog"
 	"math/rand"
 	"net/http"
 	"net/http/httputil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -18,12 +20,13 @@ import (
 )
 
 const (
-	MinRequestTTL    = 5 * time.Second
-	MaxResponseTTL   = 1 * time.Hour
-	HTTPTimeout      = 5 * time.Second
-	MaxResponseBytes = 20 * 1024 * 1024 // 20MB
-	HTTPCachePrefix  = "httpcache"
-	TTLHeader        = "X-Tidbyt-Cache-Seconds"
+	MinRequestTTL      = 5 * time.Second
+	MaxResponseTTL     = 1 * time.Hour
+	HTTPTimeout        = 5 * time.Second
+	MaxResponseDefault = 20 * 1024 * 1024 // 20MB
+	MaxResponseEnv     = "PIXLET_HTTP_MAX_RESPONSE_MB"
+	HTTPCachePrefix    = "httpcache"
+	TTLHeader          = "X-Tidbyt-Cache-Seconds"
 )
 
 // Status codes that are cacheable as defined here:
@@ -47,14 +50,24 @@ var cacheableStatusCodes = map[int]bool{
 var jitterRand *rand.Rand
 
 type cacheClient struct {
-	cache     Cache
-	transport http.RoundTripper
+	cache            Cache
+	transport        http.RoundTripper
+	MaxResponseBytes int64
 }
 
 func InitHTTP(cache Cache) {
 	cc := &cacheClient{
-		cache:     cache,
-		transport: http.DefaultTransport,
+		cache:            cache,
+		transport:        http.DefaultTransport,
+		MaxResponseBytes: MaxResponseDefault,
+	}
+
+	if rawVal := os.Getenv(MaxResponseEnv); rawVal != "" {
+		if parsedVal, err := strconv.ParseInt(rawVal, 10, 64); err == nil {
+			cc.MaxResponseBytes = parsedVal * 1024 * 1024
+		} else {
+			slog.Warn(MaxResponseEnv+" is invalid; using default", "error", err)
+		}
 	}
 
 	httpClient := &http.Client{
@@ -88,8 +101,8 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	resp, err := c.transport.RoundTrip(req.WithContext(ctx))
-	if err == nil {
-		resp.Body = http.MaxBytesReader(nil, resp.Body, MaxResponseBytes)
+	if err == nil && c.MaxResponseBytes > 0 {
+		resp.Body = http.MaxBytesReader(nil, resp.Body, c.MaxResponseBytes)
 	}
 
 	if err == nil && (req.Method == "GET" || req.Method == "HEAD" || req.Method == "POST") {
