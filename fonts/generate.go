@@ -1,3 +1,3 @@
 package fonts
 
-//go:generate sh -c "gzip -nkf *.bdf"
+//go:generate go run ./gen/gzip.go
