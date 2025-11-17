@@ -38,6 +38,7 @@ func schema(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}
+	defer applet.Close()
 
 	if schemaOutput == "" || schemaOutput == "-" {
 		buf, err := json.MarshalIndent(applet.Schema, "", "  ")

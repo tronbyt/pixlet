@@ -6,6 +6,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 	"testing/fstest"
 
@@ -451,6 +453,24 @@ def main():
 	app, err := NewAppletFromFS("test_read_file", vfs)
 	require.NoError(t, err)
 	app.RunTests(t)
+}
+
+func TestRoot(t *testing.T) {
+	const name = "test_root.star"
+
+	appDir := t.TempDir()
+	otherDir := t.TempDir()
+
+	f, err := os.CreateTemp(otherDir, name)
+	require.NoError(t, err)
+	require.NoError(t, f.Close())
+
+	err = os.Symlink(f.Name(), filepath.Join(appDir, name))
+	require.NoError(t, err)
+
+	app, err := NewAppletFromPath(appDir)
+	assert.Error(t, err)
+	require.Nil(t, app)
 }
 
 // TODO: test Screens, especially Screens.Render()

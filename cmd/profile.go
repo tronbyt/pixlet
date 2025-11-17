@@ -134,6 +134,7 @@ func ProfileApp(path string, config map[string]string, width int, height int, is
 	if err != nil {
 		return nil, fmt.Errorf("failed to load applet: %w", err)
 	}
+	defer applet.Close()
 
 	buf := new(bytes.Buffer)
 	if err = starlark.StartProfile(buf); err != nil {

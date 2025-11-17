@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"log"
 	"os"
 	"time"
@@ -31,7 +30,7 @@ const (
 // demand.
 type Loader struct {
 	id               string
-	fs               fs.FS
+	root             *os.Root
 	fileChanges      chan bool
 	watch            bool
 	applet           runtime.Applet
@@ -62,7 +61,7 @@ type Update struct {
 // requests will send updates over the updatesChan.
 func NewLoader(
 	id string,
-	fs fs.FS,
+	root *os.Root,
 	watch bool,
 	fileChanges chan bool,
 	updatesChan chan Update,
@@ -74,7 +73,7 @@ func NewLoader(
 ) (*Loader, error) {
 	l := &Loader{
 		id:               id,
-		fs:               fs,
+		root:             root,
 		fileChanges:      fileChanges,
 		watch:            watch,
 		applet:           runtime.Applet{},
@@ -181,6 +180,10 @@ func (l *Loader) Run() error {
 	}
 }
 
+func (l *Loader) Close() error {
+	return l.applet.Close()
+}
+
 // LoadApplet loads the applet on demand.
 //
 // TODO: This method is thread safe, but has a pretty glaring race condition. If
@@ -221,7 +224,7 @@ func (l *Loader) loadApplet() error {
 		}),
 	}
 
-	app, err := runtime.NewAppletFromFS(l.id, l.fs, opts...)
+	app, err := runtime.NewAppletFromRoot(l.id, l.root, opts...)
 	l.markInitialLoadComplete()
 	if err != nil {
 		return err
@@ -339,6 +342,7 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}
+	defer applet.Close()
 
 	roots, err := applet.RunWithConfig(ctx, config)
 	if err != nil {

@@ -40,12 +40,17 @@ func NewServer(host string, port int, servePath string, watch bool, path string,
 		dir = filepath.Dir(path)
 	}
 
-	fsys := os.DirFS(dir)
+	root, err := os.OpenRoot(dir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open root for %s: %w", path, err)
+	}
+
 	w := NewWatcher(dir, fileChanges)
 
 	updatesChan := make(chan loader.Update, 100)
-	l, err := loader.NewLoader(filepath.Base(path), fsys, watch, fileChanges, updatesChan, width, height, maxDuration, timeout, imageFormat, configOutFile, output2x)
+	l, err := loader.NewLoader(filepath.Base(path), root, watch, fileChanges, updatesChan, width, height, maxDuration, timeout, imageFormat, configOutFile, output2x)
 	if err != nil {
+		_ = root.Close()
 		return nil, err
 	}
 
@@ -65,6 +70,8 @@ func NewServer(host string, port int, servePath string, watch bool, path string,
 
 // Run serves the http server and runs forever in a blocking fashion.
 func (s *Server) Run() error {
+	defer s.loader.Close()
+
 	g := errgroup.Group{}
 
 	g.Go(s.loader.Run)

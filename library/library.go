@@ -92,6 +92,7 @@ func get_schema(pathPtr *C.char) (*C.char, C.int) {
 		status := errorStatus(err)
 		return nil, C.int(status)
 	}
+	defer applet.Close()
 
 	return (*C.char)(C.CString(string(applet.SchemaJSON))), 0
 }
@@ -119,6 +120,7 @@ func call_handler_with_config(pathPtr, configPtr *C.char, handlerName, parameter
 		status := errorStatus(err)
 		return nil, C.int(status), C.CString(fmt.Sprintf("error parsing config: %v", err))
 	}
+	defer applet.Close()
 
 	result, err := applet.CallSchemaHandler(context.Background(), C.GoString(handlerName), C.GoString(parameter), config)
 	if err != nil {
