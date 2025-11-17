@@ -62,6 +62,7 @@ type Applet struct {
 	Manifest *manifest.Manifest
 	Globals  map[string]starlark.StringDict
 	MainFile string
+	Root     *os.Root
 
 	loader       ModuleLoader
 	initializers []ThreadInitializer
@@ -161,6 +162,16 @@ func NewAppletFromFS(id string, fsys fs.FS, opts ...AppletOption) (*Applet, erro
 	return a, nil
 }
 
+func NewAppletFromRoot(id string, root *os.Root, opts ...AppletOption) (*Applet, error) {
+	a, err := NewAppletFromFS(id, root.FS(), opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	a.Root = root
+	return a, nil
+}
+
 var ErrStarSuffix = fmt.Errorf("script file must have suffix .star")
 
 func NewAppletFromPath(path string, opts ...AppletOption) (*Applet, error) {
@@ -178,9 +189,25 @@ func NewAppletFromPath(path string, opts ...AppletOption) (*Applet, error) {
 		dir = filepath.Dir(path)
 	}
 
-	fsys := os.DirFS(dir)
+	root, err := os.OpenRoot(dir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open root for %s: %w", path, err)
+	}
 
-	return NewAppletFromFS(filepath.Base(path), fsys, opts...)
+	a, err := NewAppletFromRoot(filepath.Base(path), root, opts...)
+	if err != nil {
+		_ = root.Close()
+		return nil, err
+	}
+
+	return a, nil
+}
+
+func (a *Applet) Close() error {
+	if a.Root == nil {
+		return nil
+	}
+	return a.Root.Close()
 }
 
 // Run executes the applet's main function. It returns the render roots that are

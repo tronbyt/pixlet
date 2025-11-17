@@ -23,9 +23,11 @@ func LoadApp(cmd *cobra.Command, args []string) error {
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	if _, err := runtime.NewAppletFromPath(path, runtime.WithPrintDisabled()); err != nil {
+	app, err := runtime.NewAppletFromPath(path, runtime.WithPrintDisabled())
+	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}
+	defer app.Close()
 
 	return nil
 }
