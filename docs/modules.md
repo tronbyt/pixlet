@@ -302,3 +302,24 @@ def main(config):
         ),
     )
 ```
+
+## Pixlet module: YAML
+
+The `yaml` module provides functions to decode and encode YAML.
+
+| Function             | Description                                                                       |
+|----------------------|-----------------------------------------------------------------------------------|
+| `decode(x)`          | Decodes a YAML-formatted string.                                                  |
+| `encode(x, indent?)` | Encodes a value to a YAML-formatted string. The indent parameter defaults to `2`. |
+
+Example:
+```starlark
+load("encoding/yaml.star", "yaml")
+load("render.star", "render")
+
+EXAMPLE_YAML = "message: Hello, world!"
+
+def main(config):
+    data = yaml.decode(EXAMPLE_YAML)
+    return render.Root(render.Text(data["message"]))
+```
