@@ -23,6 +23,7 @@ import (
 	starlibre "github.com/qri-io/starlib/re"
 	starlibzip "github.com/qri-io/starlib/zipfile"
 	"github.com/tronbyt/pixlet/manifest"
+	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
 	starlibjson "go.starlark.net/lib/json"
 	starlibmath "go.starlark.net/lib/math"
 	starlibtime "go.starlark.net/lib/time"
@@ -650,6 +651,9 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 		return starlark.StringDict{
 			starlibjson.Module.Name: starlibjson.Module,
 		}, nil
+
+	case yaml.ModuleName:
+		return yaml.LoadModule()
 
 	case "hash.star":
 		return starlibhash.LoadModule()
