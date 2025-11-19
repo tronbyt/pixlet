@@ -2,9 +2,17 @@ package encode
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/tronbyt/go-libwebp/webp"
+)
+
+const (
+	CompressionLevelEnv     = "PIXLET_WEBP_COMPRESSION_LEVEL"
+	DefaultCompressionLevel = 9
 )
 
 // Renders a screen to WebP. Optionally pass filters for
@@ -31,8 +39,21 @@ func (s *Screens) EncodeWebP(maxDuration int, filters ...ImageFilter) ([]byte, e
 	}
 	defer anim.Close()
 
+	compressionLevel := DefaultCompressionLevel
+	if raw := os.Getenv(CompressionLevelEnv); raw != "" {
+		if parsed, err := strconv.ParseInt(raw, 10, 32); err == nil {
+			if parsed < 0 || parsed > 9 {
+				slog.Warn(CompressionLevelEnv+" is out of range (0-9); using default", "value", parsed)
+			} else {
+				compressionLevel = int(parsed)
+			}
+		} else {
+			slog.Warn(CompressionLevelEnv+" is invalid; using default", "error", err)
+		}
+	}
+
 	remainingDuration := time.Duration(maxDuration) * time.Millisecond
-	config, err := webp.ConfigLosslessPreset(9)
+	config, err := webp.ConfigLosslessPreset(compressionLevel)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", "configuring encoder", err)
 	}
