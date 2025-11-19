@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/server"
 	"github.com/tronbyt/pixlet/server/loader"
 )
@@ -29,6 +30,13 @@ func init() {
 	ServeCmd.Flags().IntVar(&width, "width", 64, "Set width")
 	ServeCmd.Flags().IntVarP(&height, "height", "t", 32, "Set height")
 	ServeCmd.Flags().BoolVarP(&output2x, "2x", "2", false, "Render at 2x resolution")
+	ServeCmd.Flags().Int32VarP(
+		&webpLevel,
+		webpLevelFlag,
+		"z",
+		encode.WebPLevelDefault,
+		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
+	)
 
 	// Deprecated flags
 	ServeCmd.Flags().IntVar(&maxDuration, "max_duration", 15000, "Maximum allowed animation duration (ms)")
@@ -56,6 +64,9 @@ func serve(cmd *cobra.Command, args []string) error {
 	switch serveFormat {
 	case "webp":
 		imageFormat = loader.ImageWebP
+		if cmd.Flags().Lookup(webpLevelFlag).Changed {
+			encode.SetWebPLevel(webpLevel)
+		}
 	case "gif":
 		imageFormat = loader.ImageGIF
 	case "avif":
