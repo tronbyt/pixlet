@@ -2,10 +2,12 @@
 package manifest
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 
+	"go.starlark.net/starlark"
 	"gopkg.in/yaml.v3"
 )
 
@@ -117,4 +119,23 @@ func GenerateID(name string) string {
 func GenerateFileName(name string) string {
 	fileName := strings.ReplaceAll(name, "-", "_")
 	return strings.ToLower(strings.Join(strings.Fields(fileName), "_")) + ".star"
+}
+
+const threadManifestKey = "github.com/tronbyt/pixlet/manifest"
+
+func AttachToThread(t *starlark.Thread, m *Manifest) {
+	t.SetLocal(threadManifestKey, m)
+}
+
+var ErrNoManifest = errors.New("no manifest available")
+
+func FromThread(thread *starlark.Thread) (*Manifest, error) {
+	if thread == nil {
+		return nil, ErrNoManifest
+	}
+	m, ok := thread.Local(threadManifestKey).(*Manifest)
+	if !ok {
+		return nil, ErrNoManifest
+	}
+	return m, nil
 }

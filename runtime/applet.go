@@ -445,6 +445,12 @@ func (a *Applet) loadManifest(fsys fs.FS, pathToLoad string) (err error) {
 	if err != nil {
 		return fmt.Errorf("loading manifest: %w", err)
 	}
+
+	a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
+		manifest.AttachToThread(t, a.Manifest)
+		return t
+	})
+
 	return nil
 }
 
