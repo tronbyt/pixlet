@@ -5,8 +5,15 @@ import (
 	"image/color"
 
 	"github.com/tronbyt/gg"
-
+	"github.com/tronbyt/pixlet/tools/i18n"
 	"golang.org/x/image/font"
+	"golang.org/x/text/unicode/bidi"
+)
+
+const (
+	AlignLeft   = "left"
+	AlignCenter = "center"
+	AlignRight  = "right"
 )
 
 // WrappedText draws multi-line text.
@@ -61,6 +68,15 @@ func (tw *WrappedText) Init() error {
 	}
 
 	tw.face = face
+
+	if tw.Align == "" {
+		switch i18n.BaseDirection(tw.Content) {
+		case bidi.LeftToRight:
+			tw.Align = AlignLeft
+		case bidi.RightToLeft:
+			tw.Align = AlignRight
+		}
+	}
 
 	return nil
 }
@@ -118,9 +134,10 @@ func (tw *WrappedText) PaintBounds(bounds image.Rectangle, frameIdx int) image.R
 func (tw *WrappedText) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	// Text alignment
 	align := gg.AlignLeft
-	if tw.Align == "center" {
+	switch tw.Align {
+	case AlignCenter:
 		align = gg.AlignCenter
-	} else if tw.Align == "right" {
+	case AlignRight:
 		align = gg.AlignRight
 	}
 
@@ -136,12 +153,15 @@ func (tw *WrappedText) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx in
 		dc.SetColor(DefaultFontColor)
 	}
 
-	dc.DrawStringWrapped(
-		tw.Content,
-		0,
-		float64(-descent),
-		0,
-		0,
+	lines := dc.WordWrap(tw.Content, float64(width))
+	for i, line := range lines {
+		lines[i] = i18n.VisualBidiString(line)
+	}
+
+	drawStringWrapped(
+		dc, lines,
+		0, float64(-descent),
+		0, 0,
 		float64(width),
 		(float64(tw.LineSpacing)+dc.FontHeight())/dc.FontHeight(),
 		align,
@@ -150,4 +170,32 @@ func (tw *WrappedText) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx in
 
 func (tw *WrappedText) FrameCount(bounds image.Rectangle) int {
 	return 1
+}
+
+// drawStringWrapped is a modified version of gg.Context.DrawStringWrapped that works with pre-wrapped lines.
+// This allows for bidi text processing to occur before drawing.
+func drawStringWrapped(dc *gg.Context, lines []string, x, y, ax, ay, width, lineSpacing float64, align gg.Align) {
+	fontHeight := dc.FontHeight()
+
+	// sync h formula with MeasureMultilineString
+	h := float64(len(lines)) * fontHeight * lineSpacing
+	h -= (lineSpacing - 1) * fontHeight
+
+	x -= ax * width
+	y -= ay * h
+	switch align {
+	case gg.AlignLeft:
+		ax = 0
+	case gg.AlignCenter:
+		ax = 0.5
+		x += width / 2
+	case gg.AlignRight:
+		ax = 1
+		x += width
+	}
+	ay = 1
+	for _, line := range lines {
+		dc.DrawStringAnchored(line, x, y, ax, ay)
+		y += fontHeight * lineSpacing
+	}
 }

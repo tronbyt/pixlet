@@ -6,6 +6,7 @@ import (
 
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render/emoji"
+	"github.com/tronbyt/pixlet/tools/i18n"
 )
 
 var (
@@ -63,8 +64,10 @@ func (t *Text) Init() error {
 		return err
 	}
 
+	content := i18n.VisualBidiString(t.Content)
+
 	// Check if content contains emojis
-	segments, hasEmoji := emoji.SegmentString(t.Content)
+	segments, hasEmoji := emoji.SegmentString(content)
 
 	dc := gg.NewContext(0, 0)
 	dc.SetFontFace(face)
