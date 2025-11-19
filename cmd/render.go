@@ -14,6 +14,8 @@ import (
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
+const webpLevelFlag = "webp-level"
+
 var (
 	configJson        string
 	output            string
@@ -26,6 +28,7 @@ var (
 	timeout           int
 	colorFilter       string
 	output2x          bool
+	webpLevel         int32
 
 	// Deprecated: flag behavior has been moved to community.ListColorFiltersCmd
 	listColorFilters bool
@@ -83,6 +86,13 @@ func init() {
 		"2",
 		false,
 		"Render at 2x resolution",
+	)
+	RenderCmd.Flags().Int32VarP(
+		&webpLevel,
+		webpLevelFlag,
+		"z",
+		encode.WebPLevelDefault,
+		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
 	)
 
 	// Deprecated flags
@@ -173,6 +183,9 @@ func render(cmd *cobra.Command, args []string) error {
 	case "webp":
 		imageFormat = loader.ImageWebP
 		outPath += ".webp"
+		if cmd.Flags().Lookup(webpLevelFlag).Changed {
+			encode.SetWebPLevel(webpLevel)
+		}
 	case "gif":
 		imageFormat = loader.ImageGIF
 		outPath += ".gif"
