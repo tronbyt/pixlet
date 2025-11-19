@@ -10,7 +10,7 @@ import (
 
 func TestTextDefault(t *testing.T) {
 	text := &Text{Content: "A"}
-	text.Init()
+	text.Init(nil)
 	im := PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
 		".....",
@@ -27,7 +27,7 @@ func TestTextDefault(t *testing.T) {
 	assert.Equal(t, 8, h)
 
 	text = &Text{Content: "j!ÑÖ"}
-	text.Init()
+	text.Init(nil)
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
 		"...." + ".." + ".w.w." + "w..w.",
@@ -49,7 +49,7 @@ func TestTextParameters(t *testing.T) {
 		Content: "ᚠӠ",
 		Font:    "6x13",
 	}
-	text.Init()
+	text.Init(nil)
 
 	im := PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
@@ -79,7 +79,7 @@ func TestTextParameters(t *testing.T) {
 		Offset:  -2,
 		Height:  10,
 	}
-	text.Init()
+	text.Init(nil)
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
 		"......" + "......",
@@ -108,7 +108,7 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "6x13",
 	}
-	text.Init()
+	text.Init(nil)
 
 	im := PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
@@ -134,7 +134,7 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "Dina_r400-6",
 	}
-	text.Init()
+	text.Init(nil)
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
 		"......" + "......" + ".w.w.." + "......",
@@ -156,7 +156,7 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "5x8",
 	}
-	text.Init()
+	text.Init(nil)
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
 		"....." + "....." + "w..w." + ".....",
@@ -176,7 +176,7 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "tb-8",
 	}
-	text.Init()
+	text.Init(nil)
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
 	assert.Equal(t, nil, checkImage([]string{
 		"....." + "....." + "w..w." + "..",
@@ -198,5 +198,5 @@ func TestTextMissingFont(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "missing",
 	}
-	assert.Error(t, text.Init())
+	assert.Error(t, text.Init(nil))
 }

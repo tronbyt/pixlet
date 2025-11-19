@@ -24,6 +24,7 @@ import (
 	starlibzip "github.com/qri-io/starlib/zipfile"
 	"github.com/tronbyt/pixlet/manifest"
 	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	starlibjson "go.starlark.net/lib/json"
 	starlibmath "go.starlark.net/lib/math"
 	starlibtime "go.starlark.net/lib/time"
@@ -118,10 +119,10 @@ func WithPrintDisabled() AppletOption {
 	return WithPrintFunc(func(thread *starlark.Thread, msg string) {})
 }
 
-func WithMetadata(m render_runtime.Metadata) AppletOption {
+func WithMetadata(m metadata.Metadata) AppletOption {
 	return func(a *Applet) error {
 		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
-			render_runtime.AttachToThread(t, m)
+			metadata.AttachToThread(t, m)
 			return t
 		})
 		return nil

@@ -52,7 +52,7 @@ func new{{.GoName}}(
 {{end}}
 
 {{if .HasInit}}
-	if err := w.Init(); err != nil {
+	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
 {{end}}

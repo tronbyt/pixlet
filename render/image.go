@@ -18,6 +18,7 @@ import (
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
 	"github.com/tronbyt/gg"
+	"go.starlark.net/starlark"
 )
 
 // Image renders the binary image data passed via `src`. Supported
@@ -158,7 +159,7 @@ func (p *Image) InitFromSVG(data []byte) error {
 	return nil
 }
 
-func (p *Image) Init() error {
+func (p *Image) Init(*starlark.Thread) error {
 	err := p.InitFromWebP([]byte(p.Src))
 	if err != nil {
 		err = p.InitFromGIF([]byte(p.Src))

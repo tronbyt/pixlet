@@ -4,34 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	"go.starlark.net/starlark"
 )
-
-const threadMetadataKey = "github.com/tronbyt/pixlet/runtime/$metadata"
-
-func AttachToThread(t *starlark.Thread, m Metadata) {
-	t.SetLocal(threadMetadataKey, m)
-}
-
-type Metadata struct {
-	Width  int
-	Height int
-	Is2x   bool
-}
-
-func (m Metadata) ScaledWidth() int {
-	if m.Is2x {
-		return m.Width * 2
-	}
-	return m.Width
-}
-
-func (m Metadata) ScaledHeight() int {
-	if m.Is2x {
-		return m.Height * 2
-	}
-	return m.Height
-}
 
 type dimensionType uint8
 
@@ -40,16 +15,13 @@ const (
 	dimensionHeight
 )
 
-var (
-	ErrUnknownDimension = errors.New("unknown dimension")
-	ErrNoMetadata       = errors.New("no metadata available")
-)
+var ErrUnknownDimension = errors.New("unknown dimension")
 
 func dimension(d dimensionType) func(*starlark.Thread, *starlark.Builtin, starlark.Tuple, []starlark.Tuple) (starlark.Value, error) {
 	return func(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-		m, ok := thread.Local(threadMetadataKey).(Metadata)
-		if !ok {
-			return nil, ErrNoMetadata
+		m, err := metadata.FromThread(thread)
+		if err != nil {
+			return nil, err
 		}
 
 		var raw bool
@@ -85,9 +57,9 @@ func dimension(d dimensionType) func(*starlark.Thread, *starlark.Builtin, starla
 }
 
 func is2x(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	m, ok := thread.Local(threadMetadataKey).(Metadata)
-	if !ok {
-		return nil, ErrNoMetadata
+	m, err := metadata.FromThread(thread)
+	if err != nil {
+		return nil, err
 	}
 
 	return starlark.Bool(m.Is2x), nil

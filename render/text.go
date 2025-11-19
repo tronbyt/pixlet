@@ -6,14 +6,18 @@ import (
 
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render/emoji"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	"github.com/tronbyt/pixlet/tools/i18n"
+	"go.starlark.net/starlark"
 )
 
-var (
-	DefaultFontFace  = "tb-8"
-	DefaultFontColor = color.White
-	MaxWidth         = 1000
+const (
+	DefaultFontFace   = "tb-8"
+	DefaultFontFace2x = "terminus-16"
+	MaxWidth          = 1000
 )
+
+var DefaultFontColor = color.White
 
 // Text draws a string of text on a single line.
 //
@@ -55,10 +59,11 @@ func (t *Text) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle
 	return image.Rect(0, 0, t.img.Bounds().Dx(), t.img.Bounds().Dy())
 }
 
-func (t *Text) Init() error {
+func (t *Text) Init(thread *starlark.Thread) error {
 	if t.Font == "" {
-		t.Font = DefaultFontFace
+		t.Font = getDefaultFont(thread)
 	}
+
 	face, err := GetFont(t.Font)
 	if err != nil {
 		return err
@@ -120,4 +125,11 @@ func (t *Text) Init() error {
 
 func (t Text) FrameCount(bounds image.Rectangle) int {
 	return 1
+}
+
+func getDefaultFont(thread *starlark.Thread) string {
+	if m, err := metadata.FromThread(thread); err == nil && m.Is2x {
+		return DefaultFontFace2x
+	}
+	return DefaultFontFace
 }

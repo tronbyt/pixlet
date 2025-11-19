@@ -8,6 +8,7 @@ import (
 	"math/rand"
 
 	"github.com/tronbyt/gg"
+	"go.starlark.net/starlark"
 )
 
 type Starfield struct {
@@ -92,7 +93,7 @@ func DrawLine(dc *gg.Context, x0, y0, x1, y1 int) {
 	}
 }
 
-func (s *Starfield) Init() error {
+func (s *Starfield) Init(*starlark.Thread) error {
 	s.initStars(60)
 	return nil
 }

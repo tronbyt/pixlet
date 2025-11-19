@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/tronbyt/gg"
+	"go.starlark.net/starlark"
 
 	"github.com/tronbyt/pixlet/render"
 )
@@ -177,7 +178,7 @@ type Transformation struct {
 	WaitForChild bool          `starlark:"wait_for_child"`
 }
 
-func (self *Transformation) Init() error {
+func (self *Transformation) Init(*starlark.Thread) error {
 	self.Keyframes = processKeyframes(self.Keyframes)
 
 	return nil
