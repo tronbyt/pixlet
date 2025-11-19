@@ -4,6 +4,7 @@ import (
 	"image"
 
 	"github.com/tronbyt/gg"
+	"go.starlark.net/starlark"
 )
 
 // A Widget is a self-contained object that can render itself as an image.
@@ -16,7 +17,7 @@ type Widget interface {
 
 // Widgets can require initialization
 type WidgetWithInit interface {
-	Init() error
+	Init(*starlark.Thread) error
 }
 
 // WidgetStaticSize has inherent size and width known before painting.

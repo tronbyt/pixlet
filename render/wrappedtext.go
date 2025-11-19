@@ -6,6 +6,7 @@ import (
 
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/tools/i18n"
+	"go.starlark.net/starlark"
 	"golang.org/x/image/font"
 	"golang.org/x/text/unicode/bidi"
 )
@@ -57,9 +58,9 @@ type WrappedText struct {
 	face font.Face
 }
 
-func (tw *WrappedText) Init() error {
+func (tw *WrappedText) Init(thread *starlark.Thread) error {
 	if tw.Font == "" {
-		tw.Font = DefaultFontFace
+		tw.Font = getDefaultFont(thread)
 	}
 
 	face, err := GetFont(tw.Font)

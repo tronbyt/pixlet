@@ -11,10 +11,10 @@ import (
 	pprof_driver "github.com/google/pprof/driver"
 	pprof_profile "github.com/google/pprof/profile"
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	"go.starlark.net/starlark"
 
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
 )
 
 var (
@@ -125,7 +125,7 @@ func ProfileApp(path string, config map[string]string, width int, height int, is
 	applet, err := runtime.NewAppletFromPath(
 		path,
 		runtime.WithPrintDisabled(),
-		runtime.WithMetadata(render_runtime.Metadata{
+		runtime.WithMetadata(metadata.Metadata{
 			Width:  width,
 			Height: height,
 			Is2x:   is2x,

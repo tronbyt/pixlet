@@ -760,7 +760,7 @@ func newEmoji(
 
 	w.frame_count = starlark.NewBuiltin("frame_count", emojiFrameCount)
 
-	if err := w.Init(); err != nil {
+	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
 
@@ -918,7 +918,7 @@ func newImage(
 
 	w.frame_count = starlark.NewBuiltin("frame_count", imageFrameCount)
 
-	if err := w.Init(); err != nil {
+	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
 
@@ -2414,7 +2414,7 @@ func newText(
 
 	w.frame_count = starlark.NewBuiltin("frame_count", textFrameCount)
 
-	if err := w.Init(); err != nil {
+	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
 
@@ -2601,7 +2601,7 @@ func newWrappedText(
 
 	w.frame_count = starlark.NewBuiltin("frame_count", wrappedtextFrameCount)
 
-	if err := w.Init(); err != nil {
+	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
 

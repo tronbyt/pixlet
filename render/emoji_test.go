@@ -102,7 +102,7 @@ func TestEmojiWidget(t *testing.T) {
 				Height:   tt.height,
 			}
 
-			err := emoji.Init()
+			err := emoji.Init(nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Emoji.Init() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -153,7 +153,7 @@ func TestEmojiWidgetSize(t *testing.T) {
 				Height:   tt.height,
 			}
 
-			err := emoji.Init()
+			err := emoji.Init(nil)
 			if err != nil {
 				t.Fatalf("Emoji.Init() failed: %v", err)
 			}
@@ -185,7 +185,7 @@ func TestEmojiWidgetFrameCount(t *testing.T) {
 		Height:   16,
 	}
 
-	err := emoji.Init()
+	err := emoji.Init(nil)
 	if err != nil {
 		t.Fatalf("Emoji.Init() failed: %v", err)
 	}
@@ -217,7 +217,7 @@ func BenchmarkEmojiWidget(b *testing.B) {
 					Height:   tt.height,
 				}
 
-				err := emoji.Init()
+				err := emoji.Init(nil)
 				if err != nil {
 					b.Fatalf("Emoji.Init() failed: %v", err)
 				}

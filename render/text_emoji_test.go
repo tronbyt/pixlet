@@ -55,7 +55,7 @@ func TestTextWidgetWithEmojis(t *testing.T) {
 				Color:   color.White,
 			}
 
-			err := text.Init()
+			err := text.Init(nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Text.Init() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -116,7 +116,7 @@ func TestTextWidgetSize(t *testing.T) {
 				Color:   color.White,
 			}
 
-			err := text.Init()
+			err := text.Init(nil)
 			if err != nil {
 				t.Fatalf("Text.Init() failed: %v", err)
 			}
@@ -145,7 +145,7 @@ func TestTextWidgetPaint(t *testing.T) {
 		Color:   color.White,
 	}
 
-	err := text.Init()
+	err := text.Init(nil)
 	if err != nil {
 		t.Fatalf("Text.Init() failed: %v", err)
 	}
@@ -172,7 +172,7 @@ func TestTextWidgetWithCustomHeight(t *testing.T) {
 		Color:   color.White,
 	}
 
-	err := text.Init()
+	err := text.Init(nil)
 	if err != nil {
 		t.Fatalf("Text.Init() failed: %v", err)
 	}
@@ -191,7 +191,7 @@ func TestTextWidgetWithOffset(t *testing.T) {
 		Color:   color.White,
 	}
 
-	err := text.Init()
+	err := text.Init(nil)
 	if err != nil {
 		t.Fatalf("Text.Init() failed: %v", err)
 	}
@@ -212,7 +212,7 @@ func TestTextWidgetMaxWidth(t *testing.T) {
 		Color:   color.White,
 	}
 
-	err := text.Init()
+	err := text.Init(nil)
 	if err != nil {
 		t.Fatalf("Text.Init() failed: %v", err)
 	}
@@ -243,7 +243,7 @@ func BenchmarkTextWithEmojis(b *testing.B) {
 					Color:   color.White,
 				}
 
-				err := text.Init()
+				err := text.Init(nil)
 				if err != nil {
 					b.Fatalf("Text.Init() failed: %v", err)
 				}

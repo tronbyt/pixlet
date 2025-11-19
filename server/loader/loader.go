@@ -13,7 +13,7 @@ import (
 
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
 )
@@ -217,7 +217,7 @@ func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string
 
 func (l *Loader) loadApplet() error {
 	opts := []runtime.AppletOption{
-		runtime.WithMetadata(render_runtime.Metadata{
+		runtime.WithMetadata(metadata.Metadata{
 			Width:  l.width,
 			Height: l.height,
 			Is2x:   l.output2x,
@@ -312,7 +312,7 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 	}
 
 	opts := []runtime.AppletOption{
-		runtime.WithMetadata(render_runtime.Metadata{
+		runtime.WithMetadata(metadata.Metadata{
 			Width:  width,
 			Height: height,
 			Is2x:   filters.Output2x,

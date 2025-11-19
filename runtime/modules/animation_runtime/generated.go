@@ -728,7 +728,7 @@ func newTransformation(
 
 	w.frame_count = starlark.NewBuiltin("frame_count", transformationFrameCount)
 
-	if err := w.Init(); err != nil {
+	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
 

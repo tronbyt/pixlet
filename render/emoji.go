@@ -8,6 +8,7 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render/emoji"
+	"go.starlark.net/starlark"
 )
 
 // Emoji renders a single emoji at a specified height, maintaining aspect ratio.
@@ -49,7 +50,7 @@ func (e *Emoji) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangl
 	return image.Rect(0, 0, e.img.Bounds().Dx(), e.img.Bounds().Dy())
 }
 
-func (e *Emoji) Init() error {
+func (e *Emoji) Init(*starlark.Thread) error {
 	if e.Height < 0 {
 		return fmt.Errorf("emoji height must not be negative, got %d", e.Height)
 	}
