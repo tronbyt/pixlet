@@ -12,7 +12,7 @@ import (
 
 const (
 	CompressionLevelEnv     = "PIXLET_WEBP_COMPRESSION_LEVEL"
-	DefaultCompressionLevel = 9
+	DefaultCompressionLevel = 6
 )
 
 // Renders a screen to WebP. Optionally pass filters for
