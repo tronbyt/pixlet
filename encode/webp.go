@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	CompressionLevelEnv     = "PIXLET_WEBP_COMPRESSION_LEVEL"
+	CompressionLevelEnv     = "PIXLET_WEBP_LEVEL"
 	DefaultCompressionLevel = 6
 )
 
