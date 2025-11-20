@@ -64,7 +64,7 @@ func serve(cmd *cobra.Command, args []string) error {
 	switch serveFormat {
 	case "webp":
 		imageFormat = loader.ImageWebP
-		if cmd.Flags().Lookup(webpLevelFlag).Changed {
+		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
 			encode.SetWebPLevel(webpLevel)
 		}
 	case "gif":

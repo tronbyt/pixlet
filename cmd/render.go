@@ -183,7 +183,7 @@ func render(cmd *cobra.Command, args []string) error {
 	case "webp":
 		imageFormat = loader.ImageWebP
 		outPath += ".webp"
-		if cmd.Flags().Lookup(webpLevelFlag).Changed {
+		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
 			encode.SetWebPLevel(webpLevel)
 		}
 	case "gif":
