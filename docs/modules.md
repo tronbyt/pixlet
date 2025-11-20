@@ -177,11 +177,12 @@ def main():
 The `render.star` module also provides `canvas`, which lets an app
 fetch information about the current output configuration.
 
-| Function       | Description                                                            |
-|----------------|------------------------------------------------------------------------|
-| `width(raw?)`  | Returns the device width in px. Pass `raw` to get the unscaled value.  |
-| `height(raw?)` | Returns the canvas height in px. Pass `raw` to get the unscaled value. |
-| `is2x()`       | Returns true if the device renders at 2x resolution.                   |
+| Function       | Description                                                                                   |
+|----------------|-----------------------------------------------------------------------------------------------|
+| `width(raw?)`  | Returns the device width in px. Pass `raw` to get the unscaled value.                         |
+| `height(raw?)` | Returns the canvas height in px. Pass `raw` to get the unscaled value.                        |
+| `size(raw?)`   | Returns a tuple with the canvas width and height in px. Pass `raw` to get the unscaled value. |
+| `is2x()`       | Returns true if the device renders at 2x resolution.                                          |
 
 ```starlark
 load("render.star", "render", "canvas")

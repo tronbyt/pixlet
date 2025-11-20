@@ -56,6 +56,35 @@ func dimension(d dimensionType) func(*starlark.Thread, *starlark.Builtin, starla
 	}
 }
 
+func size(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	m, err := metadata.FromThread(thread)
+	if err != nil {
+		return nil, err
+	}
+
+	var raw bool
+
+	if err := starlark.UnpackArgs(
+		"size",
+		args, kwargs,
+		"raw?", &raw,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for size: %w", err)
+	}
+
+	var w, h int
+	if raw {
+		w, h = m.Width, m.Height
+	} else {
+		w, h = m.ScaledWidth(), m.ScaledHeight()
+	}
+
+	return starlark.Tuple([]starlark.Value{
+		starlark.MakeInt(w),
+		starlark.MakeInt(h),
+	}), nil
+}
+
 func is2x(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	m, err := metadata.FromThread(thread)
 	if err != nil {

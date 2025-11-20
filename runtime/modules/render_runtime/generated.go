@@ -79,6 +79,7 @@ func LoadRenderModule() (starlark.StringDict, error) {
 				Members: starlark.StringDict{
 					"width":  starlark.NewBuiltin("width", dimension(dimensionWidth)),
 					"height": starlark.NewBuiltin("height", dimension(dimensionHeight)),
+					"size":   starlark.NewBuiltin("size", size),
 					"is2x":   starlark.NewBuiltin("is2x", is2x),
 				},
 			},
