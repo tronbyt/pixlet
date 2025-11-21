@@ -26,11 +26,11 @@ child is a frame.
 
 FIXME: Behaviour when children themselves are animated is a bit
 weird. Think and fix.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `children` | `[Widget]` | Children to use as frames in the animation | N |
-
 
 #### Example
 ```
@@ -53,6 +53,7 @@ Boxes are transparent unless `color` is provided. They expand to
 fill all available space, unless `width` and/or `height` is
 provided. Boxes can have a `child`, which will be centered in the
 box, and the child can be padded (via `padding`).
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -61,7 +62,6 @@ box, and the child can be padded (via `padding`).
 | `height` | `int` | Limits Box height | N |
 | `padding` | `int` | Padding around the child widget | N |
 | `color` | `color` | Background color | N |
-
 
 #### Example
 ```
@@ -80,13 +80,13 @@ render.Box(
 Circle draws a circle with the given `diameter` and `color`. If a
 `child` widget is provided, it is drawn in the center of the
 circle.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `color` | `color` | Fill color | **Y** |
 | `diameter` | `int` | Diameter of the circle | **Y** |
 | `child` | `Widget` | Widget to place in the center of the circle | N |
-
 
 #### Example
 ```
@@ -120,6 +120,7 @@ one of the following `cross_align` values:
 - `"start"`: place children at the left
 - `"end"`: place children at the right
 - `"center"`: place children in the center
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -127,7 +128,6 @@ one of the following `cross_align` values:
 | `main_align` | `str` | Alignment along vertical main axis | N |
 | `cross_align` | `str` | Alignment along horizontal cross axis | N |
 | `expanded` | `bool` | Column should expand to fill all available vertical space | N |
-
 
 #### Example
 ```
@@ -162,13 +162,13 @@ render.Column(
 Emoji renders a single emoji at a specified height, maintaining aspect ratio.
 This allows for rendering emojis much larger than the standard 10x10 pixel size
 used in text rendering.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `emoji` | `str` |  | **Y** |
 | `width` | `int` | Scale emoji to this width | N |
 | `height` | `int` | Scale emoji to this height | N |
-
 
 #### Example
 ```
@@ -187,6 +187,7 @@ image's original dimensions are used.
 If the image data encodes an animated GIF, the Image instance will
 also be animated. Frame delay (in milliseconds) can be read from
 the `delay` attribute.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -194,7 +195,6 @@ the `delay` attribute.
 | `width` | `int` | Scale image to this width | N |
 | `height` | `int` | Scale image to this height | N |
 | `delay` | `int` | (Read-only) Frame delay in ms, for animated GIFs | N |
-
 
 ## Marquee
 Marquee scrolls its child horizontally or vertically.
@@ -217,6 +217,7 @@ one of the following `align` values:
 - `"start"`: place child at the left/top
 - `"end"`: place child at the right/bottom
 - `"center"`: place child at the center
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -228,7 +229,6 @@ one of the following `align` values:
 | `scroll_direction` | `str` | Direction to scroll, 'vertical' or 'horizontal', default is horizontal | N |
 | `align` | `str` | Alignment when contents fit on screen, 'start', 'center' or 'end', default is start | N |
 | `delay` | `int` | Delay the scroll of the animation by a certain number of frames, default is 0 | N |
-
 
 #### Example
 ```
@@ -248,6 +248,7 @@ If the `pad` attribute is a single integer, that amount of padding
 will be placed on all sides of the child. If it's a 4-tuple `(left,
 top, right, bottom)`, then padding will be placed on the sides
 accordingly.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -256,18 +257,17 @@ accordingly.
 | `expanded` | `bool` | This is a confusing parameter | N |
 | `color` | `color` | Background color | N |
 
-
 ## PieChart
 PieChart draws a circular pie chart of size `diameter`. It takes two
 arguments for the data: parallel lists `colors` and `weights` representing
 the shading and relative sizes of each data entry.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `colors` | `[color]` | List of color hex codes | **Y** |
 | `weights` | `[float]` | List of numbers corresponding to the relative size of each color | **Y** |
 | `diameter` | `int` | Diameter of the circle | **Y** |
-
 
 #### Example
 ```
@@ -281,6 +281,7 @@ render.PieChart(
 
 ## Plot
 Plot is a widget that draws a data series.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -295,7 +296,6 @@ Plot is a widget that draws a data series.
 | `chart_type` | `str` | Specifies the type of chart to render, "scatter" or "line", default is "line" | N |
 | `fill_color` | `color` | Fill color for Y-values above 0 | N |
 | `fill_color_inverted` | `color` | Fill color for Y-values below 0 | N |
-
 
 #### Example
 ```
@@ -337,6 +337,7 @@ If the tree holds time sensitive information which must never be
 displayed past a certain point in time, pass _MaxAge_ to specify
 an expiration time in seconds. Display devices use this to avoid
 displaying stale data in the event of e.g. connectivity issues.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -344,7 +345,6 @@ displaying stale data in the event of e.g. connectivity issues.
 | `delay` | `int` | Frame delay in milliseconds | N |
 | `max_age` | `int` | Expiration time in seconds | N |
 | `show_full_animation` | `bool` | Request animation is shown in full, regardless of app cycle speed | N |
-
 
 ## Row
 Row lays out and draws its children horizontally (in a row).
@@ -368,6 +368,7 @@ one of the following `cross_align` values:
 - `"start"`: place children at the top
 - `"end"`: place children at the bottom
 - `"center"`: place children at the center
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -375,7 +376,6 @@ one of the following `cross_align` values:
 | `main_align` | `str` | Alignment along horizontal main axis | N |
 | `cross_align` | `str` | Alignment along vertical cross axis | N |
 | `expanded` | `bool` | Row should expand to fill all available horizontal space | N |
-
 
 #### Example
 ```
@@ -415,11 +415,11 @@ be rendered and so on.
 It comes in quite useful when chaining animations.
 If you want to know more about that, go check
 out the [animation](animation.md) documentation.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `children` | `[Widget]` | List of child widgets | **Y** |
-
 
 #### Example
 ```
@@ -439,11 +439,11 @@ Stack draws its children on top of each other.
 Just like a stack of pancakes, except with Widgets instead of
 pancakes. The Stack will be given a width and height sufficient to
 fit all its children.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `children` | `[Widget]` | Widgets to stack | **Y** |
-
 
 #### Example
 ```
@@ -465,6 +465,7 @@ be chosen via the `font` attribute. The `height` and `offset`
 parameters allow fine tuning of the vertical layout of the
 string. Take a look at the [font documentation](fonts.md) for more
 information.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -473,7 +474,6 @@ information.
 | `height` | `int` | Limits height of the area on which text is drawn | N |
 | `offset` | `int` | Shifts position of text vertically. | N |
 | `color` | `color` | Desired font color | N |
-
 
 #### Example
 ```
@@ -492,6 +492,7 @@ Alignment of the text is controlled by passing one of the following `align` valu
 - `"left"`: align text to the left
 - `"center"`: align text in the center
 - `"right"`: align text to the right
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -503,7 +504,6 @@ Alignment of the text is controlled by passing one of the following `align` valu
 | `color` | `color` | Desired font color | N |
 | `align` | `str` | Text Alignment | N |
 
-
 #### Example
 ```
 render.WrappedText(
@@ -513,4 +513,3 @@ render.WrappedText(
 )
 ```
 ![](img/widget_WrappedText_0.gif)
-

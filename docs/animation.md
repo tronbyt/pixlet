@@ -34,8 +34,6 @@ Animate a widget from start to end coordinates.
 | `delay` | `int` | Delay before animation in frames | N |
 | `hold` | `int` | Delay after animation in frames | N |
 
-
-
 ## Keyframe
 A keyframe defining specific point in time in the animation.
 
@@ -48,8 +46,6 @@ The keyframe _percentage_ can is expressed as a floating point value between `0.
 | `transforms` | `[Transform]` | List of transforms at this keyframe to interpolate to or from. | **Y** |
 | `curve` | `str / function` | Easing curve to use, default is 'linear' | N |
 
-
-
 ## Origin
 An relative anchor point to use for scaling and rotation transforms.
 
@@ -59,8 +55,6 @@ An relative anchor point to use for scaling and rotation transforms.
 | `x` | `float` | Horizontal anchor point | **Y** |
 | `y` | `float` | Vertical anchor point | **Y** |
 
-
-
 ## Rotate
 Transform by rotating by a given angle in degrees.
 
@@ -68,8 +62,6 @@ Transform by rotating by a given angle in degrees.
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `angle` | `float / int` | Angle to rotate by in degrees | **Y** |
-
-
 
 ## Scale
 Transform by scaling by a given factor.
@@ -79,8 +71,6 @@ Transform by scaling by a given factor.
 | --- | --- | --- | --- |
 | `x` | `float / int` | Horizontal scale factor | **Y** |
 | `y` | `float / int` | Vertical scale factor | **Y** |
-
-
 
 ## Transformation
 Transformation makes it possible to animate a child widget by
@@ -175,7 +165,6 @@ animation.Transformation(
 ```
 ![](img/widget_Transformation_0.gif)
 
-
 ## Translate
 Transform by translating by a given offset.
 
@@ -184,6 +173,3 @@ Transform by translating by a given offset.
 | --- | --- | --- | --- |
 | `x` | `float / int` | Horizontal offset | **Y** |
 | `y` | `float / int` | Vertical offset | **Y** |
-
-
-

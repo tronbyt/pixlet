@@ -1,129 +1,132 @@
-type {{.GoName}} struct {
-	{{.GoNameWithPackage}}
-{{range .Attributes}}
-{{if or .GenerateField (eq .GoType "starlark.Value") (eq .GoType "starlark.Tuple") (eq .GoType "*starlark.List")}}
-	starlark{{.GoName}} {{.GoType}}
-{{end}}
-{{end}}
-{{if .HasSize}}
+
+type {{ .GoName }} struct {
+	{{ .GoNameWithPackage }}
+{{- range .Attributes }}
+{{- if or .GenerateField (eq .GoType "starlark.Value") (eq .GoType "starlark.Tuple") (eq .GoType "*starlark.List") }}
+	starlark{{ .GoName }} {{ .GoType }}
+{{- end }}
+{{- end }}
+{{- if .HasSize }}
 	size *starlark.Builtin
-{{end}}
-{{if .GoWidgetName}}
+{{- end }}
+{{- if .GoWidgetName }}
 	frame_count *starlark.Builtin
-{{end}}
+{{- end }}
 }
 
-func new{{.GoName}}(
+func new{{ .GoName }}(
 	thread *starlark.Thread,
 	_ *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple,
 ) (starlark.Value, error) {
-
 	var (
-		{{range .Attributes}}{{if not .IsReadOnly}}{{.StarlarkName}} {{.GoType}}{{end}}
-		{{end}}
+		{{ range .Attributes -}}
+        {{- if not .IsReadOnly }}{{ .StarlarkName }} {{ .GoType }}{{ end }}
+		{{ end }}
 	)
 
 	if err := starlark.UnpackArgs(
-		"{{.GoName}}",
+		"{{ .GoName }}",
 		args, kwargs,
-{{- range .Attributes}}{{if not .IsReadOnly}}
-		"{{.StarlarkName}}{{if not .IsRequired}}?{{end}}", &{{.StarlarkName}},
-{{- end}}{{end}}
+{{- range .Attributes }}
+{{- if not .IsReadOnly }}
+		"{{ .StarlarkName }}{{ if not .IsRequired }}?{{ end }}", &{{ .StarlarkName }},
+{{- end}}
+{{- end }}
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for {{.GoName}}: %s", err)
+		return nil, fmt.Errorf("unpacking arguments for {{ .GoName }}: %s", err)
 	}
 
-	w := &{{.GoName}}{}
+	w := &{{ .GoName }}{}
 
-{{range .Attributes}}
-{{.Code}}
-{{end}}
+{{- range .Attributes }}
+{{ .Code }}
+{{- end }}
 
-{{if .HasSize}}
-	w.size = starlark.NewBuiltin("size", {{.GoName|ToLower}}Size)
-{{end}}
-{{if .GoWidgetName}}
-	w.frame_count = starlark.NewBuiltin("frame_count", {{.GoName|ToLower}}FrameCount)
-{{end}}
+{{- if .HasSize }}
+	w.size = starlark.NewBuiltin("size", {{ .GoName | ToLower }}Size)
+{{- end }}
+{{- if .GoWidgetName }}
+	w.frame_count = starlark.NewBuiltin("frame_count", {{ .GoName | ToLower }}FrameCount)
+{{- end }}
 
-{{if .HasInit}}
+{{- if .HasInit }}
 	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
-{{end}}
+{{- end }}
 
 	return w, nil
 }
 
-{{if .GoRootName }}
-func (w *{{.GoName}}) AsRenderRoot() render.Root {
-	return w.{{.GoName}}
+{{ if .GoRootName -}}
+func (w *{{ .GoName }}) AsRenderRoot() render.Root {
+	return w.{{ .GoName }}
 }
-{{end}}
+{{- end }}
 
-{{if .GoWidgetName }}
-func (w *{{.GoName}}) AsRenderWidget() render.Widget {
-	return &w.{{.GoName}}
+{{ if .GoWidgetName -}}
+func (w *{{ .GoName }}) AsRenderWidget() render.Widget {
+	return &w.{{ .GoName }}
 }
-{{end}}
+{{- end }}
 
-func (w *{{.GoName}}) AttrNames() []string {
+func (w *{{ .GoName }}) AttrNames() []string {
 	return []string{
-{{range .Attributes -}}
-		"{{.StarlarkName}}",
-{{- end}}
+{{- range .Attributes }}
+		"{{ .StarlarkName }}",
+{{- end }}
 	}
 }
 
-func (w *{{.GoName}}) Attr(name string) (starlark.Value, error) {
+func (w *{{ .GoName }}) Attr(name string) (starlark.Value, error) {
 	switch name {
-{{range .Attributes}}
-	case "{{.StarlarkName}}":
-{{if .GenerateField}}
-		return w.starlark{{.GoName}}, nil
-{{else if eq .GoType "starlark.String"}}
-		return starlark.String(w.{{.GoName}}), nil
-{{else if eq .GoType "starlark.Int"}}
-		return starlark.MakeInt(int(w.{{.GoName}})), nil
-{{else if eq .GoType "starlark.Bool"}}
-		return starlark.Bool(w.{{.GoName}}), nil
-{{else}}
-		return w.starlark{{.GoName}}, nil
-{{end}}
-{{end}}
-{{if .HasSize}}
+{{- range .Attributes }}
+	case "{{ .StarlarkName }}":
+{{- if .GenerateField }}
+		return w.starlark{{ .GoName }}, nil
+{{- else if eq .GoType "starlark.String" }}
+		return starlark.String(w.{{ .GoName }}), nil
+{{- else if eq .GoType "starlark.Int" }}
+		return starlark.MakeInt(int(w.{{ .GoName }})), nil
+{{- else if eq .GoType "starlark.Bool" }}
+		return starlark.Bool(w.{{ .GoName }}), nil
+{{- else }}
+		return w.starlark{{ .GoName }}, nil
+{{- end }}
+{{- end }}
+{{- if .HasSize }}
 	case "size":
 		return w.size.BindReceiver(w), nil
-{{end}}
-{{if .GoWidgetName}}
+{{- end }}
+{{- if .GoWidgetName }}
 	case "frame_count":
 		return w.frame_count.BindReceiver(w), nil
-{{end}}
+{{- end }}
 	default:
 		return nil, nil
 	}
 }
 
-func (w *{{.GoName}}) String() string       { return "{{.GoName}}(...)" }
-func (w *{{.GoName}}) Type() string         { return "{{.GoName}}" }
-func (w *{{.GoName}}) Freeze()              {}
-func (w *{{.GoName}}) Truth() starlark.Bool { return true }
+func (w *{{ .GoName }}) String() string       { return "{{ .GoName }}(...)" }
+func (w *{{ .GoName }}) Type() string         { return "{{ .GoName }}" }
+func (w *{{ .GoName }}) Freeze()              {}
+func (w *{{ .GoName }}) Truth() starlark.Bool { return true }
 
-func (w *{{.GoName}}) Hash() (uint32, error) {
+func (w *{{ .GoName }}) Hash() (uint32, error) {
 	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
 
-{{if .HasSize}}
-func {{.GoName|ToLower}}Size(
+{{ if .HasSize -}}
+func {{ .GoName | ToLower }}Size(
 	thread *starlark.Thread,
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
 
-	w := b.Receiver().(*{{.GoName}})
+	w := b.Receiver().(*{{ .GoName }})
 	width, height := w.Size()
 
 	return starlark.Tuple([]starlark.Value{
@@ -131,10 +134,10 @@ func {{.GoName|ToLower}}Size(
 		starlark.MakeInt(height),
 	}), nil
 }
+{{- end }}
 
-{{end}}
-{{if .GoWidgetName}}
-func {{.GoName|ToLower}}FrameCount(
+{{ if .GoWidgetName -}}
+func {{ .GoName | ToLower }}FrameCount(
 	thread *starlark.Thread,
 	b *starlark.Builtin,
 	args starlark.Tuple,
@@ -173,10 +176,9 @@ func {{.GoName|ToLower}}FrameCount(
 		r = image.Rect(x0, y0, x1, y1)
 	}
 
-	w := b.Receiver().(*{{.GoName}})
+	w := b.Receiver().(*{{ .GoName }})
 	count := w.FrameCount(r)
 
 	return starlark.MakeInt(count), nil
 }
-
-{{end}}
+{{- end }}
