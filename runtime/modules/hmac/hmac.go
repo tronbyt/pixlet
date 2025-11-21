@@ -9,27 +9,20 @@ import (
 	"fmt"
 	"hash"
 	"sync"
-	"time"
 
-	godfe "github.com/newm4n/go-dfe"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
 
-const (
-	ModuleName = "hmac"
-)
+const ModuleName = "hmac"
 
 var (
-	once        sync.Once
-	module      starlark.StringDict
-	empty       time.Time
-	translation *godfe.PatternTranslation
+	once   sync.Once
+	module starlark.StringDict
 )
 
 func LoadModule() (starlark.StringDict, error) {
 	once.Do(func() {
-		translation = godfe.NewPatternTranslation()
 		module = starlark.StringDict{
 			ModuleName: &starlarkstruct.Module{
 				Name: ModuleName,
@@ -50,7 +43,7 @@ func fnHmac(hashFunc func() hash.Hash) func(*starlark.Thread, *starlark.Builtin,
 		var (
 			key      starlark.Value
 			s        starlark.String
-			binary   bool = false
+			binary                   = false
 			encoding starlark.String = "hex"
 		)
 		if err := starlark.UnpackArgs(fn.Name(), args, kwargs, "key", &key, "s", &s, "binary?", &binary, "encoding?", &encoding); err != nil {
@@ -60,7 +53,7 @@ func fnHmac(hashFunc func() hash.Hash) func(*starlark.Thread, *starlark.Builtin,
 		var byteKey []byte
 		switch key := key.(type) {
 		case starlark.String:
-			byteKey = []byte(string(key))
+			byteKey = []byte(key)
 		case starlark.Bytes:
 			byteKey = []byte(key)
 		default:
@@ -69,7 +62,7 @@ func fnHmac(hashFunc func() hash.Hash) func(*starlark.Thread, *starlark.Builtin,
 
 		h := hmac.New(hashFunc, byteKey)
 
-		if _, err := h.Write([]byte(string(s))); err != nil {
+		if _, err := h.Write([]byte(s)); err != nil {
 			return starlark.None, err
 		}
 
