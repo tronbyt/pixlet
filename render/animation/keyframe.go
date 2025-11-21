@@ -7,7 +7,6 @@ package animation
 // DOC(Percentage): Percentage of the time at which this keyframe occurs through the animation.
 // DOC(Transforms): List of transforms at this keyframe to interpolate to or from.
 // DOC(Curve): Easing curve to use, default is 'linear'
-//
 type Keyframe struct {
 	Percentage Percentage  `starlark:"percentage,required"`
 	Transforms []Transform `starlark:"transforms,required"`

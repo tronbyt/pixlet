@@ -21,7 +21,7 @@ like Text to get the width and height.
 
 
 ## Animation
-Animations turns a list of children into an animation, where each
+Animation turns a list of children into an animation, where each
 child is a frame.
 
 FIXME: Behaviour when children themselves are animated is a bit
@@ -66,12 +66,12 @@ box, and the child can be padded (via `padding`).
 #### Example
 ```
 render.Box(
-     color="#00f",
-     child=render.Box(
-          width=20,
-          height=10,
-          color="#f00",
-     )
+    color="#00f",
+    child=render.Box(
+        width=20,
+        height=10,
+        color="#f00",
+    )
 )
 ```
 ![](img/widget_Box_0.gif)
@@ -91,9 +91,9 @@ circle.
 #### Example
 ```
 render.Circle(
-     color="#666",
-     diameter=30,
-     child=render.Circle(color="#0ff", diameter=10),
+    color="#666",
+    diameter=30,
+    child=render.Circle(color="#0ff", diameter=10),
 )
 ```
 ![](img/widget_Circle_0.gif)
@@ -132,26 +132,28 @@ one of the following `cross_align` values:
 #### Example
 ```
 render.Column(
-     children=[
-          render.Box(width=10, height=8, color="#a00"),
-          render.Box(width=14, height=6, color="#0a0"),
-          render.Box(width=16, height=4, color="#00a"),
-     ],
+    children=[
+         render.Box(width=10, height=8, color="#a00"),
+         render.Box(width=14, height=6, color="#0a0"),
+         render.Box(width=16, height=4, color="#00a"),
+    ],
 )
+
+#
 ```
 ![](img/widget_Column_0.gif)
 
 #### Example
 ```
 render.Column(
-     expanded=True,
-     main_align="space_around",
-     cross_align="center",
-     children=[
-          render.Box(width=10, height=8, color="#a00"),
-          render.Box(width=14, height=6, color="#0a0"),
-          render.Box(width=16, height=4, color="#00a"),
-     ],
+    expanded=True,
+    main_align="space_around",
+    cross_align="center",
+    children=[
+        render.Box(width=10, height=8, color="#a00"),
+        render.Box(width=14, height=6, color="#0a0"),
+        render.Box(width=16, height=4, color="#00a"),
+    ],
 )
 ```
 ![](img/widget_Column_1.gif)
@@ -231,10 +233,10 @@ one of the following `align` values:
 #### Example
 ```
 render.Marquee(
-     width=64,
-     child=render.Text("this won't fit in 64 pixels"),
-     offset_start=5,
-     offset_end=32,
+    width=64,
+    child=render.Text("this won't fit in 64 pixels"),
+    offset_start=5,
+    offset_end=32,
 )
 ```
 ![](img/widget_Marquee_0.gif)
@@ -270,9 +272,9 @@ the shading and relative sizes of each data entry.
 #### Example
 ```
 render.PieChart(
-     colors = [ "#fff", "#0f0", "#00f" ],
-     weights  = [ 180, 135, 45 ],
-     diameter = 30,
+    colors = [ "#fff", "#0f0", "#00f" ],
+    weights  = [ 180, 135, 45 ],
+    diameter = 30,
 )
 ```
 ![](img/widget_PieChart_0.gif)
@@ -298,27 +300,25 @@ Plot is a widget that draws a data series.
 #### Example
 ```
 render.Plot(
-
-	data = [
-	  (0, 3.35),
-	  (1, 2.15),
-	  (2, 2.37),
-	  (3, -0.31),
-	  (4, -3.53),
-	  (5, 1.31),
-	  (6, -1.3),
-	  (7, 4.60),
-	  (8, 3.33),
-	  (9, 5.92),
-	],
-	width = 64,
-	height = 32,
-	color = "#0f0",
-	color_inverted = "#f00",
-	x_lim = (0, 9),
-	y_lim = (-5, 7),
-	fill = True,
-
+    data = [
+        (0, 3.35),
+        (1, 2.15),
+        (2, 2.37),
+        (3, -0.31),
+        (4, -3.53),
+        (5, 1.31),
+        (6, -1.3),
+        (7, 4.60),
+        (8, 3.33),
+        (9, 5.92),
+    ],
+    width = 64,
+    height = 32,
+    color = "#0f0",
+    color_inverted = "#f00",
+    x_lim = (0, 9),
+    y_lim = (-5, 7),
+    fill = True,
 ),
 ```
 ![](img/widget_Plot_0.gif)
@@ -380,11 +380,12 @@ one of the following `cross_align` values:
 #### Example
 ```
 render.Row(
-     children=[
-          render.Box(width=10, height=8, color="#a00"),
-          render.Box(width=14, height=6, color="#0a0"),
-          render.Box(width=16, height=4, color="#00a"),
-     ],
+    children=[
+        render.Box(width=10, height=8, color="#a00"),
+        render.Box(width=14, height=6, color="#0a0"),
+        render.Box(width=16, height=4, color="#00a"),
+    ],
+
 )
 ```
 ![](img/widget_Row_0.gif)
@@ -392,14 +393,14 @@ render.Row(
 #### Example
 ```
 render.Row(
-     expanded=True,
-     main_align="space_between",
-     cross_align="end",
-     children=[
-          render.Box(width=10, height=8, color="#a00"),
-          render.Box(width=14, height=6, color="#0a0"),
-          render.Box(width=16, height=4, color="#00a"),
-     ],
+    expanded=True,
+    main_align="space_between",
+    cross_align="end",
+    children=[
+        render.Box(width=10, height=8, color="#a00"),
+        render.Box(width=14, height=6, color="#0a0"),
+        render.Box(width=16, height=4, color="#00a"),
+    ],
 )
 ```
 ![](img/widget_Row_1.gif)
@@ -423,11 +424,11 @@ out the [animation](animation.md) documentation.
 #### Example
 ```
 render.Sequence(
-  children = [
-    animation.Transformation(...),
-    animation.Transformation(...),
-    ...
-  ],
+    children = [
+        animation.Transformation(...),
+        animation.Transformation(...),
+        ...
+    ],
 ),
 ```
 ![](img/widget_Sequence_0.gif)
@@ -447,13 +448,11 @@ fit all its children.
 #### Example
 ```
 render.Stack(
-
-	children=[
-	     render.Box(width=50, height=25, color="#911"),
-	     render.Text("hello there"),
-	     render.Box(width=4, height=32, color="#119"),
-	],
-
+    children=[
+        render.Box(width=50, height=25, color="#911"),
+        render.Text("hello there"),
+        render.Box(width=4, height=32, color="#119"),
+    ],
 )
 ```
 ![](img/widget_Stack_0.gif)
@@ -508,11 +507,9 @@ Alignment of the text is controlled by passing one of the following `align` valu
 #### Example
 ```
 render.WrappedText(
-
-	content="this is a multi-line text string",
-	width=50,
-	color="#fa0",
-
+    content="this is a multi-line text string",
+    width=50,
+    color="#fa0",
 )
 ```
 ![](img/widget_WrappedText_0.gif)

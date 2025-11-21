@@ -190,7 +190,7 @@ func TestPositionedEaseIn(t *testing.T) {
 }
 
 // The Delay and Hold parameters delays the start of transition and
-//  holds it at its final position for a certain number of frames.
+// holds it at its final position for a certain number of frames.
 func TestPositionedDelayAndHold(t *testing.T) {
 	o := AnimatedPositioned{
 		Child: render.Box{

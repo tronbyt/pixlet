@@ -21,14 +21,16 @@ import (
 // DOC(Color): Background color
 //
 // EXAMPLE BEGIN
-// render.Box(
-//      color="#00f",
-//      child=render.Box(
-//           width=20,
-//           height=10,
-//           color="#f00",
-//      )
-// )
+//
+//	render.Box(
+//	    color="#00f",
+//	    child=render.Box(
+//	        width=20,
+//	        height=10,
+//	        color="#f00",
+//	    )
+//	)
+//
 // EXAMPLE END
 type Box struct {
 	Child         Widget

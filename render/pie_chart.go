@@ -17,11 +17,13 @@ import (
 // DOC(Diameter): Diameter of the circle
 //
 // EXAMPLE BEGIN
-// render.PieChart(
-//      colors = [ "#fff", "#0f0", "#00f" ],
-//      weights  = [ 180, 135, 45 ],
-//      diameter = 30,
-// )
+//
+//	render.PieChart(
+//	    colors = [ "#fff", "#0f0", "#00f" ],
+//	    weights  = [ 180, 135, 45 ],
+//	    diameter = 30,
+//	)
+//
 // EXAMPLE END
 type PieChart struct {
 	Colors   []color.Color `starlark:"colors, required"`

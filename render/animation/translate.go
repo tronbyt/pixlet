@@ -8,7 +8,6 @@ import (
 //
 // DOC(X): Horizontal offset
 // DOC(Y): Vertical offset
-//
 type Translate struct {
 	Vec2f
 }

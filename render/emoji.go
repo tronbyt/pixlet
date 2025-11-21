@@ -20,7 +20,9 @@ import (
 // DOC(Height): Scale emoji to this height
 //
 // EXAMPLE BEGIN
-// render.Emoji(emoji="😀", height=32) // Large smiley face
+//
+//	render.Emoji(emoji="😀", height=32) // Large smiley face
+//
 // EXAMPLE END
 type Emoji struct {
 	EmojiStr      string `starlark:"emoji,required"`

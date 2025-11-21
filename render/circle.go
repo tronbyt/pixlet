@@ -17,11 +17,13 @@ import (
 // DOC(Diameter): Diameter of the circle
 //
 // EXAMPLE BEGIN
-// render.Circle(
-//      color="#666",
-//      diameter=30,
-//      child=render.Circle(color="#0ff", diameter=10),
-// )
+//
+//	render.Circle(
+//	    color="#666",
+//	    diameter=30,
+//	    child=render.Circle(color="#0ff", diameter=10),
+//	)
+//
 // EXAMPLE END
 type Circle struct {
 	Child    Widget

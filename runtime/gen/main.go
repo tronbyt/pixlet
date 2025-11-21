@@ -480,7 +480,9 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 		// Examples
 		examples := []string{}
 		for _, group := range exampleRe.FindAllStringSubmatch(docs[type_.GoName], -1) {
-			examples = append(examples, strings.TrimSpace(group[1]))
+			example := strings.TrimSpace(group[1])
+			example = strings.ReplaceAll(example, "\n\t", "\n")
+			examples = append(examples, example)
 		}
 		type_.Examples = examples
 

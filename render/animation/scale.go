@@ -8,7 +8,6 @@ import (
 //
 // DOC(X): Horizontal scale factor
 // DOC(Y): Vertical scale factor
-//
 type Scale struct {
 	Vec2f
 }
