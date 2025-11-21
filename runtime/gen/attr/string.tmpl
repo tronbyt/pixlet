@@ -1,1 +1,3 @@
-{{if not .IsReadOnly}}w.{{.GoName}} = {{.StarlarkName}}.GoString(){{end}}
+{{ if not .IsReadOnly }}
+w.{{ .GoName }} = {{ .StarlarkName }}.GoString()
+{{- end }}

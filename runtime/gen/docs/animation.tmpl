@@ -15,21 +15,25 @@ custom easing function.
 term. Please be on the lookout for bugs, issues and potential
 improvements!
 
-{{range .}}{{if .Documentation}}{{$name := .GoName}}
-## {{.GoName}}
-{{.Documentation}}
+{{ range . -}}
+{{- if .Documentation }}
+{{- $name := .GoName }}
+## {{ $name }}
+{{ .Documentation }}
 
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
-{{range .Attributes -}}
-| `{{.StarlarkName}}` | `{{.DocType}}` | {{.Documentation}} | {{if .IsRequired}}**Y**{{else}}N{{end}} |
-{{end}}
-{{range $i, $code := .Examples -}}
+{{ range .Attributes -}}
+| `{{ .StarlarkName }}` | `{{ .DocType }}` | {{ .Documentation }} | {{ if .IsRequired }}**Y**{{ else }}N{{ end }} |
+{{ end -}}
+
+{{- range $i, $code := .Examples }}
 #### Example
 ```
-{{$code}}
+{{ $code }}
 ```
-![](img/widget_{{$name}}_{{$i}}.gif)
-{{end}}
-{{end}}{{end}}
+![](img/widget_{{ $name }}_{{ $i }}.gif)
+{{ end -}}
+{{- end -}}
+{{- end -}}

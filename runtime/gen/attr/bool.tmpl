@@ -1,1 +1,3 @@
-{{if not .IsReadOnly}}w.{{.GoName}} = bool({{.StarlarkName}}){{end}}
+{{ if not .IsReadOnly }}
+w.{{ .GoName }} = bool({{ .StarlarkName }})
+{{- end }}
