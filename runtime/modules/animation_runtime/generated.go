@@ -52,8 +52,6 @@ func LoadAnimationModule() (starlark.StringDict, error) {
 }
 
 type AnimatedPositioned struct {
-	render_runtime.Widget
-
 	animation.AnimatedPositioned
 
 	starlarkChild starlark.Value
@@ -582,8 +580,6 @@ func (w *Scale) Hash() (uint32, error) {
 }
 
 type Transformation struct {
-	render_runtime.Widget
-
 	animation.Transformation
 
 	starlarkChild starlark.Value

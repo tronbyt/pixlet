@@ -38,7 +38,6 @@ var DefaultFontColor = color.White
 // render.Text(content="Tidbyt!", color="#099")
 // EXAMPLE END
 type Text struct {
-	Widget
 	Content string `starlark:"content,required"`
 	Font    string
 	Height  int

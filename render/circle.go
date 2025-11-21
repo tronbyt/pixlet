@@ -24,8 +24,6 @@ import (
 // )
 // EXAMPLE END
 type Circle struct {
-	Widget
-
 	Child    Widget
 	Color    color.Color `starlark:"color, required"`
 	Diameter int         `starlark:"diameter,required"`

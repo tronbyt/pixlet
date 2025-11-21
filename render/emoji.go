@@ -23,7 +23,6 @@ import (
 // render.Emoji(emoji="😀", height=32) // Large smiley face
 // EXAMPLE END
 type Emoji struct {
-	Widget
 	EmojiStr      string `starlark:"emoji,required"`
 	Width, Height int
 

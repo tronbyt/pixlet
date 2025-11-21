@@ -45,8 +45,6 @@ const (
 // )
 // EXAMPLE END
 type WrappedText struct {
-	Widget
-
 	Content     string `starlark:"content,required"`
 	Font        string
 	Height      int

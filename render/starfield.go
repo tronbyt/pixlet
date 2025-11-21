@@ -12,8 +12,6 @@ import (
 )
 
 type Starfield struct {
-	Widget
-
 	Child  Widget
 	Color  color.Color
 	Width  int

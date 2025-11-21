@@ -1,7 +1,4 @@
 type {{.GoName}} struct {
-{{if .GoWidgetName}}
-	{{.GoWidgetName}}
-{{end}}
 	{{.GoNameWithPackage}}
 {{range .Attributes}}
 {{if or .GenerateField (eq .GoType "starlark.Value") (eq .GoType "starlark.Tuple") (eq .GoType "*starlark.List")}}

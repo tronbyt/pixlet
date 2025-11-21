@@ -97,8 +97,6 @@ type Widget interface {
 	AsRenderWidget() render.Widget
 }
 type Animation struct {
-	Widget
-
 	render.Animation
 
 	starlarkChildren *starlark.List
@@ -234,8 +232,6 @@ func animationFrameCount(
 }
 
 type Box struct {
-	Widget
-
 	render.Box
 
 	starlarkChild starlark.Value
@@ -403,8 +399,6 @@ func boxFrameCount(
 }
 
 type Circle struct {
-	Widget
-
 	render.Circle
 
 	starlarkColor starlark.String
@@ -556,8 +550,6 @@ func circleFrameCount(
 }
 
 type Column struct {
-	Widget
-
 	render.Column
 
 	starlarkChildren *starlark.List
@@ -717,8 +709,6 @@ func columnFrameCount(
 }
 
 type Emoji struct {
-	Widget
-
 	render.Emoji
 
 	size *starlark.Builtin
@@ -875,8 +865,6 @@ func emojiFrameCount(
 }
 
 type Image struct {
-	Widget
-
 	render.Image
 
 	size *starlark.Builtin
@@ -1037,8 +1025,6 @@ func imageFrameCount(
 }
 
 type Marquee struct {
-	Widget
-
 	render.Marquee
 
 	starlarkChild starlark.Value
@@ -1221,8 +1207,6 @@ func marqueeFrameCount(
 }
 
 type Padding struct {
-	Widget
-
 	render.Padding
 
 	starlarkChild starlark.Value
@@ -1414,8 +1398,6 @@ func paddingFrameCount(
 }
 
 type PieChart struct {
-	Widget
-
 	render.PieChart
 
 	starlarkColors *starlark.List
@@ -1560,8 +1542,6 @@ func piechartFrameCount(
 }
 
 type Plot struct {
-	Widget
-
 	render.Plot
 
 	starlarkData *starlark.List
@@ -1919,8 +1899,6 @@ func (w *Root) Hash() (uint32, error) {
 }
 
 type Row struct {
-	Widget
-
 	render.Row
 
 	starlarkChildren *starlark.List
@@ -2080,8 +2058,6 @@ func rowFrameCount(
 }
 
 type Sequence struct {
-	Widget
-
 	render.Sequence
 
 	starlarkChildren *starlark.List
@@ -2217,8 +2193,6 @@ func sequenceFrameCount(
 }
 
 type Stack struct {
-	Widget
-
 	render.Stack
 
 	starlarkChildren *starlark.List
@@ -2354,8 +2328,6 @@ func stackFrameCount(
 }
 
 type Text struct {
-	Widget
-
 	render.Text
 
 	starlarkColor starlark.String
@@ -2537,8 +2509,6 @@ func textFrameCount(
 }
 
 type WrappedText struct {
-	Widget
-
 	render.WrappedText
 
 	starlarkColor starlark.String

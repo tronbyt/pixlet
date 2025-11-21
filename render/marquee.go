@@ -45,7 +45,6 @@ import (
 // )
 // EXAMPLE END
 type Marquee struct {
-	Widget
 	Child           Widget `starlark:"child,required"`
 	Width           int    `starlark:"width"`
 	Height          int    `starlark:"height"`

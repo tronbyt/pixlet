@@ -24,8 +24,6 @@ import (
 // )
 // EXAMPLE END
 type PieChart struct {
-	Widget
-
 	Colors   []color.Color `starlark:"colors, required"`
 	Weights  []float64     `starlark:"weights, required"`
 	Diameter int           `starlark:"diameter,required"`

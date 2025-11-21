@@ -26,7 +26,6 @@ import (
 // )
 // EXAMPLE END
 type Animation struct {
-	Widget
 	Children []Widget
 }
 
