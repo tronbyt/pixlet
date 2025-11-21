@@ -27,6 +27,7 @@ import (
 	"bytes"
 	"cmp"
 	"fmt"
+	"go/format"
 	"image"
 	"image/draw"
 	"image/png"
@@ -349,5 +350,10 @@ func writeOutput(pngFileName string, index map[string]image.Rectangle, fallback 
 	}
 	b.WriteString("}\n\n")
 
-	return os.WriteFile(outFile, b.Bytes(), 0o644)
+	content, err := format.Source(b.Bytes())
+	if err != nil {
+		return fmt.Errorf("format output: %w", err)
+	}
+
+	return os.WriteFile(outFile, content, 0o644)
 }
