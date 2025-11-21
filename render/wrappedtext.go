@@ -36,13 +36,13 @@ const (
 // DOC(Color): Desired font color
 // DOC(Align): Text Alignment
 // EXAMPLE BEGIN
-// render.WrappedText(
 //
-//	content="this is a multi-line text string",
-//	width=50,
-//	color="#fa0",
+//	render.WrappedText(
+//	    content="this is a multi-line text string",
+//	    width=50,
+//	    color="#fa0",
+//	)
 //
-// )
 // EXAMPLE END
 type WrappedText struct {
 	Content     string `starlark:"content,required"`

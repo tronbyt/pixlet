@@ -35,7 +35,9 @@ var DefaultFontColor = color.White
 // DOC(Color): Desired font color
 //
 // EXAMPLE BEGIN
-// render.Text(content="Tidbyt!", color="#099")
+//
+//	render.Text(content="Tidbyt!", color="#099")
+//
 // EXAMPLE END
 type Text struct {
 	Content string `starlark:"content,required"`

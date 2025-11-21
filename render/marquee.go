@@ -37,12 +37,14 @@ import (
 // DOC(Delay): Delay the scroll of the animation by a certain number of frames, default is 0
 //
 // EXAMPLE BEGIN
-// render.Marquee(
-//      width=64,
-//      child=render.Text("this won't fit in 64 pixels"),
-//      offset_start=5,
-//      offset_end=32,
-// )
+//
+//	render.Marquee(
+//	    width=64,
+//	    child=render.Text("this won't fit in 64 pixels"),
+//	    offset_start=5,
+//	    offset_end=32,
+//	)
+//
 // EXAMPLE END
 type Marquee struct {
 	Child           Widget `starlark:"child,required"`

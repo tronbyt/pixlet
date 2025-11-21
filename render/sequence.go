@@ -19,13 +19,15 @@ import (
 // DOC(Children): List of child widgets
 //
 // EXAMPLE BEGIN
-// render.Sequence(
-//   children = [
-//     animation.Transformation(...),
-//     animation.Transformation(...),
-//     ...
-//   ],
-// ),
+//
+//	render.Sequence(
+//	    children = [
+//	        animation.Transformation(...),
+//	        animation.Transformation(...),
+//	        ...
+//	    ],
+//	),
+//
 // EXAMPLE END
 type Sequence struct {
 	Children []Widget `starlark:"children,required"`

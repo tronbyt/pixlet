@@ -8,7 +8,6 @@ import (
 //
 // DOC(X): Horizontal anchor point
 // DOC(Y): Vertical anchor point
-//
 type Origin struct {
 	X Percentage `starlark:"x,required"`
 	Y Percentage `starlark:"y,required"`

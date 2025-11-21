@@ -7,7 +7,6 @@ import (
 // Transform by rotating by a given angle in degrees.
 //
 // DOC(Angle): Angle to rotate by in degrees
-//
 type Rotate struct {
 	Angle float64 `starlark:"angle,required"`
 }
