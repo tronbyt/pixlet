@@ -22,9 +22,7 @@ import (
 // DOC(Curve): Easing curve to use, default is 'linear'
 // DOC(Delay): Delay before animation in frames
 // DOC(Hold): Delay after animation in frames
-//
 type AnimatedPositioned struct {
-	render.Widget
 	Child    render.Widget `starlark:"child,required"`
 	XStart   int           `starlark:"x_start"`
 	XEnd     int           `starlark:"x_end"`

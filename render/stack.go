@@ -26,7 +26,6 @@ import (
 // )
 // EXAMPLE END
 type Stack struct {
-	Widget
 	Children []Widget `starlark:"children,required"`
 }
 

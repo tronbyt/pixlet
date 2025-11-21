@@ -28,8 +28,6 @@ import (
 // ),
 // EXAMPLE END
 type Sequence struct {
-	Widget
-
 	Children []Widget `starlark:"children,required"`
 }
 

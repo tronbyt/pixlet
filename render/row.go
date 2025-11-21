@@ -56,8 +56,6 @@ import (
 // )
 // EXAMPLE END
 type Row struct {
-	Widget
-
 	Children   []Widget `starlark:"children,required"`
 	MainAlign  string   `starlark:"main_align"`
 	CrossAlign string   `starlark:"cross_align"`

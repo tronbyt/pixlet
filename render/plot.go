@@ -53,8 +53,6 @@ var FillDampFactor uint8 = 0x55
 // ),
 // EXAMPLE END
 type Plot struct {
-	Widget
-
 	// Coordinates of points to plot
 	Data [][2]float64 `starlark:"data,required"`
 

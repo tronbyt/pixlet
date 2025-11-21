@@ -8,7 +8,6 @@ import (
 )
 
 type Tracer struct {
-	Widget
 	Path        Path
 	TraceLength int
 }

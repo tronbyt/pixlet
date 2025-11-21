@@ -37,7 +37,6 @@ import (
 // DOC(Height): Scale image to this height
 // DOC(Delay): (Read-only) Frame delay in ms, for animated GIFs
 type Image struct {
-	Widget
 	Src           string `starlark:"src,required"`
 	Width, Height int
 	Delay         int `starlark:"delay,readonly"`

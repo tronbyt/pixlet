@@ -26,8 +26,6 @@ type Insets struct {
 // DOC(Pad): Padding around the child
 // DOC(Color): Background color
 type Padding struct {
-	Widget
-
 	Child    Widget `starlark:"child,required"`
 	Pad      Insets
 	Expanded bool

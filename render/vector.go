@@ -14,8 +14,6 @@ import (
 // column). MainAlign controls how children are placed along this
 // axis. CrossAlign controls placement orthogonally to the main axis.
 type Vector struct {
-	Widget
-
 	Children   []Widget
 	MainAlign  string `starlark:"main_align"`
 	CrossAlign string `starlark:"cross_align"`
