@@ -385,9 +385,16 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 	result.GoNameWithPackage = typ.String()
 
 	for _, field := range allFields(val) {
-		if field.PkgPath != "" || field.Anonymous {
-			// Field is not an exposed attribute
+		if field.PkgPath != "" {
+			// Field is not exported.
 			continue
+		}
+
+		if field.Anonymous {
+			if _, hasTag := field.Tag.Lookup("starlark"); !hasTag {
+				// Anonymous fields without Starlark metadata are structural.
+				continue
+			}
 		}
 
 		if attribute, err := toGeneratedAttribute(typ, field); err == nil {
