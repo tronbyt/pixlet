@@ -280,19 +280,6 @@ type GeneratedType struct {
 	Examples          []string
 }
 
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func must2[T any](v T, err error) T {
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
 // Given a `reflect.Value`, return all its fields, including fields of anonymous composed types.
 func allFields(val reflect.Value) []reflect.StructField {
 	fields := make([]reflect.StructField, 0)
@@ -551,4 +538,7 @@ func main() {
 		generateCode(pkg, types)
 		generateDocs(pkg, types)
 	}
+
+	genEmoji()
+
 }
