@@ -15,11 +15,11 @@ func init() {
 
 var FormatCmd = &cobra.Command{
 	Use:   "format <pathspec>...",
-	Short: "Formats Tidbyt apps",
+	Short: "Formats Tronbyt apps",
 	Example: `  pixlet format app.star
   pixlet format app.star --dry-run
   pixlet format --recursive ./`,
-	Long: `The format command provides a code formatter for Tidbyt apps. By default, it
+	Long: `The format command provides a code formatter for Tronbyt apps. By default, it
 will format your starlark source code in line. If you wish you see the output
 before applying, add the --dry-run flag.`,
 	Args: cobra.MinimumNArgs(1),

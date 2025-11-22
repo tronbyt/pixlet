@@ -18,8 +18,8 @@ var LintCmd = &cobra.Command{
 	Use: "lint <pathspec>...",
 	Example: `  pixlet lint app.star
   pixlet lint --recursive --fix ./`,
-	Short: "Lints Tidbyt apps",
-	Long: `The lint command provides a linter for Tidbyt apps. It's capable of linting a
+	Short: "Lints Tronbyt apps",
+	Long: `The lint command provides a linter for Tronbyt apps. It's capable of linting a
 file, a list of files, or directory with the recursive option. Additionally, it
 provides an option to automatically fix resolvable linter issues.`,
 	Args: cobra.MinimumNArgs(1),
