@@ -48,14 +48,6 @@ func init() {
 		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
 	)
 	_ = ServeCmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
-
-	// Deprecated flags
-	ServeCmd.Flags().DurationVar(&maxDuration, "max_duration", 15*time.Second, "Maximum allowed animation duration")
-	if err := ServeCmd.Flags().MarkDeprecated(
-		"max_duration", "use --max-duration instead",
-	); err != nil {
-		panic(err)
-	}
 }
 
 var ServeCmd = &cobra.Command{
