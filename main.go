@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd"
 	"github.com/tronbyt/pixlet/cmd/community"
+	"github.com/tronbyt/pixlet/cmd/config"
 )
 
 var (
@@ -35,7 +36,7 @@ func init() {
 	rootCmd.AddCommand(cmd.RenderCmd)
 	rootCmd.AddCommand(cmd.SchemaCmd)
 	rootCmd.AddCommand(cmd.ServeCmd)
-	rootCmd.AddCommand(cmd.SetAuthCmd)
+	rootCmd.AddCommand(config.ConfigCmd)
 	rootCmd.AddCommand(cmd.VersionCmd)
 	rootCmd.AddCommand(community.CommunityCmd)
 }

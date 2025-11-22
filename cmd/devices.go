@@ -15,20 +15,29 @@ import (
 var devicesURL string
 
 func init() {
-	DevicesCmd.Flags().StringVarP(&devicesURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
+	DevicesCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
+	DevicesCmd.Flags().StringVarP(&devicesURL, "url", "u", "", "base URL of Tidbyt API")
 }
 
 var DevicesCmd = &cobra.Command{
 	Use:   "devices",
 	Short: "List devices in your Tidbyt account",
-	Run:   devices,
+	RunE:  devices,
 }
 
-func devices(cmd *cobra.Command, args []string) {
-	apiToken = config.OAuthTokenFromConfig(cmd.Context())
+func devices(cmd *cobra.Command, args []string) error {
+	if devicesURL == "" {
+		var err error
+		if devicesURL, err = config.GetURL(); err != nil {
+			return err
+		}
+	}
+
 	if apiToken == "" {
-		slog.Error("Login with `pixlet login`")
-		os.Exit(1)
+		var err error
+		if apiToken, err = config.GetToken(); err != nil {
+			return err
+		}
 	}
 
 	client := &http.Client{}
@@ -67,4 +76,6 @@ func devices(cmd *cobra.Command, args []string) {
 	for _, d := range body.Devices {
 		fmt.Printf("%s (%s)\n", d.ID, d.DisplayName)
 	}
+
+	return nil
 }

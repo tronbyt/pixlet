@@ -28,7 +28,7 @@ type TidbytInstallationListJSON struct {
 
 func init() {
 	ListCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
-	ListCmd.Flags().StringVarP(&listURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
+	ListCmd.Flags().StringVarP(&listURL, "url", "u", "", "base URL of Tidbyt API")
 }
 
 var ListCmd = &cobra.Command{
@@ -41,16 +41,18 @@ var ListCmd = &cobra.Command{
 func listInstallations(cmd *cobra.Command, args []string) error {
 	deviceID := args[0]
 
-	if apiToken == "" {
-		apiToken = os.Getenv(APITokenEnv)
+	if listURL == "" {
+		var err error
+		if listURL, err = config.GetURL(); err != nil {
+			return err
+		}
 	}
 
 	if apiToken == "" {
-		apiToken = config.OAuthTokenFromConfig(cmd.Context())
-	}
-
-	if apiToken == "" {
-		return fmt.Errorf("blank Tidbyt API token (use `pixlet login`, set $%s or pass with --api-token)", APITokenEnv)
+		var err error
+		if apiToken, err = config.GetToken(); err != nil {
+			return err
+		}
 	}
 
 	client := &http.Client{}
