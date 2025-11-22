@@ -30,9 +30,12 @@ type TidbytPushJSON struct {
 
 func init() {
 	PushCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	_ = PushCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
 	PushCmd.Flags().StringVarP(&installationID, "installation-id", "i", "", "Give your installation an ID to keep it in the rotation")
+	_ = PushCmd.RegisterFlagCompletionFunc("installation-id", cobra.NoFileCompletions)
 	PushCmd.Flags().BoolVarP(&background, "background", "b", false, "Don't immediately show the image on the device")
 	PushCmd.Flags().StringVarP(&pushURL, "url", "u", "", "base URL of Tronbyt API")
+	_ = PushCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
 }
 
 var PushCmd = &cobra.Command{
@@ -40,6 +43,15 @@ var PushCmd = &cobra.Command{
 	Short: "Push a WebP to a Tronbyt",
 	Args:  cobra.MinimumNArgs(2),
 	RunE:  push,
+	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+		switch len(args) {
+		case 0:
+			return completeDevices()
+		case 1:
+			return []string{"webp"}, cobra.ShellCompDirectiveFilterFileExt
+		}
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	},
 }
 
 func push(cmd *cobra.Command, args []string) error {

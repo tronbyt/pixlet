@@ -16,8 +16,12 @@ import (
 
 func init() {
 	ApiCmd.Flags().StringVarP(&host, "host", "i", "127.0.0.1", "Host interface for serving rendered images")
+	_ = ApiCmd.RegisterFlagCompletionFunc("host", cobra.NoFileCompletions)
 	ApiCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
+	_ = ApiCmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
 	ApiCmd.Flags().StringVarP(&imageOutputFormat, "format", "", "webp", "Output format. One of webp|gif|avif")
+	_ = ApiCmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
+	_ = ApiCmd.RegisterFlagCompletionFunc("format", cobra.NoFileCompletions)
 	ApiCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
 }
 
@@ -30,6 +34,7 @@ var ApiCmd = &cobra.Command{
 	RunE:  api,
 	Long: `Start an HTTP server that runs a Pixlet app in response to API requests.
 	`,
+	ValidArgsFunction: cobra.NoFileCompletions,
 }
 
 type renderRequest struct {

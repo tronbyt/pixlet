@@ -20,8 +20,9 @@ var ValidateManifestCmd = &cobra.Command{
 	Example: `  pixlet community validate-manifest manifest.yaml`,
 	Long: `This command determines if your app manifest is configured properly by
 validating the contents of each field.`,
-	Args: cobra.ExactArgs(1),
-	RunE: ValidateManifest,
+	Args:              cobra.ExactArgs(1),
+	RunE:              ValidateManifest,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"yaml"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 func ValidateManifest(cmd *cobra.Command, args []string) error {

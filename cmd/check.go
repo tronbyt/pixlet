@@ -14,11 +14,12 @@ import (
 	"github.com/tronbyt/pixlet/manifest"
 )
 
-var maxRenderTime = time.Duration(1 * time.Second)
+var maxRenderTime = 1 * time.Second
 
 func init() {
 	CheckCmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find apps recursively")
 	CheckCmd.Flags().DurationVarP(&maxRenderTime, "max-render-time", "", maxRenderTime, "override the default max render time")
+	_ = CheckCmd.RegisterFlagCompletionFunc("max-render-time", cobra.NoFileCompletions)
 }
 
 var CheckCmd = &cobra.Command{
@@ -35,8 +36,9 @@ The check command runs a series of checks to ensure your app is ready
 to publish in the community repo. Every failed check will have a solution
 provided. If your app fails a check, try the provided solution and reach out on
 Discord if you get stuck.`,
-	Args: cobra.MinimumNArgs(1),
-	RunE: checkCmd,
+	Args:              cobra.MinimumNArgs(1),
+	RunE:              checkCmd,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 func checkCmd(cmd *cobra.Command, args []string) error {

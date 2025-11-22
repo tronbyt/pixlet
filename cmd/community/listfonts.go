@@ -16,11 +16,12 @@ import (
 )
 
 var ListFontsCmd = &cobra.Command{
-	Use:     "list-fonts",
-	Short:   "List available fonts.",
-	Example: `  pixlet community list-fonts`,
-	Long:    `This command lists all fonts supported by this Pixlet version.`,
-	RunE:    listFonts,
+	Use:               "list-fonts",
+	Short:             "List available fonts.",
+	Example:           `  pixlet community list-fonts`,
+	Long:              `This command lists all fonts supported by this Pixlet version.`,
+	RunE:              listFonts,
+	ValidArgsFunction: cobra.NoFileCompletions,
 }
 
 type fontEntry struct {

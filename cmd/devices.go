@@ -4,78 +4,89 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
+	"iter"
 	"net/http"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/config"
+	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
 var devicesURL string
 
 func init() {
 	DevicesCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	_ = DevicesCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
 	DevicesCmd.Flags().StringVarP(&devicesURL, "url", "u", "", "base URL of Tronbyt API")
+	_ = DevicesCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
 }
 
 var DevicesCmd = &cobra.Command{
-	Use:   "devices",
-	Short: "List devices in your Tronbyt account",
-	RunE:  devices,
+	Use:               "devices",
+	Short:             "List devices in your Tronbyt account",
+	RunE:              devicesRun,
+	ValidArgsFunction: cobra.NoFileCompletions,
 }
 
-func devices(cmd *cobra.Command, args []string) error {
-	if devicesURL == "" {
-		var err error
-		if devicesURL, err = config.GetURL(); err != nil {
+func devicesRun(cmd *cobra.Command, args []string) error {
+	for d, err := range getDevices() {
+		if err != nil {
 			return err
 		}
-	}
 
-	if apiToken == "" {
-		var err error
-		if apiToken, err = config.GetToken(); err != nil {
-			return err
-		}
-	}
-
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v0/devices", devicesURL), nil)
-	if err != nil {
-		slog.Error("Creating GET request", "error", err)
-		os.Exit(1)
-	}
-
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		slog.Error("Listing devices from API", "error", err)
-		os.Exit(1)
-	}
-
-	if resp.StatusCode != 200 {
-		slog.Error("Tronbyt API returned an error", "status", resp.Status)
-		body, _ := io.ReadAll(resp.Body)
-		fmt.Println(string(body))
-		os.Exit(1)
-	}
-
-	body := struct {
-		Devices []struct {
-			ID          string `json:"id"`
-			DisplayName string `json:"displayName"`
-		} `json:"devices"`
-	}{}
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		slog.Error("Decoding API response", "error", err)
-		os.Exit(1)
-	}
-
-	for _, d := range body.Devices {
 		fmt.Printf("%s (%s)\n", d.ID, d.DisplayName)
 	}
 
 	return nil
+}
+
+func getDevices() iter.Seq2[*tronbytapi.Device, error] {
+	return func(yield func(*tronbytapi.Device, error) bool) {
+		if devicesURL == "" {
+			var err error
+			if devicesURL, err = config.GetURL(); err != nil {
+				yield(nil, err)
+				return
+			}
+		}
+
+		if apiToken == "" {
+			var err error
+			if apiToken, err = config.GetToken(); err != nil {
+				yield(nil, err)
+				return
+			}
+		}
+
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", fmt.Sprintf("%s/v0/devices", devicesURL), nil)
+		if err != nil {
+			yield(nil, fmt.Errorf("creating request: %w", err))
+			return
+		}
+
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
+
+		resp, err := client.Do(req)
+		if err != nil {
+			yield(nil, fmt.Errorf("listing devices: %w", err))
+			return
+		}
+
+		if resp.StatusCode != 200 {
+			body, _ := io.ReadAll(resp.Body)
+			yield(nil, fmt.Errorf("tronbyt api error %s: %s", resp.Status, body))
+			return
+		}
+
+		var devices tronbytapi.Devices
+		if err := json.NewDecoder(resp.Body).Decode(&devices); err != nil {
+			yield(nil, fmt.Errorf("decoding json: %w", err))
+			return
+		}
+
+		for _, device := range devices.Devices {
+			yield(&device, nil)
+		}
+	}
 }

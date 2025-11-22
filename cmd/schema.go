@@ -15,6 +15,7 @@ var (
 
 func init() {
 	SchemaCmd.Flags().StringVarP(&schemaOutput, "output", "o", "", "Path for schema")
+	_ = SchemaCmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
 }
 
 var SchemaCmd = &cobra.Command{
@@ -29,6 +30,7 @@ app can be a single file with the .star extension, or a directory
 containing multiple Starlark files and resources. The output is in
 JSON format.
 	`,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 func schema(cmd *cobra.Command, args []string) error {

@@ -17,8 +17,9 @@ var ValidateIconsCmd = &cobra.Command{
 	Example: `pixlet community validate-icons examples/schema_hello_world`,
 	Long: `This command determines if the icons selected in your app schema are supported
 by our mobile app.`,
-	Args: cobra.ExactArgs(1),
-	RunE: ValidateIcons,
+	Args:              cobra.ExactArgs(1),
+	RunE:              ValidateIcons,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 func ValidateIcons(cmd *cobra.Command, args []string) error {

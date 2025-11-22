@@ -9,11 +9,12 @@ import (
 )
 
 var ListColorFiltersCmd = &cobra.Command{
-	Use:     "list-color-filters",
-	Short:   "List supported color filters.",
-	Example: `  pixlet community list-color-filters`,
-	Long:    `This command lists all color filters.`,
-	RunE:    listColorFilters,
+	Use:               "list-color-filters",
+	Short:             "List supported color filters.",
+	Example:           `  pixlet community list-color-filters`,
+	Long:              `This command lists all color filters.`,
+	RunE:              listColorFilters,
+	ValidArgsFunction: cobra.NoFileCompletions,
 }
 
 func listColorFilters(cmd *cobra.Command, _ []string) error {
