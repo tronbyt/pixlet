@@ -5,6 +5,8 @@ package main
 /*
 #include <stdbool.h>
 #include <stdlib.h>
+
+// When making breaking changes to the library API, increment libpixletAPIVersion in library/version.c.
 */
 import "C"
 
@@ -23,9 +25,6 @@ import (
 )
 
 const (
-	// Increment this if you make breaking changes to this file
-	libpixletAPIVersion = 1
-
 	statusErrInvalidConfig  = -1
 	statusErrRenderFailure  = -2
 	statusErrInvalidFilters = -3
@@ -185,11 +184,6 @@ func init_redis_cache(redisURL *C.char) {
 	cache := runtime.NewRedisCache(C.GoString(redisURL))
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
-}
-
-//export get_version
-func get_version() C.int {
-	return C.int(libpixletAPIVersion)
 }
 
 func main() {}
