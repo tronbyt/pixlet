@@ -3,7 +3,6 @@ module github.com/tronbyt/pixlet
 go 1.25.4
 
 require (
-	github.com/Code-Hex/Neo-cowsay/v2 v2.0.4
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/bazelbuild/buildtools v0.0.0-20251112105957-8e68360eeafa
 	github.com/dustin/go-humanize v1.0.1
@@ -24,9 +23,7 @@ require (
 	github.com/nathan-osman/go-sunrise v1.1.0
 	github.com/newm4n/go-dfe v0.0.0-20210113055126-9d5f01722db9
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
-	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20220510032225-4f9f17eaec4c
 	github.com/nlepage/go-tarfs v1.2.1
-	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/qri-io/starlib v0.5.1-0.20220611014110-7fb7ff9ec804
 	github.com/redis/go-redis/v9 v9.16.0
 	github.com/rivo/uniseg v0.4.7
@@ -50,7 +47,6 @@ require (
 
 require (
 	dario.cat/mergo v1.0.2 // indirect
-	github.com/Code-Hex/go-wordwrap v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.3.0 // indirect
 	github.com/PuerkitoBio/goquery v1.10.3 // indirect
@@ -58,8 +54,6 @@ require (
 	github.com/antchfx/xpath v1.3.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
-	github.com/clipperhouse/stringish v0.1.1 // indirect
-	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
 	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/cyphar/filepath-securejoin v0.6.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -83,7 +77,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
-	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/pascaldekloe/name v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pjbgf/sha1cd v0.5.0 // indirect
