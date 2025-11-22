@@ -33,7 +33,7 @@ func init() {
 
 // Renders a screen to WebP. Optionally pass filters for
 // postprocessing each individual frame.
-func (s *Screens) EncodeWebP(maxDuration int, filters ...ImageFilter) ([]byte, error) {
+func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
 	images, err := s.render(filters...)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (s *Screens) EncodeWebP(maxDuration int, filters ...ImageFilter) ([]byte, e
 	}
 	defer anim.Close()
 
-	remainingDuration := time.Duration(maxDuration) * time.Millisecond
+	remainingDuration := maxDuration
 	level := int(webpLevel.Load())
 	config, err := webp.ConfigLosslessPreset(level)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/server/browser"
@@ -23,7 +24,18 @@ type Server struct {
 }
 
 // NewServer creates a new server initialized with the applet.
-func NewServer(host string, port int, servePath string, watch bool, path string, width, height, maxDuration, timeout int, imageFormat loader.ImageFormat, configOutFile string, output2x bool) (*Server, error) {
+func NewServer(
+	host string,
+	port int,
+	servePath string,
+	watch bool,
+	path string,
+	width, height int,
+	maxDuration, timeout time.Duration,
+	imageFormat loader.ImageFormat,
+	configOutFile string,
+	output2x bool,
+) (*Server, error) {
 	fileChanges := make(chan bool, 100)
 
 	// check if path exists, and whether it is a directory or a file

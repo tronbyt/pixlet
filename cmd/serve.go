@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log/slog"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
@@ -26,9 +27,9 @@ func init() {
 	ServeCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
 	_ = ServeCmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
 	ServeCmd.Flags().BoolVarP(&watch, "watch", "w", true, "Reload scripts on change. Does not recurse sub-directories.")
-	ServeCmd.Flags().IntVarP(&maxDuration, "max-duration", "d", 15000, "Maximum allowed animation duration (ms)")
+	ServeCmd.Flags().DurationVarP(&maxDuration, "max-duration", "d", 15*time.Second, "Maximum allowed animation duration")
 	_ = ServeCmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
-	ServeCmd.Flags().IntVarP(&timeout, "timeout", "", 30000, "Timeout for execution (ms)")
+	ServeCmd.Flags().DurationVarP(&timeout, "timeout", "", 30*time.Second, "Timeout for execution")
 	_ = ServeCmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
 	ServeCmd.Flags().StringVarP(&serveFormat, "format", "", "webp", "Image format. One of webp|gif|avif")
 	_ = ServeCmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
@@ -49,7 +50,7 @@ func init() {
 	_ = ServeCmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
 
 	// Deprecated flags
-	ServeCmd.Flags().IntVar(&maxDuration, "max_duration", 15000, "Maximum allowed animation duration (ms)")
+	ServeCmd.Flags().DurationVar(&maxDuration, "max_duration", 15*time.Second, "Maximum allowed animation duration")
 	if err := ServeCmd.Flags().MarkDeprecated(
 		"max_duration", "use --max-duration instead",
 	); err != nil {

@@ -39,9 +39,9 @@ type Loader struct {
 	requestedChanges chan bool
 	updatesChan      chan Update
 	resultsChan      chan Update
-	maxDuration      int
+	maxDuration      time.Duration
 	initialLoad      chan bool
-	timeout          int
+	timeout          time.Duration
 	imageFormat      ImageFormat
 	configOutFile    string
 	width            int
@@ -66,8 +66,8 @@ func NewLoader(
 	watch bool,
 	fileChanges chan bool,
 	updatesChan chan Update,
-	width, height, maxDuration int,
-	timeout int,
+	width, height int,
+	maxDuration, timeout time.Duration,
 	imageFormat ImageFormat,
 	configOutFile string,
 	output2x bool,
@@ -244,11 +244,7 @@ func (l *Loader) renderApplet(config map[string]string) (string, error) {
 		}
 	}
 
-	ctx, _ := context.WithTimeoutCause(
-		context.Background(),
-		time.Duration(l.timeout)*time.Millisecond,
-		fmt.Errorf("timeout after %dms", l.timeout),
-	)
+	ctx, _ := context.WithTimeoutCause(context.Background(), l.timeout, fmt.Errorf("timeout after %s", l.timeout))
 
 	roots, err := l.applet.RunWithConfig(ctx, config)
 	if err != nil {
@@ -310,7 +306,7 @@ func RenderApplet(
 	path string,
 	config map[string]string,
 	meta canvas.Metadata,
-	maxDuration, timeout int,
+	maxDuration, timeout time.Duration,
 	imageFormat ImageFormat,
 	silenceOutput bool,
 	location *time.Location,
@@ -347,11 +343,7 @@ func RenderApplet(
 	ctx := context.Background()
 	if timeout > 0 {
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeoutCause(
-			ctx,
-			time.Duration(timeout)*time.Millisecond,
-			fmt.Errorf("timeout after %d ms", timeout),
-		)
+		ctx, cancel = context.WithTimeoutCause(ctx, timeout, fmt.Errorf("timeout after %s", timeout))
 		defer cancel()
 	}
 
