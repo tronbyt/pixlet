@@ -13,13 +13,13 @@ import (
 var deleteURL string
 
 func init() {
-	DeleteCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
-	DeleteCmd.Flags().StringVarP(&deleteURL, "url", "u", "", "base URL of Tidbyt API")
+	DeleteCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	DeleteCmd.Flags().StringVarP(&deleteURL, "url", "u", "", "base URL of Tronbyt API")
 }
 
 var DeleteCmd = &cobra.Command{
 	Use:   "delete [device ID] [installation ID]",
-	Short: "Delete a pixlet script from a Tidbyt",
+	Short: "Delete a Pixlet script from a Tronbyt",
 	Args:  cobra.MinimumNArgs(2),
 	RunE:  delete,
 }
@@ -60,10 +60,10 @@ func delete(cmd *cobra.Command, args []string) error {
 	}
 
 	if resp.StatusCode != 200 {
-		slog.Error("Tidbyt API returned an error", "status", resp.Status)
+		slog.Error("Tronbyt API returned an error", "status", resp.Status)
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
-		return fmt.Errorf("Tidbyt API returned status: %s", resp.Status)
+		return fmt.Errorf("Tronbyt API returned status: %s", resp.Status)
 	}
 
 	return nil

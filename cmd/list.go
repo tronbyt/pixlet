@@ -27,13 +27,13 @@ type TidbytInstallationListJSON struct {
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
-	ListCmd.Flags().StringVarP(&listURL, "url", "u", "", "base URL of Tidbyt API")
+	ListCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	ListCmd.Flags().StringVarP(&listURL, "url", "u", "", "base URL of Tronbyt API")
 }
 
 var ListCmd = &cobra.Command{
 	Use:   "list [device ID]",
-	Short: "Lists all apps installed on a Tidbyt",
+	Short: "Lists all apps installed on a Tronbyt",
 	Args:  cobra.MinimumNArgs(1),
 	RunE:  listInstallations,
 }
@@ -72,9 +72,9 @@ func listInstallations(cmd *cobra.Command, args []string) error {
 
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
-		slog.Error("Tidbyt API returned an error", "status", resp.Status)
+		slog.Error("Tronbyt API returned an error", "status", resp.Status)
 		fmt.Println(string(body))
-		return fmt.Errorf("Tidbyt API returned status: %s", resp.Status)
+		return fmt.Errorf("Tronbyt API returned status: %s", resp.Status)
 	}
 
 	var installations TidbytInstallationListJSON

@@ -17,7 +17,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:          "pixlet",
 		Short:        "pixel graphics rendering",
-		Long:         "Pixlet renders graphics for pixel devices, like Tidbyt",
+		Long:         "Pixlet renders graphics for pixel devices, like Tronbyt",
 		SilenceUsage: true,
 	}
 )

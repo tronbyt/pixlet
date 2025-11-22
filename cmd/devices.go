@@ -15,13 +15,13 @@ import (
 var devicesURL string
 
 func init() {
-	DevicesCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
-	DevicesCmd.Flags().StringVarP(&devicesURL, "url", "u", "", "base URL of Tidbyt API")
+	DevicesCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	DevicesCmd.Flags().StringVarP(&devicesURL, "url", "u", "", "base URL of Tronbyt API")
 }
 
 var DevicesCmd = &cobra.Command{
 	Use:   "devices",
-	Short: "List devices in your Tidbyt account",
+	Short: "List devices in your Tronbyt account",
 	RunE:  devices,
 }
 
@@ -56,7 +56,7 @@ func devices(cmd *cobra.Command, args []string) error {
 	}
 
 	if resp.StatusCode != 200 {
-		slog.Error("Tidbyt API returned an error", "status", resp.Status)
+		slog.Error("Tronbyt API returned an error", "status", resp.Status)
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
 		os.Exit(1)

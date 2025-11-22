@@ -29,15 +29,15 @@ type TidbytPushJSON struct {
 }
 
 func init() {
-	PushCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
+	PushCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
 	PushCmd.Flags().StringVarP(&installationID, "installation-id", "i", "", "Give your installation an ID to keep it in the rotation")
 	PushCmd.Flags().BoolVarP(&background, "background", "b", false, "Don't immediately show the image on the device")
-	PushCmd.Flags().StringVarP(&pushURL, "url", "u", "", "base URL of Tidbyt API")
+	PushCmd.Flags().StringVarP(&pushURL, "url", "u", "", "base URL of Tronbyt API")
 }
 
 var PushCmd = &cobra.Command{
 	Use:   "push [device ID] [webp image]",
-	Short: "Render a Pixlet script and push the WebP output to a Tidbyt",
+	Short: "Push a WebP to a Tronbyt",
 	Args:  cobra.MinimumNArgs(2),
 	RunE:  push,
 }
@@ -106,10 +106,10 @@ func push(cmd *cobra.Command, args []string) error {
 	}
 
 	if resp.StatusCode != 200 {
-		slog.Error("Tidbyt API returned an error", "status", resp.Status)
+		slog.Error("Tronbyt API returned an error", "status", resp.Status)
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
-		return fmt.Errorf("Tidbyt API returned status: %s", resp.Status)
+		return fmt.Errorf("Tronbyt API returned status: %s", resp.Status)
 	}
 
 	return nil
