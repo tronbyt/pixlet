@@ -14,10 +14,6 @@ import (
 	"github.com/tronbyt/pixlet/cmd/config"
 )
 
-const (
-	APITokenEnv = "TIDBYT_API_TOKEN"
-)
-
 var (
 	apiToken       string
 	installationID string
@@ -36,7 +32,7 @@ func init() {
 	PushCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
 	PushCmd.Flags().StringVarP(&installationID, "installation-id", "i", "", "Give your installation an ID to keep it in the rotation")
 	PushCmd.Flags().BoolVarP(&background, "background", "b", false, "Don't immediately show the image on the device")
-	PushCmd.Flags().StringVarP(&pushURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
+	PushCmd.Flags().StringVarP(&pushURL, "url", "u", "", "base URL of Tidbyt API")
 }
 
 var PushCmd = &cobra.Command{
@@ -61,16 +57,18 @@ func push(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("background push won't do anything unless you also specify an installation ID")
 	}
 
-	if apiToken == "" {
-		apiToken = os.Getenv(APITokenEnv)
+	if pushURL == "" {
+		var err error
+		if pushURL, err = config.GetURL(); err != nil {
+			return err
+		}
 	}
 
 	if apiToken == "" {
-		apiToken = config.OAuthTokenFromConfig(cmd.Context())
-	}
-
-	if apiToken == "" {
-		return fmt.Errorf("blank Tidbyt API token (use `pixlet login`, set $%s or pass with --api-token)", APITokenEnv)
+		var err error
+		if apiToken, err = config.GetToken(); err != nil {
+			return err
+		}
 	}
 
 	imageData, err := os.ReadFile(image)

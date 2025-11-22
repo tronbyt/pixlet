@@ -5,7 +5,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/config"
@@ -15,7 +14,7 @@ var deleteURL string
 
 func init() {
 	DeleteCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tidbyt API token")
-	DeleteCmd.Flags().StringVarP(&deleteURL, "url", "u", "https://api.tidbyt.com", "base URL of Tidbyt API")
+	DeleteCmd.Flags().StringVarP(&deleteURL, "url", "u", "", "base URL of Tidbyt API")
 }
 
 var DeleteCmd = &cobra.Command{
@@ -29,16 +28,18 @@ func delete(cmd *cobra.Command, args []string) error {
 	deviceID := args[0]
 	installationID := args[1]
 
-	if apiToken == "" {
-		apiToken = os.Getenv(APITokenEnv)
+	if deleteURL == "" {
+		var err error
+		if deleteURL, err = config.GetURL(); err != nil {
+			return err
+		}
 	}
 
 	if apiToken == "" {
-		apiToken = config.OAuthTokenFromConfig(cmd.Context())
-	}
-
-	if apiToken == "" {
-		return fmt.Errorf("blank Tidbyt API token (use `pixlet login`, set $%s or pass with --api-token)", APITokenEnv)
+		var err error
+		if apiToken, err = config.GetToken(); err != nil {
+			return err
+		}
 	}
 
 	client := &http.Client{}

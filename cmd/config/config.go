@@ -1,75 +1,64 @@
 package config
 
 import (
-	"context"
 	"fmt"
-	"log/slog"
 	"os"
 	"path/filepath"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/oauth2"
 )
 
-const (
-	OAuthCallbackAddr = "localhost:8085"
-)
-
-var (
-	PrivateConfig = viper.New()
-
-	OAuthConf = &oauth2.Config{
-		ClientID: "d8ae7ea0-4a1a-46b0-b556-6d742687223a",
-		Scopes:   []string{"device", "offline_access", "app-admin"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://login.tidbyt.com/oauth2/auth",
-			TokenURL: "https://login.tidbyt.com/oauth2/token",
-		},
-		RedirectURL: fmt.Sprintf("http://%s", OAuthCallbackAddr),
-	}
-)
-
-func init() {
-	if ucd, err := os.UserConfigDir(); err == nil {
-		configPath := filepath.Join(ucd, "tidbyt")
-
-		if err := os.MkdirAll(configPath, os.ModePerm); err == nil {
-			PrivateConfig.AddConfigPath(configPath)
-		}
-	}
-
-	PrivateConfig.SetConfigName("private")
-	PrivateConfig.SetConfigType("yaml")
-	PrivateConfig.SetConfigPermissions(0600)
-
-	PrivateConfig.SafeWriteConfig()
-	PrivateConfig.ReadInConfig()
+var ConfigCmd = &cobra.Command{
+	Use:   "config",
+	Short: "Manage configuration for Pixlet.",
 }
 
-func OAuthTokenFromConfig(ctx context.Context) string {
-	if !PrivateConfig.IsSet("token") {
-		return ""
-	}
+const (
+	URLKey      = "url"
+	TokenKey    = "token"
+	APITokenEnv = "PIXLET_TOKEN"
+)
 
-	var tok oauth2.Token
-	if err := PrivateConfig.UnmarshalKey("token", &tok); err != nil {
-		slog.Error("Unmarshaling API token from config", "error", err)
-		os.Exit(1)
-	}
+var Config = viper.New()
 
-	if !tok.Valid() {
-		// probably expired, try to refresh
-		ts := OAuthConf.TokenSource(ctx, &tok)
-		refreshed, err := ts.Token()
-		if err != nil {
-			slog.Error("Refreshing API token", "error", err)
-			os.Exit(1)
+func init() {
+	ConfigCmd.AddCommand(SetCmd)
+	ConfigCmd.AddCommand(GetCmd)
+
+	if ucd, err := os.UserConfigDir(); err == nil {
+		configPath := filepath.Join(ucd, "tronbyt")
+
+		if err := os.MkdirAll(configPath, os.ModePerm); err == nil {
+			Config.AddConfigPath(configPath)
 		}
-
-		tok = *refreshed
-		PrivateConfig.Set("token", tok)
-		PrivateConfig.WriteConfig()
 	}
 
-	return tok.AccessToken
+	Config.SetConfigName("config")
+	Config.SetConfigType("yaml")
+	Config.SetConfigPermissions(0600)
+
+	Config.SafeWriteConfig()
+	Config.ReadInConfig()
+}
+
+var ErrNoURL = fmt.Errorf("Tronbyt URL not set. Use `tronbyt config set url <url>` to set it.")
+
+func GetURL() (string, error) {
+	if url := Config.GetString(URLKey); url != "" {
+		return url, nil
+	}
+	return "", ErrNoURL
+}
+
+var ErrNoToken = fmt.Errorf("Tronbyt API token not set. Use `tronbyt config set token <token>` to set it.")
+
+func GetToken() (string, error) {
+	if token := os.Getenv(APITokenEnv); token != "" {
+		return token, nil
+	}
+	if token := Config.GetString(TokenKey); token != "" {
+		return token, nil
+	}
+	return "", ErrNoToken
 }
