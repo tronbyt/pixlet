@@ -179,6 +179,10 @@ func render(cmd *cobra.Command, args []string) error {
 		outPath = strings.TrimSuffix(path, ".star")
 	}
 
+	if output2x {
+		outPath += "@2x"
+	}
+
 	imageFormat = loader.ImageWebP
 	switch imageOutputFormat {
 	case "webp":
