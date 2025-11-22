@@ -3,6 +3,7 @@
 package browser
 
 import (
+	"context"
 	_ "embed"
 	"encoding/base64"
 	"encoding/json"
@@ -109,12 +110,16 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 // Run starts the server process and runs forever in a blocking fashion. The
 // main routines include an update watcher to process incomming changes to the
 // image and running the http handlers.
-func (b *Browser) Run() error {
+func (b *Browser) Run(ctx context.Context) error {
 	defer b.fo.Quit()
 
-	g := errgroup.Group{}
-	g.Go(b.updateWatcher)
-	g.Go(b.serveHTTP)
+	g, ctx := errgroup.WithContext(ctx)
+	g.Go(func() error {
+		return b.updateWatcher(ctx)
+	})
+	g.Go(func() error {
+		return b.serveHTTP(ctx)
+	})
 
 	return g.Wait()
 }
@@ -252,7 +257,7 @@ func (b *Browser) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	b.fo.NewClient(conn)
 }
 
-func (b *Browser) updateWatcher() error {
+func (b *Browser) updateWatcher(ctx context.Context) error {
 	img_type := "webp"
 	if b.serveGif {
 		img_type = "gif"
@@ -260,6 +265,8 @@ func (b *Browser) updateWatcher() error {
 
 	for {
 		select {
+		case <-ctx.Done():
+			return ctx.Err()
 		case up := <-b.updateChan:
 			b.fo.Broadcast(
 				fanout.WebsocketEvent{

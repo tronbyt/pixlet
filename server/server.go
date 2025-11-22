@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -69,15 +70,23 @@ func NewServer(host string, port int, servePath string, watch bool, path string,
 }
 
 // Run serves the http server and runs forever in a blocking fashion.
-func (s *Server) Run() error {
+func (s *Server) Run(ctx context.Context) error {
 	defer s.loader.Close()
 
-	g := errgroup.Group{}
+	g, ctx := errgroup.WithContext(ctx)
 
-	g.Go(s.loader.Run)
-	g.Go(s.browser.Run)
+	g.Go(func() error {
+		return s.loader.Run(ctx)
+	})
+
+	g.Go(func() error {
+		return s.browser.Run(ctx)
+	})
+
 	if s.watch {
-		g.Go(s.watcher.Run)
+		g.Go(func() error {
+			return s.watcher.Run(ctx)
+		})
 		s.loader.LoadApplet(make(map[string]string))
 	}
 

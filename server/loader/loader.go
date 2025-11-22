@@ -108,11 +108,13 @@ func NewLoader(
 // If there is an on-demand request, it's processed and sent back to the caller
 // and sent out as an update. If there is a file change, we update the applet
 // and send out the update over the updatesChan.
-func (l *Loader) Run() error {
+func (l *Loader) Run(ctx context.Context) error {
 	config := make(map[string]string)
 
 	for {
 		select {
+		case <-ctx.Done():
+			return ctx.Err()
 		case c := <-l.configChanges:
 			config = c
 		case <-l.requestedChanges:
