@@ -7,7 +7,7 @@ import (
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/manifest"
 	"github.com/tronbyt/pixlet/render/emoji"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/tools/i18n"
 	"go.starlark.net/starlark"
 )
@@ -130,7 +130,7 @@ func (t Text) FrameCount(bounds image.Rectangle) int {
 }
 
 func getDefaultFont(thread *starlark.Thread) string {
-	if meta, err := metadata.FromThread(thread); err == nil {
+	if meta, err := canvas.FromThread(thread); err == nil {
 		if mani, err := manifest.FromThread(thread); err == nil {
 			if meta.Is2x && mani.Supports2x {
 				return DefaultFontFace2x

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"go.starlark.net/starlark"
 )
 
@@ -19,7 +19,7 @@ var ErrUnknownDimension = errors.New("unknown dimension")
 
 func dimension(d dimensionType) func(*starlark.Thread, *starlark.Builtin, starlark.Tuple, []starlark.Tuple) (starlark.Value, error) {
 	return func(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-		m, err := metadata.FromThread(thread)
+		m, err := canvas.FromThread(thread)
 		if err != nil {
 			return nil, err
 		}
@@ -57,7 +57,7 @@ func dimension(d dimensionType) func(*starlark.Thread, *starlark.Builtin, starla
 }
 
 func size(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	m, err := metadata.FromThread(thread)
+	m, err := canvas.FromThread(thread)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func size(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwa
 }
 
 func is2x(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	m, err := metadata.FromThread(thread)
+	m, err := canvas.FromThread(thread)
 	if err != nil {
 		return nil, err
 	}
