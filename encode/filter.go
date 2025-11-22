@@ -168,11 +168,10 @@ func (f ColorFilter) Description() (string, error) {
 type RenderFilters struct {
 	Magnify     int         `json:"magnify,omitempty"`
 	ColorFilter ColorFilter `json:"color_filter,omitempty"`
-	Output2x    bool        `json:"2x,omitempty"`
 }
 
 func (f RenderFilters) String() string {
-	return fmt.Sprintf("Magnify=%d, ColorFilter=%q, Output2x=%t", f.Magnify, f.ColorFilter, f.Output2x)
+	return fmt.Sprintf("Magnify=%d, ColorFilter=%q", f.Magnify, f.ColorFilter)
 }
 
 // Chain applies a sequence of ImageFilters in order.

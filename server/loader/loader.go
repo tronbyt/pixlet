@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	"github.com/tronbyt/pixlet/schema"
@@ -305,7 +306,15 @@ func (l *Loader) markInitialLoadComplete() {
 	}
 }
 
-func RenderApplet(path string, config map[string]string, width, height, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool, filters *encode.RenderFilters) ([]byte, []string, error) {
+func RenderApplet(
+	path string,
+	config map[string]string,
+	meta metadata.Metadata,
+	maxDuration, timeout int,
+	imageFormat ImageFormat,
+	silenceOutput bool,
+	filters *encode.RenderFilters,
+) ([]byte, []string, error) {
 	if filters == nil {
 		filters = &encode.RenderFilters{
 			Magnify: 1,
@@ -314,13 +323,15 @@ func RenderApplet(path string, config map[string]string, width, height, maxDurat
 	if filters.Magnify == 0 {
 		filters.Magnify = 1
 	}
+	if meta.Width == 0 {
+		meta.Width = render.DefaultFrameWidth
+	}
+	if meta.Height == 0 {
+		meta.Height = render.DefaultFrameHeight
+	}
 
 	opts := []runtime.AppletOption{
-		runtime.WithMetadata(metadata.Metadata{
-			Width:  width,
-			Height: height,
-			Is2x:   filters.Output2x,
-		}),
+		runtime.WithMetadata(meta),
 	}
 
 	var output []string
@@ -348,21 +359,17 @@ func RenderApplet(path string, config map[string]string, width, height, maxDurat
 	}
 	defer applet.Close()
 
+	if meta.Is2x && (applet.Manifest == nil || !applet.Manifest.Supports2x) {
+		meta.Is2x = false
+		filters.Magnify *= 2
+	}
+
 	roots, err := applet.RunWithConfig(ctx, config)
 	if err != nil {
 		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
 
-	if filters.Output2x {
-		if applet.Manifest != nil && applet.Manifest.Supports2x {
-			width *= 2
-			height *= 2
-		} else {
-			filters.Magnify *= 2
-		}
-	}
-
-	screens := encode.ScreensFromRoots(roots, width, height)
+	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
 
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
