@@ -9,9 +9,18 @@ import (
 	"github.com/spf13/viper"
 )
 
-var ConfigCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Manage configuration for Pixlet.",
+func NewConfigCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "config",
+		Short: "Manage configuration for Pixlet.",
+	}
+
+	cmd.AddCommand(
+		NewSetCmd(),
+		NewGetCmd(),
+	)
+
+	return cmd
 }
 
 const (
@@ -23,9 +32,6 @@ const (
 var Config = viper.New()
 
 func init() {
-	ConfigCmd.AddCommand(SetCmd)
-	ConfigCmd.AddCommand(GetCmd)
-
 	if ucd, err := os.UserConfigDir(); err == nil {
 		configPath := filepath.Join(ucd, "tronbyt")
 

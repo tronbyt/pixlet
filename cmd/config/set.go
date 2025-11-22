@@ -6,23 +6,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var SetCmd = &cobra.Command{
-	Use:   "set",
-	Short: "Saves a value to the config file.",
-	Example: `  pixlet config set ` + URLKey + ` <tronbyt_url>
+func NewSetCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "set",
+		Short: "Saves a value to the config file.",
+		Example: `  pixlet config set ` + URLKey + ` <tronbyt_url>
   pixlet config set ` + TokenKey + ` <user_token>`,
-	Long: `This command saves a value to the config file for use in subsequent runs.`,
-	Args: cobra.ExactArgs(2),
-	RunE: setRun,
-	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-		if len(args) == 0 {
-			return []string{URLKey, TokenKey}, cobra.ShellCompDirectiveNoFileComp
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	},
+		Long: `This command saves a value to the config file for use in subsequent runs.`,
+		Args: cobra.ExactArgs(2),
+		RunE: setRun,
+		ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			if len(args) == 0 {
+				return []string{URLKey, TokenKey}, cobra.ShellCompDirectiveNoFileComp
+			}
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
+	}
+	return cmd
 }
 
-func setRun(cmd *cobra.Command, args []string) error {
+func setRun(_ *cobra.Command, args []string) error {
 	key, val := args[0], args[1]
 
 	Config.Set(key, val)

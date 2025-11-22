@@ -12,30 +12,32 @@ import (
 
 var deleteURL string
 
-func init() {
-	DeleteCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
-	_ = DeleteCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	DeleteCmd.Flags().StringVarP(&deleteURL, "url", "u", "", "base URL of Tronbyt API")
-	_ = DeleteCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+func NewDeleteCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "delete [device ID] [installation ID]",
+		Short: "Delete a Pixlet script from a Tronbyt",
+		Args:  cobra.MinimumNArgs(2),
+		RunE:  deleteRun,
+		ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			switch len(args) {
+			case 0:
+				return completeDevices()
+			case 1:
+				return completeInstallations(args[0])
+			}
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
+	}
+
+	cmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
+	cmd.Flags().StringVarP(&deleteURL, "url", "u", "", "base URL of Tronbyt API")
+	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+
+	return cmd
 }
 
-var DeleteCmd = &cobra.Command{
-	Use:   "delete [device ID] [installation ID]",
-	Short: "Delete a Pixlet script from a Tronbyt",
-	Args:  cobra.MinimumNArgs(2),
-	RunE:  delete,
-	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-		switch len(args) {
-		case 0:
-			return completeDevices()
-		case 1:
-			return completeInstallations(args[0])
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	},
-}
-
-func delete(cmd *cobra.Command, args []string) error {
+func deleteRun(_ *cobra.Command, args []string) error {
 	deviceID := args[0]
 	installationID := args[1]
 

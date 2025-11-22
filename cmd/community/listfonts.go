@@ -15,13 +15,16 @@ import (
 	"github.com/zachomedia/go-bdf"
 )
 
-var ListFontsCmd = &cobra.Command{
-	Use:               "list-fonts",
-	Short:             "List available fonts.",
-	Example:           `  pixlet community list-fonts`,
-	Long:              `This command lists all fonts supported by this Pixlet version.`,
-	RunE:              listFonts,
-	ValidArgsFunction: cobra.NoFileCompletions,
+func NewListFontsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "list-fonts",
+		Short:             "List available fonts.",
+		Example:           `  pixlet community list-fonts`,
+		Long:              `This command lists all fonts supported by this Pixlet version.`,
+		RunE:              listFontsRun,
+		ValidArgsFunction: cobra.NoFileCompletions,
+	}
+	return cmd
 }
 
 type fontEntry struct {
@@ -33,7 +36,7 @@ type fontEntry struct {
 	descent    int
 }
 
-func listFonts(cmd *cobra.Command, _ []string) error {
+func listFontsRun(cmd *cobra.Command, _ []string) error {
 	dir, err := fonts.FS.ReadDir(".")
 	if err != nil {
 		return fmt.Errorf("could not read fonts: %w", err)

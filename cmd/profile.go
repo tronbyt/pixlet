@@ -24,42 +24,44 @@ var (
 	profileOutput2x bool
 )
 
-func init() {
-	ProfileCmd.Flags().StringVarP(
+func NewProfileCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "profile <path> [<key>=value>]...",
+		Short:             "Run a Pixlet app and print its execution-time profile",
+		Args:              cobra.MinimumNArgs(1),
+		RunE:              profileRun,
+		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+
+	cmd.Flags().StringVarP(
 		&pprof_cmd, "pprof", "", "top 10", "Command to call pprof with",
 	)
-	_ = ProfileCmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
-	ProfileCmd.Flags().IntVarP(
+	_ = cmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
+	cmd.Flags().IntVarP(
 		&profileWidth,
 		"width",
 		"w",
 		64,
 		"Set width",
 	)
-	_ = ProfileCmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
-	ProfileCmd.Flags().IntVarP(
+	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
+	cmd.Flags().IntVarP(
 		&profileHeight,
 		"height",
 		"t",
 		32,
 		"Set height",
 	)
-	_ = ProfileCmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
-	ProfileCmd.Flags().BoolVarP(
+	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
+	cmd.Flags().BoolVarP(
 		&profileOutput2x,
 		"2x",
 		"2",
 		false,
 		"Render at 2x resolution",
 	)
-}
 
-var ProfileCmd = &cobra.Command{
-	Use:               "profile <path> [<key>=value>]...",
-	Short:             "Run a Pixlet app and print its execution-time profile",
-	Args:              cobra.MinimumNArgs(1),
-	RunE:              profile,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	return cmd
 }
 
 // We save the profile into an in-memory buffer, which is simpler than the tool expects.
@@ -93,7 +95,7 @@ func (u printUI) IsTerminal() bool                             { return false }
 func (u printUI) WantBrowser() bool                            { return false }
 func (u printUI) SetAutoComplete(complete func(string) string) {}
 
-func profile(cmd *cobra.Command, args []string) error {
+func profileRun(_ *cobra.Command, args []string) error {
 	path := args[0]
 
 	config := map[string]string{}

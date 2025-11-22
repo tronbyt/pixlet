@@ -7,27 +7,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	FormatCmd.Flags().BoolVarP(&vflag, "verbose", "v", false, "print verbose information to standard error")
-	FormatCmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find starlark files recursively")
-	FormatCmd.Flags().BoolVarP(&dryRunFlag, "dry-run", "d", false, "display a diff of formatting changes without modification")
-}
-
-var FormatCmd = &cobra.Command{
-	Use:   "format <pathspec>...",
-	Short: "Formats Tronbyt apps",
-	Example: `  pixlet format app.star
+func NewFormatCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "format <pathspec>...",
+		Short: "Formats Tronbyt apps",
+		Example: `  pixlet format app.star
   pixlet format app.star --dry-run
   pixlet format --recursive ./`,
-	Long: `The format command provides a code formatter for Tronbyt apps. By default, it
+		Long: `The format command provides a code formatter for Tronbyt apps. By default, it
 will format your starlark source code in line. If you wish you see the output
 before applying, add the --dry-run flag.`,
-	Args:              cobra.MinimumNArgs(1),
-	RunE:              formatCmd,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+		Args:              cobra.MinimumNArgs(1),
+		RunE:              formatRun,
+		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+
+	cmd.Flags().BoolVarP(&vflag, "verbose", "v", false, "print verbose information to standard error")
+	cmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find starlark files recursively")
+	cmd.Flags().BoolVarP(&dryRunFlag, "dry-run", "d", false, "display a diff of formatting changes without modification")
+
+	return cmd
 }
 
-func formatCmd(cmd *cobra.Command, args []string) error {
+func formatRun(_ *cobra.Command, args []string) error {
 	// Lint refers to the lint mode for buildifier, with the options being off,
 	// warn, or fix. For pixlet format, we don't want to lint at all.
 	lint := "off"

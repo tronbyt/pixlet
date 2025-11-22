@@ -14,21 +14,23 @@ import (
 
 var devicesURL string
 
-func init() {
-	DevicesCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
-	_ = DevicesCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	DevicesCmd.Flags().StringVarP(&devicesURL, "url", "u", "", "base URL of Tronbyt API")
-	_ = DevicesCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+func NewDevicesCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "devices",
+		Short:             "List devices in your Tronbyt account",
+		RunE:              devicesRun,
+		ValidArgsFunction: cobra.NoFileCompletions,
+	}
+
+	cmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
+	cmd.Flags().StringVarP(&devicesURL, "url", "u", "", "base URL of Tronbyt API")
+	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+
+	return cmd
 }
 
-var DevicesCmd = &cobra.Command{
-	Use:               "devices",
-	Short:             "List devices in your Tronbyt account",
-	RunE:              devicesRun,
-	ValidArgsFunction: cobra.NoFileCompletions,
-}
-
-func devicesRun(cmd *cobra.Command, args []string) error {
+func devicesRun(_ *cobra.Command, _ []string) error {
 	for d, err := range getDevices() {
 		if err != nil {
 			return err

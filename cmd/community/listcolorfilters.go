@@ -8,16 +8,19 @@ import (
 	"github.com/tronbyt/pixlet/encode"
 )
 
-var ListColorFiltersCmd = &cobra.Command{
-	Use:               "list-color-filters",
-	Short:             "List supported color filters.",
-	Example:           `  pixlet community list-color-filters`,
-	Long:              `This command lists all color filters.`,
-	RunE:              listColorFilters,
-	ValidArgsFunction: cobra.NoFileCompletions,
+func NewListColorFiltersCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "list-color-filters",
+		Short:             "List supported color filters.",
+		Example:           `  pixlet community list-color-filters`,
+		Long:              `This command lists all color filters.`,
+		RunE:              listColorFiltersRun,
+		ValidArgsFunction: cobra.NoFileCompletions,
+	}
+	return cmd
 }
 
-func listColorFilters(cmd *cobra.Command, _ []string) error {
+func listColorFiltersRun(cmd *cobra.Command, _ []string) error {
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
 	if _, err := w.Write([]byte("NAME\tDESCRIPTION\n")); err != nil {
 		return err

@@ -9,31 +9,31 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var (
-	schemaOutput string
-)
+var schemaOutput string
 
-func init() {
-	SchemaCmd.Flags().StringVarP(&schemaOutput, "output", "o", "", "Path for schema")
-	_ = SchemaCmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
-}
-
-var SchemaCmd = &cobra.Command{
-	Use:   "schema [path]",
-	Short: "Print the configuration schema for a Pixlet app",
-	Args:  cobra.MinimumNArgs(1),
-	RunE:  schema,
-	Long: `Determine the configuration schema for a Pixlet app.
+func NewSchemaCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "schema [path]",
+		Short: "Print the configuration schema for a Pixlet app",
+		Args:  cobra.MinimumNArgs(1),
+		RunE:  schemaRun,
+		Long: `Determine the configuration schema for a Pixlet app.
 
 The path argument should be the path to the Pixlet app to run. The
 app can be a single file with the .star extension, or a directory
 containing multiple Starlark files and resources. The output is in
 JSON format.
 	`,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+
+	cmd.Flags().StringVarP(&schemaOutput, "output", "o", "", "Path for schema")
+	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
+
+	return cmd
 }
 
-func schema(cmd *cobra.Command, args []string) error {
+func schemaRun(_ *cobra.Command, args []string) error {
 	path := args[0]
 
 	applet, err := runtime.NewAppletFromPath(path)

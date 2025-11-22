@@ -13,31 +13,31 @@ import (
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
-var (
-	listURL string
-)
+var listURL string
 
-func init() {
-	ListCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
-	_ = ListCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	ListCmd.Flags().StringVarP(&listURL, "url", "u", "", "base URL of Tronbyt API")
-	_ = ListCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+func NewListCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "list [device ID]",
+		Short: "Lists all apps installed on a Tronbyt",
+		Args:  cobra.MinimumNArgs(1),
+		RunE:  listRun,
+		ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			if len(args) == 0 {
+				return completeDevices()
+			}
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
+	}
+
+	cmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
+	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
+	cmd.Flags().StringVarP(&listURL, "url", "u", "", "base URL of Tronbyt API")
+	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+
+	return cmd
 }
 
-var ListCmd = &cobra.Command{
-	Use:   "list [device ID]",
-	Short: "Lists all apps installed on a Tronbyt",
-	Args:  cobra.MinimumNArgs(1),
-	RunE:  listInstallationsRun,
-	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-		if len(args) == 0 {
-			return completeDevices()
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	},
-}
-
-func listInstallationsRun(cmd *cobra.Command, args []string) error {
+func listRun(cmd *cobra.Command, args []string) error {
 	deviceID := args[0]
 
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)

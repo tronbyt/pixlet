@@ -14,27 +14,29 @@ import (
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
-func init() {
-	ApiCmd.Flags().StringVarP(&host, "host", "i", "127.0.0.1", "Host interface for serving rendered images")
-	_ = ApiCmd.RegisterFlagCompletionFunc("host", cobra.NoFileCompletions)
-	ApiCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
-	_ = ApiCmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
-	ApiCmd.Flags().StringVarP(&imageOutputFormat, "format", "", "webp", "Output format. One of webp|gif|avif")
-	_ = ApiCmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
-	_ = ApiCmd.RegisterFlagCompletionFunc("format", cobra.NoFileCompletions)
-	ApiCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
-}
-
 var imageFormat loader.ImageFormat
 
-var ApiCmd = &cobra.Command{
-	Use:   "api",
-	Short: "Run a Pixlet API server",
-	Args:  cobra.MinimumNArgs(0),
-	RunE:  api,
-	Long: `Start an HTTP server that runs a Pixlet app in response to API requests.
+func NewAPICmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "api",
+		Short: "Run a Pixlet API server",
+		Args:  cobra.MinimumNArgs(0),
+		RunE:  apiRun,
+		Long: `Start an HTTP server that runs a Pixlet app in response to API requests.
 	`,
-	ValidArgsFunction: cobra.NoFileCompletions,
+		ValidArgsFunction: cobra.NoFileCompletions,
+	}
+
+	cmd.Flags().StringVarP(&host, "host", "i", "127.0.0.1", "Host interface for serving rendered images")
+	_ = cmd.RegisterFlagCompletionFunc("host", cobra.NoFileCompletions)
+	cmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
+	_ = cmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
+	cmd.Flags().StringVarP(&imageOutputFormat, "format", "", "webp", "Output format. One of webp|gif|avif")
+	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
+	_ = cmd.RegisterFlagCompletionFunc("format", cobra.NoFileCompletions)
+	cmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
+
+	return cmd
 }
 
 type renderRequest struct {
@@ -106,7 +108,7 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 	w.Write(buf)
 }
 
-func api(cmd *cobra.Command, args []string) error {
+func apiRun(_ *cobra.Command, _ []string) error {
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)

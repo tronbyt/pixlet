@@ -16,17 +16,12 @@ import (
 
 var maxRenderTime = 1 * time.Second
 
-func init() {
-	CheckCmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find apps recursively")
-	CheckCmd.Flags().DurationVarP(&maxRenderTime, "max-render-time", "", maxRenderTime, "override the default max render time")
-	_ = CheckCmd.RegisterFlagCompletionFunc("max-render-time", cobra.NoFileCompletions)
-}
-
-var CheckCmd = &cobra.Command{
-	Use:     "check <path>...",
-	Example: `pixlet check examples/clock`,
-	Short:   "Check if an app is ready to publish",
-	Long: `Check if an app is ready to publish.
+func NewCheckCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "check <path>...",
+		Example: `pixlet check examples/clock`,
+		Short:   "Check if an app is ready to publish",
+		Long: `Check if an app is ready to publish.
 
 The path argument should be the path to the Pixlet app to check. The
 app can be a single file with the .star extension, or a directory
@@ -36,12 +31,19 @@ The check command runs a series of checks to ensure your app is ready
 to publish in the community repo. Every failed check will have a solution
 provided. If your app fails a check, try the provided solution and reach out on
 Discord if you get stuck.`,
-	Args:              cobra.MinimumNArgs(1),
-	RunE:              checkCmd,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+		Args:              cobra.MinimumNArgs(1),
+		RunE:              checkRun,
+		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+
+	cmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find apps recursively")
+	cmd.Flags().DurationVarP(&maxRenderTime, "max-render-time", "", maxRenderTime, "override the default max render time")
+	_ = cmd.RegisterFlagCompletionFunc("max-render-time", cobra.NoFileCompletions)
+
+	return cmd
 }
 
-func checkCmd(cmd *cobra.Command, args []string) error {
+func checkRun(cmd *cobra.Command, args []string) error {
 	// check every path.
 	foundIssue := false
 	for _, path := range args {
@@ -104,7 +106,7 @@ func checkCmd(cmd *cobra.Command, args []string) error {
 		// Check if app renders.
 		silenceOutput = true
 		output = f.Name()
-		err = render(cmd, []string{path})
+		err = renderRun(cmd, []string{path})
 		if err != nil {
 			foundIssue = true
 			failure(path, fmt.Errorf("app failed to render: %w", err), "try `pixlet render` and resolve any runtime issues")
@@ -139,13 +141,13 @@ func checkCmd(cmd *cobra.Command, args []string) error {
 			realPath := filepath.Join(baseDir, p)
 
 			dryRunFlag = true
-			if err := formatCmd(cmd, []string{realPath}); err != nil {
+			if err := formatRun(cmd, []string{realPath}); err != nil {
 				foundIssue = true
 				failure(p, fmt.Errorf("app is not formatted correctly: %w", err), fmt.Sprintf("try `pixlet format %s`", realPath))
 			}
 
 			outputFormat = "off"
-			err = lintCmd(cmd, []string{realPath})
+			err = lintRun(cmd, []string{realPath})
 			if err != nil {
 				foundIssue = true
 				failure(p, fmt.Errorf("app has lint warnings: %w", err), fmt.Sprintf("try `pixlet lint --fix %s`", realPath))

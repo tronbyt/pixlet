@@ -8,16 +8,19 @@ import (
 	"github.com/tronbyt/pixlet/icons"
 )
 
-var ListIconsCmd = &cobra.Command{
-	Use:               "list-icons",
-	Short:             "List icons that are available in our mobile app.",
-	Example:           `  pixlet community list-icons`,
-	Long:              `This command lists all in your icons that are supported by our mobile app.`,
-	RunE:              listIcons,
-	ValidArgsFunction: cobra.NoFileCompletions,
+func NewListIconsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "list-icons",
+		Short:             "List icons that are available in our mobile app.",
+		Example:           `  pixlet community list-icons`,
+		Long:              `This command lists all in your icons that are supported by our mobile app.`,
+		RunE:              listIconsRun,
+		ValidArgsFunction: cobra.NoFileCompletions,
+	}
+	return cmd
 }
 
-func listIcons(cmd *cobra.Command, args []string) error {
+func listIconsRun(_ *cobra.Command, _ []string) error {
 	iconSet := []string{}
 	for icon := range icons.IconsMap {
 		iconSet = append(iconSet, icon)
