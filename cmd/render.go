@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -208,20 +207,18 @@ func render(cmd *cobra.Command, args []string) error {
 
 	if configJson != "" {
 		// Open the JSON file.
-		file, err := os.Open(configJson)
+		f, err := os.Open(configJson)
 		if err != nil {
 			return fmt.Errorf("file open error %v", err)
 		}
 
-		// Use the `json.Unmarshal()` function to unmarshal the JSON file into the map variable.
-		fileData, err := io.ReadAll(file)
+		err = json.NewDecoder(f).Decode(&config)
 		if err != nil {
-			return fmt.Errorf("file read error %v", err)
-		}
-		err = json.Unmarshal(fileData, &config)
-		if err != nil {
+			_ = f.Close()
 			return fmt.Errorf("failed to unmarshal JSON %v: %w", configJson, err)
 		}
+
+		_ = f.Close()
 	}
 
 	for _, param := range args[1:] {
