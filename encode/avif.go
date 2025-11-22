@@ -12,7 +12,10 @@ import (
 	"github.com/ebitengine/purego"
 )
 
-var initOnce sync.Once
+var (
+	avifOnce sync.Once
+	avifErr  error
+)
 
 const (
 	AVIF_HEADER_MINI      = 1
@@ -27,7 +30,12 @@ const (
 // Renders screens to AVIF. Optionally pass filters for postprocessing
 // each individual frame.
 func (s *Screens) EncodeAVIF(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
-	initOnce.Do(initAvif)
+	avifOnce.Do(func() {
+		avifErr = initAvif()
+	})
+	if avifErr != nil {
+		return nil, avifErr
+	}
 
 	images, err := s.render(filters...)
 	if err != nil {
@@ -282,11 +290,11 @@ func loadAvif() (uintptr, error) {
 	return lib, nil
 }
 
-func initAvif() {
+func initAvif() error {
 	var err error
 	libavif, err = loadAvif()
 	if err != nil {
-		panic(fmt.Sprintf("error loading libavif: %s\n", err))
+		return fmt.Errorf("loading avif: %w", err)
 	}
 
 	purego.RegisterLibFunc(&avifVersion, libavif, "avifVersion")
@@ -304,11 +312,14 @@ func initAvif() {
 	purego.RegisterLibFunc(&avifResultToString, libavif, "avifResultToString")
 
 	version := avifVersion()
-	fmt.Printf("using libavif %s\n", version)
 
 	var major, minor, patch int
-	_, _ = fmt.Sscanf(version, "%d.%d.%d", &major, &minor, &patch)
-	if major < 1 || (major == 1 && minor < 1) {
-		panic("minimum required libavif version is 1.1.0")
+	if n, err := fmt.Sscanf(version, "%d.%d.%d", &major, &minor, &patch); err != nil || n != 3 {
+		return fmt.Errorf("could not parse libavif version string: %q", version)
 	}
+	if major < 1 || (major == 1 && minor < 1) {
+		return fmt.Errorf("libavif version is too old. requires 1.1.0, got %s", version)
+	}
+
+	return nil
 }
