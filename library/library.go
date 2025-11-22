@@ -22,6 +22,16 @@ import (
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
+const (
+	statusErrInvalidConfig  = -1
+	statusErrRenderFailure  = -2
+	statusErrInvalidFilters = -3
+	statusErrHandlerFailure = -4
+	statusErrInvalidPath    = -5
+	statusErrStarSuffix     = -6
+	statusErrUnknownApplet  = -7
+)
+
 // render_app renders an applet based on the provided parameters.
 //
 // Arguments:
@@ -55,7 +65,7 @@ func render_app(
 
 	var config map[string]string
 	if err := json.Unmarshal([]byte(configStr), &config); err != nil {
-		return nil, -1, nil, C.CString(fmt.Sprintf("error parsing config: %v", err))
+		return nil, C.int(statusErrInvalidConfig), nil, C.CString(fmt.Sprintf("error parsing config: %v", err))
 	}
 
 	var filters *encode.RenderFilters
@@ -63,7 +73,7 @@ func render_app(
 		var parsed encode.RenderFilters
 		filtersStr := C.GoString(filtersPtr)
 		if err := json.Unmarshal([]byte(filtersStr), &parsed); err != nil {
-			return nil, -3, nil, C.CString(fmt.Sprintf("invalid filters JSON: %v", err))
+			return nil, C.int(statusErrInvalidFilters), nil, C.CString(fmt.Sprintf("invalid filters JSON: %v", err))
 		}
 		filters = &parsed
 	}
@@ -78,7 +88,7 @@ func render_app(
 
 	messagesJSON, _ := json.Marshal(messages)
 	if err != nil {
-		return nil, -2, C.CString(string(messagesJSON)), C.CString(fmt.Sprintf("error rendering: %v", err))
+		return nil, C.int(statusErrRenderFailure), C.CString(string(messagesJSON)), C.CString(fmt.Sprintf("error rendering: %v", err))
 	}
 
 	return (*C.uchar)(C.CBytes(result)), C.int(len(result)), C.CString(string(messagesJSON)), nil
@@ -89,12 +99,12 @@ func errorStatus(err error) int {
 		var pathErr *os.PathError
 		switch {
 		case errors.As(err, &pathErr):
-			return -1
+			return statusErrInvalidPath
 		case errors.Is(err, runtime.ErrStarSuffix):
-			return -2
+			return statusErrStarSuffix
 		}
 	}
-	return -3
+	return statusErrUnknownApplet
 }
 
 //export get_schema
@@ -130,7 +140,7 @@ func call_handler(
 	var config map[string]string
 	if configStr != "" {
 		if err := json.Unmarshal([]byte(configStr), &config); err != nil {
-			return nil, -4, C.CString(fmt.Sprintf("error parsing config: %v", err))
+			return nil, C.int(statusErrInvalidConfig), C.CString(fmt.Sprintf("error parsing config: %v", err))
 		}
 	}
 
@@ -149,7 +159,7 @@ func call_handler(
 
 	result, err := applet.CallSchemaHandler(context.Background(), C.GoString(handlerName), C.GoString(parameter), config)
 	if err != nil {
-		return nil, -1, C.CString(err.Error())
+		return nil, C.int(statusErrHandlerFailure), C.CString(err.Error())
 	}
 
 	return (*C.char)(C.CString(result)), 0, nil
