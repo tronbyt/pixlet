@@ -31,9 +31,6 @@ var (
 	colorFilter       string
 	output2x          bool
 	webpLevel         int32
-
-	// Deprecated: flag behavior has been moved to community.ListColorFiltersCmd
-	listColorFilters bool
 )
 
 func init() {
@@ -122,43 +119,6 @@ func init() {
 		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
 	)
 	_ = RenderCmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
-
-	// Deprecated flags
-	RenderCmd.Flags().DurationVar(
-		&maxDuration,
-		"max_duration",
-		15*time.Second,
-		"Maximum allowed animation duration",
-	)
-	if err := RenderCmd.Flags().MarkDeprecated(
-		"max_duration", "use --max-duration instead",
-	); err != nil {
-		panic(err)
-	}
-
-	RenderCmd.Flags().StringVar(
-		&colorFilter,
-		"color_filter",
-		"",
-		"Apply a color filter (warm, cool, etc)",
-	)
-	if err := RenderCmd.Flags().MarkDeprecated(
-		"color_filter", "use --color-filter instead",
-	); err != nil {
-		panic(err)
-	}
-
-	RenderCmd.Flags().BoolVar(
-		&listColorFilters,
-		"list-color-filters",
-		false,
-		"List available color filters",
-	)
-	if err := RenderCmd.Flags().MarkDeprecated(
-		"list-color-filters", `use "pixlet community list-color-filters" instead`,
-	); err != nil {
-		panic(err)
-	}
 }
 
 var RenderCmd = &cobra.Command{
@@ -176,13 +136,6 @@ containing multiple Starlark files and resources.
 }
 
 func render(cmd *cobra.Command, args []string) error {
-	if listColorFilters {
-		fmt.Println("Supported color filters:")
-		for _, f := range encode.ColorFilterStrings() {
-			fmt.Println(" -", f)
-		}
-		return nil
-	}
 	path := args[0]
 
 	// check if path exists, and whether it is a directory or a file
