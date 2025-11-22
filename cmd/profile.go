@@ -28,6 +28,7 @@ func init() {
 	ProfileCmd.Flags().StringVarP(
 		&pprof_cmd, "pprof", "", "top 10", "Command to call pprof with",
 	)
+	_ = ProfileCmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
 	ProfileCmd.Flags().IntVarP(
 		&profileWidth,
 		"width",
@@ -35,6 +36,7 @@ func init() {
 		64,
 		"Set width",
 	)
+	_ = ProfileCmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
 	ProfileCmd.Flags().IntVarP(
 		&profileHeight,
 		"height",
@@ -42,6 +44,7 @@ func init() {
 		32,
 		"Set height",
 	)
+	_ = ProfileCmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
 	ProfileCmd.Flags().BoolVarP(
 		&profileOutput2x,
 		"2x",
@@ -52,10 +55,11 @@ func init() {
 }
 
 var ProfileCmd = &cobra.Command{
-	Use:   "profile <path> [<key>=value>]...",
-	Short: "Run a Pixlet app and print its execution-time profile",
-	Args:  cobra.MinimumNArgs(1),
-	RunE:  profile,
+	Use:               "profile <path> [<key>=value>]...",
+	Short:             "Run a Pixlet app and print its execution-time profile",
+	Args:              cobra.MinimumNArgs(1),
+	RunE:              profile,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 // We save the profile into an in-memory buffer, which is simpler than the tool expects.

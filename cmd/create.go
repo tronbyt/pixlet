@@ -78,4 +78,5 @@ var CreateCmd = &cobra.Command{
 		fmt.Printf("\thttps://tidbyt.dev\n")
 		return nil
 	},
+	ValidArgsFunction: cobra.NoFileCompletions,
 }

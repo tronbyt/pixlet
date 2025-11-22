@@ -12,6 +12,7 @@ func init() {
 	LintCmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find starlark files recursively")
 	LintCmd.Flags().BoolVarP(&fixFlag, "fix", "f", false, "automatically fix resolvable lint issues")
 	LintCmd.Flags().StringVarP(&outputFormat, "output", "o", "", "output format: text, json, or off")
+	_ = LintCmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"text", "json", "off"}, cobra.ShellCompDirectiveNoFileComp))
 }
 
 var LintCmd = &cobra.Command{
@@ -22,8 +23,9 @@ var LintCmd = &cobra.Command{
 	Long: `The lint command provides a linter for Tronbyt apps. It's capable of linting a
 file, a list of files, or directory with the recursive option. Additionally, it
 provides an option to automatically fix resolvable linter issues.`,
-	Args: cobra.MinimumNArgs(1),
-	RunE: lintCmd,
+	Args:              cobra.MinimumNArgs(1),
+	RunE:              lintCmd,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 func lintCmd(cmd *cobra.Command, args []string) error {

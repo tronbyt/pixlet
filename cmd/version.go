@@ -14,4 +14,5 @@ var VersionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("Pixlet version: %s\n", Version)
 	},
+	ValidArgsFunction: cobra.NoFileCompletions,
 }

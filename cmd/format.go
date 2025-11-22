@@ -22,8 +22,9 @@ var FormatCmd = &cobra.Command{
 	Long: `The format command provides a code formatter for Tronbyt apps. By default, it
 will format your starlark source code in line. If you wish you see the output
 before applying, add the --dry-run flag.`,
-	Args: cobra.MinimumNArgs(1),
-	RunE: formatCmd,
+	Args:              cobra.MinimumNArgs(1),
+	RunE:              formatCmd,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 func formatCmd(cmd *cobra.Command, args []string) error {

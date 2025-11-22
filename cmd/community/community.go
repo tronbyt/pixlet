@@ -5,6 +5,7 @@ import (
 )
 
 func init() {
+	CommunityCmd.AddCommand(CreateManifestCmd)
 	CommunityCmd.AddCommand(ListColorFiltersCmd)
 	CommunityCmd.AddCommand(ListFontsCmd)
 	CommunityCmd.AddCommand(ListIconsCmd)

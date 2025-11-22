@@ -37,8 +37,14 @@ var (
 
 func init() {
 	RenderCmd.Flags().StringVarP(&configJson, "config", "c", "", "Config file in json format")
+	_ = RenderCmd.RegisterFlagCompletionFunc("config", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveNoFileComp))
+
 	RenderCmd.Flags().StringVarP(&output, "output", "o", "", "Path for rendered image")
+	_ = RenderCmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveFilterFileExt))
+
 	RenderCmd.Flags().StringVarP(&imageOutputFormat, "format", "", "webp", "Output format. One of webp|gif|avif")
+	_ = RenderCmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
+
 	RenderCmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
 	RenderCmd.Flags().IntVarP(
 		&magnify,
@@ -47,12 +53,23 @@ func init() {
 		1,
 		"Increase image dimension by a factor (useful for debugging)",
 	)
+	_ = RenderCmd.RegisterFlagCompletionFunc("magnify", cobra.NoFileCompletions)
+
 	RenderCmd.Flags().StringVar(
 		&colorFilter,
 		"color-filter",
 		"",
 		`Apply a color filter. (See "pixlet community list-color-filters")`,
 	)
+	_ = RenderCmd.RegisterFlagCompletionFunc("color-filter", func(cmd *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
+		var s []string
+		for _, v := range encode.ColorFilterValues() {
+			desc, _ := v.Description()
+			s = append(s, v.String()+"\t"+desc)
+		}
+		return s, cobra.ShellCompDirectiveNoFileComp
+	})
+
 	RenderCmd.Flags().IntVarP(
 		&width,
 		"width",
@@ -60,6 +77,8 @@ func init() {
 		64,
 		"Set width",
 	)
+	_ = RenderCmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
+
 	RenderCmd.Flags().IntVarP(
 		&height,
 		"height",
@@ -67,6 +86,8 @@ func init() {
 		32,
 		"Set height",
 	)
+	_ = RenderCmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
+
 	RenderCmd.Flags().IntVarP(
 		&maxDuration,
 		"max-duration",
@@ -74,6 +95,8 @@ func init() {
 		15000,
 		"Maximum allowed animation duration (ms)",
 	)
+	_ = RenderCmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
+
 	RenderCmd.Flags().IntVarP(
 		&timeout,
 		"timeout",
@@ -81,6 +104,8 @@ func init() {
 		30000,
 		"Timeout for execution (ms)",
 	)
+	_ = RenderCmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
+
 	RenderCmd.Flags().BoolVarP(
 		&output2x,
 		"2x",
@@ -95,6 +120,7 @@ func init() {
 		encode.WebPLevelDefault,
 		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
 	)
+	_ = RenderCmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
 
 	// Deprecated flags
 	RenderCmd.Flags().IntVar(
@@ -145,6 +171,7 @@ The path argument should be the path to the Pixlet app to run. The
 app can be a single file with the .star extension, or a directory
 containing multiple Starlark files and resources.
 	`,
+	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 }
 
 func render(cmd *cobra.Command, args []string) error {
