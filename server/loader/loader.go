@@ -135,7 +135,7 @@ func (l *Loader) Run(ctx context.Context) error {
 				}
 			}
 
-			img, err := l.renderApplet(config)
+			img, err := l.renderApplet(ctx, config)
 			if err != nil {
 				slog.Error("Loading applet", "error", err)
 				up.Err = err
@@ -159,7 +159,7 @@ func (l *Loader) Run(ctx context.Context) error {
 			slog.Info("Detected updates; reloading")
 			up := Update{}
 
-			img, err := l.renderApplet(config)
+			img, err := l.renderApplet(ctx, config)
 			if err != nil {
 				slog.Error("Loading applet", "error", err)
 				up.Err = err
@@ -237,14 +237,15 @@ func (l *Loader) loadApplet() error {
 	return nil
 }
 
-func (l *Loader) renderApplet(config map[string]string) (string, error) {
+func (l *Loader) renderApplet(ctx context.Context, config map[string]string) (string, error) {
 	if l.watch {
 		if err := l.loadApplet(); err != nil {
 			return "", err
 		}
 	}
 
-	ctx, _ := context.WithTimeoutCause(context.Background(), l.timeout, fmt.Errorf("timeout after %s", l.timeout))
+	ctx, cancel := context.WithTimeoutCause(ctx, l.timeout, fmt.Errorf("timeout after %s", l.timeout))
+	defer cancel()
 
 	roots, err := l.applet.RunWithConfig(ctx, config)
 	if err != nil {
