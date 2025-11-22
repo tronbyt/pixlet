@@ -274,7 +274,7 @@ func render(cmd *cobra.Command, args []string) error {
 		Is2x:   output2x,
 	}
 
-	buf, _, err := loader.RenderApplet(path, config, meta, maxDuration, timeout, imageFormat, silenceOutput, filters)
+	buf, _, err := loader.RenderApplet(path, config, meta, maxDuration, timeout, imageFormat, silenceOutput, nil, filters)
 	if err != nil {
 		return fmt.Errorf("error rendering: %w", err)
 	}

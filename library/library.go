@@ -16,6 +16,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 	"unsafe"
 
 	"github.com/tronbyt/pixlet/encode"
@@ -47,6 +48,7 @@ const (
 //   - silenceOutput (C.int): A flag to suppress output (non-zero to silence).
 //   - output2x (C.bool): Render at 2x resolution
 //   - filtersPtr (*C.char): A JSON string for optional filters (e.g. {"magnify":2,"color_filter":"warm"})
+//   - tzPtr (*C.char): The local timezone. Defaults to the system time.
 //
 // Returns:
 //   - (*C.uchar): A pointer to the rendered image bytes.
@@ -60,7 +62,7 @@ func render_app(
 	configPtr *C.char,
 	width, height, maxDuration, timeout, imageFormat, silenceOutput C.int,
 	output2x C.bool,
-	filtersPtr *C.char,
+	filtersPtr, tzPtr *C.char,
 ) (*C.uchar, C.int, *C.char, *C.char) {
 	path := C.GoString(pathPtr)
 	configStr := C.GoString(configPtr)
@@ -80,13 +82,22 @@ func render_app(
 		filters = &parsed
 	}
 
+	location := time.Local
+	if tzPtr != nil {
+		if tzRaw := C.GoString(tzPtr); tzRaw != "" {
+			if v, err := time.LoadLocation(C.GoString(tzPtr)); err == nil {
+				location = v
+			}
+		}
+	}
+
 	meta := canvas.Metadata{
 		Width:  int(width),
 		Height: int(height),
 		Is2x:   bool(output2x),
 	}
 
-	result, messages, err := loader.RenderApplet(path, config, meta, int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)
+	result, messages, err := loader.RenderApplet(path, config, meta, int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, location, filters)
 
 	messagesJSON, _ := json.Marshal(messages)
 	if err != nil {

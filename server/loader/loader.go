@@ -313,6 +313,7 @@ func RenderApplet(
 	maxDuration, timeout int,
 	imageFormat ImageFormat,
 	silenceOutput bool,
+	location *time.Location,
 	filters *encode.RenderFilters,
 ) ([]byte, []string, error) {
 	if filters == nil {
@@ -332,6 +333,7 @@ func RenderApplet(
 
 	opts := []runtime.AppletOption{
 		runtime.WithCanvasMeta(meta),
+		runtime.WithLocation(location),
 	}
 
 	var output []string
