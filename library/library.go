@@ -69,9 +69,9 @@ func render_app(
 	}
 
 	meta := metadata.Metadata{
-		Width:  width,
-		Height: height,
-		Is2x:   output2x,
+		Width:  int(width),
+		Height: int(height),
+		Is2x:   bool(output2x),
 	}
 
 	result, messages, err := loader.RenderApplet(path, config, meta, int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)
@@ -98,10 +98,16 @@ func errorStatus(err error) int {
 }
 
 //export get_schema
-func get_schema(pathPtr *C.char) (*C.char, C.int) {
+func get_schema(pathPtr *C.char, width, height C.int, output2x C.bool) (*C.char, C.int) {
 	path := C.GoString(pathPtr)
 
-	applet, err := runtime.NewAppletFromPath(path)
+	meta := metadata.Metadata{
+		Width:  int(width),
+		Height: int(height),
+		Is2x:   bool(output2x),
+	}
+
+	applet, err := runtime.NewAppletFromPath(path, runtime.WithMetadata(meta))
 	if err != nil {
 		status := errorStatus(err)
 		return nil, C.int(status)
@@ -112,13 +118,12 @@ func get_schema(pathPtr *C.char) (*C.char, C.int) {
 }
 
 //export call_handler
-func call_handler(pathPtr, handlerName, parameter *C.char) (*C.char, C.int) {
-	result, status, _ := call_handler_with_config(pathPtr, nil, handlerName, parameter)
-	return result, status
-}
-
-//export call_handler_with_config
-func call_handler_with_config(pathPtr, configPtr *C.char, handlerName, parameter *C.char) (*C.char, C.int, *C.char) {
+func call_handler(
+	pathPtr, configPtr *C.char,
+	width, height C.int,
+	output2x C.bool,
+	handlerName, parameter *C.char,
+) (*C.char, C.int, *C.char) {
 	path := C.GoString(pathPtr)
 	configStr := C.GoString(configPtr)
 
@@ -129,10 +134,16 @@ func call_handler_with_config(pathPtr, configPtr *C.char, handlerName, parameter
 		}
 	}
 
-	applet, err := runtime.NewAppletFromPath(path)
+	meta := metadata.Metadata{
+		Width:  int(width),
+		Height: int(height),
+		Is2x:   bool(output2x),
+	}
+
+	applet, err := runtime.NewAppletFromPath(path, runtime.WithMetadata(meta))
 	if err != nil {
 		status := errorStatus(err)
-		return nil, C.int(status), C.CString(fmt.Sprintf("error parsing config: %v", err))
+		return nil, C.int(status), C.CString(fmt.Sprintf("error loading app: %v", err))
 	}
 	defer applet.Close()
 
