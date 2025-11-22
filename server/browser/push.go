@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 )
 
@@ -93,7 +94,7 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if resp.StatusCode != 200 {
-		fmt.Printf("Tidbyt API returned status %s\n", resp.Status)
+		slog.Error("Tidbyt API returned an error", "status", resp.Status)
 		w.WriteHeader(resp.StatusCode)
 		fmt.Fprintln(w, err)
 

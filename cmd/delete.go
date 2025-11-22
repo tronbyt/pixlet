@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -58,7 +59,7 @@ func delete(cmd *cobra.Command, args []string) error {
 	}
 
 	if resp.StatusCode != 200 {
-		fmt.Printf("Tidbyt API returned status %s\n", resp.Status)
+		slog.Error("Tidbyt API returned an error", "status", resp.Status)
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
 		return fmt.Errorf("Tidbyt API returned status: %s", resp.Status)

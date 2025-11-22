@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -111,11 +111,11 @@ func api(cmd *cobra.Command, args []string) error {
 	case "avif":
 		imageFormat = loader.ImageAVIF
 	default:
-		log.Printf("Invalid image format %q. Defaulting to WebP.", imageOutputFormat)
+		slog.Warn("Invalid image format; defaulting to WebP.", "format", imageOutputFormat)
 	}
 
 	addr := fmt.Sprintf("%s:%d", host, port)
-	log.Printf("listening at http://%s\n", addr)
+	slog.Info("Starting HTTP server", "address", addr)
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/render", renderHandler)
 	return http.ListenAndServe(addr, mux)

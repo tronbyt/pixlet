@@ -90,7 +90,7 @@ func (s *Screens) EncodeWebP(maxDuration int, filters ...ImageFilter) ([]byte, e
 
 func SetWebPLevel(level int32) {
 	if level < 0 || level > 9 {
-		slog.Warn("webp level is out of range (0-9); using default.", "value", level)
+		slog.Warn("WebP level is out of range (0-9); using default.", "value", level)
 		return
 	}
 	webpLevel.Store(level)

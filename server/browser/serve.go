@@ -3,7 +3,7 @@ package browser
 import (
 	"context"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ func (b *Browser) serveHTTP(ctx context.Context) error {
 		_ = server.Close()
 	}()
 
-	log.Printf("listening at http://%s%s\n", b.addr, b.path)
+	slog.Info("Starting HTTP server", "address", b.addr+b.path)
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}

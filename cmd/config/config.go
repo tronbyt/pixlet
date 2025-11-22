@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -52,7 +53,7 @@ func OAuthTokenFromConfig(ctx context.Context) string {
 
 	var tok oauth2.Token
 	if err := PrivateConfig.UnmarshalKey("token", &tok); err != nil {
-		fmt.Println("unmarshaling API token from config:", err)
+		slog.Error("Unmarshaling API token from config", "error", err)
 		os.Exit(1)
 	}
 
@@ -61,7 +62,7 @@ func OAuthTokenFromConfig(ctx context.Context) string {
 		ts := OAuthConf.TokenSource(ctx, &tok)
 		refreshed, err := ts.Token()
 		if err != nil {
-			fmt.Println("refreshing API token:", err)
+			slog.Error("Refreshing API token", "error", err)
 			os.Exit(1)
 		}
 

@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"time"
 
@@ -127,7 +127,7 @@ func (l *Loader) Run(ctx context.Context) error {
 
 			if l.configOutFile != "" {
 				// Write the byte slice to the file.
-				//log.Printf("writing to %v",l.configOutFile)
+				slog.Debug("Writing to config file", "path", l.configOutFile)
 				err = os.WriteFile(l.configOutFile, byteSlice, 0644)
 				if err != nil {
 					panic(err)
@@ -136,7 +136,7 @@ func (l *Loader) Run(ctx context.Context) error {
 
 			img, err := l.renderApplet(config)
 			if err != nil {
-				log.Printf("error loading applet: %v", err)
+				slog.Error("Loading applet", "error", err)
 				up.Err = err
 			} else {
 				up.Image = img
@@ -155,12 +155,12 @@ func (l *Loader) Run(ctx context.Context) error {
 			l.updatesChan <- up
 			l.resultsChan <- up
 		case <-l.fileChanges:
-			log.Println("detected updates, reloading")
+			slog.Info("Detected updates; reloading")
 			up := Update{}
 
 			img, err := l.renderApplet(config)
 			if err != nil {
-				log.Printf("error loading applet: %v", err)
+				slog.Error("Loading applet", "error", err)
 				up.Err = err
 			} else {
 				up.Image = img

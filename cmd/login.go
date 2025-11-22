@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"math/rand"
 	"net/http"
 	"os"
@@ -66,13 +67,13 @@ func login(cmd *cobra.Command, args []string) {
 
 	cv, err := cv.CreateCodeVerifier()
 	if err != nil {
-		fmt.Println("creating PKCE code verifier:", err)
+		slog.Error("Creating PKCE code verifier", "error", err)
 		os.Exit(1)
 	}
 
 	buf := make([]byte, 32)
 	if _, err := urand.Read(buf); err != nil {
-		fmt.Println("couldn't generate enough random bytes for state")
+		slog.Error("Couldn't generate enough random bytes for state")
 		os.Exit(1)
 	}
 	state := base64.RawURLEncoding.EncodeToString(buf)
@@ -91,7 +92,7 @@ func login(cmd *cobra.Command, args []string) {
 		pkce,
 	).Token()
 	if err != nil {
-		fmt.Println("getting auth token:", err)
+		slog.Error("Getting auth token", "error", err)
 		os.Exit(1)
 	}
 
@@ -105,7 +106,7 @@ func login(cmd *cobra.Command, args []string) {
 	if loginCommandJSON {
 		b, err := json.Marshal(tok)
 		if err != nil {
-			fmt.Printf("could not marshal token: %v\n", err)
+			slog.Error("Marshaling token", "error", err)
 			os.Exit(1)
 		}
 		fmt.Printf("%s\n", b)

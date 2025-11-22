@@ -17,7 +17,9 @@ require (
 	github.com/google/pprof v0.0.0-20251007162407-5df77e3f7d1d
 	github.com/google/tink/go v1.7.0
 	github.com/gorilla/websocket v1.5.3
+	github.com/lmittmann/tint v1.1.2
 	github.com/manifoldco/promptui v0.9.0
+	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nathan-osman/go-sunrise v1.1.0
 	github.com/newm4n/go-dfe v0.0.0-20210113055126-9d5f01722db9
@@ -81,7 +83,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/pascaldekloe/name v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
