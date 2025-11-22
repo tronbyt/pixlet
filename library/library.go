@@ -27,7 +27,6 @@ import (
 //   - configPtr (*C.char): A C string containing a JSON-encoded configuration map.
 //   - width (C.int): The width of the rendered output.
 //   - height (C.int): The height of the rendered output.
-//   - magnify (C.int): The magnification level (legacy, overridden if filtersPtr is used).
 //   - maxDuration (C.int): The maximum duration (in milliseconds) for rendering.
 //   - timeout (C.int): The timeout (in milliseconds) for rendering.
 //   - imageFormat (C.int): The format of the rendered image (e.g., PNG, GIF).
@@ -41,7 +40,7 @@ import (
 //   - (*C.char): A pointer to an error message (if any).
 
 //export render_app
-func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput C.int, filtersPtr *C.char) (*C.uchar, C.int, *C.char, *C.char) {
+func render_app(pathPtr *C.char, configPtr *C.char, width, height, maxDuration, timeout, imageFormat, silenceOutput C.int, filtersPtr *C.char) (*C.uchar, C.int, *C.char, *C.char) {
 	path := C.GoString(pathPtr)
 	configStr := C.GoString(configPtr)
 
@@ -60,7 +59,7 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, magnify, maxD
 		filters = &parsed
 	}
 
-	result, messages, err := loader.RenderApplet(path, config, int(width), int(height), int(magnify), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)
+	result, messages, err := loader.RenderApplet(path, config, int(width), int(height), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)
 
 	messagesJSON, _ := json.Marshal(messages)
 	if err != nil {

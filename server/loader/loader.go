@@ -305,12 +305,14 @@ func (l *Loader) markInitialLoadComplete() {
 	}
 }
 
-func RenderApplet(path string, config map[string]string, width, height, magnify, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool, filters *encode.RenderFilters) ([]byte, []string, error) {
+func RenderApplet(path string, config map[string]string, width, height, maxDuration, timeout int, imageFormat ImageFormat, silenceOutput bool, filters *encode.RenderFilters) ([]byte, []string, error) {
 	if filters == nil {
-		filters = &encode.RenderFilters{}
+		filters = &encode.RenderFilters{
+			Magnify: 1,
+		}
 	}
 	if filters.Magnify == 0 {
-		filters.Magnify = magnify
+		filters.Magnify = 1
 	}
 
 	opts := []runtime.AppletOption{
@@ -356,9 +358,6 @@ func RenderApplet(path string, config map[string]string, width, height, magnify,
 			width *= 2
 			height *= 2
 		} else {
-			if filters.Magnify == 0 {
-				filters.Magnify = 1
-			}
 			filters.Magnify *= 2
 		}
 	}
