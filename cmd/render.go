@@ -243,7 +243,7 @@ func render(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	buf, _, err := loader.RenderApplet(path, config, width, height, magnify, maxDuration, timeout, imageFormat, silenceOutput, filters)
+	buf, _, err := loader.RenderApplet(path, config, width, height, maxDuration, timeout, imageFormat, silenceOutput, filters)
 	if err != nil {
 		return fmt.Errorf("error rendering: %w", err)
 	}
