@@ -97,7 +97,13 @@ func render_app(
 		Is2x:   bool(output2x),
 	}
 
-	result, messages, err := loader.RenderApplet(path, config, meta, int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, location, filters)
+	result, messages, err := loader.RenderApplet(
+		path, config, meta,
+		time.Duration(maxDuration)*time.Millisecond,
+		time.Duration(timeout)*time.Millisecond,
+		loader.ImageFormat(imageFormat),
+		silenceOutput != 0, location, filters,
+	)
 
 	messagesJSON, _ := json.Marshal(messages)
 	if err != nil {

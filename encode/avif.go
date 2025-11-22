@@ -26,7 +26,7 @@ const (
 
 // Renders screens to AVIF. Optionally pass filters for postprocessing
 // each individual frame.
-func (s *Screens) EncodeAVIF(maxDuration int, filters ...ImageFilter) ([]byte, error) {
+func (s *Screens) EncodeAVIF(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
 	initOnce.Do(initAvif)
 
 	images, err := s.render(filters...)
@@ -52,7 +52,7 @@ func (s *Screens) EncodeAVIF(maxDuration int, filters ...ImageFilter) ([]byte, e
 	encoder.Timescale = uint64(time.Second / time.Millisecond)
 
 	for _, im := range images {
-		frameDuration := int(s.delay)
+		frameDuration := time.Duration(s.delay) * time.Millisecond
 
 		if maxDuration > 0 {
 			if frameDuration > remainingDuration {

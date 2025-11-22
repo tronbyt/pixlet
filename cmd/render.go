@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
@@ -22,11 +23,11 @@ var (
 	output            string
 	magnify           int
 	imageOutputFormat string
-	maxDuration       int
+	maxDuration       time.Duration
 	silenceOutput     bool
 	width             int
 	height            int
-	timeout           int
+	timeout           time.Duration
 	colorFilter       string
 	output2x          bool
 	webpLevel         int32
@@ -88,21 +89,21 @@ func init() {
 	)
 	_ = RenderCmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
 
-	RenderCmd.Flags().IntVarP(
+	RenderCmd.Flags().DurationVarP(
 		&maxDuration,
 		"max-duration",
 		"d",
-		15000,
-		"Maximum allowed animation duration (ms)",
+		15*time.Second,
+		"Maximum allowed animation duration",
 	)
 	_ = RenderCmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
 
-	RenderCmd.Flags().IntVarP(
+	RenderCmd.Flags().DurationVarP(
 		&timeout,
 		"timeout",
 		"",
-		30000,
-		"Timeout for execution (ms)",
+		30*time.Second,
+		"Timeout for execution",
 	)
 	_ = RenderCmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
 
@@ -123,11 +124,11 @@ func init() {
 	_ = RenderCmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
 
 	// Deprecated flags
-	RenderCmd.Flags().IntVar(
+	RenderCmd.Flags().DurationVar(
 		&maxDuration,
 		"max_duration",
-		15000,
-		"Maximum allowed animation duration (ms)",
+		15*time.Second,
+		"Maximum allowed animation duration",
 	)
 	if err := RenderCmd.Flags().MarkDeprecated(
 		"max_duration", "use --max-duration instead",
