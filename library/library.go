@@ -3,6 +3,7 @@
 package main
 
 /*
+#include <stdbool.h>
 #include <stdlib.h>
 */
 import "C"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
@@ -31,7 +33,8 @@ import (
 //   - timeout (C.int): The timeout (in milliseconds) for rendering.
 //   - imageFormat (C.int): The format of the rendered image (e.g., PNG, GIF).
 //   - silenceOutput (C.int): A flag to suppress output (non-zero to silence).
-//   - filtersPtr (*C.char): A JSON string for optional filters (e.g. {"magnify":2,"color_filter":"warm","2x":true})
+//   - output2x (C.bool): Render at 2x resolution
+//   - filtersPtr (*C.char): A JSON string for optional filters (e.g. {"magnify":2,"color_filter":"warm"})
 //
 // Returns:
 //   - (*C.uchar): A pointer to the rendered image bytes.
@@ -40,7 +43,13 @@ import (
 //   - (*C.char): A pointer to an error message (if any).
 
 //export render_app
-func render_app(pathPtr *C.char, configPtr *C.char, width, height, maxDuration, timeout, imageFormat, silenceOutput C.int, filtersPtr *C.char) (*C.uchar, C.int, *C.char, *C.char) {
+func render_app(
+	pathPtr *C.char,
+	configPtr *C.char,
+	width, height, maxDuration, timeout, imageFormat, silenceOutput C.int,
+	output2x C.bool,
+	filtersPtr *C.char,
+) (*C.uchar, C.int, *C.char, *C.char) {
 	path := C.GoString(pathPtr)
 	configStr := C.GoString(configPtr)
 
@@ -59,7 +68,13 @@ func render_app(pathPtr *C.char, configPtr *C.char, width, height, maxDuration, 
 		filters = &parsed
 	}
 
-	result, messages, err := loader.RenderApplet(path, config, int(width), int(height), int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)
+	meta := metadata.Metadata{
+		Width:  width,
+		Height: height,
+		Is2x:   output2x,
+	}
+
+	result, messages, err := loader.RenderApplet(path, config, meta, int(maxDuration), int(timeout), loader.ImageFormat(imageFormat), silenceOutput != 0, filters)
 
 	messagesJSON, _ := json.Marshal(messages)
 	if err != nil {

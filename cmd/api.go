@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
@@ -66,10 +67,7 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	filters := &encode.RenderFilters{
-		Magnify:  r.Magnify,
-		Output2x: r.Output2x,
-	}
+	filters := &encode.RenderFilters{Magnify: r.Magnify}
 	if r.ColorFilter != "" {
 		var err error
 		if filters.ColorFilter, err = encode.ColorFilterString(r.ColorFilter); err != nil {
@@ -78,7 +76,13 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	buf, _, err := loader.RenderApplet(r.Path, r.Config, r.Width, r.Height, maxDuration, timeout, imageFormat, silenceOutput, filters)
+	meta := metadata.Metadata{
+		Width:  r.Width,
+		Height: r.Height,
+		Is2x:   r.Output2x,
+	}
+
+	buf, _, err := loader.RenderApplet(r.Path, r.Config, meta, maxDuration, timeout, imageFormat, silenceOutput, filters)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error rendering: %v", err), http.StatusInternalServerError)
 		return
