@@ -222,11 +222,11 @@ func render(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, param := range args[1:] {
-		split := strings.Split(param, "=")
-		if len(split) < 2 {
+		key, val, ok := strings.Cut(param, "=")
+		if !ok {
 			return fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
 		}
-		config[split[0]] = strings.Join(split[1:], "=")
+		config[key] = val
 	}
 
 	cache := runtime.NewInMemoryCache()
