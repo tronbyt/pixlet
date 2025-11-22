@@ -87,7 +87,7 @@ func renderHandler(w http.ResponseWriter, req *http.Request) {
 		Is2x:   r.Output2x,
 	}
 
-	buf, _, err := loader.RenderApplet(r.Path, r.Config, meta, maxDuration, timeout, imageFormat, silenceOutput, filters)
+	buf, _, err := loader.RenderApplet(r.Path, r.Config, meta, maxDuration, timeout, imageFormat, silenceOutput, nil, filters)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error rendering: %v", err), http.StatusInternalServerError)
 		return

@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 	"testing/fstest"
+	"time"
 
 	starlibbsoup "github.com/qri-io/starlib/bsoup"
 	starlibgzip "github.com/qri-io/starlib/compress/gzip"
@@ -25,9 +26,9 @@ import (
 	"github.com/tronbyt/pixlet/manifest"
 	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
+	"github.com/tronbyt/pixlet/runtime/modules/time_runtime"
 	starlibjson "go.starlark.net/lib/json"
 	starlibmath "go.starlark.net/lib/math"
-	starlibtime "go.starlark.net/lib/time"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 	"go.starlark.net/starlarktest"
@@ -123,6 +124,16 @@ func WithCanvasMeta(m canvas.Metadata) AppletOption {
 	return func(a *Applet) error {
 		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
 			canvas.AttachToThread(t, m)
+			return t
+		})
+		return nil
+	}
+}
+
+func WithLocation(tz *time.Location) AppletOption {
+	return func(a *Applet) error {
+		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
+			time_runtime.SetLocation(t, tz)
 			return t
 		})
 		return nil
@@ -688,10 +699,8 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 	case "sunrise.star":
 		return sunrise.LoadModule()
 
-	case "time.star":
-		return starlark.StringDict{
-			starlibtime.Module.Name: starlibtime.Module,
-		}, nil
+	case time_runtime.ModuleName:
+		return time_runtime.LoadModule()
 
 	case "random.star":
 		return random.LoadModule()
