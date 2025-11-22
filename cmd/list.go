@@ -6,7 +6,6 @@ import (
 	"io"
 	"iter"
 	"net/http"
-	"os"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -41,8 +40,7 @@ var ListCmd = &cobra.Command{
 func listInstallationsRun(cmd *cobra.Command, args []string) error {
 	deviceID := args[0]
 
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 22, 8, 0, '\t', 0)
+	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
 	defer w.Flush()
 
 	for inst, err := range getInstallations(deviceID) {
@@ -50,7 +48,7 @@ func listInstallationsRun(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		fmt.Fprintf(w, "%s\t%s\n", inst.AppId, inst.Id)
+		fmt.Fprintf(w, "%s\t%s\n", inst.Id, inst.AppId)
 	}
 
 	return nil
