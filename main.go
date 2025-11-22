@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd"
 	"github.com/tronbyt/pixlet/cmd/community"
-	"github.com/tronbyt/pixlet/cmd/private"
 )
 
 var (
@@ -28,11 +27,9 @@ func init() {
 	rootCmd.AddCommand(cmd.CreateCmd)
 	rootCmd.AddCommand(cmd.DeleteCmd)
 	rootCmd.AddCommand(cmd.DevicesCmd)
-	rootCmd.AddCommand(cmd.EncryptCmd)
 	rootCmd.AddCommand(cmd.FormatCmd)
 	rootCmd.AddCommand(cmd.LintCmd)
 	rootCmd.AddCommand(cmd.ListCmd)
-	rootCmd.AddCommand(cmd.LoginCmd)
 	rootCmd.AddCommand(cmd.ProfileCmd)
 	rootCmd.AddCommand(cmd.PushCmd)
 	rootCmd.AddCommand(cmd.RenderCmd)
@@ -41,7 +38,6 @@ func init() {
 	rootCmd.AddCommand(cmd.SetAuthCmd)
 	rootCmd.AddCommand(cmd.VersionCmd)
 	rootCmd.AddCommand(community.CommunityCmd)
-	rootCmd.AddCommand(private.PrivateCmd)
 }
 
 func main() {
