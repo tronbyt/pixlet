@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -34,7 +35,7 @@ func NewWatcher(filename string, fileChanges chan bool) *Watcher {
 // the WRITE and CREATE events since VIM will write to a swap and then create
 // the file on save. VSCode does a WRITE and then a CHMOD, so tracking WRITE
 // catches the changes for VSCode exactly once.
-func (w *Watcher) Run() error {
+func (w *Watcher) Run(ctx context.Context) error {
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(w.path)
 	if err != nil {
@@ -56,6 +57,8 @@ func (w *Watcher) Run() error {
 
 	for {
 		select {
+		case <-ctx.Done():
+			return ctx.Err()
 		case event, ok := <-watcher.Events:
 			if !ok {
 				return fmt.Errorf("watcher events channel closed unexpectedly")
