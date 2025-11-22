@@ -18,7 +18,7 @@ import (
 
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
@@ -68,7 +68,7 @@ func render_app(
 		filters = &parsed
 	}
 
-	meta := metadata.Metadata{
+	meta := canvas.Metadata{
 		Width:  int(width),
 		Height: int(height),
 		Is2x:   bool(output2x),
@@ -101,13 +101,13 @@ func errorStatus(err error) int {
 func get_schema(pathPtr *C.char, width, height C.int, output2x C.bool) (*C.char, C.int) {
 	path := C.GoString(pathPtr)
 
-	meta := metadata.Metadata{
+	meta := canvas.Metadata{
 		Width:  int(width),
 		Height: int(height),
 		Is2x:   bool(output2x),
 	}
 
-	applet, err := runtime.NewAppletFromPath(path, runtime.WithMetadata(meta))
+	applet, err := runtime.NewAppletFromPath(path, runtime.WithCanvasMeta(meta))
 	if err != nil {
 		status := errorStatus(err)
 		return nil, C.int(status)
@@ -134,13 +134,13 @@ func call_handler(
 		}
 	}
 
-	meta := metadata.Metadata{
+	meta := canvas.Metadata{
 		Width:  int(width),
 		Height: int(height),
 		Is2x:   bool(output2x),
 	}
 
-	applet, err := runtime.NewAppletFromPath(path, runtime.WithMetadata(meta))
+	applet, err := runtime.NewAppletFromPath(path, runtime.WithCanvasMeta(meta))
 	if err != nil {
 		status := errorStatus(err)
 		return nil, C.int(status), C.CString(fmt.Sprintf("error loading app: %v", err))

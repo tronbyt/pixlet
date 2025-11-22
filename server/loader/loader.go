@@ -14,7 +14,7 @@ import (
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
 )
@@ -220,7 +220,7 @@ func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string
 
 func (l *Loader) loadApplet() error {
 	opts := []runtime.AppletOption{
-		runtime.WithMetadata(metadata.Metadata{
+		runtime.WithCanvasMeta(canvas.Metadata{
 			Width:  l.width,
 			Height: l.height,
 			Is2x:   l.output2x,
@@ -309,7 +309,7 @@ func (l *Loader) markInitialLoadComplete() {
 func RenderApplet(
 	path string,
 	config map[string]string,
-	meta metadata.Metadata,
+	meta canvas.Metadata,
 	maxDuration, timeout int,
 	imageFormat ImageFormat,
 	silenceOutput bool,
@@ -331,7 +331,7 @@ func RenderApplet(
 	}
 
 	opts := []runtime.AppletOption{
-		runtime.WithMetadata(meta),
+		runtime.WithCanvasMeta(meta),
 	}
 
 	var output []string

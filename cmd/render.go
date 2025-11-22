@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/metadata"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
@@ -241,7 +241,7 @@ func render(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	meta := metadata.Metadata{
+	meta := canvas.Metadata{
 		Width:  width,
 		Height: height,
 		Is2x:   output2x,
