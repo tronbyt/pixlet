@@ -2,6 +2,7 @@ package animation
 
 import (
 	"fmt"
+	"log/slog"
 	"math"
 	"regexp"
 	"strconv"
@@ -68,13 +69,13 @@ type CustomCurve struct {
 func (cc CustomCurve) Transform(t float64) float64 {
 	r, err := starlark.Call(&starlark.Thread{}, cc.Function, starlark.Tuple{starlark.Float(t)}, nil)
 	if err != nil {
-		fmt.Printf("Error calling curve function %s: %s\n", cc.Function.String(), err.Error())
+		slog.Error("Calling curve function", "name", cc.Function.String(), "error", err)
 		return math.NaN()
 	}
 
 	f, ok := starlark.AsFloat(r)
 	if !ok {
-		fmt.Printf("Curve function did not return a floating point value!\n")
+		slog.Error("Curve function did not return a floating point value!")
 		return math.NaN()
 	}
 

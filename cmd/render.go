@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -193,7 +194,7 @@ func render(cmd *cobra.Command, args []string) error {
 		imageFormat = loader.ImageAVIF
 		outPath += ".avif"
 	default:
-		fmt.Printf("Invalid image format %q. Defaulting to WebP.", imageOutputFormat)
+		slog.Warn("Invalid image format; defaulting to WebP.", "format", imageOutputFormat)
 	}
 	if output != "" {
 		outPath = output

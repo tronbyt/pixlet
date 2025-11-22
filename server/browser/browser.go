@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -203,7 +203,7 @@ func (b *Browser) imageHandler(w http.ResponseWriter, r *http.Request) {
 func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse the request form so we can use it as config values.
 	if err := r.ParseMultipartForm(100); err != nil {
-		log.Printf("form parsing failed: %+v", err)
+		slog.Error("Form parsing failed", "error", err)
 		http.Error(w, "bad form data", http.StatusBadRequest)
 		return
 	}
@@ -250,7 +250,7 @@ func (b *Browser) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("error establishing a new connection %v\n", err)
+		slog.Error("Establishing a new connection", "error", err)
 		return
 	}
 

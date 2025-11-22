@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"log"
+	"log/slog"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
@@ -72,7 +72,7 @@ func serve(cmd *cobra.Command, args []string) error {
 	case "avif":
 		imageFormat = loader.ImageAVIF
 	default:
-		log.Printf("Invalid image format %q. Defaulting to WebP.", serveFormat)
+		slog.Warn("Invalid image format; defaulting to WebP.", "format", serveFormat)
 	}
 
 	s, err := server.NewServer(host, port, path, watch, args[0], width, height, maxDuration, timeout, imageFormat, configOutFile, output2x)

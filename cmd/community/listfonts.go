@@ -45,13 +45,13 @@ func listFonts(cmd *cobra.Command, _ []string) error {
 
 			b, err := fonts.GetBytes(name)
 			if err != nil {
-				slog.Error("could not read font", "name", name, "err", err)
+				slog.Error("Could not read font", "name", name, "err", err)
 				continue
 			}
 
 			f, err := bdf.Parse(b)
 			if err != nil {
-				slog.Error("could not parse font", "name", name, "err", err)
+				slog.Error("Could not parse font", "name", name, "err", err)
 				continue
 			}
 

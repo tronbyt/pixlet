@@ -3,7 +3,7 @@ package runtime
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -146,7 +146,7 @@ func cacheGet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 
 	if err != nil {
 		// don't fail just because cache is misbehaving
-		log.Printf("getting %s from cache: %v", cacheKey, err)
+		slog.Error("Getting cache entry", "key", cacheKey, "error", err)
 		return starlark.None, nil
 	}
 
@@ -196,7 +196,7 @@ func cacheSet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 
 	err := cache.Set(thread, cacheKey, []byte(val.GoString()), ttl64)
 	if err != nil {
-		log.Printf("setting %s in cache: %v", cacheKey, err)
+		slog.Error("Setting cache entry", "key", cacheKey, "error", err)
 	}
 
 	return starlark.None, nil
