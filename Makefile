@@ -38,7 +38,7 @@ bench:
 
 build: gzip_fonts
 	$(GO_CMD) build $(LDFLAGS) $(TAGS) -o $(BINARY) github.com/tronbyt/pixlet
-	CGO_LDFLAGS=$(CGO_LDFLAGS) $(GO_CMD) build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared library/library.go
+	CGO_LDFLAGS=$(CGO_LDFLAGS) $(GO_CMD) build $(LDFLAGS) -tags lib -o $(LIBRARY) -buildmode=c-shared ./library
 
 widgets:
 	 $(GO_CMD) run ./runtime/gen
