@@ -258,5 +258,6 @@ func render(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("writing %s: %s", outPath, err)
 	}
 
+	slog.Info("Rendered image", "path", outPath)
 	return nil
 }
