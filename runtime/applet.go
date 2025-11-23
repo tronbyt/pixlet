@@ -74,8 +74,7 @@ type Applet struct {
 	mainFun    *starlark.Function
 	schemaFile string
 
-	Schema     *schema.Schema
-	SchemaJSON []byte
+	Schema *schema.Schema
 }
 
 func WithModuleLoader(loader ModuleLoader) AppletOption {
@@ -572,11 +571,6 @@ func (a *Applet) ensureLoaded(fsys fs.FS, pathToLoad string, currentlyLoading ..
 			a.Schema, err = schema.FromStarlark(schemaVal, globals)
 			if err != nil {
 				return fmt.Errorf("parsing schema for %s: %w", a.ID, err)
-			}
-
-			a.SchemaJSON, err = json.Marshal(a.Schema)
-			if err != nil {
-				return fmt.Errorf("serializing schema to JSON for %s: %w", a.ID, err)
 			}
 		}
 

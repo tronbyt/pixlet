@@ -153,7 +153,10 @@ def main():
 	assert.NoError(t, err)
 
 	var s schema.Schema
-	json.Unmarshal(app.SchemaJSON, &s)
+	tmp, err := json.Marshal(app.Schema)
+	require.NoError(t, err)
+	err = json.Unmarshal(tmp, &s)
+	require.NoError(t, err)
 
 	assert.Equal(t, schema.Schema{
 		Version: "1",
@@ -488,7 +491,10 @@ def main():
 	assert.NoError(t, err)
 
 	var s schema.Schema
-	json.Unmarshal(app.SchemaJSON, &s)
+	tmp, err := json.Marshal(app.Schema)
+	require.NoError(t, err)
+	err = json.Unmarshal(tmp, &s)
+	require.NoError(t, err)
 
 	assert.Equal(t, schema.Schema{
 		Version: "1",

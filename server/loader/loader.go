@@ -175,7 +175,7 @@ func (l *Loader) Run(ctx context.Context) error {
 				case ImageAVIF:
 					up.ImageType = "avif"
 				}
-				up.Schema = string(l.applet.SchemaJSON)
+				up.Schema = string(l.GetSchema())
 			}
 
 			l.updatesChan <- up
@@ -204,12 +204,16 @@ func (l *Loader) LoadApplet(config map[string]string) (string, error) {
 func (l *Loader) GetSchema() []byte {
 	<-l.initialLoad
 
-	s := l.applet.SchemaJSON
-	if len(s) > 0 {
-		return s
+	s := l.applet.Schema
+	if s == nil {
+		s = &schema.Schema{}
+
 	}
 
-	b, _ := json.Marshal(&schema.Schema{})
+	b, err := json.Marshal(s)
+	if err != nil {
+		slog.Error("Marshalling schema", "error", err)
+	}
 	return b
 }
 
