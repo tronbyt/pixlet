@@ -9,41 +9,52 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
-	"github.com/tronbyt/pixlet/cmd/config"
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
-var (
-	listURL string
-)
-
-func init() {
-	ListCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
-	_ = ListCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	ListCmd.Flags().StringVarP(&listURL, "url", "u", "", "base URL of Tronbyt API")
-	_ = ListCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+type listOptions struct {
+	apiToken string
+	baseURL  string
 }
 
-var ListCmd = &cobra.Command{
-	Use:   "list [device ID]",
-	Short: "Lists all apps installed on a Tronbyt",
-	Args:  cobra.MinimumNArgs(1),
-	RunE:  listInstallationsRun,
-	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-		if len(args) == 0 {
-			return completeDevices()
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	},
+func NewListCmd() *cobra.Command {
+	opts := &listOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "list [device ID]",
+		Short: "Lists all apps installed on a Tronbyt",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return listRun(cmd, args, opts)
+		},
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			if len(args) == 0 {
+				return completeDevices(cmd)
+			}
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
+	}
+
+	cmd.Flags().StringVarP(&opts.apiToken, "api-token", "t", opts.apiToken, "Tronbyt API token")
+	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
+	cmd.Flags().StringVarP(&opts.baseURL, "url", "u", opts.baseURL, "base URL of Tronbyt API")
+	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+
+	return cmd
 }
 
-func listInstallationsRun(cmd *cobra.Command, args []string) error {
+func listRun(cmd *cobra.Command, args []string, opts *listOptions) error {
 	deviceID := args[0]
 
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
 	defer w.Flush()
 
-	for inst, err := range getInstallations(deviceID) {
+	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
+	if err != nil {
+		return err
+	}
+
+	for inst, err := range getInstallations(deviceID, creds) {
 		if err != nil {
 			return err
 		}
@@ -54,34 +65,18 @@ func listInstallationsRun(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func getInstallations(deviceID string) iter.Seq2[*tronbytapi.Installation, error] {
+func getInstallations(deviceID string, creds apiCredentials) iter.Seq2[*tronbytapi.Installation, error] {
 	return func(yield func(*tronbytapi.Installation, error) bool) {
-		if listURL == "" {
-			var err error
-			if listURL, err = config.GetURL(); err != nil {
-				yield(nil, err)
-				return
-			}
-		}
-
-		if apiToken == "" {
-			var err error
-			if apiToken, err = config.GetToken(); err != nil {
-				yield(nil, err)
-				return
-			}
-		}
-
 		client := &http.Client{}
 		req, err := http.NewRequest(
 			"GET",
-			fmt.Sprintf("%s/v0/devices/%s/installations", listURL, deviceID), nil)
+			fmt.Sprintf("%s/v0/devices/%s/installations", creds.baseURL, deviceID), nil)
 		if err != nil {
 			yield(nil, fmt.Errorf("creating request: %w", err))
 			return
 		}
 
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", creds.token))
 
 		resp, err := client.Do(req)
 		if err != nil {

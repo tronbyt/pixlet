@@ -11,18 +11,21 @@ import (
 	"github.com/tronbyt/pixlet/schema"
 )
 
-var ValidateIconsCmd = &cobra.Command{
-	Use:     "validate-icons <path>",
-	Short:   "Validates the schema icons used are available in our mobile app.",
-	Example: `pixlet community validate-icons examples/schema_hello_world`,
-	Long: `This command determines if the icons selected in your app schema are supported
+func NewValidateIconsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "validate-icons <path>",
+		Short:   "Validates the schema icons used are available in our mobile app.",
+		Example: `pixlet community validate-icons examples/schema_hello_world`,
+		Long: `This command determines if the icons selected in your app schema are supported
 by our mobile app.`,
-	Args:              cobra.ExactArgs(1),
-	RunE:              ValidateIcons,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+		Args:              cobra.ExactArgs(1),
+		RunE:              ValidateIcons,
+		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+	return cmd
 }
 
-func ValidateIcons(cmd *cobra.Command, args []string) error {
+func ValidateIcons(_ *cobra.Command, args []string) error {
 	path := args[0]
 
 	cache := runtime.NewInMemoryCache()

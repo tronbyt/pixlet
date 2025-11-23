@@ -11,50 +11,49 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/tronbyt/pixlet/cmd/config"
+	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
-var (
+type pushOptions struct {
 	apiToken       string
 	installationID string
 	background     bool
-	pushURL        string
-)
-
-type TidbytPushJSON struct {
-	DeviceID       string `json:"deviceID"`
-	Image          string `json:"image"`
-	InstallationID string `json:"installationID"`
-	Background     bool   `json:"background"`
+	baseURL        string
 }
 
-func init() {
-	PushCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
-	_ = PushCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	PushCmd.Flags().StringVarP(&installationID, "installation-id", "i", "", "Give your installation an ID to keep it in the rotation")
-	_ = PushCmd.RegisterFlagCompletionFunc("installation-id", cobra.NoFileCompletions)
-	PushCmd.Flags().BoolVarP(&background, "background", "b", false, "Don't immediately show the image on the device")
-	PushCmd.Flags().StringVarP(&pushURL, "url", "u", "", "base URL of Tronbyt API")
-	_ = PushCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+func NewPushCmd() *cobra.Command {
+	opts := &pushOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "push [device ID] [webp image]",
+		Short: "Push a WebP to a Tronbyt",
+		Args:  cobra.MinimumNArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return pushRun(cmd, args, opts)
+		},
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			switch len(args) {
+			case 0:
+				return completeDevices(cmd)
+			case 1:
+				return []string{"webp"}, cobra.ShellCompDirectiveFilterFileExt
+			}
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
+	}
+
+	cmd.Flags().StringVarP(&opts.apiToken, "api-token", "t", opts.apiToken, "Tronbyt API token")
+	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
+	cmd.Flags().StringVarP(&opts.installationID, "installation-id", "i", opts.installationID, "Give your installation an ID to keep it in the rotation")
+	_ = cmd.RegisterFlagCompletionFunc("installation-id", cobra.NoFileCompletions)
+	cmd.Flags().BoolVarP(&opts.background, "background", "b", opts.background, "Don't immediately show the image on the device")
+	cmd.Flags().StringVarP(&opts.baseURL, "url", "u", opts.baseURL, "base URL of Tronbyt API")
+	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+
+	return cmd
 }
 
-var PushCmd = &cobra.Command{
-	Use:   "push [device ID] [webp image]",
-	Short: "Push a WebP to a Tronbyt",
-	Args:  cobra.MinimumNArgs(2),
-	RunE:  push,
-	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-		switch len(args) {
-		case 0:
-			return completeDevices()
-		case 1:
-			return []string{"webp"}, cobra.ShellCompDirectiveFilterFileExt
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	},
-}
-
-func push(cmd *cobra.Command, args []string) error {
+func pushRun(_ *cobra.Command, args []string, opts *pushOptions) error {
 	deviceID := args[0]
 	image := args[1]
 
@@ -62,25 +61,16 @@ func push(cmd *cobra.Command, args []string) error {
 	// folks in the short term. We should consider dropping this as an argument
 	// in a future release.
 	if len(args) == 3 {
-		installationID = args[2]
+		opts.installationID = args[2]
 	}
 
-	if background && len(installationID) == 0 {
+	if opts.background && len(opts.installationID) == 0 {
 		return fmt.Errorf("background push won't do anything unless you also specify an installation ID")
 	}
 
-	if pushURL == "" {
-		var err error
-		if pushURL, err = config.GetURL(); err != nil {
-			return err
-		}
-	}
-
-	if apiToken == "" {
-		var err error
-		if apiToken, err = config.GetToken(); err != nil {
-			return err
-		}
+	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
+	if err != nil {
+		return err
 	}
 
 	imageData, err := os.ReadFile(image)
@@ -89,11 +79,11 @@ func push(cmd *cobra.Command, args []string) error {
 	}
 
 	payload, err := json.Marshal(
-		TidbytPushJSON{
+		tronbytapi.PushPayload{
 			DeviceID:       deviceID,
 			Image:          base64.StdEncoding.EncodeToString(imageData),
-			InstallationID: installationID,
-			Background:     background,
+			InstallationID: opts.installationID,
+			Background:     opts.background,
 		},
 	)
 	if err != nil {
@@ -103,14 +93,14 @@ func push(cmd *cobra.Command, args []string) error {
 	client := &http.Client{}
 	req, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("%s/v0/devices/%s/push", pushURL, deviceID),
+		fmt.Sprintf("%s/v0/devices/%s/push", creds.baseURL, deviceID),
 		bytes.NewReader(payload),
 	)
 	if err != nil {
 		return fmt.Errorf("creating POST request: %w", err)
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", creds.token))
 
 	resp, err := client.Do(req)
 	if err != nil {

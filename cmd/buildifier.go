@@ -31,14 +31,6 @@ import (
 	"github.com/bazelbuild/buildtools/wspace"
 )
 
-var (
-	vflag        bool
-	rflag        bool
-	dryRunFlag   bool
-	fixFlag      bool
-	outputFormat string
-)
-
 func runBuildifier(args []string, lint string, mode string, format string, recursive bool, verbose bool) int {
 	tf := &utils.TempFile{}
 	defer tf.Clean()

@@ -9,31 +9,37 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var (
-	schemaOutput string
-)
-
-func init() {
-	SchemaCmd.Flags().StringVarP(&schemaOutput, "output", "o", "", "Path for schema")
-	_ = SchemaCmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
+type schemaOptions struct {
+	output string
 }
 
-var SchemaCmd = &cobra.Command{
-	Use:   "schema [path]",
-	Short: "Print the configuration schema for a Pixlet app",
-	Args:  cobra.MinimumNArgs(1),
-	RunE:  schema,
-	Long: `Determine the configuration schema for a Pixlet app.
+func NewSchemaCmd() *cobra.Command {
+	opts := &schemaOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "schema [path]",
+		Short: "Print the configuration schema for a Pixlet app",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return schemaRun(args, opts)
+		},
+		Long: `Determine the configuration schema for a Pixlet app.
 
 The path argument should be the path to the Pixlet app to run. The
 app can be a single file with the .star extension, or a directory
 containing multiple Starlark files and resources. The output is in
 JSON format.
 	`,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+
+	cmd.Flags().StringVarP(&opts.output, "output", "o", opts.output, "Path for schema")
+	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
+
+	return cmd
 }
 
-func schema(cmd *cobra.Command, args []string) error {
+func schemaRun(args []string, opts *schemaOptions) error {
 	path := args[0]
 
 	applet, err := runtime.NewAppletFromPath(path)
@@ -42,14 +48,14 @@ func schema(cmd *cobra.Command, args []string) error {
 	}
 	defer applet.Close()
 
-	if schemaOutput == "" || schemaOutput == "-" {
+	if opts.output == "" || opts.output == "-" {
 		buf, err := json.MarshalIndent(applet.Schema, "", "  ")
 		if err != nil {
 			return fmt.Errorf("failed to marshal JSON: %w", err)
 		}
 		fmt.Println(string(buf))
 	} else {
-		err = os.WriteFile(schemaOutput, applet.SchemaJSON, 0644)
+		err = os.WriteFile(opts.output, applet.SchemaJSON, 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write schema to file: %w", err)
 		}

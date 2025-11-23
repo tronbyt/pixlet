@@ -7,39 +7,8 @@ import (
 
 	"github.com/lmittmann/tint"
 	"github.com/mattn/go-isatty"
-	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd"
-	"github.com/tronbyt/pixlet/cmd/community"
-	"github.com/tronbyt/pixlet/cmd/config"
 )
-
-var (
-	rootCmd = &cobra.Command{
-		Use:          "pixlet",
-		Short:        "pixel graphics rendering",
-		Long:         "Pixlet renders graphics for pixel devices, like Tronbyt",
-		SilenceUsage: true,
-	}
-)
-
-func init() {
-	rootCmd.AddCommand(cmd.ApiCmd)
-	rootCmd.AddCommand(cmd.CheckCmd)
-	rootCmd.AddCommand(cmd.CreateCmd)
-	rootCmd.AddCommand(cmd.DeleteCmd)
-	rootCmd.AddCommand(cmd.DevicesCmd)
-	rootCmd.AddCommand(cmd.FormatCmd)
-	rootCmd.AddCommand(cmd.LintCmd)
-	rootCmd.AddCommand(cmd.ListCmd)
-	rootCmd.AddCommand(cmd.ProfileCmd)
-	rootCmd.AddCommand(cmd.PushCmd)
-	rootCmd.AddCommand(cmd.RenderCmd)
-	rootCmd.AddCommand(cmd.SchemaCmd)
-	rootCmd.AddCommand(cmd.ServeCmd)
-	rootCmd.AddCommand(config.ConfigCmd)
-	rootCmd.AddCommand(cmd.VersionCmd)
-	rootCmd.AddCommand(community.CommunityCmd)
-}
 
 func main() {
 	slog.SetDefault(slog.New(
@@ -50,7 +19,7 @@ func main() {
 		}),
 	))
 
-	if err := rootCmd.Execute(); err != nil {
+	if err := cmd.New().Execute(); err != nil {
 		os.Exit(1)
 	}
 }

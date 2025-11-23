@@ -10,17 +10,20 @@ import (
 	"github.com/tronbyt/pixlet/manifest"
 )
 
-var CreateManifestCmd = &cobra.Command{
-	Use:               "create-manifest <pathspec>",
-	Short:             "Creates an app manifest from a prompt",
-	Example:           `  pixlet community create-manifest manifest.yaml`,
-	Long:              `This command creates an app manifest by asking a series of prompts.`,
-	Args:              cobra.ExactArgs(1),
-	RunE:              CreateManifest,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"yaml"}, cobra.ShellCompDirectiveFilterFileExt),
+func NewCreateManifestCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "create-manifest <pathspec>",
+		Short:             "Creates an app manifest from a prompt",
+		Example:           `  pixlet community create-manifest manifest.yaml`,
+		Long:              `This command creates an app manifest by asking a series of prompts.`,
+		Args:              cobra.ExactArgs(1),
+		RunE:              CreateManifest,
+		ValidArgsFunction: cobra.FixedCompletions([]string{"yaml"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+	return cmd
 }
 
-func CreateManifest(cmd *cobra.Command, args []string) error {
+func CreateManifest(_ *cobra.Command, args []string) error {
 	fileName := filepath.Base(args[0])
 	if fileName != manifest.ManifestFileName {
 		return fmt.Errorf("supplied manifest must be named %s", manifest.ManifestFileName)

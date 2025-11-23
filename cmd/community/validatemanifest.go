@@ -9,23 +9,21 @@ import (
 	"github.com/tronbyt/pixlet/manifest"
 )
 
-var ValidateManifestAppFileName string
-
-func init() {
-}
-
-var ValidateManifestCmd = &cobra.Command{
-	Use:     "validate-manifest <pathspec>",
-	Short:   "Validates an app manifest is ready for publishing",
-	Example: `  pixlet community validate-manifest manifest.yaml`,
-	Long: `This command determines if your app manifest is configured properly by
+func NewValidateManifestCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "validate-manifest <pathspec>",
+		Short:   "Validates an app manifest is ready for publishing",
+		Example: `  pixlet community validate-manifest manifest.yaml`,
+		Long: `This command determines if your app manifest is configured properly by
 validating the contents of each field.`,
-	Args:              cobra.ExactArgs(1),
-	RunE:              ValidateManifest,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"yaml"}, cobra.ShellCompDirectiveFilterFileExt),
+		Args:              cobra.ExactArgs(1),
+		RunE:              ValidateManifest,
+		ValidArgsFunction: cobra.FixedCompletions([]string{"yaml"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+	return cmd
 }
 
-func ValidateManifest(cmd *cobra.Command, args []string) error {
+func ValidateManifest(_ *cobra.Command, args []string) error {
 	fileName := filepath.Base(args[0])
 	if fileName != manifest.ManifestFileName {
 		return fmt.Errorf("supplied manifest must be named %s", manifest.ManifestFileName)

@@ -17,3 +17,10 @@ type Installation struct {
 	Id    string `json:"id"`
 	AppId string `json:"appID"`
 }
+
+type PushPayload struct {
+	DeviceID       string `json:"deviceID"`
+	Image          string `json:"image"`
+	InstallationID string `json:"installationID"`
+	Background     bool   `json:"background"`
+}

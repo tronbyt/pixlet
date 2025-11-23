@@ -11,55 +11,66 @@ import (
 	pprof_driver "github.com/google/pprof/driver"
 	pprof_profile "github.com/google/pprof/profile"
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"go.starlark.net/starlark"
 
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var (
-	pprof_cmd       string
-	profileWidth    int
-	profileHeight   int
-	profileOutput2x bool
-)
-
-func init() {
-	ProfileCmd.Flags().StringVarP(
-		&pprof_cmd, "pprof", "", "top 10", "Command to call pprof with",
-	)
-	_ = ProfileCmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
-	ProfileCmd.Flags().IntVarP(
-		&profileWidth,
-		"width",
-		"w",
-		64,
-		"Set width",
-	)
-	_ = ProfileCmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
-	ProfileCmd.Flags().IntVarP(
-		&profileHeight,
-		"height",
-		"t",
-		32,
-		"Set height",
-	)
-	_ = ProfileCmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
-	ProfileCmd.Flags().BoolVarP(
-		&profileOutput2x,
-		"2x",
-		"2",
-		false,
-		"Render at 2x resolution",
-	)
+type profileOptions struct {
+	pprofCommand string
+	width        int
+	height       int
+	output2x     bool
 }
 
-var ProfileCmd = &cobra.Command{
-	Use:               "profile <path> [<key>=value>]...",
-	Short:             "Run a Pixlet app and print its execution-time profile",
-	Args:              cobra.MinimumNArgs(1),
-	RunE:              profile,
-	ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+func NewProfileCmd() *cobra.Command {
+	opts := &profileOptions{
+		pprofCommand: "top 10",
+		width:        render.DefaultFrameWidth,
+		height:       render.DefaultFrameHeight,
+	}
+
+	cmd := &cobra.Command{
+		Use:   "profile <path> [<key>=value>]...",
+		Short: "Run a Pixlet app and print its execution-time profile",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return profileRun(args, opts)
+		},
+		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+	}
+
+	cmd.Flags().StringVarP(
+		&opts.pprofCommand, "pprof", "", opts.pprofCommand, "Command to call pprof with",
+	)
+	_ = cmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
+	cmd.Flags().IntVarP(
+		&opts.width,
+		"width",
+		"w",
+		opts.width,
+		"Set width",
+	)
+	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
+	cmd.Flags().IntVarP(
+		&opts.height,
+		"height",
+		"t",
+		opts.height,
+		"Set height",
+	)
+	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
+	cmd.Flags().BoolVarP(
+		&opts.output2x,
+		"2x",
+		"2",
+		opts.output2x,
+		"Render at 2x resolution",
+	)
+
+	return cmd
 }
 
 // We save the profile into an in-memory buffer, which is simpler than the tool expects.
@@ -76,24 +87,25 @@ func MakeFetchFunc(prof *pprof_profile.Profile) FetchFunc {
 }
 
 // Calls the pprof program to print the top users of CPU, then exit
-type printUI struct{}
+type printUI struct {
+	command string
+	printed bool
+}
 
-var pprof_printed = false
-
-func (u printUI) ReadLine(prompt string) (string, error) {
-	if pprof_printed {
+func (u *printUI) ReadLine(prompt string) (string, error) {
+	if u.printed {
 		os.Exit(0)
 	}
-	pprof_printed = true
-	return pprof_cmd, nil
+	u.printed = true
+	return u.command, nil
 }
-func (u printUI) Print(args ...interface{})                    {}
-func (u printUI) PrintErr(args ...interface{})                 {}
-func (u printUI) IsTerminal() bool                             { return false }
-func (u printUI) WantBrowser() bool                            { return false }
-func (u printUI) SetAutoComplete(complete func(string) string) {}
+func (u *printUI) Print(args ...interface{})                    {}
+func (u *printUI) PrintErr(args ...interface{})                 {}
+func (u *printUI) IsTerminal() bool                             { return false }
+func (u *printUI) WantBrowser() bool                            { return false }
+func (u *printUI) SetAutoComplete(complete func(string) string) {}
 
-func profile(cmd *cobra.Command, args []string) error {
+func profileRun(args []string, opts *profileOptions) error {
 	path := args[0]
 
 	config := map[string]string{}
@@ -105,14 +117,15 @@ func profile(cmd *cobra.Command, args []string) error {
 		config[split[0]] = split[1]
 	}
 
-	profile, err := ProfileApp(path, config, profileWidth, profileHeight, profileOutput2x)
+	profile, err := ProfileApp(path, config, opts.width, opts.height, opts.output2x)
 	if err != nil {
 		return err
 	}
 
+	ui := &printUI{command: opts.pprofCommand}
 	options := &pprof_driver.Options{
 		Fetch: MakeFetchFunc(profile),
-		UI:    printUI{},
+		UI:    ui,
 	}
 	if err = pprof_driver.PProf(options); err != nil {
 		return fmt.Errorf("could not start pprof driver: %w", err)

@@ -7,63 +7,62 @@ import (
 	"net/http"
 
 	"github.com/spf13/cobra"
-	"github.com/tronbyt/pixlet/cmd/config"
 )
 
-var deleteURL string
-
-func init() {
-	DeleteCmd.Flags().StringVarP(&apiToken, "api-token", "t", "", "Tronbyt API token")
-	_ = DeleteCmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	DeleteCmd.Flags().StringVarP(&deleteURL, "url", "u", "", "base URL of Tronbyt API")
-	_ = DeleteCmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+type deleteOptions struct {
+	apiToken string
+	baseURL  string
 }
 
-var DeleteCmd = &cobra.Command{
-	Use:   "delete [device ID] [installation ID]",
-	Short: "Delete a Pixlet script from a Tronbyt",
-	Args:  cobra.MinimumNArgs(2),
-	RunE:  delete,
-	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-		switch len(args) {
-		case 0:
-			return completeDevices()
-		case 1:
-			return completeInstallations(args[0])
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	},
+func NewDeleteCmd() *cobra.Command {
+	opts := &deleteOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "delete [device ID] [installation ID]",
+		Short: "Delete a Pixlet script from a Tronbyt",
+		Args:  cobra.MinimumNArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return deleteRun(cmd, args, opts)
+		},
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			switch len(args) {
+			case 0:
+				return completeDevices(cmd)
+			case 1:
+				return completeInstallations(cmd, args[0])
+			}
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
+	}
+
+	cmd.Flags().StringVarP(&opts.apiToken, "api-token", "t", opts.apiToken, "Tronbyt API token")
+	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
+	cmd.Flags().StringVarP(&opts.baseURL, "url", "u", opts.baseURL, "base URL of Tronbyt API")
+	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
+
+	return cmd
 }
 
-func delete(cmd *cobra.Command, args []string) error {
+func deleteRun(_ *cobra.Command, args []string, opts *deleteOptions) error {
 	deviceID := args[0]
 	installationID := args[1]
 
-	if deleteURL == "" {
-		var err error
-		if deleteURL, err = config.GetURL(); err != nil {
-			return err
-		}
-	}
-
-	if apiToken == "" {
-		var err error
-		if apiToken, err = config.GetToken(); err != nil {
-			return err
-		}
+	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
+	if err != nil {
+		return err
 	}
 
 	client := &http.Client{}
 	req, err := http.NewRequest(
 		"DELETE",
-		fmt.Sprintf("%s/v0/devices/%s/installations/%s", deleteURL, deviceID, installationID),
+		fmt.Sprintf("%s/v0/devices/%s/installations/%s", creds.baseURL, deviceID, installationID),
 		nil,
 	)
 	if err != nil {
 		return fmt.Errorf("creating DELETE request: %w", err)
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", creds.token))
 
 	resp, err := client.Do(req)
 	if err != nil {
