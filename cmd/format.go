@@ -7,7 +7,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type formatOptions struct {
+	verbose   bool
+	recursive bool
+	dryRun    bool
+}
+
+func newFormatOptions() *formatOptions {
+	return &formatOptions{}
+}
+
 func NewFormatCmd() *cobra.Command {
+	opts := newFormatOptions()
+
 	cmd := &cobra.Command{
 		Use:   "format <pathspec>...",
 		Short: "Formats Tronbyt apps",
@@ -17,19 +29,21 @@ func NewFormatCmd() *cobra.Command {
 		Long: `The format command provides a code formatter for Tronbyt apps. By default, it
 will format your starlark source code in line. If you wish you see the output
 before applying, add the --dry-run flag.`,
-		Args:              cobra.MinimumNArgs(1),
-		RunE:              formatRun,
+		Args: cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return formatRun(args, opts)
+		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
 
-	cmd.Flags().BoolVarP(&vflag, "verbose", "v", false, "print verbose information to standard error")
-	cmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find starlark files recursively")
-	cmd.Flags().BoolVarP(&dryRunFlag, "dry-run", "d", false, "display a diff of formatting changes without modification")
+	cmd.Flags().BoolVarP(&opts.verbose, "verbose", "v", opts.verbose, "print verbose information to standard error")
+	cmd.Flags().BoolVarP(&opts.recursive, "recursive", "r", opts.recursive, "find starlark files recursively")
+	cmd.Flags().BoolVarP(&opts.dryRun, "dry-run", "d", opts.dryRun, "display a diff of formatting changes without modification")
 
 	return cmd
 }
 
-func formatRun(_ *cobra.Command, args []string) error {
+func formatRun(args []string, opts *formatOptions) error {
 	// Lint refers to the lint mode for buildifier, with the options being off,
 	// warn, or fix. For pixlet format, we don't want to lint at all.
 	lint := "off"
@@ -39,7 +53,7 @@ func formatRun(_ *cobra.Command, args []string) error {
 	// resolvable issue by default and provide a dry run flag to be able to
 	// diff the changes before fixing them.
 	mode := "fix"
-	if dryRunFlag {
+	if opts.dryRun {
 		mode = "diff"
 	}
 
@@ -49,7 +63,7 @@ func formatRun(_ *cobra.Command, args []string) error {
 	diff = differ
 
 	// Run buildifier and exit with the returned exit code.
-	exitCode := runBuildifier(args, lint, mode, "", rflag, vflag)
+	exitCode := runBuildifier(args, lint, mode, "", opts.recursive, opts.verbose)
 	if exitCode != 0 {
 		return fmt.Errorf("formatting returned non-zero exit status: %d", exitCode)
 	}

@@ -8,9 +8,14 @@ import (
 
 var formats = []string{"webp", "gif", "avif"}
 
-func completeInstallations(deviceID string) ([]string, cobra.ShellCompDirective) {
+func completeInstallations(cmd *cobra.Command, deviceID string) ([]string, cobra.ShellCompDirective) {
+	creds, err := resolveCommandAPICredentials(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
 	var installations []string
-	for i, err := range getInstallations(deviceID) {
+	for i, err := range getInstallations(deviceID, creds) {
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
@@ -19,9 +24,14 @@ func completeInstallations(deviceID string) ([]string, cobra.ShellCompDirective)
 	return installations, cobra.ShellCompDirectiveNoFileComp
 }
 
-func completeDevices() ([]string, cobra.ShellCompDirective) {
+func completeDevices(cmd *cobra.Command) ([]string, cobra.ShellCompDirective) {
+	creds, err := resolveCommandAPICredentials(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
 	var devices []string
-	for d, err := range getDevices() {
+	for d, err := range getDevices(creds) {
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}

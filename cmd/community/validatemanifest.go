@@ -9,8 +9,6 @@ import (
 	"github.com/tronbyt/pixlet/manifest"
 )
 
-var ValidateManifestAppFileName string
-
 func NewValidateManifestCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "validate-manifest <pathspec>",

@@ -14,9 +14,16 @@ import (
 	"github.com/tronbyt/pixlet/manifest"
 )
 
-var maxRenderTime = 1 * time.Second
+type checkOptions struct {
+	recursive     bool
+	maxRenderTime time.Duration
+}
 
 func NewCheckCmd() *cobra.Command {
+	opts := &checkOptions{
+		maxRenderTime: 1 * time.Second,
+	}
+
 	cmd := &cobra.Command{
 		Use:     "check <path>...",
 		Example: `pixlet check examples/clock`,
@@ -31,19 +38,25 @@ The check command runs a series of checks to ensure your app is ready
 to publish in the community repo. Every failed check will have a solution
 provided. If your app fails a check, try the provided solution and reach out on
 Discord if you get stuck.`,
-		Args:              cobra.MinimumNArgs(1),
-		RunE:              checkRun,
+		Args: cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return checkRun(cmd, args, opts)
+		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
 
-	cmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find apps recursively")
-	cmd.Flags().DurationVarP(&maxRenderTime, "max-render-time", "", maxRenderTime, "override the default max render time")
+	cmd.Flags().BoolVarP(&opts.recursive, "recursive", "r", opts.recursive, "find apps recursively")
+	cmd.Flags().DurationVarP(&opts.maxRenderTime, "max-render-time", "", opts.maxRenderTime, "override the default max render time")
 	_ = cmd.RegisterFlagCompletionFunc("max-render-time", cobra.NoFileCompletions)
 
 	return cmd
 }
 
-func checkRun(cmd *cobra.Command, args []string) error {
+func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
+	if opts.recursive {
+		// TODO: implement recursive traversal for check command.
+	}
+
 	// check every path.
 	foundIssue := false
 	for _, path := range args {
@@ -88,7 +101,6 @@ func checkRun(cmd *cobra.Command, args []string) error {
 
 		// Validate manifest.
 		manifestFile := filepath.Join(baseDir, manifest.ManifestFileName)
-		community.ValidateManifestAppFileName = filepath.Base(path)
 		err = community.ValidateManifest(cmd, []string{manifestFile})
 		if err != nil {
 			foundIssue = true
@@ -104,9 +116,11 @@ func checkRun(cmd *cobra.Command, args []string) error {
 		defer os.Remove(f.Name())
 
 		// Check if app renders.
-		silenceOutput = true
-		output = f.Name()
-		err = renderRun(cmd, []string{path})
+		renderOpts := newRenderOptions()
+		renderOpts.silenceOutput = true
+		renderOpts.output = f.Name()
+
+		err = renderRun(cmd, []string{path}, renderOpts)
 		if err != nil {
 			foundIssue = true
 			failure(path, fmt.Errorf("app failed to render: %w", err), "try `pixlet render` and resolve any runtime issues")
@@ -118,12 +132,12 @@ func checkRun(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return fmt.Errorf("could not profile app: %w", err)
 		}
-		if p.DurationNanos > maxRenderTime.Nanoseconds() {
+		if p.DurationNanos > opts.maxRenderTime.Nanoseconds() {
 			foundIssue = true
 			failure(
 				path,
 				fmt.Errorf("app takes too long to render %s", time.Duration(p.DurationNanos)),
-				fmt.Sprintf("try optimizing your app using `pixlet profile %s` to get it under %s", path, time.Duration(maxRenderTime)),
+				fmt.Sprintf("try optimizing your app using `pixlet profile %s` to get it under %s", path, time.Duration(opts.maxRenderTime)),
 			)
 			continue
 		}
@@ -140,14 +154,16 @@ func checkRun(cmd *cobra.Command, args []string) error {
 
 			realPath := filepath.Join(baseDir, p)
 
-			dryRunFlag = true
-			if err := formatRun(cmd, []string{realPath}); err != nil {
+			formatOpts := newFormatOptions()
+			formatOpts.dryRun = true
+			if err := formatRun([]string{realPath}, formatOpts); err != nil {
 				foundIssue = true
 				failure(p, fmt.Errorf("app is not formatted correctly: %w", err), fmt.Sprintf("try `pixlet format %s`", realPath))
 			}
 
-			outputFormat = "off"
-			err = lintRun(cmd, []string{realPath})
+			lintOpts := newLintOptions()
+			lintOpts.outputFormat = "off"
+			err = lintRun([]string{realPath}, lintOpts)
 			if err != nil {
 				foundIssue = true
 				failure(p, fmt.Errorf("app has lint warnings: %w", err), fmt.Sprintf("try `pixlet lint --fix %s`", realPath))

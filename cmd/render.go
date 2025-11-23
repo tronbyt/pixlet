@@ -11,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
@@ -18,8 +19,8 @@ import (
 
 const webpLevelFlag = "webp-level"
 
-var (
-	configJson        string
+type renderOptions struct {
+	configJSON        string
 	output            string
 	magnify           int
 	imageOutputFormat string
@@ -31,14 +32,30 @@ var (
 	colorFilter       string
 	output2x          bool
 	webpLevel         int32
-)
+}
+
+func newRenderOptions() *renderOptions {
+	return &renderOptions{
+		magnify:           1,
+		imageOutputFormat: "webp",
+		maxDuration:       15 * time.Second,
+		width:             render.DefaultFrameWidth,
+		height:            render.DefaultFrameHeight,
+		timeout:           30 * time.Second,
+		webpLevel:         encode.WebPLevelDefault,
+	}
+}
 
 func NewRenderCmd() *cobra.Command {
+	opts := newRenderOptions()
+
 	cmd := &cobra.Command{
 		Use:   "render [path] [<key>=value>]...",
 		Short: "Run a Pixlet app with provided config parameters",
 		Args:  cobra.MinimumNArgs(1),
-		RunE:  renderRun,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return renderRun(cmd, args, opts)
+		},
 		Long: `Render a Pixlet app with provided config parameters.
 
 The path argument should be the path to the Pixlet app to run. The
@@ -48,29 +65,29 @@ containing multiple Starlark files and resources.
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
 
-	cmd.Flags().StringVarP(&configJson, "config", "c", "", "Config file in json format")
+	cmd.Flags().StringVarP(&opts.configJSON, "config", "c", opts.configJSON, "Config file in json format")
 	_ = cmd.RegisterFlagCompletionFunc("config", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveNoFileComp))
 
-	cmd.Flags().StringVarP(&output, "output", "o", "", "Path for rendered image")
+	cmd.Flags().StringVarP(&opts.output, "output", "o", opts.output, "Path for rendered image")
 	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveFilterFileExt))
 
-	cmd.Flags().StringVarP(&imageOutputFormat, "format", "", "webp", "Output format. One of webp|gif|avif")
+	cmd.Flags().StringVarP(&opts.imageOutputFormat, "format", "", opts.imageOutputFormat, "Output format. One of webp|gif|avif")
 	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
 
-	cmd.Flags().BoolVarP(&silenceOutput, "silent", "", false, "Silence print statements when rendering app")
+	cmd.Flags().BoolVarP(&opts.silenceOutput, "silent", "", opts.silenceOutput, "Silence print statements when rendering app")
 	cmd.Flags().IntVarP(
-		&magnify,
+		&opts.magnify,
 		"magnify",
 		"m",
-		1,
+		opts.magnify,
 		"Increase image dimension by a factor (useful for debugging)",
 	)
 	_ = cmd.RegisterFlagCompletionFunc("magnify", cobra.NoFileCompletions)
 
 	cmd.Flags().StringVar(
-		&colorFilter,
+		&opts.colorFilter,
 		"color-filter",
-		"",
+		opts.colorFilter,
 		`Apply a color filter. (See "pixlet community list-color-filters")`,
 	)
 	_ = cmd.RegisterFlagCompletionFunc("color-filter", func(cmd *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
@@ -83,53 +100,53 @@ containing multiple Starlark files and resources.
 	})
 
 	cmd.Flags().IntVarP(
-		&width,
+		&opts.width,
 		"width",
 		"w",
-		64,
+		opts.width,
 		"Set width",
 	)
 	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
 
 	cmd.Flags().IntVarP(
-		&height,
+		&opts.height,
 		"height",
 		"t",
-		32,
+		opts.height,
 		"Set height",
 	)
 	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
 
 	cmd.Flags().DurationVarP(
-		&maxDuration,
+		&opts.maxDuration,
 		"max-duration",
 		"d",
-		15*time.Second,
+		opts.maxDuration,
 		"Maximum allowed animation duration",
 	)
 	_ = cmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
 
 	cmd.Flags().DurationVarP(
-		&timeout,
+		&opts.timeout,
 		"timeout",
 		"",
-		30*time.Second,
+		opts.timeout,
 		"Timeout for execution",
 	)
 	_ = cmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
 
 	cmd.Flags().BoolVarP(
-		&output2x,
+		&opts.output2x,
 		"2x",
 		"2",
-		false,
+		opts.output2x,
 		"Render at 2x resolution",
 	)
 	cmd.Flags().Int32VarP(
-		&webpLevel,
+		&opts.webpLevel,
 		webpLevelFlag,
 		"z",
-		encode.WebPLevelDefault,
+		opts.webpLevel,
 		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
 	)
 	_ = cmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
@@ -137,7 +154,7 @@ containing multiple Starlark files and resources.
 	return cmd
 }
 
-func renderRun(cmd *cobra.Command, args []string) error {
+func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	path := args[0]
 
 	// check if path exists, and whether it is a directory or a file
@@ -162,18 +179,12 @@ func renderRun(cmd *cobra.Command, args []string) error {
 		outPath = strings.TrimSuffix(path, ".star")
 	}
 
-	if output2x {
+	if opts.output2x {
 		outPath += "@2x"
 	}
 
-	imageFormat = loader.ImageWebP
-	switch imageOutputFormat {
-	case "webp":
-		imageFormat = loader.ImageWebP
-		outPath += ".webp"
-		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
-			encode.SetWebPLevel(webpLevel)
-		}
+	imageFormat := loader.ImageWebP
+	switch opts.imageOutputFormat {
 	case "gif":
 		imageFormat = loader.ImageGIF
 		outPath += ".gif"
@@ -181,17 +192,23 @@ func renderRun(cmd *cobra.Command, args []string) error {
 		imageFormat = loader.ImageAVIF
 		outPath += ".avif"
 	default:
-		slog.Warn("Invalid image format; defaulting to WebP.", "format", imageOutputFormat)
+		if opts.imageOutputFormat != "webp" {
+			slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.imageOutputFormat)
+		}
+		outPath += ".webp"
+		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
+			encode.SetWebPLevel(opts.webpLevel)
+		}
 	}
-	if output != "" {
-		outPath = output
+	if opts.output != "" {
+		outPath = opts.output
 	}
 
 	config := map[string]string{}
 
-	if configJson != "" {
+	if opts.configJSON != "" {
 		// Open the JSON file.
-		f, err := os.Open(configJson)
+		f, err := os.Open(opts.configJSON)
 		if err != nil {
 			return fmt.Errorf("file open error %v", err)
 		}
@@ -199,7 +216,7 @@ func renderRun(cmd *cobra.Command, args []string) error {
 		err = json.NewDecoder(f).Decode(&config)
 		if err != nil {
 			_ = f.Close()
-			return fmt.Errorf("failed to unmarshal JSON %v: %w", configJson, err)
+			return fmt.Errorf("failed to unmarshal JSON %v: %w", opts.configJSON, err)
 		}
 
 		_ = f.Close()
@@ -217,20 +234,20 @@ func renderRun(cmd *cobra.Command, args []string) error {
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	filters := &encode.RenderFilters{Magnify: magnify}
-	if colorFilter != "" {
-		if filters.ColorFilter, err = encode.ColorFilterString(colorFilter); err != nil {
+	filters := &encode.RenderFilters{Magnify: opts.magnify}
+	if opts.colorFilter != "" {
+		if filters.ColorFilter, err = encode.ColorFilterString(opts.colorFilter); err != nil {
 			return err
 		}
 	}
 
 	meta := canvas.Metadata{
-		Width:  width,
-		Height: height,
-		Is2x:   output2x,
+		Width:  opts.width,
+		Height: opts.height,
+		Is2x:   opts.output2x,
 	}
 
-	buf, _, err := loader.RenderApplet(path, config, meta, maxDuration, timeout, imageFormat, silenceOutput, nil, filters)
+	buf, _, err := loader.RenderApplet(path, config, meta, opts.maxDuration, opts.timeout, imageFormat, opts.silenceOutput, nil, filters)
 	if err != nil {
 		return fmt.Errorf("error rendering: %w", err)
 	}

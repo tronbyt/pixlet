@@ -7,7 +7,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type lintOptions struct {
+	verbose      bool
+	recursive    bool
+	fix          bool
+	outputFormat string
+}
+
+func newLintOptions() *lintOptions {
+	return &lintOptions{}
+}
+
 func NewLintCmd() *cobra.Command {
+	opts := newLintOptions()
+
 	cmd := &cobra.Command{
 		Use: "lint <pathspec>...",
 		Example: `  pixlet lint app.star
@@ -16,21 +29,23 @@ func NewLintCmd() *cobra.Command {
 		Long: `The lint command provides a linter for Tronbyt apps. It's capable of linting a
 file, a list of files, or directory with the recursive option. Additionally, it
 provides an option to automatically fix resolvable linter issues.`,
-		Args:              cobra.MinimumNArgs(1),
-		RunE:              lintRun,
+		Args: cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return lintRun(args, opts)
+		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
 
-	cmd.Flags().BoolVarP(&vflag, "verbose", "v", false, "print verbose information to standard error")
-	cmd.Flags().BoolVarP(&rflag, "recursive", "r", false, "find starlark files recursively")
-	cmd.Flags().BoolVarP(&fixFlag, "fix", "f", false, "automatically fix resolvable lint issues")
-	cmd.Flags().StringVarP(&outputFormat, "output", "o", "", "output format: text, json, or off")
+	cmd.Flags().BoolVarP(&opts.verbose, "verbose", "v", opts.verbose, "print verbose information to standard error")
+	cmd.Flags().BoolVarP(&opts.recursive, "recursive", "r", opts.recursive, "find starlark files recursively")
+	cmd.Flags().BoolVarP(&opts.fix, "fix", "f", opts.fix, "automatically fix resolvable lint issues")
+	cmd.Flags().StringVarP(&opts.outputFormat, "output", "o", opts.outputFormat, "output format: text, json, or off")
 	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"text", "json", "off"}, cobra.ShellCompDirectiveNoFileComp))
 
 	return cmd
 }
 
-func lintRun(_ *cobra.Command, args []string) error {
+func lintRun(args []string, opts *lintOptions) error {
 	// Mode refers to formatting mode for buildifier, with the options being
 	// check, diff, or fix. For the pixlet lint command, we only want to check
 	// formatting.
@@ -42,7 +57,7 @@ func lintRun(_ *cobra.Command, args []string) error {
 	lint := "warn"
 
 	// If the fix flag is enabled, the lint command should both format and lint.
-	if fixFlag {
+	if opts.fix {
 		mode = "fix"
 		lint = "fix"
 	}
@@ -53,7 +68,7 @@ func lintRun(_ *cobra.Command, args []string) error {
 	diff = differ
 
 	// Run buildifier and exit with the returned exit code.
-	exitCode := runBuildifier(args, lint, mode, outputFormat, rflag, vflag)
+	exitCode := runBuildifier(args, lint, mode, opts.outputFormat, opts.recursive, opts.verbose)
 	if exitCode != 0 {
 		return fmt.Errorf("linting failed with exit code: %d", exitCode)
 	}
@@ -62,11 +77,11 @@ func lintRun(_ *cobra.Command, args []string) error {
 	// even if there are still lint issues that could not be fixed. So we need
 	// to run it twice to get the full picture - once with fix enabled and once
 	// more to determine what else needs to be fixed manually.
-	if fixFlag {
+	if opts.fix {
 		mode = "check"
 		lint = "warn"
 
-		exitCode := runBuildifier(args, lint, mode, outputFormat, rflag, vflag)
+		exitCode := runBuildifier(args, lint, mode, opts.outputFormat, opts.recursive, opts.verbose)
 		if exitCode != 0 {
 			return fmt.Errorf("linting failed with exit code: %d", exitCode)
 		}

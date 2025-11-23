@@ -6,25 +6,47 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/server"
 	"github.com/tronbyt/pixlet/server/loader"
 )
 
-var (
+type serveOptions struct {
 	host          string
 	port          int
 	path          string
 	watch         bool
-	serveFormat   string
+	format        string
 	configOutFile string
-)
+	maxDuration   time.Duration
+	timeout       time.Duration
+	width         int
+	height        int
+	output2x      bool
+	webpLevel     int32
+}
 
 func NewServeCmd() *cobra.Command {
+	opts := &serveOptions{
+		host:        "127.0.0.1",
+		port:        8080,
+		path:        "/",
+		watch:       true,
+		format:      "webp",
+		maxDuration: 15 * time.Second,
+		timeout:     30 * time.Second,
+		width:       render.DefaultFrameWidth,
+		height:      render.DefaultFrameHeight,
+		webpLevel:   encode.WebPLevelDefault,
+	}
+
 	cmd := &cobra.Command{
 		Use:   "serve [path]",
 		Short: "Serve a Pixlet app in a web server",
 		Args:  cobra.ExactArgs(1),
-		RunE:  serveRun,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return serveRun(cmd, args, opts)
+		},
 		Long: `Serve a Pixlet app in a web server.
 
 The path argument should be the path to the Pixlet program to run. The
@@ -33,28 +55,28 @@ containing multiple Starlark files and resources.`,
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
 
-	cmd.Flags().StringVarP(&configOutFile, "saveconfig", "o", "", "Output file for config changes")
+	cmd.Flags().StringVarP(&opts.configOutFile, "saveconfig", "o", opts.configOutFile, "Output file for config changes")
 	_ = cmd.RegisterFlagCompletionFunc("saveconfig", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
-	cmd.Flags().StringVarP(&host, "host", "i", "127.0.0.1", "Host interface for serving rendered images")
+	cmd.Flags().StringVarP(&opts.host, "host", "i", opts.host, "Host interface for serving rendered images")
 	_ = cmd.RegisterFlagCompletionFunc("host", cobra.NoFileCompletions)
-	cmd.Flags().IntVarP(&port, "port", "p", 8080, "Port for serving rendered images")
+	cmd.Flags().IntVarP(&opts.port, "port", "p", opts.port, "Port for serving rendered images")
 	_ = cmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
-	cmd.Flags().BoolVarP(&watch, "watch", "w", true, "Reload scripts on change. Does not recurse sub-directories.")
-	cmd.Flags().DurationVarP(&maxDuration, "max-duration", "d", 15*time.Second, "Maximum allowed animation duration")
+	cmd.Flags().BoolVarP(&opts.watch, "watch", "w", opts.watch, "Reload scripts on change. Does not recurse sub-directories.")
+	cmd.Flags().DurationVarP(&opts.maxDuration, "max-duration", "d", opts.maxDuration, "Maximum allowed animation duration")
 	_ = cmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
-	cmd.Flags().DurationVarP(&timeout, "timeout", "", 30*time.Second, "Timeout for execution")
+	cmd.Flags().DurationVarP(&opts.timeout, "timeout", "", opts.timeout, "Timeout for execution")
 	_ = cmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&serveFormat, "format", "", "webp", "Image format. One of webp|gif|avif")
+	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Image format. One of webp|gif|avif")
 	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
-	cmd.Flags().StringVarP(&path, "path", "", "/", "Path to serve the app on")
+	cmd.Flags().StringVarP(&opts.path, "path", "", opts.path, "Path to serve the app on")
 	_ = cmd.RegisterFlagCompletionFunc("path", cobra.NoFileCompletions)
-	cmd.Flags().IntVar(&width, "width", 64, "Set width")
+	cmd.Flags().IntVar(&opts.width, "width", opts.width, "Set width")
 	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
-	cmd.Flags().IntVarP(&height, "height", "t", 32, "Set height")
+	cmd.Flags().IntVarP(&opts.height, "height", "t", opts.height, "Set height")
 	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
-	cmd.Flags().BoolVarP(&output2x, "2x", "2", false, "Render at 2x resolution")
+	cmd.Flags().BoolVarP(&opts.output2x, "2x", "2", opts.output2x, "Render at 2x resolution")
 	cmd.Flags().Int32VarP(
-		&webpLevel,
+		&opts.webpLevel,
 		webpLevelFlag,
 		"z",
 		encode.WebPLevelDefault,
@@ -65,23 +87,23 @@ containing multiple Starlark files and resources.`,
 	return cmd
 }
 
-func serveRun(cmd *cobra.Command, args []string) error {
+func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 	imageFormat := loader.ImageWebP
-	switch serveFormat {
-	case "webp":
-		imageFormat = loader.ImageWebP
-		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
-			encode.SetWebPLevel(webpLevel)
-		}
+	switch opts.format {
 	case "gif":
 		imageFormat = loader.ImageGIF
 	case "avif":
 		imageFormat = loader.ImageAVIF
 	default:
-		slog.Warn("Invalid image format; defaulting to WebP.", "format", serveFormat)
+		if opts.format != "webp" {
+			slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.format)
+		}
+		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
+			encode.SetWebPLevel(opts.webpLevel)
+		}
 	}
 
-	s, err := server.NewServer(host, port, path, watch, args[0], width, height, maxDuration, timeout, imageFormat, configOutFile, output2x)
+	s, err := server.NewServer(opts.host, opts.port, opts.path, opts.watch, args[0], opts.width, opts.height, opts.maxDuration, opts.timeout, imageFormat, opts.configOutFile, opts.output2x)
 	if err != nil {
 		return err
 	}
