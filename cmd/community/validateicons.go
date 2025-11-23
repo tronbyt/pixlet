@@ -1,14 +1,12 @@
 package community
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
 
 	"github.com/tronbyt/pixlet/icons"
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/schema"
 )
 
 func NewValidateIconsCmd() *cobra.Command {
@@ -38,24 +36,15 @@ func ValidateIcons(_ *cobra.Command, args []string) error {
 	}
 	defer applet.Close()
 
-	s := schema.Schema{}
-	js := applet.SchemaJSON
-	if len(js) == 0 {
-		return nil
-	}
+	if applet.Schema != nil {
+		for _, field := range applet.Schema.Fields {
+			if field.Icon == "" {
+				continue
+			}
 
-	err = json.Unmarshal(js, &s)
-	if err != nil {
-		return fmt.Errorf("failed to load schema: %w", err)
-	}
-
-	for _, field := range s.Fields {
-		if field.Icon == "" {
-			continue
-		}
-
-		if _, ok := icons.IconsMap[field.Icon]; !ok {
-			return fmt.Errorf("app '%s' contains unknown icon: '%s'", applet.ID, field.Icon)
+			if _, ok := icons.IconsMap[field.Icon]; !ok {
+				return fmt.Errorf("app '%s' contains unknown icon: '%s'", applet.ID, field.Icon)
+			}
 		}
 	}
 

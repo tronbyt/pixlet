@@ -33,6 +33,7 @@ const (
 	statusErrInvalidPath    = -5
 	statusErrStarSuffix     = -6
 	statusErrUnknownApplet  = -7
+	statusErrSchemaFailure  = -8
 )
 
 // render_app renders an applet based on the provided parameters.
@@ -143,7 +144,12 @@ func get_schema(pathPtr *C.char, width, height C.int, output2x C.bool) (*C.char,
 	}
 	defer applet.Close()
 
-	return (*C.char)(C.CString(string(applet.SchemaJSON))), 0
+	b, err := json.Marshal(applet.Schema)
+	if err != nil {
+		return nil, C.int(statusErrSchemaFailure)
+	}
+
+	return (*C.char)(C.CString(string(b))), 0
 }
 
 //export call_handler

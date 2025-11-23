@@ -55,7 +55,12 @@ func schemaRun(args []string, opts *schemaOptions) error {
 		}
 		fmt.Println(string(buf))
 	} else {
-		err = os.WriteFile(opts.output, applet.SchemaJSON, 0644)
+		b, err := json.Marshal(applet.Schema)
+		if err != nil {
+			return fmt.Errorf("failed to marshal JSON: %w", err)
+		}
+
+		err = os.WriteFile(opts.output, b, 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write schema to file: %w", err)
 		}

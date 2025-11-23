@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -15,8 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.starlark.net/starlark"
-
-	"github.com/tronbyt/pixlet/schema"
 )
 
 func TestLoadEmptySrc(t *testing.T) {
@@ -202,9 +199,7 @@ def get_schema():
 	require.NoError(t, err)
 	require.NotNil(t, app)
 
-	var s schema.Schema
-	json.Unmarshal(app.SchemaJSON, &s)
-	assert.Equal(t, "1", s.Version)
+	assert.Equal(t, "1", app.Schema.Version)
 
 	roots, err := app.Run(context.Background())
 	assert.NoError(t, err)
