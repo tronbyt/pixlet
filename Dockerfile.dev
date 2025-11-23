@@ -1,17 +1,14 @@
 FROM golang:latest
-# We need trixie/bookworm backports for libsharpyuv-dev
-RUN echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list && \
-    apt update && \
-    apt upgrade -y && \
-    apt install -y unzip libwebp-dev python3-venv python3-pip clang && \
-    apt install -y -t bookworm-backports libsharpyuv-dev && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends unzip libwebp-dev python3-venv python3-pip clang libsharpyuv-dev && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && apt-get install -y nodejs && node -v
+RUN curl -fsSL https://deb.nodesource.com/setup_25.x | bash - && apt-get install -y --no-install-recommends nodejs && node -v
 
 #uncomment below if you want to compile during build
-#RUN git clone https://github.com/tidbyt/pixlet.git
+#RUN git clone https://github.com/tronbyt/pixlet.git
 #WORKDIR /tmp/pixlet
 #RUN npm install && npm run build && make build
 

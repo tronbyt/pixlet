@@ -29,7 +29,7 @@ RUN --mount=type=cache,target=/var/lib/apt/lists <<EOT
     tzdata
 EOT
 
-COPY go.mod go.sum .
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY --from=xx / /
