@@ -109,7 +109,7 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 		}
 
 		// Create temporary file for app rendering.
-		f, err := os.CreateTemp("", "")
+		f, err := os.CreateTemp("", "pixlet-check-"+filepath.Base(baseDir)+"-*")
 		if err != nil {
 			return fmt.Errorf("could not create temp file for rendering, check your system: %w", err)
 		}
