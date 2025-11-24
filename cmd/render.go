@@ -234,20 +234,27 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	filters := &encode.RenderFilters{Magnify: opts.magnify}
+	filters := encode.RenderFilters{Magnify: opts.magnify}
 	if opts.colorFilter != "" {
 		if filters.ColorFilter, err = encode.ColorFilterString(opts.colorFilter); err != nil {
 			return err
 		}
 	}
 
-	meta := canvas.Metadata{
-		Width:  opts.width,
-		Height: opts.height,
-		Is2x:   opts.output2x,
-	}
-
-	buf, _, err := loader.RenderApplet(path, config, meta, opts.maxDuration, opts.timeout, imageFormat, opts.silenceOutput, nil, filters)
+	buf, _, err := loader.RenderApplet(
+		path,
+		config,
+		loader.WithMeta(canvas.Metadata{
+			Width:  opts.width,
+			Height: opts.height,
+			Is2x:   opts.output2x,
+		}),
+		loader.WithMaxDuration(opts.maxDuration),
+		loader.WithTimeout(opts.timeout),
+		loader.WithImageFormat(imageFormat),
+		loader.WithSilenceOutput(opts.silenceOutput),
+		loader.WithFilters(filters),
+	)
 	if err != nil {
 		return fmt.Errorf("error rendering: %w", err)
 	}

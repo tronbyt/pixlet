@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server"
 	"github.com/tronbyt/pixlet/server/loader"
 )
@@ -103,7 +104,22 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		}
 	}
 
-	s, err := server.NewServer(opts.host, opts.port, opts.path, opts.watch, args[0], opts.width, opts.height, opts.maxDuration, opts.timeout, imageFormat, opts.configOutFile, opts.output2x)
+	s, err := server.NewServer(
+		opts.host,
+		opts.port,
+		opts.path,
+		opts.watch,
+		args[0],
+		opts.configOutFile,
+		loader.WithMeta(canvas.Metadata{
+			Width:  opts.width,
+			Height: opts.height,
+			Is2x:   opts.output2x,
+		}),
+		loader.WithMaxDuration(opts.maxDuration),
+		loader.WithTimeout(opts.timeout),
+		loader.WithImageFormat(imageFormat),
+	)
 	if err != nil {
 		return err
 	}

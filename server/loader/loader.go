@@ -9,12 +9,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"time"
 
 	"github.com/tronbyt/pixlet/encode"
-	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
 )
@@ -30,8 +27,8 @@ const (
 // Loader is a structure to provide applet loading when a file changes or on
 // demand.
 type Loader struct {
-	id               string
 	root             *os.Root
+	conf             *RenderConfig
 	fileChanges      chan bool
 	watch            bool
 	applet           runtime.Applet
@@ -39,14 +36,8 @@ type Loader struct {
 	requestedChanges chan bool
 	updatesChan      chan Update
 	resultsChan      chan Update
-	maxDuration      time.Duration
 	initialLoad      chan bool
-	timeout          time.Duration
-	imageFormat      ImageFormat
 	configOutFile    string
-	width            int
-	height           int
-	output2x         bool
 }
 
 type Update struct {
@@ -66,14 +57,11 @@ func NewLoader(
 	watch bool,
 	fileChanges chan bool,
 	updatesChan chan Update,
-	width, height int,
-	maxDuration, timeout time.Duration,
-	imageFormat ImageFormat,
 	configOutFile string,
-	output2x bool,
+	options ...Option,
 ) (*Loader, error) {
 	l := &Loader{
-		id:               id,
+		conf:             NewRenderConfig(id, nil, options...),
 		root:             root,
 		fileChanges:      fileChanges,
 		watch:            watch,
@@ -82,14 +70,8 @@ func NewLoader(
 		configChanges:    make(chan map[string]string, 100),
 		requestedChanges: make(chan bool, 100),
 		resultsChan:      make(chan Update, 100),
-		maxDuration:      maxDuration,
 		initialLoad:      make(chan bool),
-		timeout:          timeout,
-		imageFormat:      imageFormat,
 		configOutFile:    configOutFile,
-		width:            width,
-		height:           height,
-		output2x:         output2x,
 	}
 
 	cache := runtime.NewInMemoryCache()
@@ -141,7 +123,7 @@ func (l *Loader) Run(ctx context.Context) error {
 				up.Err = err
 			} else {
 				up.Image = img
-				switch l.imageFormat {
+				switch l.conf.ImageFormat {
 				default:
 					fallthrough
 				case ImageWebP:
@@ -165,7 +147,7 @@ func (l *Loader) Run(ctx context.Context) error {
 				up.Err = err
 			} else {
 				up.Image = img
-				switch l.imageFormat {
+				switch l.conf.ImageFormat {
 				default:
 					fallthrough
 				case ImageWebP:
@@ -224,14 +206,10 @@ func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string
 
 func (l *Loader) loadApplet() error {
 	opts := []runtime.AppletOption{
-		runtime.WithCanvasMeta(canvas.Metadata{
-			Width:  l.width,
-			Height: l.height,
-			Is2x:   l.output2x,
-		}),
+		runtime.WithCanvasMeta(l.conf.Meta),
 	}
 
-	app, err := runtime.NewAppletFromRoot(l.id, l.root, opts...)
+	app, err := runtime.NewAppletFromRoot(l.conf.Path, l.root, opts...)
 	l.markInitialLoadComplete()
 	if err != nil {
 		return err
@@ -248,7 +226,10 @@ func (l *Loader) renderApplet(ctx context.Context, config map[string]string) (st
 		}
 	}
 
-	ctx, cancel := context.WithTimeoutCause(ctx, l.timeout, fmt.Errorf("timeout after %s", l.timeout))
+	ctx, cancel := context.WithTimeoutCause(
+		ctx, l.conf.Timeout,
+		fmt.Errorf("timeout after %s", l.conf.Timeout),
+	)
 	defer cancel()
 
 	roots, err := l.applet.RunWithConfig(ctx, config)
@@ -256,33 +237,33 @@ func (l *Loader) renderApplet(ctx context.Context, config map[string]string) (st
 		return "", fmt.Errorf("error running script: %w", err)
 	}
 
-	width, height := l.width, l.height
-	magnify := 1
-
-	if l.output2x {
-		if l.applet.Manifest != nil && l.applet.Manifest.Supports2x {
-			width *= 2
-			height *= 2
-		} else {
-			magnify = 2
-		}
+	if l.conf.Meta.Is2x && (l.applet.Manifest == nil || !l.applet.Manifest.Supports2x) {
+		l.conf.Meta.Is2x = false
+		l.conf.Filters.Magnify *= 2
 	}
 
-	screens := encode.ScreensFromRoots(roots, width, height)
+	screens := encode.ScreensFromRoots(roots, l.conf.Meta.ScaledWidth(), l.conf.Meta.ScaledHeight())
 
+	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
-	if magnify > 1 {
-		chain = append(chain, encode.Magnify(magnify))
+	if l.conf.Filters.Magnify > 1 {
+		chain = append(chain, encode.Magnify(l.conf.Filters.Magnify))
 	}
-	filter := encode.Chain(chain...)
+	if imageFilter, err := l.conf.Filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
+		chain = append(chain, imageFilter)
+	}
 
-	maxDuration := l.maxDuration
+	if len(chain) > 0 {
+		filter = encode.Chain(chain...)
+	}
+
+	maxDuration := l.conf.MaxDuration
 	if screens.ShowFullAnimation {
 		maxDuration = 0
 	}
 
 	var img []byte
-	switch l.imageFormat {
+	switch l.conf.ImageFormat {
 	default:
 		fallthrough
 	case ImageWebP:
@@ -307,38 +288,24 @@ func (l *Loader) markInitialLoadComplete() {
 	}
 }
 
-func RenderApplet(
-	path string,
-	config map[string]string,
-	meta canvas.Metadata,
-	maxDuration, timeout time.Duration,
-	imageFormat ImageFormat,
-	silenceOutput bool,
-	location *time.Location,
-	filters *encode.RenderFilters,
-) ([]byte, []string, error) {
-	if filters == nil {
-		filters = &encode.RenderFilters{
-			Magnify: 1,
-		}
-	}
-	if filters.Magnify == 0 {
-		filters.Magnify = 1
-	}
-	if meta.Width == 0 {
-		meta.Width = render.DefaultFrameWidth
-	}
-	if meta.Height == 0 {
-		meta.Height = render.DefaultFrameHeight
-	}
+func (l *Loader) Width() int {
+	return l.conf.Meta.ScaledWidth()
+}
+
+func (l *Loader) Height() int {
+	return l.conf.Meta.ScaledHeight()
+}
+
+func RenderApplet(path string, config map[string]string, options ...Option) ([]byte, []string, error) {
+	conf := NewRenderConfig(path, config, options...)
 
 	opts := []runtime.AppletOption{
-		runtime.WithCanvasMeta(meta),
-		runtime.WithLocation(location),
+		runtime.WithCanvasMeta(conf.Meta),
+		runtime.WithLocation(conf.Location),
 	}
 
 	var output []string
-	if silenceOutput {
+	if conf.SilenceOutput {
 		// Replace the print function from the starlark thread if the silent flag is passed.
 		opts = append(opts, runtime.WithPrintFunc(func(thread *starlark.Thread, msg string) {
 			output = append(output, msg)
@@ -346,9 +313,9 @@ func RenderApplet(
 	}
 
 	ctx := context.Background()
-	if timeout > 0 {
+	if conf.Timeout > 0 {
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeoutCause(ctx, timeout, fmt.Errorf("timeout after %s", timeout))
+		ctx, cancel = context.WithTimeoutCause(ctx, conf.Timeout, fmt.Errorf("timeout after %s", conf.Timeout))
 		defer cancel()
 	}
 
@@ -358,9 +325,9 @@ func RenderApplet(
 	}
 	defer applet.Close()
 
-	if meta.Is2x && (applet.Manifest == nil || !applet.Manifest.Supports2x) {
-		meta.Is2x = false
-		filters.Magnify *= 2
+	if conf.Meta.Is2x && (applet.Manifest == nil || !applet.Manifest.Supports2x) {
+		conf.Meta.Is2x = false
+		conf.Filters.Magnify *= 2
 	}
 
 	roots, err := applet.RunWithConfig(ctx, config)
@@ -368,14 +335,14 @@ func RenderApplet(
 		return nil, output, fmt.Errorf("error running script: %w", err)
 	}
 
-	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
+	screens := encode.ScreensFromRoots(roots, conf.Meta.ScaledWidth(), conf.Meta.ScaledHeight())
 
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
-	if filters.Magnify > 1 {
-		chain = append(chain, encode.Magnify(filters.Magnify))
+	if conf.Filters.Magnify > 1 {
+		chain = append(chain, encode.Magnify(conf.Filters.Magnify))
 	}
-	if imageFilter, err := filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
+	if imageFilter, err := conf.Filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
 		chain = append(chain, imageFilter)
 	}
 
@@ -386,36 +353,22 @@ func RenderApplet(
 	var buf []byte
 
 	if screens.ShowFullAnimation {
-		maxDuration = 0
+		conf.MaxDuration = 0
 	}
 
-	switch imageFormat {
+	switch conf.ImageFormat {
 	default:
 		fallthrough
 	case ImageWebP:
-		buf, err = screens.EncodeWebP(maxDuration, filter)
+		buf, err = screens.EncodeWebP(conf.MaxDuration, filter)
 	case ImageGIF:
-		buf, err = screens.EncodeGIF(maxDuration, filter)
+		buf, err = screens.EncodeGIF(conf.MaxDuration, filter)
 	case ImageAVIF:
-		buf, err = screens.EncodeAVIF(maxDuration, filter)
+		buf, err = screens.EncodeAVIF(conf.MaxDuration, filter)
 	}
 	if err != nil {
 		return nil, output, fmt.Errorf("error rendering: %w", err)
 	}
 
 	return buf, output, nil
-}
-
-func (l *Loader) Width() int {
-	if l.output2x {
-		return l.width * 2
-	}
-	return l.width
-}
-
-func (l *Loader) Height() int {
-	if l.output2x {
-		return l.height * 2
-	}
-	return l.height
 }
