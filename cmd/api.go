@@ -93,7 +93,7 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	filters := &encode.RenderFilters{Magnify: r.Magnify}
+	filters := encode.RenderFilters{Magnify: r.Magnify}
 	if r.ColorFilter != "" {
 		var err error
 		if filters.ColorFilter, err = encode.ColorFilterString(r.ColorFilter); err != nil {
@@ -102,13 +102,20 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	meta := canvas.Metadata{
-		Width:  r.Width,
-		Height: r.Height,
-		Is2x:   r.Output2x,
-	}
-
-	buf, _, err := loader.RenderApplet(r.Path, r.Config, meta, o.maxDuration, o.timeout, o.imageFormat, o.silenceOutput, nil, filters)
+	buf, _, err := loader.RenderApplet(
+		r.Path,
+		r.Config,
+		loader.WithMeta(canvas.Metadata{
+			Width:  r.Width,
+			Height: r.Height,
+			Is2x:   r.Output2x,
+		}),
+		loader.WithMaxDuration(o.maxDuration),
+		loader.WithTimeout(o.timeout),
+		loader.WithImageFormat(o.imageFormat),
+		loader.WithSilenceOutput(o.silenceOutput),
+		loader.WithFilters(filters),
+	)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error rendering: %v", err), http.StatusInternalServerError)
 		return

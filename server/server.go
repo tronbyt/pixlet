@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/server/browser"
@@ -30,11 +29,8 @@ func NewServer(
 	servePath string,
 	watch bool,
 	path string,
-	width, height int,
-	maxDuration, timeout time.Duration,
-	imageFormat loader.ImageFormat,
 	configOutFile string,
-	output2x bool,
+	options ...loader.Option,
 ) (*Server, error) {
 	fileChanges := make(chan bool, 100)
 
@@ -61,7 +57,7 @@ func NewServer(
 	w := NewWatcher(dir, fileChanges)
 
 	updatesChan := make(chan loader.Update, 100)
-	l, err := loader.NewLoader(filepath.Base(path), root, watch, fileChanges, updatesChan, width, height, maxDuration, timeout, imageFormat, configOutFile, output2x)
+	l, err := loader.NewLoader(filepath.Base(path), root, watch, fileChanges, updatesChan, configOutFile, options...)
 	if err != nil {
 		_ = root.Close()
 		return nil, err

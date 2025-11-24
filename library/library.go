@@ -73,14 +73,12 @@ func render_app(
 		return nil, C.int(statusErrInvalidConfig), nil, C.CString(fmt.Sprintf("error parsing config: %v", err))
 	}
 
-	var filters *encode.RenderFilters
+	var filters encode.RenderFilters
 	if filtersPtr != nil {
-		var parsed encode.RenderFilters
 		filtersStr := C.GoString(filtersPtr)
-		if err := json.Unmarshal([]byte(filtersStr), &parsed); err != nil {
+		if err := json.Unmarshal([]byte(filtersStr), &filters); err != nil {
 			return nil, C.int(statusErrInvalidFilters), nil, C.CString(fmt.Sprintf("invalid filters JSON: %v", err))
 		}
-		filters = &parsed
 	}
 
 	location := time.Local
@@ -92,18 +90,19 @@ func render_app(
 		}
 	}
 
-	meta := canvas.Metadata{
-		Width:  int(width),
-		Height: int(height),
-		Is2x:   bool(output2x),
-	}
-
 	result, messages, err := loader.RenderApplet(
-		path, config, meta,
-		time.Duration(maxDuration)*time.Millisecond,
-		time.Duration(timeout)*time.Millisecond,
-		loader.ImageFormat(imageFormat),
-		silenceOutput != 0, location, filters,
+		path, config,
+		loader.WithMeta(canvas.Metadata{
+			Width:  int(width),
+			Height: int(height),
+			Is2x:   bool(output2x),
+		}),
+		loader.WithMaxDuration(time.Duration(maxDuration)*time.Millisecond),
+		loader.WithTimeout(time.Duration(timeout)*time.Millisecond),
+		loader.WithImageFormat(loader.ImageFormat(imageFormat)),
+		loader.WithSilenceOutput(silenceOutput != 0),
+		loader.WithLocation(location),
+		loader.WithFilters(filters),
 	)
 
 	messagesJSON, _ := json.Marshal(messages)
@@ -131,13 +130,14 @@ func errorStatus(err error) int {
 func get_schema(pathPtr *C.char, width, height C.int, output2x C.bool) (*C.char, C.int) {
 	path := C.GoString(pathPtr)
 
-	meta := canvas.Metadata{
-		Width:  int(width),
-		Height: int(height),
-		Is2x:   bool(output2x),
-	}
-
-	applet, err := runtime.NewAppletFromPath(path, runtime.WithCanvasMeta(meta))
+	applet, err := runtime.NewAppletFromPath(
+		path,
+		runtime.WithCanvasMeta(canvas.Metadata{
+			Width:  int(width),
+			Height: int(height),
+			Is2x:   bool(output2x),
+		}),
+	)
 	if err != nil {
 		status := errorStatus(err)
 		return nil, C.int(status)
@@ -169,13 +169,14 @@ func call_handler(
 		}
 	}
 
-	meta := canvas.Metadata{
-		Width:  int(width),
-		Height: int(height),
-		Is2x:   bool(output2x),
-	}
-
-	applet, err := runtime.NewAppletFromPath(path, runtime.WithCanvasMeta(meta))
+	applet, err := runtime.NewAppletFromPath(
+		path,
+		runtime.WithCanvasMeta(canvas.Metadata{
+			Width:  int(width),
+			Height: int(height),
+			Is2x:   bool(output2x),
+		}),
+	)
 	if err != nil {
 		status := errorStatus(err)
 		return nil, C.int(status), C.CString(fmt.Sprintf("error loading app: %v", err))
