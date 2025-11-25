@@ -6,6 +6,7 @@ import (
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
+	"golang.org/x/text/language"
 )
 
 type RenderConfig struct {
@@ -17,6 +18,7 @@ type RenderConfig struct {
 	ImageFormat   ImageFormat
 	SilenceOutput bool
 	Location      *time.Location
+	Language      language.Tag
 	Filters       encode.RenderFilters
 }
 
@@ -30,6 +32,7 @@ func NewRenderConfig(path string, config map[string]string, options ...Option) *
 		},
 		ImageFormat: ImageWebP,
 		Location:    time.Local,
+		Language:    language.English,
 		Filters: encode.RenderFilters{
 			Magnify: 1,
 		},
@@ -47,6 +50,12 @@ func WithLocation(location *time.Location) Option {
 		if location != nil {
 			config.Location = location
 		}
+	}
+}
+
+func WithLanguage(lang language.Tag) Option {
+	return func(config *RenderConfig) {
+		config.Language = lang
 	}
 }
 

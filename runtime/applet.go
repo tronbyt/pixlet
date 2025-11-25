@@ -24,29 +24,30 @@ import (
 	starlibre "github.com/qri-io/starlib/re"
 	starlibzip "github.com/qri-io/starlib/zipfile"
 	"github.com/tronbyt/pixlet/manifest"
-	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
-	"github.com/tronbyt/pixlet/runtime/modules/time_runtime"
-	starlibjson "go.starlark.net/lib/json"
-	starlibmath "go.starlark.net/lib/math"
-	"go.starlark.net/starlark"
-	"go.starlark.net/starlarkstruct"
-	"go.starlark.net/starlarktest"
-	"go.starlark.net/syntax"
-
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime/modules/animation_runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
 	"github.com/tronbyt/pixlet/runtime/modules/file"
 	"github.com/tronbyt/pixlet/runtime/modules/hmac"
 	"github.com/tronbyt/pixlet/runtime/modules/humanize"
 	"github.com/tronbyt/pixlet/runtime/modules/qrcode"
 	"github.com/tronbyt/pixlet/runtime/modules/random"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/language_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 	"github.com/tronbyt/pixlet/runtime/modules/sunrise"
+	"github.com/tronbyt/pixlet/runtime/modules/time_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/xpath"
 	"github.com/tronbyt/pixlet/schema"
 	"github.com/tronbyt/pixlet/starlarkutil"
+	starlibjson "go.starlark.net/lib/json"
+	starlibmath "go.starlark.net/lib/math"
+	"go.starlark.net/starlark"
+	"go.starlark.net/starlarkstruct"
+	"go.starlark.net/starlarktest"
+	"go.starlark.net/syntax"
+	"golang.org/x/text/language"
 )
 
 type ModuleLoader func(*starlark.Thread, string) (starlark.StringDict, error)
@@ -133,6 +134,16 @@ func WithLocation(tz *time.Location) AppletOption {
 	return func(a *Applet) error {
 		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
 			time_runtime.SetLocation(t, tz)
+			return t
+		})
+		return nil
+	}
+}
+
+func WithLanguage(lang language.Tag) AppletOption {
+	return func(a *Applet) error {
+		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
+			language_runtime.AttachToThread(t, lang)
 			return t
 		})
 		return nil

@@ -13,6 +13,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
+	"golang.org/x/text/language"
 )
 
 type apiOptions struct {
@@ -66,6 +67,7 @@ type renderRequest struct {
 	Magnify     int               `json:"magnify"`
 	ColorFilter string            `json:"color_filter,omitempty"`
 	Output2x    bool              `json:"2x,omitempty"`
+	Locale      string            `json:"locale,omitempty"`
 }
 
 func validatePath(path string) bool {
@@ -102,6 +104,16 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	lang := language.English
+	if r.Locale != "" {
+		var err error
+		lang, err = language.Parse(r.Locale)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("invalid locale: %v", err), http.StatusBadRequest)
+			return
+		}
+	}
+
 	buf, _, err := loader.RenderApplet(
 		r.Path,
 		r.Config,
@@ -114,6 +126,7 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		loader.WithTimeout(o.timeout),
 		loader.WithImageFormat(o.imageFormat),
 		loader.WithSilenceOutput(o.silenceOutput),
+		loader.WithLanguage(lang),
 		loader.WithFilters(filters),
 	)
 	if err != nil {
