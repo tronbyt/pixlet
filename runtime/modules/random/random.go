@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -63,9 +64,9 @@ func randomSeed(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		return nil, fmt.Errorf("unpacking arguments for seed: %w", err)
 	}
 
-	seed, ok := starSeed.Int64()
-	if !ok {
-		return nil, fmt.Errorf("casting seed to int64")
+	seed, err := starlarkutil.AsInt64(starSeed)
+	if err != nil {
+		return nil, fmt.Errorf("parsing seed: %w", err)
 	}
 
 	rng, ok := thread.Local(threadRandKey).(*rand.Rand)
@@ -93,23 +94,21 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 		return nil, fmt.Errorf("unpacking arguments for random number: %w", err)
 	}
 
-	min, ok := starMin.Int64()
-	if !ok {
-		return nil, fmt.Errorf("casting min to an int64")
-
+	minVal, err := starlarkutil.AsInt64(starMin)
+	if err != nil {
+		return nil, fmt.Errorf("parsing min: %w", err)
 	}
 
-	max, ok := starMax.Int64()
-	if !ok {
-		return nil, fmt.Errorf("casting max to an int64")
-
+	maxVal, err := starlarkutil.AsInt64(starMax)
+	if err != nil {
+		return nil, fmt.Errorf("parsing max: %w", err)
 	}
 
-	if min < 0 {
+	if minVal < 0 {
 		return nil, fmt.Errorf("min has to be 0 or greater")
 	}
 
-	if max < min {
+	if maxVal < minVal {
 		return nil, fmt.Errorf("max is less than min")
 	}
 
@@ -118,5 +117,5 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 		return nil, fmt.Errorf("RNG not set (very bad!)")
 	}
 
-	return starlark.MakeInt64(rng.Int63n(max-min+1) + min), nil
+	return starlark.MakeInt64(rng.Int63n(maxVal-minVal+1) + minVal), nil
 }

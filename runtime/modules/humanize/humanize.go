@@ -11,6 +11,7 @@ import (
 	gohumanizeEnglish "github.com/dustin/go-humanize/english"
 	godfe "github.com/newm4n/go-dfe"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/language_runtime"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	startime "go.starlark.net/lib/time"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
@@ -201,7 +202,10 @@ func bytes(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 		return nil, fmt.Errorf("unpacking arguments for bytes: %s", err)
 	}
 
-	bytes := uint64(starBytes.BigInt().Uint64())
+	bytes, err := starlarkutil.AsUint64(starBytes)
+	if err != nil {
+		return nil, fmt.Errorf("parsing bytes: %w", err)
+	}
 	iec := bool(starIEC)
 
 	var val string
@@ -252,7 +256,10 @@ func comma(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 
 	switch starNum := starNum.(type) {
 	case starlark.Int:
-		val = starNum.BigInt().Int64()
+		var err error
+		if val, err = starlarkutil.AsInt64(starNum); err != nil {
+			return nil, fmt.Errorf("parsing num: %w", err)
+		}
 	case starlark.Float:
 		f := float64(starNum)
 		if math.IsInf(f, 0) {
@@ -284,8 +291,11 @@ func ordinal(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, 
 		return nil, fmt.Errorf("unpacking arguments for ordinal: %s", err)
 	}
 
-	num := int(starNum.BigInt().Int64())
-	val := gohumanize.Ordinal(num)
+	num, err := starlarkutil.AsInt64(starNum)
+	if err != nil {
+		return nil, fmt.Errorf("parsing num: %w", err)
+	}
+	val := gohumanize.Ordinal(int(num))
 	return starlark.String(val), nil
 }
 
@@ -309,8 +319,11 @@ func ftoa(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwa
 
 	switch starDigits := starDigits.(type) {
 	case starlark.Int:
-		digits := int(starDigits.BigInt().Int64())
-		val = gohumanize.FtoaWithDigits(num, digits)
+		digits, err := starlarkutil.AsInt64(starDigits)
+		if err != nil {
+			return nil, fmt.Errorf("parsing digits: %w", err)
+		}
+		val = gohumanize.FtoaWithDigits(num, int(digits))
 	case starlark.Float:
 		digits := int(starDigits)
 		val = gohumanize.FtoaWithDigits(num, digits)
@@ -356,7 +369,11 @@ func formatInt(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 		return nil, fmt.Errorf("unpacking arguments for formatFloat: %s", err)
 	}
 
-	val := gohumanize.FormatInteger(starFormat.GoString(), int(starNum.BigInt().Int64()))
+	num, err := starlarkutil.AsInt64(starNum)
+	if err != nil {
+		return nil, fmt.Errorf("parsing num: %w", err)
+	}
+	val := gohumanize.FormatInteger(starFormat.GoString(), int(num))
 	return starlark.String(val), nil
 }
 
@@ -377,7 +394,11 @@ func plural(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, k
 		return nil, fmt.Errorf("unpacking arguments for plural: %s", err)
 	}
 
-	val := gohumanizeEnglish.Plural(int(starQuantity.BigInt().Int64()), starSingular.GoString(), starPlural.GoString())
+	qty, err := starlarkutil.AsInt64(starQuantity)
+	if err != nil {
+		return nil, fmt.Errorf("parsing quantity: %w", err)
+	}
+	val := gohumanizeEnglish.Plural(int(qty), starSingular.GoString(), starPlural.GoString())
 	return starlark.String(val), nil
 }
 
@@ -398,7 +419,11 @@ func pluralWord(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		return nil, fmt.Errorf("unpacking arguments for pluralWord: %s", err)
 	}
 
-	val := gohumanizeEnglish.PluralWord(int(starQuantity.BigInt().Int64()), starSingular.GoString(), starPlural.GoString())
+	qty, err := starlarkutil.AsInt64(starQuantity)
+	if err != nil {
+		return nil, fmt.Errorf("parsing quantity: %w", err)
+	}
+	val := gohumanizeEnglish.PluralWord(int(qty), starSingular.GoString(), starPlural.GoString())
 	return starlark.String(val), nil
 }
 

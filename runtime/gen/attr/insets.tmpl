@@ -2,11 +2,14 @@
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 switch {{ .StarlarkName }}Val := {{ .StarlarkName }}.(type) {
 case starlark.Int:
-	{{ .StarlarkName }}Int := int({{ .StarlarkName }}Val.BigInt().Int64())
-	w.{{ .GoName }}.Left = {{ .StarlarkName }}Int
-	w.{{ .GoName }}.Top = {{ .StarlarkName }}Int
-	w.{{ .GoName }}.Right = {{ .StarlarkName }}Int
-	w.{{ .GoName }}.Bottom = {{ .StarlarkName }}Int
+	{{ .StarlarkName }}Int, err := starlarkutil.AsInt64({{ .StarlarkName }}Val)
+	if err != nil {
+		return nil, fmt.Errorf("parsing {{ .StarlarkName }}: %w", err)
+	}
+	w.{{ .GoName }}.Left = int({{ .StarlarkName }}Int)
+	w.{{ .GoName }}.Top = int({{ .StarlarkName }}Int)
+	w.{{ .GoName }}.Right = int({{ .StarlarkName }}Int)
+	w.{{ .GoName }}.Bottom = int({{ .StarlarkName }}Int)
 case starlark.Tuple:
 	{{ .StarlarkName }}List := []starlark.Value({{ .StarlarkName }}Val)
 	if len({{ .StarlarkName }}List) != 4 {
@@ -15,18 +18,22 @@ case starlark.Tuple:
 			len({{ .StarlarkName }}List),
 		)
 	}
-	{{ .StarlarkName }}ListInt := make([]starlark.Int, 4)
+	{{ .StarlarkName }}ListInt := make([]int, 4)
 	for i := 0; i < 4; i++ {
 		pi, ok := {{ .StarlarkName }}List[i].(starlark.Int)
 		if !ok {
 			return nil, fmt.Errorf("{{ .StarlarkName }} element %d is not int", i)
 		}
-		{{ .StarlarkName }}ListInt[i] = pi
+		{{ .StarlarkName }}Int, err := starlarkutil.AsInt64(pi)
+		if err != nil {
+			return nil, fmt.Errorf("parsing {{ .StarlarkName }} element %d: %w", i, err)
+		}
+		{{ .StarlarkName }}ListInt[i] = int({{ .StarlarkName }}Int)
 	}
-	w.{{ .GoName }}.Left = int({{ .StarlarkName }}ListInt[0].BigInt().Int64())
-	w.{{ .GoName }}.Top = int({{ .StarlarkName }}ListInt[1].BigInt().Int64())
-	w.{{ .GoName }}.Right = int({{ .StarlarkName }}ListInt[2].BigInt().Int64())
-	w.{{ .GoName }}.Bottom = int({{ .StarlarkName }}ListInt[3].BigInt().Int64())
+	w.{{ .GoName }}.Left = {{ .StarlarkName }}ListInt[0]
+	w.{{ .GoName }}.Top = {{ .StarlarkName }}ListInt[1]
+	w.{{ .GoName }}.Right = {{ .StarlarkName }}ListInt[2]
+	w.{{ .GoName }}.Bottom = {{ .StarlarkName }}ListInt[3]
 default:
 	return nil, fmt.Errorf("{{ .StarlarkName }} must be int or 4-tuple of int")
 }

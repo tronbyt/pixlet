@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 )
 
@@ -31,7 +32,12 @@ func newHandler(
 		return nil, fmt.Errorf("unpacking arguments for Handler: %s", err)
 	}
 
-	handlerType := HandlerReturnType(type_.BigInt().Int64())
+	typeInt, err := starlarkutil.AsInt64(type_)
+	if err != nil {
+		return nil, fmt.Errorf("parsing type: %w", err)
+	}
+
+	handlerType := HandlerReturnType(typeInt)
 	if handlerType != ReturnSchema &&
 		handlerType != ReturnOptions &&
 		handlerType != ReturnString &&

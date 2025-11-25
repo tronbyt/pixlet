@@ -12,6 +12,7 @@ import (
 	"go.starlark.net/starlarkstruct"
 
 	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/starlarkutil"
 )
 
 type RenderModule struct {
@@ -256,11 +257,23 @@ func newBox(
 		w.starlarkChild = child
 	}
 
-	w.Width = int(width.BigInt().Int64())
+	widthInt, err := starlarkutil.AsInt64(width)
+	if err != nil {
+		return nil, fmt.Errorf("parsing width: %w", err)
+	}
+	w.Width = int(widthInt)
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
-	w.Padding = int(padding.BigInt().Int64())
+	paddingInt, err := starlarkutil.AsInt64(padding)
+	if err != nil {
+		return nil, fmt.Errorf("parsing padding: %w", err)
+	}
+	w.Padding = int(paddingInt)
 
 	w.starlarkColor = color
 	if color.Len() > 0 {
@@ -404,7 +417,11 @@ func newCircle(
 		w.Color = c
 	}
 
-	w.Diameter = int(diameter.BigInt().Int64())
+	diameterInt, err := starlarkutil.AsInt64(diameter)
+	if err != nil {
+		return nil, fmt.Errorf("parsing diameter: %w", err)
+	}
+	w.Diameter = int(diameterInt)
 
 	if child != nil {
 		childWidget, ok := child.(Widget)
@@ -686,9 +703,17 @@ func newEmoji(
 
 	w.EmojiStr = emoji.GoString()
 
-	w.Width = int(width.BigInt().Int64())
+	widthInt, err := starlarkutil.AsInt64(width)
+	if err != nil {
+		return nil, fmt.Errorf("parsing width: %w", err)
+	}
+	w.Width = int(widthInt)
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
 	w.size = starlark.NewBuiltin("size", emojiSize)
 	w.frame_count = starlark.NewBuiltin("frame_count", emojiFrameCount)
@@ -830,9 +855,17 @@ func newImage(
 
 	w.Src = src.GoString()
 
-	w.Width = int(width.BigInt().Int64())
+	widthInt, err := starlarkutil.AsInt64(width)
+	if err != nil {
+		return nil, fmt.Errorf("parsing width: %w", err)
+	}
+	w.Width = int(widthInt)
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
 	w.size = starlark.NewBuiltin("size", imageSize)
 	w.frame_count = starlark.NewBuiltin("frame_count", imageFrameCount)
@@ -997,19 +1030,39 @@ func newMarquee(
 		w.starlarkChild = child
 	}
 
-	w.Width = int(width.BigInt().Int64())
+	widthInt, err := starlarkutil.AsInt64(width)
+	if err != nil {
+		return nil, fmt.Errorf("parsing width: %w", err)
+	}
+	w.Width = int(widthInt)
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
-	w.OffsetStart = int(offset_start.BigInt().Int64())
+	offset_startInt, err := starlarkutil.AsInt64(offset_start)
+	if err != nil {
+		return nil, fmt.Errorf("parsing offset_start: %w", err)
+	}
+	w.OffsetStart = int(offset_startInt)
 
-	w.OffsetEnd = int(offset_end.BigInt().Int64())
+	offset_endInt, err := starlarkutil.AsInt64(offset_end)
+	if err != nil {
+		return nil, fmt.Errorf("parsing offset_end: %w", err)
+	}
+	w.OffsetEnd = int(offset_endInt)
 
 	w.ScrollDirection = scroll_direction.GoString()
 
 	w.Align = align.GoString()
 
-	w.Delay = int(delay.BigInt().Int64())
+	delayInt, err := starlarkutil.AsInt64(delay)
+	if err != nil {
+		return nil, fmt.Errorf("parsing delay: %w", err)
+	}
+	w.Delay = int(delayInt)
 
 	w.frame_count = starlark.NewBuiltin("frame_count", marqueeFrameCount)
 
@@ -1162,11 +1215,14 @@ func newPadding(
 	w.starlarkPad = pad
 	switch padVal := pad.(type) {
 	case starlark.Int:
-		padInt := int(padVal.BigInt().Int64())
-		w.Pad.Left = padInt
-		w.Pad.Top = padInt
-		w.Pad.Right = padInt
-		w.Pad.Bottom = padInt
+		padInt, err := starlarkutil.AsInt64(padVal)
+		if err != nil {
+			return nil, fmt.Errorf("parsing pad: %w", err)
+		}
+		w.Pad.Left = int(padInt)
+		w.Pad.Top = int(padInt)
+		w.Pad.Right = int(padInt)
+		w.Pad.Bottom = int(padInt)
 	case starlark.Tuple:
 		padList := []starlark.Value(padVal)
 		if len(padList) != 4 {
@@ -1175,18 +1231,22 @@ func newPadding(
 				len(padList),
 			)
 		}
-		padListInt := make([]starlark.Int, 4)
+		padListInt := make([]int, 4)
 		for i := 0; i < 4; i++ {
 			pi, ok := padList[i].(starlark.Int)
 			if !ok {
 				return nil, fmt.Errorf("pad element %d is not int", i)
 			}
-			padListInt[i] = pi
+			padInt, err := starlarkutil.AsInt64(pi)
+			if err != nil {
+				return nil, fmt.Errorf("parsing pad element %d: %w", i, err)
+			}
+			padListInt[i] = int(padInt)
 		}
-		w.Pad.Left = int(padListInt[0].BigInt().Int64())
-		w.Pad.Top = int(padListInt[1].BigInt().Int64())
-		w.Pad.Right = int(padListInt[2].BigInt().Int64())
-		w.Pad.Bottom = int(padListInt[3].BigInt().Int64())
+		w.Pad.Left = padListInt[0]
+		w.Pad.Top = padListInt[1]
+		w.Pad.Right = padListInt[2]
+		w.Pad.Bottom = padListInt[3]
 	default:
 		return nil, fmt.Errorf("pad must be int or 4-tuple of int")
 	}
@@ -1337,7 +1397,11 @@ func newPieChart(
 		return nil, err
 	}
 
-	w.Diameter = int(diameter.BigInt().Int64())
+	diameterInt, err := starlarkutil.AsInt64(diameter)
+	if err != nil {
+		return nil, fmt.Errorf("parsing diameter: %w", err)
+	}
+	w.Diameter = int(diameterInt)
 
 	w.frame_count = starlark.NewBuiltin("frame_count", piechartFrameCount)
 
@@ -1485,9 +1549,17 @@ func newPlot(
 		return nil, err
 	}
 
-	w.Width = int(width.BigInt().Int64())
+	widthInt, err := starlarkutil.AsInt64(width)
+	if err != nil {
+		return nil, fmt.Errorf("parsing width: %w", err)
+	}
+	w.Width = int(widthInt)
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
 	w.starlarkColor = color
 	if color.Len() > 0 {
@@ -2196,9 +2268,17 @@ func newText(
 
 	w.Font = font.GoString()
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
-	w.Offset = int(offset.BigInt().Int64())
+	offsetInt, err := starlarkutil.AsInt64(offset)
+	if err != nil {
+		return nil, fmt.Errorf("parsing offset: %w", err)
+	}
+	w.Offset = int(offsetInt)
 
 	w.starlarkColor = color
 	if color.Len() > 0 {
@@ -2365,11 +2445,23 @@ func newWrappedText(
 
 	w.Font = font.GoString()
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
-	w.Width = int(width.BigInt().Int64())
+	widthInt, err := starlarkutil.AsInt64(width)
+	if err != nil {
+		return nil, fmt.Errorf("parsing width: %w", err)
+	}
+	w.Width = int(widthInt)
 
-	w.LineSpacing = int(linespacing.BigInt().Int64())
+	linespacingInt, err := starlarkutil.AsInt64(linespacing)
+	if err != nil {
+		return nil, fmt.Errorf("parsing linespacing: %w", err)
+	}
+	w.LineSpacing = int(linespacingInt)
 
 	w.starlarkColor = color
 	if color.Len() > 0 {
