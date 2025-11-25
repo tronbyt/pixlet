@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -176,9 +177,9 @@ func cacheSet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 
 	cacheKey := scopedCacheKey(thread, key)
 
-	ttl64, ok := ttl.Int64()
-	if !ok {
-		return nil, fmt.Errorf("ttl_seconds must be valid integer (not %s)", ttl.String())
+	ttl64, err := starlarkutil.AsInt64(ttl)
+	if err != nil {
+		return nil, fmt.Errorf("parsing ttl_seconds: %w", err)
 	}
 
 	if ttl64 < 0 {
@@ -194,8 +195,7 @@ func cacheSet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 		return starlark.None, nil
 	}
 
-	err := cache.Set(thread, cacheKey, []byte(val.GoString()), ttl64)
-	if err != nil {
+	if err := cache.Set(thread, cacheKey, []byte(val.GoString()), ttl64); err != nil {
 		slog.Error("Setting cache entry", "key", cacheKey, "error", err)
 	}
 

@@ -36,7 +36,8 @@ import (
 	"strconv"
 	"strings"
 
-	util "github.com/qri-io/starlib/util"
+	"github.com/qri-io/starlib/util"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -231,10 +232,11 @@ func setStandardHeaders(req *http.Request, thread *starlark.Thread, ttl starlark
 	req.Header.Set("X-Tidbyt-App", getAppIdentifier(thread))
 
 	// Set ttl for caching client.
-	ttl64, ok := ttl.Int64()
-	if !ok {
-		return fmt.Errorf("ttl_seconds must be valid integer (not %s)", ttl.String())
+	ttl64, err := starlarkutil.AsInt64(ttl)
+	if err != nil {
+		return fmt.Errorf("parsing ttl_seconds: %w", err)
 	}
+
 	req.Header.Set("X-Tidbyt-Cache-Seconds", fmt.Sprintf("%d", ttl64))
 
 	return nil

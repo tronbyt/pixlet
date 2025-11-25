@@ -14,6 +14,7 @@ import (
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/render/animation"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
+	"github.com/tronbyt/pixlet/starlarkutil"
 )
 
 type AnimationModule struct {
@@ -99,7 +100,11 @@ func newAnimatedPositioned(
 		w.starlarkChild = child
 	}
 
-	w.Duration = int(duration.BigInt().Int64())
+	durationInt, err := starlarkutil.AsInt64(duration)
+	if err != nil {
+		return nil, fmt.Errorf("parsing duration: %w", err)
+	}
+	w.Duration = int(durationInt)
 
 	w.starlarkCurve = curve
 	if curve == nil {
@@ -110,17 +115,41 @@ func newAnimatedPositioned(
 		return nil, err
 	}
 
-	w.XStart = int(x_start.BigInt().Int64())
+	x_startInt, err := starlarkutil.AsInt64(x_start)
+	if err != nil {
+		return nil, fmt.Errorf("parsing x_start: %w", err)
+	}
+	w.XStart = int(x_startInt)
 
-	w.XEnd = int(x_end.BigInt().Int64())
+	x_endInt, err := starlarkutil.AsInt64(x_end)
+	if err != nil {
+		return nil, fmt.Errorf("parsing x_end: %w", err)
+	}
+	w.XEnd = int(x_endInt)
 
-	w.YStart = int(y_start.BigInt().Int64())
+	y_startInt, err := starlarkutil.AsInt64(y_start)
+	if err != nil {
+		return nil, fmt.Errorf("parsing y_start: %w", err)
+	}
+	w.YStart = int(y_startInt)
 
-	w.YEnd = int(y_end.BigInt().Int64())
+	y_endInt, err := starlarkutil.AsInt64(y_end)
+	if err != nil {
+		return nil, fmt.Errorf("parsing y_end: %w", err)
+	}
+	w.YEnd = int(y_endInt)
 
-	w.Delay = int(delay.BigInt().Int64())
+	delayInt, err := starlarkutil.AsInt64(delay)
+	if err != nil {
+		return nil, fmt.Errorf("parsing delay: %w", err)
+	}
+	w.Delay = int(delayInt)
 
-	w.Hold = int(hold.BigInt().Int64())
+	holdInt, err := starlarkutil.AsInt64(hold)
+	if err != nil {
+		return nil, fmt.Errorf("parsing hold: %w", err)
+	}
+	w.Hold = int(holdInt)
 
 	w.frame_count = starlark.NewBuiltin("frame_count", animatedpositionedFrameCount)
 
@@ -600,13 +629,29 @@ func newTransformation(
 		}
 	}
 
-	w.Duration = int(duration.BigInt().Int64())
+	durationInt, err := starlarkutil.AsInt64(duration)
+	if err != nil {
+		return nil, fmt.Errorf("parsing duration: %w", err)
+	}
+	w.Duration = int(durationInt)
 
-	w.Delay = int(delay.BigInt().Int64())
+	delayInt, err := starlarkutil.AsInt64(delay)
+	if err != nil {
+		return nil, fmt.Errorf("parsing delay: %w", err)
+	}
+	w.Delay = int(delayInt)
 
-	w.Width = int(width.BigInt().Int64())
+	widthInt, err := starlarkutil.AsInt64(width)
+	if err != nil {
+		return nil, fmt.Errorf("parsing width: %w", err)
+	}
+	w.Width = int(widthInt)
 
-	w.Height = int(height.BigInt().Int64())
+	heightInt, err := starlarkutil.AsInt64(height)
+	if err != nil {
+		return nil, fmt.Errorf("parsing height: %w", err)
+	}
+	w.Height = int(heightInt)
 
 	w.starlarkOrigin = origin
 	if origin == nil {

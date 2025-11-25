@@ -1,10 +1,12 @@
 package yaml
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 
 	"github.com/qri-io/starlib/util"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 	"gopkg.in/yaml.v3"
@@ -84,11 +86,16 @@ func Encode(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs
 	enc := yaml.NewEncoder(&buf)
 	defer enc.Close()
 
-	indentVal := DefaultIndent
-	if v, ok := indent.Int64(); ok && v != 0 {
-		indentVal = int(v)
+	indentVal, err := starlarkutil.AsInt64(indent)
+	if err != nil {
+		return starlark.None, fmt.Errorf("parsing indent: %w", err)
 	}
-	enc.SetIndent(indentVal)
+
+	if indentVal == 0 {
+		indentVal = DefaultIndent
+	}
+
+	enc.SetIndent(int(indentVal))
 
 	if err := enc.Encode(val); err != nil {
 		return starlark.None, err

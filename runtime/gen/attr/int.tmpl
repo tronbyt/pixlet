@@ -1,3 +1,7 @@
 {{ if not .IsReadOnly }}
-w.{{ .GoName }} = int({{ .StarlarkName }}.BigInt().Int64())
+{{ .StarlarkName }}Int, err := starlarkutil.AsInt64({{ .StarlarkName }})
+if err != nil {
+	return nil, fmt.Errorf("parsing {{ .StarlarkName }}: %w", err)
+}
+w.{{ .GoName }} = int({{ .StarlarkName }}Int)
 {{- end }}
