@@ -10,9 +10,11 @@ import (
 	gohumanize "github.com/dustin/go-humanize"
 	gohumanizeEnglish "github.com/dustin/go-humanize/english"
 	godfe "github.com/newm4n/go-dfe"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/language_runtime"
 	startime "go.starlark.net/lib/time"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
+	"golang.org/x/text/message"
 )
 
 const (
@@ -246,11 +248,11 @@ func comma(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 		return nil, fmt.Errorf("unpacking arguments for comma: %s", err)
 	}
 
+	var val any
+
 	switch starNum := starNum.(type) {
 	case starlark.Int:
-		i := int64(starNum.BigInt().Int64())
-		val := gohumanize.Comma(i)
-		return starlark.String(val), nil
+		val = starNum.BigInt().Int64()
 	case starlark.Float:
 		f := float64(starNum)
 		if math.IsInf(f, 0) {
@@ -258,10 +260,15 @@ func comma(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 		} else if math.IsNaN(f) {
 			return nil, fmt.Errorf("cannot convert float NaN to integer")
 		}
-		val := gohumanize.Commaf(f)
-		return starlark.String(val), nil
+		val = f
+	default:
+		return nil, fmt.Errorf("cannot convert %s to int or float", starNum.Type())
 	}
-	return nil, fmt.Errorf("cannot convert %s to int or float", starNum.Type())
+
+	lang := language_runtime.FromThread(thread)
+	p := message.NewPrinter(lang)
+	formatted := p.Sprint(val)
+	return starlark.String(formatted), nil
 }
 
 func ordinal(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
