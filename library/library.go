@@ -74,19 +74,16 @@ func render_app(
 	}
 
 	var filters encode.RenderFilters
-	if filtersPtr != nil {
-		filtersStr := C.GoString(filtersPtr)
+	if filtersStr := C.GoString(filtersPtr); filtersStr != "" {
 		if err := json.Unmarshal([]byte(filtersStr), &filters); err != nil {
 			return nil, C.int(statusErrInvalidFilters), nil, C.CString(fmt.Sprintf("invalid filters JSON: %v", err))
 		}
 	}
 
 	location := time.Local
-	if tzPtr != nil {
-		if tzRaw := C.GoString(tzPtr); tzRaw != "" {
-			if v, err := time.LoadLocation(C.GoString(tzPtr)); err == nil {
-				location = v
-			}
+	if tzStr := C.GoString(tzPtr); tzStr != "" {
+		if v, err := time.LoadLocation(tzStr); err == nil {
+			location = v
 		}
 	}
 
@@ -160,10 +157,9 @@ func call_handler(
 	handlerName, parameter *C.char,
 ) (*C.char, C.int, *C.char) {
 	path := C.GoString(pathPtr)
-	configStr := C.GoString(configPtr)
 
 	var config map[string]string
-	if configStr != "" {
+	if configStr := C.GoString(configPtr); configStr != "" {
 		if err := json.Unmarshal([]byte(configStr), &config); err != nil {
 			return nil, C.int(statusErrInvalidConfig), C.CString(fmt.Sprintf("error parsing config: %v", err))
 		}
