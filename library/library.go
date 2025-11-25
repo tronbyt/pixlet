@@ -26,14 +26,15 @@ import (
 )
 
 const (
-	statusErrInvalidConfig  = -1
-	statusErrRenderFailure  = -2
-	statusErrInvalidFilters = -3
-	statusErrHandlerFailure = -4
-	statusErrInvalidPath    = -5
-	statusErrStarSuffix     = -6
-	statusErrUnknownApplet  = -7
-	statusErrSchemaFailure  = -8
+	statusErrInvalidConfig   = -1
+	statusErrRenderFailure   = -2
+	statusErrInvalidFilters  = -3
+	statusErrHandlerFailure  = -4
+	statusErrInvalidPath     = -5
+	statusErrStarSuffix      = -6
+	statusErrUnknownApplet   = -7
+	statusErrSchemaFailure   = -8
+	statusErrInvalidTimezone = -9
 )
 
 // render_app renders an applet based on the provided parameters.
@@ -82,9 +83,11 @@ func render_app(
 
 	location := time.Local
 	if tzStr := C.GoString(tzPtr); tzStr != "" {
-		if v, err := time.LoadLocation(tzStr); err == nil {
-			location = v
+		v, err := time.LoadLocation(tzStr)
+		if err != nil {
+			return nil, C.int(statusErrInvalidTimezone), nil, C.CString(fmt.Sprintf("invalid timezone: %v", err))
 		}
+		location = v
 	}
 
 	result, messages, err := loader.RenderApplet(
