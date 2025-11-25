@@ -207,6 +207,7 @@ func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string
 func (l *Loader) loadApplet() error {
 	opts := []runtime.AppletOption{
 		runtime.WithCanvasMeta(l.conf.Meta),
+		runtime.WithLanguage(l.conf.Language),
 	}
 
 	app, err := runtime.NewAppletFromRoot(l.conf.Path, l.root, opts...)
@@ -302,6 +303,7 @@ func RenderApplet(path string, config map[string]string, options ...Option) ([]b
 	opts := []runtime.AppletOption{
 		runtime.WithCanvasMeta(conf.Meta),
 		runtime.WithLocation(conf.Location),
+		runtime.WithLanguage(conf.Language),
 	}
 
 	var output []string

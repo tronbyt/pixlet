@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server"
 	"github.com/tronbyt/pixlet/server/loader"
+	"golang.org/x/text/language"
 )
 
 type serveOptions struct {
@@ -25,6 +27,7 @@ type serveOptions struct {
 	height        int
 	output2x      bool
 	webpLevel     int32
+	locale        string
 }
 
 func NewServeCmd() *cobra.Command {
@@ -84,6 +87,8 @@ containing multiple Starlark files and resources.`,
 		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
 	)
 	_ = cmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
+	cmd.Flags().StringVar(&opts.locale, "locale", opts.locale, "Locale to use for rendering")
+	_ = cmd.RegisterFlagCompletionFunc("locale", cobra.NoFileCompletions)
 
 	return cmd
 }
@@ -104,6 +109,15 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		}
 	}
 
+	lang := language.English
+	if opts.locale != "" {
+		var err error
+		lang, err = language.Parse(opts.locale)
+		if err != nil {
+			return fmt.Errorf("invalid locale: %v", err)
+		}
+	}
+
 	s, err := server.NewServer(
 		opts.host,
 		opts.port,
@@ -119,6 +133,7 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		loader.WithMaxDuration(opts.maxDuration),
 		loader.WithTimeout(opts.timeout),
 		loader.WithImageFormat(imageFormat),
+		loader.WithLanguage(lang),
 	)
 	if err != nil {
 		return err

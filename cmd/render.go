@@ -15,6 +15,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
+	"golang.org/x/text/language"
 )
 
 const webpLevelFlag = "webp-level"
@@ -32,6 +33,7 @@ type renderOptions struct {
 	colorFilter       string
 	output2x          bool
 	webpLevel         int32
+	locale            string
 }
 
 func newRenderOptions() *renderOptions {
@@ -151,6 +153,9 @@ containing multiple Starlark files and resources.
 	)
 	_ = cmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
 
+	cmd.Flags().StringVar(&opts.locale, "locale", opts.locale, "Locale to use for rendering")
+	_ = cmd.RegisterFlagCompletionFunc("locale", cobra.NoFileCompletions)
+
 	return cmd
 }
 
@@ -241,6 +246,15 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		}
 	}
 
+	lang := language.English
+	if opts.locale != "" {
+		var err error
+		lang, err = language.Parse(opts.locale)
+		if err != nil {
+			return fmt.Errorf("invalid locale: %v", err)
+		}
+	}
+
 	buf, _, err := loader.RenderApplet(
 		path,
 		config,
@@ -253,6 +267,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		loader.WithTimeout(opts.timeout),
 		loader.WithImageFormat(imageFormat),
 		loader.WithSilenceOutput(opts.silenceOutput),
+		loader.WithLanguage(lang),
 		loader.WithFilters(filters),
 	)
 	if err != nil {

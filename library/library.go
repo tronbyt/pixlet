@@ -23,6 +23,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
+	"golang.org/x/text/language"
 )
 
 const (
@@ -35,6 +36,7 @@ const (
 	statusErrUnknownApplet   = -7
 	statusErrSchemaFailure   = -8
 	statusErrInvalidTimezone = -9
+	statusErrInvalidLocale   = -10
 )
 
 // render_app renders an applet based on the provided parameters.
@@ -51,6 +53,7 @@ const (
 //   - output2x (C.bool): Render at 2x resolution
 //   - filtersPtr (*C.char): A JSON string for optional filters (e.g. {"magnify":2,"color_filter":"warm"})
 //   - tzPtr (*C.char): The local timezone. Defaults to the system time.
+//   - localePtr (*C.char): An optional locale string.
 //
 // Returns:
 //   - (*C.uchar): A pointer to the rendered image bytes.
@@ -60,11 +63,10 @@ const (
 
 //export render_app
 func render_app(
-	pathPtr *C.char,
-	configPtr *C.char,
+	pathPtr, configPtr *C.char,
 	width, height, maxDuration, timeout, imageFormat, silenceOutput C.int,
 	output2x C.bool,
-	filtersPtr, tzPtr *C.char,
+	filtersPtr, tzPtr, localePtr *C.char,
 ) (*C.uchar, C.int, *C.char, *C.char) {
 	path := C.GoString(pathPtr)
 	configStr := C.GoString(configPtr)
@@ -90,6 +92,15 @@ func render_app(
 		location = v
 	}
 
+	lang := language.English
+	if localeStr := C.GoString(localePtr); localeStr != "" {
+		var err error
+		lang, err = language.Parse(localeStr)
+		if err != nil {
+			return nil, C.int(statusErrInvalidLocale), nil, C.CString(fmt.Sprintf("invalid locale: %v", err))
+		}
+	}
+
 	result, messages, err := loader.RenderApplet(
 		path, config,
 		loader.WithMeta(canvas.Metadata{
@@ -102,6 +113,7 @@ func render_app(
 		loader.WithImageFormat(loader.ImageFormat(imageFormat)),
 		loader.WithSilenceOutput(silenceOutput != 0),
 		loader.WithLocation(location),
+		loader.WithLanguage(lang),
 		loader.WithFilters(filters),
 	)
 
