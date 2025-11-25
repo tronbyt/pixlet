@@ -215,11 +215,11 @@ func setAuth(req *http.Request, auth starlark.Tuple) error {
 	} else if len(auth) == 2 {
 		username, err := AsString(auth[0])
 		if err != nil {
-			return fmt.Errorf("parsing auth username string: %s", err.Error())
+			return fmt.Errorf("parsing auth username string: %w", err)
 		}
 		password, err := AsString(auth[1])
 		if err != nil {
-			return fmt.Errorf("parsing auth password string: %s", err.Error())
+			return fmt.Errorf("parsing auth password string: %w", err)
 		}
 		req.SetBasicAuth(username, password)
 		return nil
