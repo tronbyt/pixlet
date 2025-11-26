@@ -64,7 +64,7 @@ The path argument should be the path to the Pixlet app to run. The
 app can be a single file with the .star extension, or a directory
 containing multiple Starlark files and resources.
 	`,
-		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+		ValidArgsFunction: completeRender,
 	}
 
 	cmd.Flags().StringVarP(&opts.configJSON, "config", "c", opts.configJSON, "Config file in json format")
