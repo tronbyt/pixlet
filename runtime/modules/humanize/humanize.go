@@ -10,7 +10,7 @@ import (
 	gohumanize "github.com/dustin/go-humanize"
 	gohumanizeEnglish "github.com/dustin/go-humanize/english"
 	godfe "github.com/newm4n/go-dfe"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/language_runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/i18n_runtime"
 	"github.com/tronbyt/pixlet/starlarkutil"
 	startime "go.starlark.net/lib/time"
 	"go.starlark.net/starlark"
@@ -272,7 +272,7 @@ func comma(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 		return nil, fmt.Errorf("cannot convert %s to int or float", starNum.Type())
 	}
 
-	lang := language_runtime.FromThread(thread)
+	lang := i18n_runtime.LanguageFromThread(thread)
 	p := message.NewPrinter(lang)
 	formatted := p.Sprint(val)
 	return starlark.String(formatted), nil

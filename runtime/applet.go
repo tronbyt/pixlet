@@ -3,6 +3,7 @@ package runtime
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -30,11 +31,11 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/file"
 	"github.com/tronbyt/pixlet/runtime/modules/hmac"
 	"github.com/tronbyt/pixlet/runtime/modules/humanize"
+	"github.com/tronbyt/pixlet/runtime/modules/i18n_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/qrcode"
 	"github.com/tronbyt/pixlet/runtime/modules/random"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/language_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 	"github.com/tronbyt/pixlet/runtime/modules/sunrise"
 	"github.com/tronbyt/pixlet/runtime/modules/time_runtime"
@@ -48,7 +49,10 @@ import (
 	"go.starlark.net/starlarktest"
 	"go.starlark.net/syntax"
 	"golang.org/x/text/language"
+	"golang.org/x/text/message/catalog"
 )
+
+const LocaleDir = "locales"
 
 type ModuleLoader func(*starlark.Thread, string) (starlark.StringDict, error)
 
@@ -143,7 +147,7 @@ func WithLocation(tz *time.Location) AppletOption {
 func WithLanguage(lang language.Tag) AppletOption {
 	return func(a *Applet) error {
 		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
-			language_runtime.AttachToThread(t, lang)
+			i18n_runtime.AttachLanguageToThread(t, lang)
 			return t
 		})
 		return nil
@@ -432,7 +436,14 @@ func (a *Applet) load(fsys fs.FS) (err error) {
 	for _, d := range rootDir {
 		switch {
 		case d.IsDir():
-			// Skip dirs
+			if d.Name() == LocaleDir {
+				if err := a.loadCatalog(fsys); err != nil {
+					if errors.Is(err, os.ErrNotExist) {
+						continue
+					}
+					return err
+				}
+			}
 		case d.Name() == "manifest.yaml", d.Name() == "manifest.yml":
 			if err := a.loadManifest(fsys, d.Name()); err != nil {
 				return err
@@ -597,6 +608,66 @@ func (a *Applet) ensureLoaded(fsys fs.FS, pathToLoad string, currentlyLoading ..
 	return nil
 }
 
+func (a *Applet) loadCatalog(fsys fs.FS) error {
+	dir, err := fs.Sub(fsys, LocaleDir)
+	if err != nil {
+		return fmt.Errorf("opening locales directory: %w", err)
+	}
+
+	d, err := fs.ReadDir(dir, ".")
+	if err != nil {
+		return fmt.Errorf("listing locales directory: %w", err)
+	}
+
+	b := catalog.NewBuilder()
+
+	for _, entry := range d {
+		if err := loadLocale(dir, b, entry.Name()); err != nil {
+			return err
+		}
+	}
+
+	a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
+		i18n_runtime.AttachCatalogToThread(t, b)
+		return t
+	})
+
+	return nil
+}
+
+func loadLocale(fsys fs.FS, b *catalog.Builder, name string) error {
+	if !strings.HasSuffix(name, ".json") {
+		return nil
+	}
+
+	base := strings.TrimSuffix(name, ".json")
+	base = strings.ReplaceAll(base, "_", "-")
+
+	tag, err := language.Parse(base)
+	if err != nil {
+		return fmt.Errorf("parsing locale %s: %w", name, err)
+	}
+
+	f, err := fsys.Open(name)
+	if err != nil {
+		return fmt.Errorf("opening locale file %s: %w", name, err)
+	}
+	defer f.Close()
+
+	var msgs map[string]string
+	if err := json.NewDecoder(f).Decode(&msgs); err != nil {
+		return fmt.Errorf("decoding locale file %s: %w", name, err)
+	}
+
+	for key, val := range msgs {
+		if err := b.SetString(tag, key, val); err != nil {
+			return fmt.Errorf("setting locale string %s: %w", name, err)
+		}
+	}
+
+	return nil
+}
+
 func (a *Applet) newThread(ctx context.Context) *starlark.Thread {
 	t := &starlark.Thread{
 		Name: a.ID,
@@ -627,6 +698,9 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 	switch module {
 	case "render.star":
 		return render_runtime.LoadRenderModule()
+
+	case i18n_runtime.ModuleName:
+		return i18n_runtime.LoadModule()
 
 	case "animation.star":
 		return animation_runtime.LoadAnimationModule()
