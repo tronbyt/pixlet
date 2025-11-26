@@ -1,7 +1,6 @@
 package xpath_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,7 +9,7 @@ import (
 )
 
 func TestXPath(t *testing.T) {
-	src := `
+	const source = `
 load("render.star", r="render")
 load("xpath.star", "xpath")
 
@@ -74,9 +73,9 @@ def main():
 
     return [r.Root(child=r.Text("1337"))]
 `
-	app, err := runtime.NewApplet("test.star", []byte(src))
+	app, err := runtime.NewApplet("test.star", []byte(source), runtime.WithTests(t))
 	require.NoError(t, err)
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }

@@ -1,19 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var locationSource = `
+func TestLocation(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 s = schema.Location(
 	id = "location",
@@ -22,20 +19,19 @@ s = schema.Location(
 	icon = "locationDot",
 )
 
-assert(s.id == "location")
-assert(s.name == "Location")
-assert(s.desc == "Location for which to display time.")
-assert(s.icon == "locationDot")
+assert.eq(s.id, "location")
+assert.eq(s.name, "Location")
+assert.eq(s.desc, "Location for which to display time.")
+assert.eq(s.icon, "locationDot")
 
 def main():
 	return []
 `
 
-func TestLocation(t *testing.T) {
-	app, err := runtime.NewApplet("location.star", []byte(locationSource))
+	app, err := runtime.NewApplet("location.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"testing"
 
@@ -54,28 +53,25 @@ func TestSecretDecrypt(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEqual(t, encrypted, "")
 
-	src := fmt.Sprintf(`
+src := fmt.Sprintf(`
 load("render.star", "render")
 load("schema.star", "schema")
 load("secret.star", "secret")
+load("assert.star", "assert")
 
 EXPECTED_PLAINTEXT = "%s"
 ENCRYPTED = "%s"
 DECRYPTED = secret.decrypt(ENCRYPTED)
 
-def assert_eq(message, actual, expected):
-	if not expected == actual:
-		fail(message, "-", "expected", expected, "actual", actual)
-
 def main():
-	assert_eq("secret value", DECRYPTED, EXPECTED_PLAINTEXT)
+	assert.eq(DECRYPTED, EXPECTED_PLAINTEXT)
 	return render.Root(child=render.Box())
 `, plaintext, encrypted)
 
-	app, err := NewApplet("testid", []byte(src), WithSecretDecryptionKey(decryptionKey))
+	app, err := NewApplet("testid", []byte(src), WithSecretDecryptionKey(decryptionKey), WithTests(t))
 	require.NoError(t, err)
 
-	roots, err := app.Run(context.Background())
+	roots, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(roots))
 }
@@ -107,28 +103,25 @@ func TestSecretDoesntDecryptWithoutKey(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEqual(t, encrypted, "")
 
-	src := fmt.Sprintf(`
+src := fmt.Sprintf(`
 load("render.star", "render")
 load("schema.star", "schema")
 load("secret.star", "secret")
+load("assert.star", "assert")
 
 EXPECTED_PLAINTEXT = "%s"
 ENCRYPTED = "%s"
 DECRYPTED = secret.decrypt(ENCRYPTED)
 
-def assert_eq(message, actual, expected):
-	if not expected == actual:
-		fail(message, "-", "expected", expected, "actual", actual)
-
 def main():
-	assert_eq("secret value", DECRYPTED, None)
+	assert.eq(DECRYPTED, None)
 	return render.Root(child=render.Box())
 `, plaintext, encrypted)
 
-	app, err := NewApplet("test.star", []byte(src))
+	app, err := NewApplet("test.star", []byte(src), WithTests(t))
 	require.NoError(t, err)
 
-	roots, err := app.Run(context.Background())
+	roots, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(roots))
 }

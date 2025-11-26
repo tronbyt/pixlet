@@ -1,7 +1,6 @@
 package schema_test
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 	"testing/fstest"
@@ -13,12 +12,12 @@ import (
 	"github.com/tronbyt/pixlet/schema"
 )
 
-func loadApp(code string) (*runtime.Applet, error) {
+func loadApp(tb testing.TB, code string) (*runtime.Applet, error) {
 	vfs := fstest.MapFS{
 		"test.star": &fstest.MapFile{Data: []byte(code)},
 		"ding.mp3":  &fstest.MapFile{Data: []byte("ding data")},
 	}
-	return runtime.NewAppletFromFS("test", vfs)
+	return runtime.NewAppletFromFS("test", vfs, runtime.WithTests(tb))
 }
 
 func TestSchemaAllTypesSuccess(t *testing.T) {
@@ -149,7 +148,7 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
 	var s schema.Schema
@@ -332,7 +331,7 @@ def main():
     return None
 `
 
-	_, err := loadApp(code)
+	_, err := loadApp(t, code)
 	assert.ErrorContains(t, err, "expected fields")
 }
 
@@ -360,7 +359,7 @@ def main():
     return None
 `
 
-	_, err := loadApp(code)
+	_, err := loadApp(t, code)
 	assert.ErrorContains(t, err, "expected notifications")
 }
 
@@ -487,7 +486,7 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
 	var s schema.Schema
@@ -661,15 +660,15 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
 	// Handlers are not identified by ID
-	_, err = app.CallSchemaHandler(context.Background(), "generatedid", "foobar", nil)
+	_, err = app.CallSchemaHandler(t.Context(), "generatedid", "foobar", nil)
 	assert.Error(t, err)
 
 	// They're identified by function name
-	jsonSchema, err := app.CallSchemaHandler(context.Background(), "generatedid$generate_schema", "foobar", nil)
+	jsonSchema, err := app.CallSchemaHandler(t.Context(), "generatedid$generate_schema", "foobar", nil)
 	assert.NoError(t, err)
 
 	var s schema.Schema
@@ -722,13 +721,13 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	_, err = app.CallSchemaHandler(context.Background(), "generatedid$generate_schema", "win", nil)
+	_, err = app.CallSchemaHandler(t.Context(), "generatedid$generate_schema", "win", nil)
 	assert.NoError(t, err)
 
-	_, err = app.CallSchemaHandler(context.Background(), "generatedid$generate_schema", "fail", nil)
+	_, err = app.CallSchemaHandler(t.Context(), "generatedid$generate_schema", "fail", nil)
 	assert.Error(t, err)
 }
 
@@ -754,7 +753,7 @@ def main():
     return None
 `
 
-	_, err := loadApp(code)
+	_, err := loadApp(t, code)
 	assert.Error(t, err)
 }
 
@@ -787,7 +786,7 @@ def main():
     return None
 `
 
-	_, err := loadApp(code)
+	_, err := loadApp(t, code)
 	assert.Error(t, err)
 }
 
@@ -811,10 +810,10 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	stringValue, err := app.CallSchemaHandler(context.Background(), "locationbasedid$handle_location", "fart", nil)
+	stringValue, err := app.CallSchemaHandler(t.Context(), "locationbasedid$handle_location", "fart", nil)
 	assert.NoError(t, err)
 	assert.Equal(t, "[{\"display\":\"\",\"text\":\"Your only option is\",\"value\":\"fart\"}]", stringValue)
 }
@@ -839,10 +838,10 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	_, err = app.CallSchemaHandler(context.Background(), "handle_location", "fart", nil)
+	_, err = app.CallSchemaHandler(t.Context(), "handle_location", "fart", nil)
 	assert.Error(t, err)
 }
 
@@ -866,10 +865,10 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	stringValue, err := app.CallSchemaHandler(context.Background(), "typeaheadid$handle_typeahead", "farts", nil)
+	stringValue, err := app.CallSchemaHandler(t.Context(), "typeaheadid$handle_typeahead", "farts", nil)
 	assert.NoError(t, err)
 	assert.Equal(t, "[{\"display\":\"\",\"text\":\"You searched for\",\"value\":\"farts\"}]", stringValue)
 }
@@ -894,10 +893,10 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	_, err = app.CallSchemaHandler(context.Background(), "handle_typeahead", "fart", nil)
+	_, err = app.CallSchemaHandler(t.Context(), "handle_typeahead", "fart", nil)
 	assert.Error(t, err)
 }
 
@@ -925,10 +924,10 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	stringValue, err := app.CallSchemaHandler(context.Background(), "oauth2id$oauth2handler", "farts", nil)
+	stringValue, err := app.CallSchemaHandler(t.Context(), "oauth2id$oauth2handler", "farts", nil)
 	assert.NoError(t, err)
 	assert.Equal(t, "a-refresh-token", stringValue)
 }
@@ -957,10 +956,10 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	_, err = app.CallSchemaHandler(context.Background(), "oauth2handler", "farts", nil)
+	_, err = app.CallSchemaHandler(t.Context(), "oauth2handler", "farts", nil)
 	assert.Error(t, err)
 }
 
@@ -1014,11 +1013,11 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
-	data, err := app.CallSchemaHandler(context.Background(), "get_somethingelse", "win", nil)
+	data, err := app.CallSchemaHandler(t.Context(), "get_somethingelse", "win", nil)
 	assert.NoError(t, err)
 	var options []map[string]string
 	assert.NoError(t, json.Unmarshal([]byte(data), &options))
@@ -1026,7 +1025,7 @@ def main():
 	assert.Equal(t, "hey", options[0]["display"])
 	assert.Equal(t, "ho", options[0]["value"])
 
-	_, err = app.CallSchemaHandler(context.Background(), "get_somethingelse", "fail", nil)
+	_, err = app.CallSchemaHandler(t.Context(), "get_somethingelse", "fail", nil)
 	assert.Error(t, err)
 }
 
@@ -1074,18 +1073,18 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
-	data, err := app.CallSchemaHandler(context.Background(), "generatedid$build_boroughs", "false", nil)
+	data, err := app.CallSchemaHandler(t.Context(), "generatedid$build_boroughs", "false", nil)
 	assert.NoError(t, err)
 	var schema schema.Schema
 	assert.NoError(t, json.Unmarshal([]byte(data), &schema))
 	assert.Equal(t, "1", schema.Version)
 	assert.Equal(t, 0, len(schema.Fields))
 
-	data, err = app.CallSchemaHandler(context.Background(), "generatedid$build_boroughs", "true", nil)
+	data, err = app.CallSchemaHandler(t.Context(), "generatedid$build_boroughs", "true", nil)
 	assert.NoError(t, err)
 	assert.NoError(t, json.Unmarshal([]byte(data), &schema))
 	assert.Equal(t, 1, len(schema.Fields))
@@ -1145,11 +1144,11 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
-	data, err := app.CallSchemaHandler(context.Background(), "generatedid$get_station_selector", "true", nil)
+	data, err := app.CallSchemaHandler(t.Context(), "generatedid$get_station_selector", "true", nil)
 	assert.NoError(t, err)
 	var s schema.Schema
 	assert.NoError(t, json.Unmarshal([]byte(data), &s))
@@ -1158,7 +1157,7 @@ def main():
 	assert.Equal(t, "locationbased", s.Fields[0].Type)
 	assert.Equal(t, "station$get_stations", s.Fields[0].Handler)
 
-	data, err = app.CallSchemaHandler(context.Background(), "get_stations", "locationdata", nil)
+	data, err = app.CallSchemaHandler(t.Context(), "get_stations", "locationdata", nil)
 	var options []schema.SchemaOption
 	assert.NoError(t, err)
 	assert.NoError(t, json.Unmarshal([]byte(data), &options))
@@ -1210,10 +1209,10 @@ def main():
 		"handler.star": &fstest.MapFile{Data: []byte(handlerFile)},
 		"test.star":    &fstest.MapFile{Data: []byte(mainFile)},
 	}
-	app, err := runtime.NewAppletFromFS("test", vfs)
+	app, err := runtime.NewAppletFromFS("test", vfs, runtime.WithTests(t))
 	require.NoError(t, err)
 
-	data, err := app.CallSchemaHandler(context.Background(), "get_stations", "locationdata", nil)
+	data, err := app.CallSchemaHandler(t.Context(), "get_stations", "locationdata", nil)
 	var options []schema.SchemaOption
 	assert.NoError(t, err)
 	assert.NoError(t, json.Unmarshal([]byte(data), &options))
@@ -1262,14 +1261,14 @@ def main():
     return None
 `
 
-	app, err := loadApp(code)
+	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
 	config := map[string]string{
 		"password": "secret",
 	}
 
-	stringValue, err := app.CallSchemaHandler(context.Background(), "test$get_dropdown", "true", config)
+	stringValue, err := app.CallSchemaHandler(t.Context(), "test$get_dropdown", "true", config)
 	require.NoError(t, err)
 	assert.Equal(t, `{"version":"1","schema":[{"type":"text","id":"password","name":"Password","description":"Generated input","icon":"userSecret","default":"secret"}]}`, stringValue)
 }

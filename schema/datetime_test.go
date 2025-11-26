@@ -1,19 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var dateTimeSource = `
+func TestDateTime(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 t = schema.DateTime(
 	id = "event_name",
@@ -22,20 +19,19 @@ t = schema.DateTime(
 	icon = "gear",
 )
 
-assert(t.id == "event_name")
-assert(t.name == "Event Name")
-assert(t.desc == "The time of the event.")
-assert(t.icon == "gear")
+assert.eq(t.id, "event_name")
+assert.eq(t.name, "Event Name")
+assert.eq(t.desc, "The time of the event.")
+assert.eq(t.icon, "gear")
 
 def main():
 	return []
 `
 
-func TestDateTime(t *testing.T) {
-	app, err := runtime.NewApplet("date_time.star", []byte(dateTimeSource))
+	app, err := runtime.NewApplet("date_time.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

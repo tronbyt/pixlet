@@ -1,26 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var moduleSource = `
+func TestStarlarkSchema(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
-
-def main():
-	return []
-`
-
-var schemaSource = `
-load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 s = schema.Schema(
 	version = "1",
@@ -34,26 +24,32 @@ s = schema.Schema(
 	],
 )
 
-assert(s.version == "1")
-assert(s.fields[0].name == "Display Weather")
+assert.eq(s.version, "1")
+assert.eq(s.fields[0].name, "Display Weather")
 
 def main():
 	return []
 `
 
-func TestStarlarkSchema(t *testing.T) {
-	app, err := runtime.NewApplet("starlark.star", []byte(schemaSource))
+	app, err := runtime.NewApplet("starlark.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 func TestSchemaModuleLoads(t *testing.T) {
-	app, err := runtime.NewApplet("source.star", []byte(moduleSource))
+	const source = `
+load("schema.star", "schema")
+
+def main():
+	return []
+`
+
+	app, err := runtime.NewApplet("source.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

@@ -150,6 +150,16 @@ func WithLanguage(lang language.Tag) AppletOption {
 	}
 }
 
+func WithTests(t testing.TB) AppletOption {
+	return func(a *Applet) error {
+		a.initializers = append(a.initializers, func(thread *starlark.Thread) *starlark.Thread {
+			starlarktest.SetReporter(thread, t)
+			return thread
+		})
+		return nil
+	}
+}
+
 func NewApplet(id string, src []byte, opts ...AppletOption) (*Applet, error) {
 	fn := id
 	if !strings.HasSuffix(fn, ".star") {

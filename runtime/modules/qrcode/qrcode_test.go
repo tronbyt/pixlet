@@ -1,20 +1,15 @@
 package qrcode_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var qrCodeSource = `
+const qrCodeSource = `
 load("qrcode.star", "qrcode")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
-
+load("assert.star", "assert")
 
 url = "https://tidbyt.com?utm_source=pixlet_example"
 code = qrcode.generate(
@@ -29,10 +24,10 @@ def main():
 `
 
 func TestQRCode(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(qrCodeSource))
+	app, err := runtime.NewApplet("test.star", []byte(qrCodeSource), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

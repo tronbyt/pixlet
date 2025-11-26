@@ -1,16 +1,17 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var locationBasedSource = `
+func TestLocationBased(t *testing.T) {
+	const source = `
 load("encoding/json.star", "json")
 load("schema.star", "schema")
+load("assert.star", "assert")
 
 DEFAULT_LOCATION = """
 {
@@ -22,10 +23,6 @@ DEFAULT_LOCATION = """
 	"timezone": "America/New_York"
 }
 """
-
-def assert(success, message = None):
-    if not success:
-        fail(message or "assertion failed")
 
 def get_stations(location):
     loc = json.decode(location)
@@ -50,22 +47,21 @@ t = schema.LocationBased(
     handler = get_stations,
 )
 
-assert(t.id == "station")
-assert(t.name == "Train Station")
-assert(t.desc == "A list of train stations based on a location.")
-assert(t.icon == "train")
-assert(t.handler(DEFAULT_LOCATION)[0].display == "Grand Central")
+assert.eq(t.id, "station")
+assert.eq(t.name, "Train Station")
+assert.eq(t.desc, "A list of train stations based on a location.")
+assert.eq(t.icon, "train")
+assert.eq(t.handler(DEFAULT_LOCATION)[0].display, "Grand Central")
 
 def main():
     return []
 
 `
 
-func TestLocationBased(t *testing.T) {
-	app, err := runtime.NewApplet("location_based.star", []byte(locationBasedSource))
+	app, err := runtime.NewApplet("location_based.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

@@ -1,7 +1,6 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 	"testing/fstest"
 
@@ -9,13 +8,11 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var soundSource = `
+func TestSound(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
 load("sound.mp3", "file")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 s = schema.Sound(
 	id = "sound1",
@@ -23,24 +20,23 @@ s = schema.Sound(
 	file = file,
 )
 
-assert(s.id == "sound1")
-assert(s.title == "Sneezing Elephant")
-assert(s.file == file)
-assert(s.file.readall() == "sound data")
+assert.eq(s.id, "sound1")
+assert.eq(s.title, "Sneezing Elephant")
+assert.eq(s.file, file)
+assert.eq(s.file.readall(), "sound data")
 
 def main():
 	return []
 `
 
-func TestSound(t *testing.T) {
 	vfs := fstest.MapFS{
 		"sound.mp3":  &fstest.MapFile{Data: []byte("sound data")},
-		"sound.star": &fstest.MapFile{Data: []byte(soundSource)},
+		"sound.star": &fstest.MapFile{Data: []byte(source)},
 	}
-	app, err := runtime.NewAppletFromFS("sound", vfs)
+	app, err := runtime.NewAppletFromFS("sound", vfs, runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

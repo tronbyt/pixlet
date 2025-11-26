@@ -1,20 +1,17 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var oauth2Source = `
+func TestOAuth2(t *testing.T) {
+	const source = `
 load("encoding/json.star", "json")
 load("schema.star", "schema")
-
-def assert(success, message = None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 def oauth_handler(params):
     params = json.decode(params)
@@ -33,25 +30,24 @@ t = schema.OAuth2(
     ],
 )
 
-assert(t.id == "auth")
-assert(t.name == "GitHub")
-assert(t.desc == "Connect your GitHub account.")
-assert(t.icon == "github")
-assert(t.handler("{}") == "foobar123")
-assert(t.client_id == "the-oauth2-client-id")
-assert(t.authorization_endpoint == "https://example.com/")
-assert(t.scopes == ["read:user"])
+assert.eq(t.id, "auth")
+assert.eq(t.name, "GitHub")
+assert.eq(t.desc, "Connect your GitHub account.")
+assert.eq(t.icon, "github")
+assert.eq(t.handler("{}"), "foobar123")
+assert.eq(t.client_id, "the-oauth2-client-id")
+assert.eq(t.authorization_endpoint, "https://example.com/")
+assert.eq(t.scopes, ["read:user"])
 
 def main():
     return []
 
 `
 
-func TestOAuth2(t *testing.T) {
-	app, err := runtime.NewApplet("oauth2.star", []byte(oauth2Source))
+	app, err := runtime.NewApplet("oauth2.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

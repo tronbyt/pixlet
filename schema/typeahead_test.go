@@ -1,19 +1,15 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var typeaheadSource = `
+const typeaheadSource = `
+load("assert.star", "assert")
 load("schema.star", "schema")
-
-def assert(success, message = None):
-    if not success:
-        fail(message or "assertion failed")
 
 def search(pattern):
     return [
@@ -35,11 +31,11 @@ t = schema.Typeahead(
     handler = search,
 )
 
-assert(t.id == "search")
-assert(t.name == "Search")
-assert(t.desc == "A list of items that match search.")
-assert(t.icon == "gear")
-assert(t.handler("")[0].display == "Grand Central")
+assert.eq(t.id, "search")
+assert.eq(t.name, "Search")
+assert.eq(t.desc, "A list of items that match search.")
+assert.eq(t.icon, "gear")
+assert.eq(t.handler("")[0].display, "Grand Central")
 
 def main():
     return []
@@ -47,10 +43,10 @@ def main():
 `
 
 func TestTypeahead(t *testing.T) {
-	app, err := runtime.NewApplet("typeahead.star", []byte(typeaheadSource))
+	app, err := runtime.NewApplet("typeahead.star", []byte(typeaheadSource), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }
