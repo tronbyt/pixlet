@@ -7,6 +7,10 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import DownloadIcon from '@mui/icons-material/Download';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ImageIcon from '@mui/icons-material/Image';
 import { resetConfig, setConfig } from '../config/actions';
 import { set } from '../config/configSlice';
 import { setScale } from '../preview/previewSlice';
@@ -131,10 +135,10 @@ export default function Controls() {
                     <MenuItem value="2">2x</MenuItem>
                 </Select>
             </FormControl>
-            <Button fullWidth={fullWidth} variant="outlined" onClick={() => selectConfig()}>Import Config</Button>
-            <Button fullWidth={fullWidth} variant="outlined" onClick={() => downloadConfig()}>Export Config</Button>
-            <Button fullWidth={fullWidth} variant="outlined" onClick={() => resetSchema()}>Reset</Button>
-            <Button fullWidth={fullWidth} variant="contained" onClick={() => downloadPreview()}>Export Image</Button>
+            <Button fullWidth={fullWidth} variant="outlined" startIcon={<UploadFileIcon />} onClick={() => selectConfig()}>Import Config</Button>
+            <Button fullWidth={fullWidth} variant="outlined" startIcon={<DownloadIcon />} onClick={() => downloadConfig()}>Export Config</Button>
+            <Button fullWidth={fullWidth} variant="outlined" startIcon={<RestartAltIcon />} onClick={() => resetSchema()}>Reset</Button>
+            <Button fullWidth={fullWidth} variant="contained" startIcon={<ImageIcon />} onClick={() => downloadPreview()}>Export Image</Button>
         </Stack>
     );
 }
