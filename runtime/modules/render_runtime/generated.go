@@ -13,6 +13,7 @@ import (
 
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/starlarkutil"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 )
 
 type RenderModule struct {
@@ -108,10 +109,7 @@ func newAnimation(
 
 	w := &Animation{}
 
-	var childrenVal starlark.Value
-	childrenIter := children.Iterate()
-	defer childrenIter.Done()
-	for i := 0; childrenIter.Next(&childrenVal); {
+	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -120,8 +118,7 @@ func newAnimation(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected children to be a list of Widget but found: %s (at index %d)",
-				childrenVal.Type(),
-				i,
+				childrenVal.Type(), i,
 			)
 		}
 
@@ -554,10 +551,7 @@ func newColumn(
 
 	w := &Column{}
 
-	var childrenVal starlark.Value
-	childrenIter := children.Iterate()
-	defer childrenIter.Done()
-	for i := 0; childrenIter.Next(&childrenVal); {
+	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -566,8 +560,7 @@ func newColumn(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected children to be a list of Widget but found: %s (at index %d)",
-				childrenVal.Type(),
-				i,
+				childrenVal.Type(), i,
 			)
 		}
 
@@ -1856,10 +1849,7 @@ func newRow(
 
 	w := &Row{}
 
-	var childrenVal starlark.Value
-	childrenIter := children.Iterate()
-	defer childrenIter.Done()
-	for i := 0; childrenIter.Next(&childrenVal); {
+	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -1868,8 +1858,7 @@ func newRow(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected children to be a list of Widget but found: %s (at index %d)",
-				childrenVal.Type(),
-				i,
+				childrenVal.Type(), i,
 			)
 		}
 
@@ -1999,10 +1988,7 @@ func newSequence(
 
 	w := &Sequence{}
 
-	var childrenVal starlark.Value
-	childrenIter := children.Iterate()
-	defer childrenIter.Done()
-	for i := 0; childrenIter.Next(&childrenVal); {
+	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -2011,8 +1997,7 @@ func newSequence(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected children to be a list of Widget but found: %s (at index %d)",
-				childrenVal.Type(),
-				i,
+				childrenVal.Type(), i,
 			)
 		}
 
@@ -2127,10 +2112,7 @@ func newStack(
 
 	w := &Stack{}
 
-	var childrenVal starlark.Value
-	childrenIter := children.Iterate()
-	defer childrenIter.Done()
-	for i := 0; childrenIter.Next(&childrenVal); {
+	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -2139,8 +2121,7 @@ func newStack(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected children to be a list of Widget but found: %s (at index %d)",
-				childrenVal.Type(),
-				i,
+				childrenVal.Type(), i,
 			)
 		}
 

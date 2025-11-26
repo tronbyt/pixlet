@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 )
 
@@ -82,10 +83,7 @@ func newColor(
 	s.starlarkPalette = starlark.NewList([]starlark.Value{})
 	s.Palette = []string{}
 
-	var paletteVal starlark.Value
-	paletteIter := palette.Iterate()
-	defer paletteIter.Done()
-	for i := 0; paletteIter.Next(&paletteVal); {
+	for i, paletteVal := range iterutil.Enumerate(palette.Elements()) {
 		if _, isNone := paletteVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -94,8 +92,7 @@ func newColor(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected palette to be a list of string but found: %s (at index %d)",
-				paletteVal.Type(),
-				i,
+				paletteVal.Type(), i,
 			)
 		}
 

@@ -257,11 +257,8 @@ func unmarshalStarlark(object starlark.Value) (interface{}, error) {
 
 	case *starlark.List:
 		goList := make([]interface{}, 0, v.Len())
-		iter := v.Iterate()
-		defer iter.Done()
 
-		var listVal starlark.Value
-		for i := 0; iter.Next(&listVal); i++ {
+		for listVal := range v.Elements() {
 			goVal, err := unmarshalStarlark(listVal)
 			if err != nil {
 				return nil, err

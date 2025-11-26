@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 )
 
@@ -48,10 +49,7 @@ func newDropdown(
 	s.Icon = icon.GoString()
 	s.Default = def.GoString()
 
-	var optionVal starlark.Value
-	optionIter := options.Iterate()
-	defer optionIter.Done()
-	for i := 0; optionIter.Next(&optionVal); {
+	for i, optionVal := range iterutil.Enumerate(options.Elements()) {
 		if _, isNone := optionVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -60,8 +58,7 @@ func newDropdown(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected options to be a list of Option but found: %s (at index %d)",
-				optionVal.Type(),
-				i,
+				optionVal.Type(), i,
 			)
 		}
 

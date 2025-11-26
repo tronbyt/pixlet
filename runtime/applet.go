@@ -42,6 +42,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/xpath"
 	"github.com/tronbyt/pixlet/schema"
 	"github.com/tronbyt/pixlet/starlarkutil"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 	starlibjson "go.starlark.net/lib/json"
 	starlibmath "go.starlark.net/lib/math"
 	"go.starlark.net/starlark"
@@ -266,21 +267,16 @@ func ExtractRoots(val starlark.Value) ([]render.Root, error) {
 		roots = []render.Root{returnRoot.AsRenderRoot()}
 	} else if returnList, ok := val.(*starlark.List); ok {
 		roots = make([]render.Root, returnList.Len())
-		iter := returnList.Iterate()
-		defer iter.Done()
-		i := 0
-		var listVal starlark.Value
-		for iter.Next(&listVal) {
+
+		for i, listVal := range iterutil.Enumerate(returnList.Elements()) {
 			if listValRoot, ok := listVal.(render_runtime.Rootable); ok {
 				roots[i] = listValRoot.AsRenderRoot()
 			} else {
 				return nil, fmt.Errorf(
 					"expected app implementation to return Root(s) but found: %s (at index %d)",
-					listVal.Type(),
-					i,
+					listVal.Type(), i,
 				)
 			}
-			i++
 		}
 	} else {
 		return nil, fmt.Errorf("expected app implementation to return Root(s) but found: %s", val.Type())

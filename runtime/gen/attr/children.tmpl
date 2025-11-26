@@ -1,8 +1,5 @@
 {{ if not .IsReadOnly }}
-var {{ .StarlarkName }}Val starlark.Value
-{{ .StarlarkName }}Iter := {{ .StarlarkName }}.Iterate()
-defer {{ .StarlarkName }}Iter.Done()
-for i := 0; {{ .StarlarkName }}Iter.Next(&{{ .StarlarkName }}Val);  {
+for i, {{ .StarlarkName}}Val := range iterutil.Enumerate({{ .StarlarkName }}.Elements()) {
 	if _, isNone := {{ .StarlarkName }}Val.(starlark.NoneType); isNone {
 		continue
 	}
@@ -11,8 +8,7 @@ for i := 0; {{ .StarlarkName }}Iter.Next(&{{ .StarlarkName }}Val);  {
 	if !ok {
 		return nil, fmt.Errorf(
 			"expected {{ .StarlarkName }} to be a list of Widget but found: %s (at index %d)",
-			{{ .StarlarkName }}Val.Type(),
-			i,
+			{{ .StarlarkName }}Val.Type(), i,
 		)
 	}
 
