@@ -114,6 +114,16 @@ Example:
 
 See [examples/humanize/humanize.star](../examples/humanize/humanize.star) for an example.
 
+## Pixlet module: i18n
+
+The `i18n` module provides a single helper that formats strings using the active
+locale. See the [Internationalization guide](./i18n.md) for creating locale
+files and selecting a language at runtime.
+
+| Function | Description |
+| --- | --- |
+| `tr(format, *args)` | Looks up `format` in the loaded locale catalog, formats it using Go's `fmt.Sprintf` semantics, and returns the localized string. Missing entries fall back to the source string. |
+
 ## Pixlet module: XPath
 
 The xpath module lets you extract data from XML documents using
