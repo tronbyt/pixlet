@@ -1,19 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var textSource = `
+func TestText(t *testing.T) {
+	const source = `
+load("assert.star", "assert")
 load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
 
 s = schema.Text(
 	id = "screen_name",
@@ -24,22 +21,21 @@ s = schema.Text(
 	secret = True,
 )
 
-assert(s.id == "screen_name")
-assert(s.name == "Screen Name")
-assert(s.desc == "A text entry for your screen name.")
-assert(s.icon == "user")
-assert(s.default == "foo")
-assert(s.secret == True)
+assert.eq(s.id, "screen_name")
+assert.eq(s.name, "Screen Name")
+assert.eq(s.desc, "A text entry for your screen name.")
+assert.eq(s.icon, "user")
+assert.eq(s.default, "foo")
+assert.eq(s.secret, True)
 
 def main():
 	return []
 `
 
-func TestText(t *testing.T) {
-	app, err := runtime.NewApplet("text.star", []byte(textSource))
+	app, err := runtime.NewApplet("text.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

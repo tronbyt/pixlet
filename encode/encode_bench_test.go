@@ -1,14 +1,13 @@
 package encode
 
 import (
-	"context"
 	"testing"
 	"time"
 
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var BenchmarkDotStar = `
+const benchmarkDotStar = `
 """benchmark
 
 A mock app that returns a widget tree of what is meant to be average
@@ -73,13 +72,13 @@ def main(config):
 `
 
 func BenchmarkRunAndRender(b *testing.B) {
-	app, err := runtime.NewApplet("benchmark.star", []byte(BenchmarkDotStar))
+	app, err := runtime.NewApplet("benchmark.star", []byte(benchmarkDotStar), runtime.WithTests(b))
 	if err != nil {
 		b.Error(err)
 	}
 
 	for i := 0; i < b.N; i++ {
-		roots, err := app.Run(context.Background())
+		roots, err := app.Run(b.Context())
 		if err != nil {
 			b.Error(err)
 		}

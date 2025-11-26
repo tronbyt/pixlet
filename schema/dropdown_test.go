@@ -1,19 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var dropdownSource = `
+func TestDropdown(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 options = [
 	schema.Option(
@@ -35,27 +32,26 @@ s = schema.Dropdown(
 	options = options,
 )
 
-assert(s.id == "colors")
-assert(s.name == "Text Color")
-assert(s.desc == "The color of text to be displayed.")
-assert(s.icon == "brush")
-assert(s.default == "#00FF00")
+assert.eq(s.id, "colors")
+assert.eq(s.name, "Text Color")
+assert.eq(s.desc, "The color of text to be displayed.")
+assert.eq(s.icon, "brush")
+assert.eq(s.default, "#00FF00")
 
-assert(s.options[0].display == "Green")
-assert(s.options[0].value == "#00FF00")
+assert.eq(s.options[0].display, "Green")
+assert.eq(s.options[0].value, "#00FF00")
 
-assert(s.options[1].display == "Red")
-assert(s.options[1].value == "#FF0000")
+assert.eq(s.options[1].display, "Red")
+assert.eq(s.options[1].value, "#FF0000")
 
 def main():
 	return []
 `
 
-func TestDropdown(t *testing.T) {
-	app, err := runtime.NewApplet("dropdown.star", []byte(dropdownSource))
+	app, err := runtime.NewApplet("dropdown.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

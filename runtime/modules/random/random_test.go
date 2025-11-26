@@ -1,7 +1,6 @@
 package random_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,7 +8,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var randomSrc = `
+const randomSrc = `
 load("random.star", "random")
 
 min = 100
@@ -48,10 +47,10 @@ def main():
 `
 
 func TestRandom(t *testing.T) {
-	app, err := runtime.NewApplet("random_test.star", []byte(randomSrc))
+	app, err := runtime.NewApplet("random_test.star", []byte(randomSrc), runtime.WithTests(t))
 	require.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }

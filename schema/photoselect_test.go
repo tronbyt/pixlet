@@ -1,19 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var photoSelectSource = `
+func TestPhotoSelect(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 t = schema.PhotoSelect(
 	id = "photo",
@@ -22,20 +19,19 @@ t = schema.PhotoSelect(
 	icon = "gear",
 )
 
-assert(t.id == "photo")
-assert(t.name == "Add Photo")
-assert(t.desc == "A photo.")
-assert(t.icon == "gear")
+assert.eq(t.id, "photo")
+assert.eq(t.name, "Add Photo")
+assert.eq(t.desc, "A photo.")
+assert.eq(t.icon, "gear")
 
 def main():
 	return []
 `
 
-func TestPhotoSelect(t *testing.T) {
-	app, err := runtime.NewApplet("photo_select.star", []byte(photoSelectSource))
+	app, err := runtime.NewApplet("photo_select.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

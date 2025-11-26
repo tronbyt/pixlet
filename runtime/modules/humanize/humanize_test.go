@@ -1,20 +1,17 @@
 package humanize_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var humanSource = `
-load("time.star", "time")
+func TestHumanize(t *testing.T) {
+	const source = `
+load("assert.star", "assert")
 load("humanize.star", "humanize")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("time.star", "time")
 
 # Set up
 now = time.now()
@@ -48,43 +45,42 @@ humanized_url_encode = humanize.url_encode("bar baz")
 humanized_url_decode = humanize.url_decode("http://example.com/foo=bar+baz")
 
 # Assert.
-assert(humanized_time_past == "2 days ago")
-assert(humanized_time_future == "1 day from now")
-assert(humanized_rel_time == "1 day ")
-assert(humanized_date_format == "2006-01-02")
-assert(humanized_date_format_date == iso_date)
+assert.eq(humanized_time_past, "2 days ago")
+assert.eq(humanized_time_future, "1 day from now")
+assert.eq(humanized_rel_time, "1 day ")
+assert.eq(humanized_date_format, "2006-01-02")
+assert.eq(humanized_date_format_date, iso_date)
 weekday = now.format("Monday")
 weekday_names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-assert(weekday_names[humanized_day_of_week] == weekday)
-assert(humanized_size == "1.4 GB")
-assert(humanized_size_iec == "1.3 GiB")
-assert(humanized_size_parsed == 42000000)
-assert(humanized_comma_int == "123,456")
-assert(humanized_comma_float == "123,456.78")
-assert(humanized_float == "123,456.78")
-assert(humanized_int == "123,456")
-assert(humanized_ordinal == "1st")
-assert(humanized_ftoa == "3.145")
-assert(humanized_ftoa_digits == "3.14")
-assert(humanized_ftoa_digits_z == "3")
-assert(humanized_plural == "42 objects")
-assert(humanized_plural_test == "1 star")
-assert(humanized_plural_word == "star")
-assert(humanized_word_series == "foo, bar and baz")
-assert(humanized_word_series_oxford == "foo, bar, and baz")
-assert(humanized_url_encode == "bar+baz")
-assert(humanized_url_decode == "http://example.com/foo=bar baz")
+assert.eq(weekday_names[humanized_day_of_week], weekday)
+assert.eq(humanized_size, "1.4 GB")
+assert.eq(humanized_size_iec, "1.3 GiB")
+assert.eq(humanized_size_parsed, 42000000)
+assert.eq(humanized_comma_int, "123,456")
+assert.eq(humanized_comma_float, "123,456.78")
+assert.eq(humanized_float, "123,456.78")
+assert.eq(humanized_int, "123,456")
+assert.eq(humanized_ordinal, "1st")
+assert.eq(humanized_ftoa, "3.145")
+assert.eq(humanized_ftoa_digits, "3.14")
+assert.eq(humanized_ftoa_digits_z, "3")
+assert.eq(humanized_plural, "42 objects")
+assert.eq(humanized_plural_test, "1 star")
+assert.eq(humanized_plural_word, "star")
+assert.eq(humanized_word_series, "foo, bar and baz")
+assert.eq(humanized_word_series_oxford, "foo, bar, and baz")
+assert.eq(humanized_url_encode, "bar+baz")
+assert.eq(humanized_url_decode, "http://example.com/foo=bar baz")
 
 def main():
 	return []
 `
 
-func TestHumanize(t *testing.T) {
-	app, err := runtime.NewApplet("human.star", []byte(humanSource))
+	app, err := runtime.NewApplet("human.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

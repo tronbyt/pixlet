@@ -1,19 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var handlerSource = `
+func TestHandler(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 def foobar(param):
     return "derp"
@@ -23,18 +20,17 @@ h = schema.Handler(
     type = schema.HandlerType.String,
 )
 
-assert(h.handler == foobar)
-assert(h.type == schema.HandlerType.String)
+assert.eq(h.handler, foobar)
+assert.eq(h.type, schema.HandlerType.String)
 
 def main():
 	return []
 `
 
-func TestHandler(t *testing.T) {
-	app, err := runtime.NewApplet("handler.star", []byte(handlerSource))
+	app, err := runtime.NewApplet("handler.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }
@@ -54,7 +50,7 @@ h = schema.Handler(
 
 def main():
 	return []
-`))
+`), runtime.WithTests(t))
 	assert.Error(t, err)
 	assert.Nil(t, app)
 
@@ -72,7 +68,7 @@ h = schema.Handler(
 
 def main():
 	return []
-`))
+`), runtime.WithTests(t))
 	assert.Error(t, err)
 	assert.Nil(t, app)
 }

@@ -1,39 +1,38 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var generatedSource = `
+func TestGenerated(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
+load("assert.star", "assert")
 
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+def validate(value):
+	assert.eq(value, value)
 
 s = schema.Generated(
 	id = "foo",
         source = "bar",
-        handler = assert,
+        handler = validate,
 )
 
-assert(s.id == "foo")
-assert(s.source == "bar")
-assert(s.handler == assert)
+assert.eq(s.id, "foo")
+assert.eq(s.source, "bar")
+assert.eq(s.handler, validate)
 
 def main():
 	return []
 `
 
-func TestGenerated(t *testing.T) {
-	app, err := runtime.NewApplet("generated.star", []byte(generatedSource))
+	app, err := runtime.NewApplet("generated.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

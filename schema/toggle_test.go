@@ -1,19 +1,16 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var toggleSource = `
+func TestToggle(t *testing.T) {
+	const source = `
 load("schema.star", "schema")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 t = schema.Toggle(
 	id = "display_weather",
@@ -23,21 +20,20 @@ t = schema.Toggle(
 	default = True,
 )
 
-assert(t.id == "display_weather")
-assert(t.name == "Display Weather")
-assert(t.desc == "A toggle to determine if the weather should be displayed.")
-assert(t.icon == "cloud")
-assert(t.default == True)
+assert.eq(t.id, "display_weather")
+assert.eq(t.name, "Display Weather")
+assert.eq(t.desc, "A toggle to determine if the weather should be displayed.")
+assert.eq(t.icon, "cloud")
+assert.eq(t.default, True)
 
 def main():
 	return []
 `
 
-func TestToggle(t *testing.T) {
-	app, err := runtime.NewApplet("toggle.star", []byte(toggleSource))
+	app, err := runtime.NewApplet("toggle.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

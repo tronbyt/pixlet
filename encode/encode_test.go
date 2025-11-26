@@ -2,7 +2,6 @@ package encode
 
 import (
 	"bytes"
-	"context"
 	"image"
 	"image/gif"
 	"strings"
@@ -16,17 +15,14 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var TestDotStar = `
+const testDotStar = `
 load("render.star", "render")
 load("encoding/base64.star", "base64")
-
-def assert(success, message=None):
-    if not success:
-        fail(message or "assertion failed")
+load("assert.star", "assert")
 
 # Font tests
-assert(render.fonts["6x13"] == "6x13", 'render.fonts["6x13"] == "6x13"')
-assert(render.fonts["Dina_r400-6"] == "Dina_r400-6", 'render.fonts["Dina_r400-6"] == "Dina_r400-6"')
+assert.eq(render.fonts["6x13"], "6x13")
+assert.eq(render.fonts["Dina_r400-6"], "Dina_r400-6")
 
 # Box tests
 b1 = render.Box(
@@ -35,17 +31,17 @@ b1 = render.Box(
     color = "#000",
 )
 
-assert(b1.width == 64, "b1.width == 64")
-assert(b1.height == 32, "b1.height == 32")
-assert(b1.color == "#000", 'b1.color == "#000"')
+assert.eq(b1.width, 64)
+assert.eq(b1.height, 32)
+assert.eq(b1.color, "#000")
 
 b2 = render.Box(
     child = b1,
     color = "#0f0d",
 )
 
-assert(b2.child == b1, "b2.child == b1")
-assert(b2.color == "#0f0d", 'b2.color == "#0f0d"')
+assert.eq(b2.child, b1)
+assert.eq(b2.color, "#0f0d")
 
 # Text tests
 t1 = render.Text(
@@ -54,11 +50,11 @@ t1 = render.Text(
     color = "#fff",
     content = "foo",
 )
-assert(t1.height == 10, "t1.height == 10")
-assert(t1.font == "6x13", 't1.font == "6x13"')
-assert(t1.color == "#fff", 't1.color == "#fff"')
-assert(0 < t1.size()[0], "0 < t1.size()[0]")
-assert(0 < t1.size()[1], "0 < t1.size()[1]")
+assert.eq(t1.height, 10)
+assert.eq(t1.font, "6x13")
+assert.eq(t1.color, "#fff")
+assert.lt(0, t1.size()[0])
+assert.lt(0, t1.size()[1])
 
 # WrappedText
 tw = render.WrappedText(
@@ -79,8 +75,8 @@ f = render.Root(
     ),
 )
 
-assert(f.child.width == 123, "f.child.width == 123")
-assert(f.child.child.content == "hello", 'f.child.child.content == "hello"')
+assert.eq(f.child.width, 123)
+assert.eq(f.child.child.content, "hello")
 
 # Padding
 p = render.Padding(pad=3, child=render.Box(width=1, height=2))
@@ -90,9 +86,9 @@ p3 = render.Padding(pad=1, child=render.Box(width=1, height=2), expanded=True)
 # Image tests
 png_src = base64.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX/AAAZ4gk3AAAACklEQVR4nGNiAAAABgADNjd8qAAAAABJRU5ErkJggg==")
 img = render.Image(src = png_src)
-assert(img.src == png_src, "img.src == png_src")
-assert(0 < img.size()[0], "0 < img.size()[0]")
-assert(0 < img.size()[1], "0 < img.size()[1]")
+assert.eq(img.src, png_src)
+assert.lt(0, img.size()[0])
+assert.lt(0, img.size()[1])
 
 # Row and Column
 r1 = render.Row(
@@ -135,22 +131,22 @@ r1 = render.Row(
     ],
 )
 
-assert(r1.main_align == "space_evenly", 'r1.main_align == "space_evenly"')
-assert(r1.cross_align == "center", 'r1.cross_align == "center"')
-assert(r1.children[1].main_align == "start", 'r1.children[1].main_align == "start"')
-assert(r1.children[1].cross_align == "end", 'r1.children[1].cross_align == "end"')
-assert(len(r1.children) == 3, "len(r1.children) == 3")
-assert(len(r1.children[1].children) == 3, "len(r1.children[1].children) == 3")
+assert.eq(r1.main_align, "space_evenly")
+assert.eq(r1.cross_align, "center")
+assert.eq(r1.children[1].main_align, "start")
+assert.eq(r1.children[1].cross_align, "end")
+assert.eq(len(r1.children), 3)
+assert.eq(len(r1.children[1].children), 3)
 
 def main():
     return render.Root(child=r1)
 `
 
 func TestFile(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(TestDotStar))
+	app, err := runtime.NewApplet("test.star", []byte(testDotStar), runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	roots, err := app.Run(context.Background())
+	roots, err := app.Run(t.Context())
 	assert.NoError(t, err)
 
 	webp, err := ScreensFromRoots(roots, 64, 32).EncodeWebP(15 * time.Second)
@@ -159,10 +155,10 @@ func TestFile(t *testing.T) {
 }
 
 func TestHash(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(TestDotStar))
+	app, err := runtime.NewApplet("test.star", []byte(testDotStar), runtime.WithTests(t))
 	require.NoError(t, err)
 
-	roots, err := app.Run(context.Background())
+	roots, err := app.Run(t.Context())
 	require.NoError(t, err)
 	assert.False(t, ScreensFromRoots(roots, 64, 32).Empty())
 
@@ -179,11 +175,11 @@ func TestHash(t *testing.T) {
 	}
 
 	// change the app slightly
-	modifiedSource := strings.Replace(TestDotStar, "foo bar", "bar foo", 1)
-	app2, err := runtime.NewApplet("test.star", []byte(modifiedSource))
+	modifiedSource := strings.Replace(testDotStar, "foo bar", "bar foo", 1)
+	app2, err := runtime.NewApplet("test.star", []byte(modifiedSource), runtime.WithTests(t))
 	require.NoError(t, err)
 
-	roots2, err := app2.Run(context.Background())
+	roots2, err := app2.Run(t.Context())
 	require.NoError(t, err)
 
 	// ensure we can calculate a hash on the new app
@@ -195,10 +191,10 @@ func TestHash(t *testing.T) {
 }
 
 func TestHashEmptyApp(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(`def main(): return []`))
+	app, err := runtime.NewApplet("test.star", []byte(`def main(): return []`), runtime.WithTests(t))
 	require.NoError(t, err)
 
-	roots, err := app.Run(context.Background())
+	roots, err := app.Run(t.Context())
 	require.NoError(t, err)
 	assert.True(t, ScreensFromRoots(roots, 64, 32).Empty())
 
@@ -255,25 +251,25 @@ func TestScreensFromRoots(t *testing.T) {
 }
 
 func TestShowFullAnimation(t *testing.T) {
-	requestFull := `
+	const requestFull = `
 load("render.star", "render")
 def main():
     return render.Root(show_full_animation=True, child=render.Box())
 `
-	app, err := runtime.NewApplet("test.star", []byte(requestFull))
+	app, err := runtime.NewApplet("test.star", []byte(requestFull), runtime.WithTests(t))
 	require.NoError(t, err)
-	roots, err := app.Run(context.Background())
+	roots, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.True(t, ScreensFromRoots(roots, 64, 32).ShowFullAnimation)
 
-	dontRequestFull := `
+	const dontRequestFull = `
 load("render.star", "render")
 def main():
     return render.Root(child=render.Box())
 `
-	app, err = runtime.NewApplet("test.star", []byte(dontRequestFull))
+	app, err = runtime.NewApplet("test.star", []byte(dontRequestFull), runtime.WithTests(t))
 	require.NoError(t, err)
-	roots, err = app.Run(context.Background())
+	roots, err = app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.False(t, ScreensFromRoots(roots, 64, 32).ShowFullAnimation)
 }
@@ -298,10 +294,10 @@ def main():
     )
 `)
 
-	app, err := runtime.NewApplet("test.star", src)
+	app, err := runtime.NewApplet("test.star", src, runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	roots, err := app.Run(context.Background())
+	roots, err := app.Run(t.Context())
 	assert.NoError(t, err)
 
 	// Source above will produce a 70 frame animation

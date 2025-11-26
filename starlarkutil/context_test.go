@@ -15,10 +15,7 @@ func TestThreadContext(t *testing.T) {
 	key = "foo"
 	val := "bar"
 
-	ctx := context.WithValue(
-		context.Background(),
-		key, val,
-	)
+	ctx := context.WithValue(t.Context(), key, val)
 
 	thread := &starlark.Thread{}
 	AttachThreadContext(ctx, thread)

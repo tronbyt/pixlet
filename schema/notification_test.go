@@ -1,7 +1,6 @@
 package schema_test
 
 import (
-	"context"
 	"testing"
 	"testing/fstest"
 
@@ -10,7 +9,8 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-var notificationSource = `
+func TestNotification(t *testing.T) {
+	const source = `
 load("assert.star", "assert")
 load("schema.star", "schema")
 load("sound.mp3", "file")
@@ -46,15 +46,14 @@ def main():
 	return []
 `
 
-func TestNotification(t *testing.T) {
 	vfs := fstest.MapFS{
 		"sound.mp3":         &fstest.MapFile{Data: []byte("sound data")},
-		"notification.star": &fstest.MapFile{Data: []byte(notificationSource)},
+		"notification.star": &fstest.MapFile{Data: []byte(source)},
 	}
-	app, err := runtime.NewAppletFromFS("sound", vfs)
+	app, err := runtime.NewAppletFromFS("sound", vfs, runtime.WithTests(t))
 	assert.NoError(t, err)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }

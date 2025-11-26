@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"context"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -19,11 +18,11 @@ func TestInitHTTP(t *testing.T) {
 	b, err := os.ReadFile("testdata/httpcache.star")
 	assert.NoError(t, err)
 
-	app, err := NewApplet("httpcache.star", b)
+	app, err := NewApplet("httpcache.star", b, WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
-	screens, err := app.Run(context.Background())
+	screens, err := app.Run(t.Context())
 	assert.NoError(t, err)
 	assert.NotNil(t, screens)
 }
