@@ -6,6 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { resetConfig, setConfig } from '../config/actions';
 import { set } from '../config/configSlice';
 import { setScale } from '../preview/previewSlice';
@@ -15,6 +16,7 @@ export default function Controls() {
     const config = useSelector(state => state.config);
     const schema = useSelector(state => state.schema);
     const dispatch = useDispatch();
+    const fullWidth = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     let imageType = 'webp';
     if (preview.value.img_type === "gif") {
@@ -109,8 +111,14 @@ export default function Controls() {
     const scaleValue = preview.value.is2x === true ? '2' : '1';
 
     return (
-        <Stack sx={{ marginTop: '32px' }} spacing={2} direction="row">
-            <FormControl size="small" sx={{ minWidth: 160 }}>
+        <Stack
+            sx={{ marginTop: '32px' }}
+            spacing={2}
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems="flex-start"
+            flexWrap="wrap"
+        >
+            <FormControl size="small" sx={{ minWidth: 160 }} fullWidth={fullWidth}>
                 <InputLabel id="render-scale-label">Render Scale</InputLabel>
                 <Select
                     labelId="render-scale-label"
@@ -123,10 +131,10 @@ export default function Controls() {
                     <MenuItem value="2">2x</MenuItem>
                 </Select>
             </FormControl>
-            <Button variant="outlined" onClick={() => selectConfig()}>Import Config</Button>
-            <Button variant="outlined" onClick={() => downloadConfig()}>Export Config</Button>
-            <Button variant="outlined" onClick={() => resetSchema()}>Reset</Button>
-            <Button variant="contained" onClick={() => downloadPreview()}>Export Image</Button>
+            <Button fullWidth={fullWidth} variant="outlined" onClick={() => selectConfig()}>Import Config</Button>
+            <Button fullWidth={fullWidth} variant="outlined" onClick={() => downloadConfig()}>Export Config</Button>
+            <Button fullWidth={fullWidth} variant="outlined" onClick={() => resetSchema()}>Reset</Button>
+            <Button fullWidth={fullWidth} variant="contained" onClick={() => downloadPreview()}>Export Image</Button>
         </Stack>
     );
 }
