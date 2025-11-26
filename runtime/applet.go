@@ -49,11 +49,15 @@ import (
 	"go.starlark.net/starlarkstruct"
 	"go.starlark.net/starlarktest"
 	"go.starlark.net/syntax"
+	"golang.org/x/mod/semver"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message/catalog"
 )
 
-const LocaleDir = "locales"
+const (
+	ManifestPath = "manifest.yaml"
+	LocaleDir    = "locales"
+)
 
 type ModuleLoader func(*starlark.Thread, string) (starlark.StringDict, error)
 
@@ -437,22 +441,19 @@ func (a *Applet) load(fsys fs.FS) (err error) {
 		return fmt.Errorf("reading root directory: %v", err)
 	}
 
+	if err := a.loadManifest(fsys, ManifestPath); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+
 	singleFile := path.Ext(a.ID) == ".star"
 
 	for _, d := range rootDir {
 		switch {
 		case d.IsDir():
 			if d.Name() == LocaleDir {
-				if err := a.loadCatalog(fsys); err != nil {
-					if errors.Is(err, os.ErrNotExist) {
-						continue
-					}
+				if err := a.loadCatalog(fsys); err != nil && !errors.Is(err, os.ErrNotExist) {
 					return err
 				}
-			}
-		case d.Name() == "manifest.yaml", d.Name() == "manifest.yml":
-			if err := a.loadManifest(fsys, d.Name()); err != nil {
-				return err
 			}
 		case path.Ext(d.Name()) == ".star":
 			if singleFile && a.ID != d.Name() {
@@ -472,6 +473,11 @@ func (a *Applet) load(fsys fs.FS) (err error) {
 	return nil
 }
 
+var (
+	ErrMinPixletVersionInvalid = errors.New("manifest minPixletVersion is not a valid version string")
+	ErrMinPixletVersion        = errors.New("app requires a newer pixlet version")
+)
+
 func (a *Applet) loadManifest(fsys fs.FS, pathToLoad string) (err error) {
 	r, err := fsys.Open(pathToLoad)
 	if err != nil {
@@ -482,6 +488,16 @@ func (a *Applet) loadManifest(fsys fs.FS, pathToLoad string) (err error) {
 	a.Manifest, err = manifest.LoadManifest(r)
 	if err != nil {
 		return fmt.Errorf("loading manifest: %w", err)
+	}
+
+	if Version != "" && a.Manifest.MinPixletVersion != "" && semver.IsValid(Version) {
+		if !semver.IsValid(a.Manifest.MinPixletVersion) {
+			return fmt.Errorf("%w: %s", ErrMinPixletVersionInvalid, a.Manifest.MinPixletVersion)
+		}
+
+		if semver.Compare(Version, a.Manifest.MinPixletVersion) < 0 {
+			return fmt.Errorf("%w: needs %s, got %s", ErrMinPixletVersion, a.Manifest.MinPixletVersion, Version)
+		}
 	}
 
 	a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {

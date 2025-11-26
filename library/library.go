@@ -27,16 +27,17 @@ import (
 )
 
 const (
-	statusErrInvalidConfig   = -1
-	statusErrRenderFailure   = -2
-	statusErrInvalidFilters  = -3
-	statusErrHandlerFailure  = -4
-	statusErrInvalidPath     = -5
-	statusErrStarSuffix      = -6
-	statusErrUnknownApplet   = -7
-	statusErrSchemaFailure   = -8
-	statusErrInvalidTimezone = -9
-	statusErrInvalidLocale   = -10
+	statusErrInvalidConfig    = -1
+	statusErrRenderFailure    = -2
+	statusErrInvalidFilters   = -3
+	statusErrHandlerFailure   = -4
+	statusErrInvalidPath      = -5
+	statusErrStarSuffix       = -6
+	statusErrUnknownApplet    = -7
+	statusErrSchemaFailure    = -8
+	statusErrInvalidTimezone  = -9
+	statusErrInvalidLocale    = -10
+	statusErrMinPixletVersion = -11
 )
 
 // render_app renders an applet based on the provided parameters.
@@ -118,8 +119,13 @@ func render_app(
 	)
 
 	messagesJSON, _ := json.Marshal(messages)
+
 	if err != nil {
-		return nil, C.int(statusErrRenderFailure), C.CString(string(messagesJSON)), C.CString(fmt.Sprintf("error rendering: %v", err))
+		status := statusErrRenderFailure
+		if errors.Is(err, runtime.ErrMinPixletVersion) {
+			status = statusErrMinPixletVersion
+		}
+		return nil, C.int(status), C.CString(string(messagesJSON)), C.CString(fmt.Sprintf("error rendering: %v", err))
 	}
 
 	return (*C.uchar)(C.CBytes(result)), C.int(len(result)), C.CString(string(messagesJSON)), nil
@@ -133,6 +139,8 @@ func errorStatus(err error) int {
 			return statusErrInvalidPath
 		case errors.Is(err, runtime.ErrStarSuffix):
 			return statusErrStarSuffix
+		case errors.Is(err, runtime.ErrMinPixletVersion):
+			return statusErrMinPixletVersion
 		}
 	}
 	return statusErrUnknownApplet
