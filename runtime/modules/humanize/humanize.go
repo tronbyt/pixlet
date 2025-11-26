@@ -16,6 +16,7 @@ import (
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 	"golang.org/x/text/message"
+	"golang.org/x/text/number"
 )
 
 const (
@@ -306,33 +307,41 @@ func ftoa(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwa
 	)
 
 	if err := starlark.UnpackArgs(
-		"ftoa",
-		args, kwargs,
+		"ftoa", args, kwargs,
 		"num", &starNum,
 		"digits?", &starDigits,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for ftoa: %s", err)
 	}
 
-	var val string
 	num := float64(starNum)
 
-	switch starDigits := starDigits.(type) {
+	lang := i18n_runtime.LanguageFromThread(thread)
+	p := message.NewPrinter(lang)
+
+	var digits int64
+
+	switch d := starDigits.(type) {
 	case starlark.Int:
-		digits, err := starlarkutil.AsInt64(starDigits)
-		if err != nil {
+		var err error
+		if digits, err = starlarkutil.AsInt64(d); err != nil {
 			return nil, fmt.Errorf("parsing digits: %w", err)
 		}
-		val = gohumanize.FtoaWithDigits(num, int(digits))
 	case starlark.Float:
-		digits := int(starDigits)
-		val = gohumanize.FtoaWithDigits(num, digits)
+		digits = int64(d)
+	case nil, starlark.NoneType:
+		s := p.Sprint(number.Decimal(num))
+		return starlark.String(s), nil
+	default:
+		return nil, fmt.Errorf("expected digits to be int, got %s", d.Type())
 	}
 
-	if val == "" {
-		val = gohumanize.Ftoa(num)
+	if digits < 0 {
+		return nil, fmt.Errorf("digits must be >= 0")
 	}
-	return starlark.String(val), nil
+
+	s := p.Sprint(number.Decimal(num, number.MaxFractionDigits(int(digits))))
+	return starlark.String(s), nil
 }
 
 func formatFloat(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {

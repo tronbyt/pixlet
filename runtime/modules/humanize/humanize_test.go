@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/runtime"
+	"golang.org/x/text/language"
 )
 
 func TestHumanize(t *testing.T) {
@@ -62,7 +63,7 @@ assert.eq(humanized_float, "123,456.78")
 assert.eq(humanized_int, "123,456")
 assert.eq(humanized_ordinal, "1st")
 assert.eq(humanized_ftoa, "3.145")
-assert.eq(humanized_ftoa_digits, "3.14")
+assert.eq(humanized_ftoa_digits, "3.15")
 assert.eq(humanized_ftoa_digits_z, "3")
 assert.eq(humanized_plural, "42 objects")
 assert.eq(humanized_plural_test, "1 star")
@@ -77,6 +78,48 @@ def main():
 `
 
 	app, err := runtime.NewApplet("human.star", []byte(source), runtime.WithTests(t))
+	assert.NoError(t, err)
+	assert.NotNil(t, app)
+
+	screens, err := app.Run(t.Context())
+	assert.NoError(t, err)
+	assert.NotNil(t, screens)
+}
+
+func TestHumanizeLocale(t *testing.T) {
+	const source = `
+load("assert.star", "assert")
+load("humanize.star", "humanize")
+load("time.star", "time")
+
+# Set up
+now = time.now()
+tomorrow = now + time.parse_duration("26h")
+
+# Call methods.
+humanized_comma_int = humanize.comma(123456)
+humanized_comma_float = humanize.comma(123456.78)
+humanized_ftoa = humanize.ftoa(3.1450000)
+humanized_ftoa_digits = humanize.ftoa(3.1450000, 2)
+humanized_ftoa_digits_z = humanize.ftoa(3.1450000, 0)
+
+# Assert.
+assert.eq(humanized_comma_int, "123.456")
+assert.eq(humanized_comma_float, "123.456,78")
+assert.eq(humanized_ftoa, "3,145")
+assert.eq(humanized_ftoa_digits, "3,15")
+assert.eq(humanized_ftoa_digits_z, "3")
+
+def main():
+	return []
+`
+
+	app, err := runtime.NewApplet(
+		"human_locale.star",
+		[]byte(source),
+		runtime.WithTests(t),
+		runtime.WithLanguage(language.German),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
