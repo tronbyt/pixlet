@@ -120,7 +120,7 @@ func (pl *PolyLine) Point(i int) (int, int) {
 
 func (pl *PolyLine) compute() {
 	pl.path = []PathPoint{}
-	for i := 0; i < len(pl.Vertices)-1; i++ {
+	for i := range len(pl.Vertices) - 1 {
 		pl.addLineSegment(
 			pl.Vertices[i].X,
 			pl.Vertices[i].Y,

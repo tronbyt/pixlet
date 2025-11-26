@@ -188,7 +188,7 @@ func (p *Image) Init(*starlark.Thread) error {
 			nh = int(float64(nw) * (float64(h) / float64(w)))
 		}
 
-		for i := 0; i < len(p.imgs); i++ {
+		for i := range p.imgs {
 			p.imgs[i] = resize.Resize(uint(nw), uint(nh), p.imgs[i], resize.NearestNeighbor)
 		}
 	}

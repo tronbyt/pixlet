@@ -1232,7 +1232,7 @@ func newPadding(
 			)
 		}
 		padListInt := make([]int, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			pi, ok := padList[i].(starlark.Int)
 			if !ok {
 				return nil, fmt.Errorf("pad element %d is not int", i)

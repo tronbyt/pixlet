@@ -19,7 +19,7 @@ case starlark.Tuple:
 		)
 	}
 	{{ .StarlarkName }}ListInt := make([]int, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		pi, ok := {{ .StarlarkName }}List[i].(starlark.Int)
 		if !ok {
 			return nil, fmt.Errorf("{{ .StarlarkName }} element %d is not int", i)

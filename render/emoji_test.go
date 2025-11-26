@@ -211,7 +211,7 @@ func BenchmarkEmojiWidget(b *testing.B) {
 
 	for _, tt := range tests {
 		b.Run(tt.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				emoji := &Emoji{
 					EmojiStr: tt.emoji,
 					Height:   tt.height,

@@ -177,7 +177,7 @@ func (p *Plot) translatePoints() []PathPoint {
 
 	// Translate
 	points := make([]PathPoint, len(p.Data))
-	for i := 0; i < len(p.Data); i++ {
+	for i := range p.Data {
 		pt := p.Data[i]
 		nX := (pt[0] - xLimMin) / (xLimMax - xLimMin)
 		nY := (pt[1] - yLimMin) / (yLimMax - yLimMin)
@@ -247,7 +247,7 @@ func (p Plot) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 
 	if p.ChartType == "scatter" {
 		points := p.translatePoints()
-		for i := 0; i < len(points); i++ {
+		for i := range points {
 			point := points[i]
 			if point.Y > p.invThreshold {
 				dc.SetColor(colInv)
@@ -258,7 +258,7 @@ func (p Plot) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 		}
 	} else {
 		// the line itself
-		for i := 0; i < pl.Length(); i++ {
+		for i := range pl.Length() {
 			x, y := pl.Point(i)
 			if y > p.invThreshold {
 				dc.SetColor(colInv)

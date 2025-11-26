@@ -34,14 +34,14 @@ func (ic ImageChecker) Check(expected []string, actual image.Image) error {
 		return fmt.Errorf("expected %d rows, found %d", len(expected), actual.Bounds().Dy())
 	}
 
-	for y := 0; y < actual.Bounds().Dy(); y++ {
+	for y := range actual.Bounds().Dy() {
 		if len(runes[y]) != actual.Bounds().Dx() {
 			ic.PrintDiff(expected, actual)
 			return fmt.Errorf(
 				"row %d: expected %d columns, found %d",
 				y, len(runes[0]), actual.Bounds().Dx())
 		}
-		for x := 0; x < actual.Bounds().Dx(); x++ {
+		for x := range actual.Bounds().Dx() {
 			var actualColorRGBA color.RGBA
 			actualColor := actual.At(x, y)
 			if nrgba, ok := actualColor.(color.NRGBA); ok {
@@ -51,7 +51,7 @@ func (ic ImageChecker) Check(expected []string, actual image.Image) error {
 				actualColorRGBA = actualColor.(color.RGBA)
 			}
 
-			if actualColorRGBA != ic.Palette[string(runes[y][x])] {
+			if actualColorRGBA != ic.Palette[runes[y][x]] {
 				ic.PrintDiff(expected, actual)
 				return fmt.Errorf("color differs at %d,%d", x, y)
 			}
@@ -77,8 +77,8 @@ func (ic ImageChecker) PrintImage(im image.Image) {
 		color2Ascii[rgba] = t
 	}
 
-	for y := 0; y < im.Bounds().Dy(); y++ {
-		for x := 0; x < im.Bounds().Dx(); x++ {
+	for y := range im.Bounds().Dy() {
+		for x := range im.Bounds().Dx() {
 			ascii := color2Ascii[im.At(x, y).(color.RGBA)]
 			if ascii == "" {
 				ascii = "?"

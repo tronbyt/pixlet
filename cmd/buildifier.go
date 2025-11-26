@@ -104,7 +104,7 @@ func processFiles(files []string, lint string, tf *utils.TempFile, mode string, 
 	}
 
 	ch := make([]chan result, nworker)
-	for i := 0; i < nworker; i++ {
+	for i := range nworker {
 		ch[i] = make(chan result, 1)
 		go func(i int) {
 			for j := i; j < len(files); j += nworker {

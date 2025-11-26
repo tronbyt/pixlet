@@ -1,6 +1,6 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
-for i := 0; i < {{ .StarlarkName }}.Len(); i++ {
+for i := range {{ .StarlarkName }}.Len() {
 	if val, ok := {{ .StarlarkName }}.Index(i).(*Keyframe); ok {
 		w.{{ .GoName }} = append(w.{{ .GoName }}, val.Keyframe)
 	} else {

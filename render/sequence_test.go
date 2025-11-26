@@ -159,7 +159,7 @@ func TestSequenceWithAnimatedChildren(t *testing.T) {
 		},
 	}
 
-	for i := 0; i < seq.FrameCount(image.Rect(0, 0, 2, 2)); i++ {
+	for i := range seq.FrameCount(image.Rect(0, 0, 2, 2)) {
 		im := PaintWidget(seq, image.Rect(0, 0, 2, 2), i)
 		assert.Equal(t, nil, checkImage(expected[i], im))
 	}

@@ -32,7 +32,7 @@ func DataPointFromStarlark(value starlark.Value) ([2]float64, error) {
 		return result, fmt.Errorf("invalid type for data point: %s (expected a 2-tuple)", value.Type())
 	}
 
-	for i := 0; i < len(result); i++ {
+	for i := range result {
 		if value, err := DataPointElementFromStarlark(tuple.Index(i)); err == nil {
 			result[i] = value
 		} else {
@@ -46,7 +46,7 @@ func DataPointFromStarlark(value starlark.Value) ([2]float64, error) {
 func DataSeriesFromStarlark(list *starlark.List) ([][2]float64, error) {
 	result := make([][2]float64, 0)
 
-	for i := 0; i < list.Len(); i++ {
+	for i := range list.Len() {
 		if val, err := DataPointFromStarlark(list.Index(i)); err == nil {
 			result = append(result, val)
 		} else {
@@ -60,7 +60,7 @@ func DataSeriesFromStarlark(list *starlark.List) ([][2]float64, error) {
 func WeightsFromStarlark(list *starlark.List) ([]float64, error) {
 	result := make([]float64, 0)
 
-	for i := 0; i < list.Len(); i++ {
+	for i := range list.Len() {
 		if val, err := DataPointElementFromStarlark(list.Index(i)); err == nil {
 			result = append(result, val)
 		} else {
@@ -74,7 +74,7 @@ func WeightsFromStarlark(list *starlark.List) ([]float64, error) {
 func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
 	result := make([]color.Color, 0)
 
-	for i := 0; i < list.Len(); i++ {
+	for i := range list.Len() {
 		c := list.Index(i)
 
 		switch v := c.(type) {

@@ -63,7 +63,7 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 			fmt.Errorf("invalid range for percentage: %f (expected number in range [0.0, 1.0])", p)
 	}
 
-	for i := 0; i < len(arr)-1; i++ {
+	for i := range len(arr) - 1 {
 		p0 := arr[i].Percentage.Value
 		p1 := arr[i+1].Percentage.Value
 

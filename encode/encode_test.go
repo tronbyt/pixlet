@@ -168,7 +168,7 @@ func TestHash(t *testing.T) {
 	require.True(t, len(hash) > 0)
 
 	// ensure the hash doesn't change
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		h, err := ScreensFromRoots(roots, 64, 32).Hash()
 		assert.NoError(t, err)
 		assert.Equal(t, hash, h)
@@ -204,7 +204,7 @@ func TestHashEmptyApp(t *testing.T) {
 	require.True(t, len(hash) > 0)
 
 	// ensure the hash doesn't change
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		h, err := ScreensFromRoots(roots, 64, 32).Hash()
 		assert.NoError(t, err)
 		assert.Equal(t, hash, h)

@@ -98,7 +98,7 @@ func (s *Starfield) Init(*starlark.Thread) error {
 
 func (s *Starfield) initStars(numStars int) {
 	s.stars = make([]*Star, numStars)
-	for i := 0; i < numStars; i++ {
+	for i := range numStars {
 		s.stars[i] = &Star{
 			X: 2*rand.Float64() - 1,
 			Y: 2*rand.Float64() - 1,
@@ -121,7 +121,7 @@ func (s *Starfield) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) 
 	dc.SetColor(Black)
 	dc.Clear()
 
-	for j := 0; j < len(s.stars); j++ {
+	for j := range s.stars {
 		s.stars[j].Tick()
 		if math.Abs(s.stars[j].X) > 1.0 || math.Abs(s.stars[j].Y) > 1.0 {
 			s.stars[j].X = rand.NormFloat64() * 0.3
