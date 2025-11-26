@@ -1,5 +1,5 @@
 import store from '../../store';
-import { update } from '../preview/previewSlice';
+import { update, loading as previewLoading } from '../preview/previewSlice';
 import { update as updateSchema } from '../schema/schemaSlice';
 import { set as setError, clear as clearErrors } from '../errors/errorSlice';
 
@@ -36,6 +36,7 @@ export default class Watcher {
                     height: data.height,
                     is2x: data.is2x,
                 }));
+                store.dispatch(previewLoading(false));
                 store.dispatch(clearErrors());
                 break;
             case 'schema':
