@@ -8,6 +8,7 @@ let timeout = null;
 
 export default function fetchPreview(formData) {
     const client = axios.create();
+    store.dispatch(loading(true));
     axiosRetry(client, {
         retries: 5,
         retryDelay: () => 1000,

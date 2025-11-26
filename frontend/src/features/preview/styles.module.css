@@ -1,5 +1,6 @@
 .container {
 	background-color: black;
+	position: relative;
 }
 
 .image {
