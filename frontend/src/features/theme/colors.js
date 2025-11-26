@@ -1,6 +1,6 @@
-export const solarized = {
-    base03: "#002b36",
-    base02: "#073642",
+export const tronbyt = {
+    base03: "#0F172B",
+    base02: "#1E293B",
     base01: "#586e75",
     base00: "#657b83",
     base0: "#839496",
