@@ -28,7 +28,7 @@ func FromThread(thread *starlark.Thread) (Metadata, error) {
 type Metadata struct {
 	Width  int  `json:"width"`
 	Height int  `json:"height"`
-	Is2x   bool `json:"2x"`
+	Is2x   bool `json:"is2x"`
 }
 
 func (c Metadata) ScaledWidth() int {

@@ -31,7 +31,10 @@ export default class Watcher {
             case 'img':
                 store.dispatch(update({
                     img: data.message,
-                    img_type: data.img_type
+                    img_type: data.img_type,
+                    width: data.width,
+                    height: data.height,
+                    is2x: data.is2x,
                 }));
                 store.dispatch(clearErrors());
                 break;

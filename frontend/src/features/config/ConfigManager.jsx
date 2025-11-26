@@ -9,6 +9,7 @@ export default function ConfigManager() {
     const config = useSelector(state => state.config);
     const loading = useSelector(state => state.param.loading);
     const preview = useSelector(state => state.preview);
+    const renderScale = useSelector(state => state.preview.value.is2x);
     const navigate = useNavigate();
 
     const updatePreviews = (formData, params) => {
@@ -33,10 +34,16 @@ export default function ConfigManager() {
             formData.set(id, item.value);
         });
 
+        if (renderScale !== null && renderScale !== undefined) {
+            const scaleValue = renderScale ? '2' : '1';
+            params.set('_renderScale', scaleValue);
+            formData.set('_renderScale', scaleValue);
+        }
+
         if (!loading || !('img' in preview)) {
             updatePreviews(formData, params);
         }
-    }, [config]);
+    }, [config, renderScale]);
 
     return null;
 }

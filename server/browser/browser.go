@@ -16,6 +16,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/tronbyt/pixlet/frontend"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/fanout"
 	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/sync/errgroup"
@@ -45,13 +46,30 @@ type previewData struct {
 	ImageType string `json:"img_type"`
 	Watch     bool   `json:"-"`
 	Err       string `json:"error,omitempty"`
-	Width     int    `json:"width,omitzero"`
-	Height    int    `json:"height,omitzero"`
+	canvas.Metadata
 }
 type handlerRequest struct {
 	Config map[string]string `json:"config"`
 	ID     string            `json:"id"`
 	Param  string            `json:"param"`
+}
+
+const renderScaleField = "_renderScale"
+
+func parseRenderScale(r *http.Request, defaultVal bool) (bool, error) {
+	renderScale := r.FormValue(renderScaleField)
+	if renderScale == "" {
+		return defaultVal, nil
+	}
+
+	switch renderScale {
+	case "1":
+		return false, nil
+	case "2":
+		return true, nil
+	default:
+		return defaultVal, fmt.Errorf("invalid render scale %q", renderScale)
+	}
 }
 
 // NewBrowser sets up a browser structure. Call Run() to kick off the main loops.
@@ -167,12 +185,18 @@ func (b *Browser) schemaHandlerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b *Browser) imageHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		w.WriteHeader(500)
+	if err := r.ParseForm(); err != nil {
 		http.Error(w, "bad form data", http.StatusBadRequest)
 		return
 	}
+
+	is2x, err := parseRenderScale(r, b.loader.Meta().Is2x)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	delete(r.Form, renderScaleField)
+	b.loader.SetIs2x(is2x)
 
 	config := make(map[string]string)
 	for k, val := range r.Form {
@@ -207,12 +231,22 @@ func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad form data", http.StatusBadRequest)
 		return
 	}
+
+	is2x, err := parseRenderScale(r, b.loader.Meta().Is2x)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	delete(r.Form, renderScaleField)
+	b.loader.SetIs2x(is2x)
+
 	config := make(map[string]string)
 	for k, val := range r.Form {
 		config[k] = val[0]
 	}
 
 	img, err := b.loader.LoadApplet(config)
+	meta := b.loader.Meta()
 	img_type := "webp"
 	if b.serveGif {
 		img_type = "gif"
@@ -221,8 +255,7 @@ func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 		Image:     img,
 		ImageType: img_type,
 		Title:     b.title,
-		Width:     b.loader.Width(),
-		Height:    b.loader.Height(),
+		Metadata:  meta,
 	}
 	if err != nil {
 		data.Err = err.Error()
@@ -273,6 +306,7 @@ func (b *Browser) updateWatcher(ctx context.Context) error {
 					Type:      fanout.EventTypeImage,
 					Message:   up.Image,
 					ImageType: img_type,
+					Metadata:  up.Metadata,
 				},
 			)
 

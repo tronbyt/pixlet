@@ -2,8 +2,13 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { resetConfig, setConfig } from '../config/actions';
 import { set } from '../config/configSlice';
+import { setScale } from '../preview/previewSlice';
 
 export default function Controls() {
     const preview = useSelector(state => state.preview);
@@ -97,8 +102,27 @@ export default function Controls() {
         });
     };
 
+    const handleScaleChange = (event) => {
+        dispatch(setScale(event.target.value === '2'));
+    };
+
+    const scaleValue = preview.value.is2x === true ? '2' : '1';
+
     return (
         <Stack sx={{ marginTop: '32px' }} spacing={2} direction="row">
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+                <InputLabel id="render-scale-label">Render Scale</InputLabel>
+                <Select
+                    labelId="render-scale-label"
+                    id="render-scale"
+                    value={scaleValue}
+                    label="Render Scale"
+                    onChange={handleScaleChange}
+                >
+                    <MenuItem value="1">1x</MenuItem>
+                    <MenuItem value="2">2x</MenuItem>
+                </Select>
+            </FormControl>
             <Button variant="outlined" onClick={() => selectConfig()}>Import Config</Button>
             <Button variant="outlined" onClick={() => downloadConfig()}>Export Config</Button>
             <Button variant="outlined" onClick={() => resetSchema()}>Reset</Button>

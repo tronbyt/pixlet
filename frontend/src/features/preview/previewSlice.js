@@ -10,6 +10,7 @@ export const previewSlice = createSlice({
             title: 'Pixlet',
             width: 64,
             height: 32,
+            is2x: null,
         }
     },
     reducers: {
@@ -36,13 +37,26 @@ export const previewSlice = createSlice({
                 up.value.height = action.payload.height;
             }
 
+            if ('is2x' in action.payload) {
+                up.value.is2x = action.payload.is2x;
+            }
+
             return up;
         },
         loading: (state = initialState, action) => {
             return { ...state, loading: action.payload }
         },
+        setScale: (state = initialState, action) => {
+            return {
+                ...state,
+                value: {
+                    ...state.value,
+                    is2x: action.payload,
+                }
+            }
+        },
     },
 });
 
-export const { update, loading } = previewSlice.actions;
+export const { update, loading, setScale } = previewSlice.actions;
 export default previewSlice.reducer;

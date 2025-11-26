@@ -78,7 +78,7 @@ containing multiple Starlark files and resources.`,
 	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
 	cmd.Flags().IntVarP(&opts.height, "height", "t", opts.height, "Set height")
 	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
-	cmd.Flags().BoolVarP(&opts.output2x, "2x", "2", opts.output2x, "Render at 2x resolution")
+	cmd.Flags().BoolVarP(&opts.output2x, "2x", "2", opts.output2x, "Render at 2x resolution (initial value for the UI toggle)")
 	cmd.Flags().Int32VarP(
 		&opts.webpLevel,
 		webpLevelFlag,
