@@ -22,14 +22,6 @@ export const theme = createTheme({
             default: tronbyt.base02,
         },
     },
-    components: {
-        MuiSvgIcon: {
-            defaultProps: {
-                htmlColor: tronbyt.base1,
-                color: tronbyt.base1,
-            },
-        },
-    },
     typography: {
         fontFamily: [
             '-apple-system',
