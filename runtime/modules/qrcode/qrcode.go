@@ -7,6 +7,7 @@ import (
 
 	goqrcode "github.com/skip2/go-qrcode"
 	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -54,19 +55,24 @@ func generateQRCode(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 		return nil, fmt.Errorf("unpacking arguments for generate: %w", err)
 	}
 
+	scale := 1
+	if meta, err := canvas.FromThread(thread); err == nil && meta.Is2x {
+		scale = 2
+	}
+
 	// Determine QRCode sizing information.
 	version := 0
 	imgSize := 0
 	switch starSize.GoString() {
 	case "small":
 		version = 1
-		imgSize = 21
+		imgSize = 21 * scale
 	case "medium":
 		version = 2
-		imgSize = 25
+		imgSize = 25 * scale
 	case "large":
 		version = 3
-		imgSize = 29
+		imgSize = 29 * scale
 	default:
 		return nil, fmt.Errorf("size must be small, medium, or large")
 	}
@@ -105,5 +111,5 @@ func generateQRCode(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 		return nil, err
 	}
 
-	return starlark.String(string(png)), nil
+	return starlark.String(png), nil
 }
