@@ -152,7 +152,6 @@ func (l *Loader) Run(ctx context.Context) error {
 			}
 			up.Metadata = l.conf.Meta
 
-			l.updatesChan <- up
 			l.resultsChan <- up
 		case <-l.fileChanges:
 			slog.Info("Detected updates; reloading")
