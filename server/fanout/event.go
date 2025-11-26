@@ -1,5 +1,7 @@
 package fanout
 
+import "github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
+
 const (
 	// EventTypeImage is used to signal what type of message we are sending over
 	// the socket.
@@ -24,4 +26,6 @@ type WebsocketEvent struct {
 
 	// Type is the type of message we are sending over the socket.
 	Type string `json:"type"`
+
+	canvas.Metadata
 }

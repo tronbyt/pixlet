@@ -69,11 +69,12 @@ export default function Preview() {
     }
 
     let dotsUrl = new URL('./api/v1/dots.svg', document.location);
+    const scale = preview.value.is2x ? 2 : 1;
     if (preview.value.width) {
-        dotsUrl.searchParams.set('w', preview.value.width);
+        dotsUrl.searchParams.set('w', String(preview.value.width * scale));
     }
     if (preview.value.height) {
-        dotsUrl.searchParams.set('h', preview.value.height);
+        dotsUrl.searchParams.set('h', String(preview.value.height * scale));
     }
 
     return (

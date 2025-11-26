@@ -12,9 +12,15 @@ import (
 
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
 )
+
+type metaUpdate struct {
+	is2x *bool
+	resp chan bool
+}
 
 type ImageFormat int
 
@@ -38,13 +44,15 @@ type Loader struct {
 	resultsChan      chan Update
 	initialLoad      chan bool
 	configOutFile    string
+	metaUpdates      chan metaUpdate
 }
 
 type Update struct {
 	Image     string
 	ImageType string
 	Schema    string
-	Err       error
+	canvas.Metadata
+	Err error
 }
 
 // NewLoader instantiates a new loader structure. The loader will read off of
@@ -72,6 +80,7 @@ func NewLoader(
 		resultsChan:      make(chan Update, 100),
 		initialLoad:      make(chan bool),
 		configOutFile:    configOutFile,
+		metaUpdates:      make(chan metaUpdate, 10),
 	}
 
 	cache := runtime.NewInMemoryCache()
@@ -100,6 +109,13 @@ func (l *Loader) Run(ctx context.Context) error {
 			return ctx.Err()
 		case c := <-l.configChanges:
 			config = c
+		case mu := <-l.metaUpdates:
+			if mu.is2x != nil {
+				l.conf.Meta.Is2x = *mu.is2x
+			}
+			if mu.resp != nil {
+				mu.resp <- l.conf.Meta.Is2x
+			}
 		case <-l.requestedChanges:
 			up := Update{}
 
@@ -134,6 +150,7 @@ func (l *Loader) Run(ctx context.Context) error {
 					up.ImageType = "avif"
 				}
 			}
+			up.Metadata = l.conf.Meta
 
 			l.updatesChan <- up
 			l.resultsChan <- up
@@ -159,6 +176,7 @@ func (l *Loader) Run(ctx context.Context) error {
 				}
 				up.Schema = string(l.GetSchema())
 			}
+			up.Metadata = l.conf.Meta
 
 			l.updatesChan <- up
 		}
@@ -167,6 +185,18 @@ func (l *Loader) Run(ctx context.Context) error {
 
 func (l *Loader) Close() error {
 	return l.applet.Close()
+}
+
+func (l *Loader) SetIs2x(is2x bool) {
+	if l.conf.Meta.Is2x == is2x {
+		return
+	}
+	resp := make(chan bool, 1)
+	l.metaUpdates <- metaUpdate{
+		is2x: &is2x,
+		resp: resp,
+	}
+	<-resp
 }
 
 // LoadApplet loads the applet on demand.
@@ -227,6 +257,9 @@ func (l *Loader) renderApplet(ctx context.Context, config map[string]string) (st
 		}
 	}
 
+	meta := l.conf.Meta
+	filters := l.conf.Filters
+
 	ctx, cancel := context.WithTimeoutCause(
 		ctx, l.conf.Timeout,
 		fmt.Errorf("timeout after %s", l.conf.Timeout),
@@ -238,19 +271,19 @@ func (l *Loader) renderApplet(ctx context.Context, config map[string]string) (st
 		return "", fmt.Errorf("error running script: %w", err)
 	}
 
-	if l.conf.Meta.Is2x && (l.applet.Manifest == nil || !l.applet.Manifest.Supports2x) {
-		l.conf.Meta.Is2x = false
-		l.conf.Filters.Magnify *= 2
+	if meta.Is2x && (l.applet.Manifest == nil || !l.applet.Manifest.Supports2x) {
+		meta.Is2x = false
+		filters.Magnify *= 2
 	}
 
-	screens := encode.ScreensFromRoots(roots, l.conf.Meta.ScaledWidth(), l.conf.Meta.ScaledHeight())
+	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
 
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
-	if l.conf.Filters.Magnify > 1 {
-		chain = append(chain, encode.Magnify(l.conf.Filters.Magnify))
+	if filters.Magnify > 1 {
+		chain = append(chain, encode.Magnify(filters.Magnify))
 	}
-	if imageFilter, err := l.conf.Filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
+	if imageFilter, err := filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
 		chain = append(chain, imageFilter)
 	}
 
@@ -289,12 +322,8 @@ func (l *Loader) markInitialLoadComplete() {
 	}
 }
 
-func (l *Loader) Width() int {
-	return l.conf.Meta.ScaledWidth()
-}
-
-func (l *Loader) Height() int {
-	return l.conf.Meta.ScaledHeight()
+func (l *Loader) Meta() canvas.Metadata {
+	return l.conf.Meta
 }
 
 func RenderApplet(path string, config map[string]string, options ...Option) ([]byte, []string, error) {
