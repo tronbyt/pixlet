@@ -198,14 +198,16 @@ jobs:
           # Extract version from tag (remove 'v' prefix)
           VERSION=${tag#v}
           echo "Updating package.json version to $VERSION"
-          
+
           # Update package.json version
+          npm install
           npm version $VERSION --no-git-tag-version
-          
+          npm run build
+
           # Commit and push the change
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add package.json
+          git add package.json package-lock.json
           git commit -m "Update package.json version to $VERSION" || exit 0
           git push origin HEAD:main
 
