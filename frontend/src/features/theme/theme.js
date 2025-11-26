@@ -2,31 +2,31 @@ import '@fontsource/material-icons';
 
 import { createTheme } from '@mui/material/styles';
 
-import { solarized } from './colors';
+import { tronbyt } from './colors';
 
 export const theme = createTheme({
     palette: {
-        mode: 'light',
+        mode: 'dark',
         primary: {
-            main: solarized.cyan,
+            main: tronbyt.cyan,
         },
         secondary: {
-            main: solarized.yellow,
+            main: tronbyt.yellow,
         },
         text: {
-            primary: solarized.base1,
-            secondary: solarized.base0,
+            primary: tronbyt.base1,
+            secondary: tronbyt.base0,
         },
         background: {
-            paper: solarized.base02,
-            default: solarized.base02,
+            paper: tronbyt.base03,
+            default: tronbyt.base02,
         },
     },
     components: {
         MuiSvgIcon: {
             defaultProps: {
-                htmlColor: solarized.base1,
-                color: solarized.base1,
+                htmlColor: tronbyt.base1,
+                color: tronbyt.base1,
             },
         },
     },

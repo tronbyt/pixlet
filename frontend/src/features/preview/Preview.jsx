@@ -78,7 +78,7 @@ export default function Preview() {
     }
 
     return (
-        <Paper sx={{ bgcolor: "black" }}>
+        <Paper sx={{ backgroundColor: "black", backgroundImage: 'none' }}>
             <img
                 src={displayType + img}
                 className={styles.image}
