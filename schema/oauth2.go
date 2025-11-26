@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 )
 
@@ -57,11 +58,7 @@ func newOAuth2(
 	s.starlarkScopes = scopes
 
 	if s.starlarkScopes != nil {
-		scopesIter := s.starlarkScopes.Iterate()
-		defer scopesIter.Done()
-
-		var scopeVal starlark.Value
-		for i := 0; scopesIter.Next(&scopeVal); {
+		for i, scopeVal := range iterutil.Enumerate(s.starlarkScopes.Elements()) {
 			if _, isNone := scopeVal.(starlark.NoneType); isNone {
 				continue
 			}
@@ -70,8 +67,7 @@ func newOAuth2(
 			if !ok {
 				return nil, fmt.Errorf(
 					"expected fields to be a list of string but found: %s (at index %d)",
-					scopeVal.Type(),
-					i,
+					scopeVal.Type(), i,
 				)
 			}
 

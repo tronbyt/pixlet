@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 )
 
@@ -49,10 +50,7 @@ func newNotification(
 	s.Icon = icon.GoString()
 	s.Builder = builder
 
-	var soundVal starlark.Value
-	soundIter := sounds.Iterate()
-	defer soundIter.Done()
-	for i := 0; soundIter.Next(&soundVal); {
+	for i, soundVal := range iterutil.Enumerate(sounds.Elements()) {
 		if _, isNone := soundVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -61,8 +59,7 @@ func newNotification(
 		if !ok {
 			return nil, fmt.Errorf(
 				"expected options to be a list of Sound but found: %s (at index %d)",
-				soundVal.Type(),
-				i,
+				soundVal.Type(), i,
 			)
 		}
 

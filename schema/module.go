@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -105,11 +106,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	}
 
 	if s.starlarkFields != nil {
-		fieldIter := s.starlarkFields.Iterate()
-		defer fieldIter.Done()
-
-		var fieldVal starlark.Value
-		for i := 0; fieldIter.Next(&fieldVal); {
+		for i, fieldVal := range iterutil.Enumerate(s.starlarkFields.Elements()) {
 			if _, isNone := fieldVal.(starlark.NoneType); isNone {
 				continue
 			}
@@ -118,14 +115,12 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 			if !ok {
 				return nil, fmt.Errorf(
 					"expected fields to be a list of Field but found: %s (at index %d)",
-					fieldVal.Type(),
-					i,
+					fieldVal.Type(), i,
 				)
 			} else if f.AsSchemaField().Type == "notification" {
 				return nil, fmt.Errorf(
 					"expected fields to be a list of Field but found: %s (at index %d)",
-					fieldVal.Type(),
-					i,
+					fieldVal.Type(), i,
 				)
 			}
 
@@ -134,17 +129,12 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	}
 
 	if s.starlarkHandlers != nil {
-		handlerIter := s.starlarkHandlers.Iterate()
-		defer handlerIter.Done()
-
-		var handlerVal starlark.Value
-		for i := 0; handlerIter.Next(&handlerVal); {
+		for i, handlerVal := range iterutil.Enumerate(s.starlarkHandlers.Elements()) {
 			handler, ok := handlerVal.(*Handler)
 			if !ok {
 				return nil, fmt.Errorf(
 					"expected handlers to hold Handler but found: %s (at index %d)",
-					handlerVal.Type(),
-					i,
+					handlerVal.Type(), i,
 				)
 			}
 			s.Handlers[handler.Function.Name()] = handler.SchemaHandler
@@ -152,11 +142,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	}
 
 	if s.starlarkNotifications != nil {
-		notificationIter := s.starlarkNotifications.Iterate()
-		defer notificationIter.Done()
-
-		var notificationVal starlark.Value
-		for i := 0; notificationIter.Next(&notificationVal); {
+		for i, notificationVal := range iterutil.Enumerate(s.starlarkNotifications.Elements()) {
 			if _, isNone := notificationVal.(starlark.NoneType); isNone {
 				continue
 			}
@@ -165,8 +151,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 			if !ok {
 				return nil, fmt.Errorf(
 					"expected notifications to be a list of Notification but found: %s (at index %d)",
-					notificationVal.Type(),
-					i,
+					notificationVal.Type(), i,
 				)
 			}
 
