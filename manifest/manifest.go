@@ -40,6 +40,9 @@ type Manifest struct {
 
 	// Supports2x indicates whether an app supports 2x render scaling.
 	Supports2x bool `json:"supports2x,omitempty" yaml:"supports2x,omitempty"`
+
+	// MinPixletVersion returns an error if the current version of Pixlet is too old.
+	MinPixletVersion string `json:"minPixletVersion,omitempty" yaml:"minPixletVersion,omitempty"`
 }
 
 // LoadManifest reads a manifest from an io.Reader, with the most common reader
