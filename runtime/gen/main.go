@@ -285,7 +285,7 @@ func allFields(val reflect.Value) []reflect.StructField {
 	fields := make([]reflect.StructField, 0)
 	typ := val.Type()
 
-	for i := 0; i < typ.NumField(); i++ {
+	for i := range typ.NumField() {
 		t := typ.Field(i)
 		v := val.Field(i)
 

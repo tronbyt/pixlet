@@ -23,10 +23,10 @@ func Magnify(input image.Image) (image.Image, error) {
 	}
 
 	out := image.NewRGBA(image.Rect(0, 0, in.Bounds().Dx()*Magnification, in.Bounds().Dy()*Magnification))
-	for x := 0; x < in.Bounds().Dx(); x++ {
-		for y := 0; y < in.Bounds().Dy(); y++ {
-			for xx := 0; xx < 10; xx++ {
-				for yy := 0; yy < 10; yy++ {
+	for x := range in.Bounds().Dx() {
+		for y := range in.Bounds().Dy() {
+			for xx := range 10 {
+				for yy := range 10 {
 					out.SetRGBA(
 						x*Magnification+xx,
 						y*Magnification+yy,

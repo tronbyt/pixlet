@@ -77,7 +77,7 @@ func BenchmarkRunAndRender(b *testing.B) {
 		b.Error(err)
 	}
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		roots, err := app.Run(b.Context())
 		if err != nil {
 			b.Error(err)

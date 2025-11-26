@@ -295,7 +295,7 @@ func newKeyframe(
 	}
 
 	w.starlarkTransforms = transforms
-	for i := 0; i < transforms.Len(); i++ {
+	for i := range transforms.Len() {
 		switch transformsVal := transforms.Index(i).(type) {
 		case *Translate:
 			w.Transforms = append(w.Transforms, transformsVal.Translate)
@@ -621,7 +621,7 @@ func newTransformation(
 	}
 
 	w.starlarkKeyframes = keyframes
-	for i := 0; i < keyframes.Len(); i++ {
+	for i := range keyframes.Len() {
 		if val, ok := keyframes.Index(i).(*Keyframe); ok {
 			w.Keyframes = append(w.Keyframes, val.Keyframe)
 		} else {

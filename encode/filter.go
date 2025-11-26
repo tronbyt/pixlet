@@ -214,11 +214,11 @@ func Magnify(factor int) ImageFilter {
 			),
 		)
 
-		for x := 0; x < in.Bounds().Dx(); x++ {
-			for y := 0; y < in.Bounds().Dy(); y++ {
+		for x := range in.Bounds().Dx() {
+			for y := range in.Bounds().Dy() {
 				px := in.RGBAAt(x, y)
-				for dx := 0; dx < factor; dx++ {
-					for dy := 0; dy < factor; dy++ {
+				for dx := range factor {
+					for dy := range factor {
 						out.SetRGBA(x*factor+dx, y*factor+dy, px)
 					}
 				}

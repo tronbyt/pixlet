@@ -40,7 +40,7 @@ func InterpolateTransforms(lhs, rhs []Transform, progress float64) (result []Tra
 
 	result = make([]Transform, 0)
 
-	for i := 0; i < len(lhs); i++ {
+	for i := range lhs {
 		if t, ok := lhs[i].Interpolate(rhs[i], progress); ok {
 			result = append(result, t)
 		} else {
