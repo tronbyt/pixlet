@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { set } from './configSlice';
 import { loading } from './paramSlice';
-import { setScale } from '../preview/previewSlice';
+import { setScale, setTimezone, setLocale } from '../preview/previewSlice';
 
 
 export default function ParamSetter() {
@@ -17,6 +17,14 @@ export default function ParamSetter() {
 
         params.forEach((value, key) => {
             if (key === '_renderScale') {
+                return;
+            }
+            if (key === '_metaTimezone') {
+                dispatch(setTimezone(value));
+                return;
+            }
+            if (key === '_metaLocale') {
+                dispatch(setLocale(value));
                 return;
             }
             dispatch(set({
