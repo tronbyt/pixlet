@@ -101,12 +101,13 @@ func (m *Module) Struct() *starlarkstruct.Struct {
 // StringDict returns all module methods in a starlark.StringDict
 func (m *Module) StringDict() starlark.StringDict {
 	return starlark.StringDict{
-		"get":     starlark.NewBuiltin("get", m.reqMethod("get")),
-		"put":     starlark.NewBuiltin("put", m.reqMethod("put")),
-		"post":    starlark.NewBuiltin("post", m.reqMethod("post")),
-		"delete":  starlark.NewBuiltin("delete", m.reqMethod("delete")),
-		"patch":   starlark.NewBuiltin("patch", m.reqMethod("patch")),
-		"options": starlark.NewBuiltin("options", m.reqMethod("options")),
+		"get":         starlark.NewBuiltin("get", m.reqMethod("get")),
+		"put":         starlark.NewBuiltin("put", m.reqMethod("put")),
+		"post":        starlark.NewBuiltin("post", m.reqMethod("post")),
+		"delete":      starlark.NewBuiltin("delete", m.reqMethod("delete")),
+		"patch":       starlark.NewBuiltin("patch", m.reqMethod("patch")),
+		"options":     starlark.NewBuiltin("options", m.reqMethod("options")),
+		"status_text": starlark.NewBuiltin("status_text", StatusText),
 	}
 }
 
@@ -433,4 +434,22 @@ func (r *Response) JSON(thread *starlark.Thread, _ *starlark.Builtin, args starl
 	// reset reader to allow multiple calls
 	r.Body = io.NopCloser(bytes.NewReader(body))
 	return util.Marshal(data)
+}
+
+func StatusText(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var starCode starlark.Int
+
+	if err := starlark.UnpackArgs(
+		"status_text", args, kwargs,
+		"code", &starCode,
+	); err != nil {
+		return nil, err
+	}
+
+	code, err := starlarkutil.AsInt64(starCode)
+	if err != nil {
+		return nil, fmt.Errorf("parsing code: %w", err)
+	}
+
+	return starlark.String(http.StatusText(int(code))), nil
 }
