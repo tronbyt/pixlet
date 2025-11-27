@@ -30,6 +30,8 @@ import (
 	"testing"
 
 	"github.com/qri-io/starlib/testdata"
+	"github.com/stretchr/testify/assert"
+	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarktest"
@@ -139,4 +141,21 @@ func TestSetBody(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestStatusText(t *testing.T) {
+	const source = `
+load("assert.star", "assert")
+load("http.star", "http")
+
+def main():
+    assert.eq(http.status_text(200), "OK")
+    assert.eq(http.status_text(404), "Not Found")
+`
+
+	app, err := runtime.NewApplet("test.star", []byte(source), runtime.WithTests(t))
+	assert.NoError(t, err)
+
+	_, err = app.Run(t.Context())
+	assert.NoError(t, err)
 }
