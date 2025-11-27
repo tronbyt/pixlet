@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ export default function ConfigManager() {
     const metaTimezone = useSelector(state => state.preview.value.timezone);
     const metaLocale = useSelector(state => state.preview.value.locale);
     const navigate = useNavigate();
+    const debounceRef = useRef(null);
 
     const updatePreviews = (formData, params) => {
         navigate({ search: params.toString() });
@@ -48,9 +49,16 @@ export default function ConfigManager() {
             formData.set('_renderScale', scaleValue);
         }
 
-        if (!loading || !('img' in preview)) {
-            updatePreviews(formData, params);
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
         }
+        debounceRef.current = setTimeout(() => updatePreviews(formData, params), 250);
+
+        return () => {
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current);
+            }
+        };
     }, [config, renderScale, metaTimezone, metaLocale]);
 
     return null;
