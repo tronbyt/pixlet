@@ -41,12 +41,12 @@ var favicon []byte
 
 // previewData is used to populate the HTML template.
 type previewData struct {
+	canvas.Metadata
 	Title     string `json:"title"`
 	Image     string `json:"img"`
 	ImageType string `json:"img_type"`
 	Watch     bool   `json:"-"`
 	Err       string `json:"error,omitempty"`
-	canvas.Metadata
 }
 type handlerRequest struct {
 	Config map[string]string `json:"config"`
@@ -55,6 +55,8 @@ type handlerRequest struct {
 }
 
 const renderScaleField = "_renderScale"
+const localeField = "_metaLocale"
+const timezoneField = "_metaTimezone"
 
 func parseRenderScale(r *http.Request, defaultVal bool) (bool, error) {
 	renderScale := r.FormValue(renderScaleField)
@@ -70,6 +72,22 @@ func parseRenderScale(r *http.Request, defaultVal bool) (bool, error) {
 	default:
 		return defaultVal, fmt.Errorf("invalid render scale %q", renderScale)
 	}
+}
+
+func (b *Browser) applyLocaleTimezone(r *http.Request) error {
+	if tz := r.FormValue(timezoneField); tz != "" {
+		if err := b.loader.SetTimezone(tz); err != nil {
+			return fmt.Errorf("invalid timezone %q: %w", tz, err)
+		}
+		delete(r.Form, timezoneField)
+	}
+	if loc := r.FormValue(localeField); loc != "" {
+		if err := b.loader.SetLocale(loc); err != nil {
+			return fmt.Errorf("invalid locale %q: %w", loc, err)
+		}
+		delete(r.Form, localeField)
+	}
+	return nil
 }
 
 // NewBrowser sets up a browser structure. Call Run() to kick off the main loops.
@@ -198,6 +216,11 @@ func (b *Browser) imageHandler(w http.ResponseWriter, r *http.Request) {
 	delete(r.Form, renderScaleField)
 	b.loader.SetIs2x(is2x)
 
+	if err := b.applyLocaleTimezone(r); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	config := make(map[string]string)
 	for k, val := range r.Form {
 		config[k] = val[0]
@@ -239,6 +262,10 @@ func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	delete(r.Form, renderScaleField)
 	b.loader.SetIs2x(is2x)
+	if err := b.applyLocaleTimezone(r); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	config := make(map[string]string)
 	for k, val := range r.Form {

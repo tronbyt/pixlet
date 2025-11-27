@@ -9,17 +9,28 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/runtime"
+	"github.com/tronbyt/pixlet/runtime/modules/i18n_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
+	"golang.org/x/text/language"
 )
+
+type metaState struct {
+	is2x    bool
+	loc     *time.Location
+	langTag language.Tag
+}
 
 type metaUpdate struct {
 	is2x *bool
-	resp chan bool
+	loc  *time.Location
+	lang *language.Tag
+	resp chan metaState
 }
 
 type ImageFormat int
@@ -68,8 +79,9 @@ func NewLoader(
 	configOutFile string,
 	options ...Option,
 ) (*Loader, error) {
+	conf := NewRenderConfig(id, nil, options...)
 	l := &Loader{
-		conf:             NewRenderConfig(id, nil, options...),
+		conf:             conf,
 		root:             root,
 		fileChanges:      fileChanges,
 		watch:            watch,
@@ -113,8 +125,18 @@ func (l *Loader) Run(ctx context.Context) error {
 			if mu.is2x != nil {
 				l.conf.Meta.Is2x = *mu.is2x
 			}
+			if mu.loc != nil {
+				l.conf.Location = mu.loc
+			}
+			if mu.lang != nil {
+				l.conf.Language = *mu.lang
+			}
 			if mu.resp != nil {
-				mu.resp <- l.conf.Meta.Is2x
+				mu.resp <- metaState{
+					is2x:    l.conf.Meta.Is2x,
+					loc:     l.conf.Location,
+					langTag: l.conf.Language,
+				}
 			}
 		case <-l.requestedChanges:
 			up := Update{}
@@ -190,12 +212,58 @@ func (l *Loader) SetIs2x(is2x bool) {
 	if l.conf.Meta.Is2x == is2x {
 		return
 	}
-	resp := make(chan bool, 1)
+	resp := make(chan metaState, 1)
 	l.metaUpdates <- metaUpdate{
 		is2x: &is2x,
 		resp: resp,
 	}
 	<-resp
+}
+
+func (l *Loader) SetLocale(loc string) error {
+	tag := i18n_runtime.DefaultLanguage
+	if loc != "" {
+		parsed, err := language.Parse(loc)
+		if err != nil {
+			return err
+		}
+		tag = parsed
+	}
+	resp := make(chan metaState, 1)
+	l.metaUpdates <- metaUpdate{
+		lang: &tag,
+		resp: resp,
+	}
+	<-resp
+	return nil
+}
+
+func (l *Loader) SetTimezone(tz string) error {
+	var loc *time.Location
+	if tz == "" {
+		loc = time.Local
+	} else {
+		loaded, err := time.LoadLocation(tz)
+		if err != nil {
+			return err
+		}
+		loc = loaded
+	}
+	resp := make(chan metaState, 1)
+	l.metaUpdates <- metaUpdate{
+		loc:  loc,
+		resp: resp,
+	}
+	<-resp
+	return nil
+}
+
+func (l *Loader) Locale() language.Tag {
+	return l.conf.Language
+}
+
+func (l *Loader) Location() *time.Location {
+	return l.conf.Location
 }
 
 // LoadApplet loads the applet on demand.
@@ -236,6 +304,7 @@ func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string
 func (l *Loader) loadApplet() error {
 	opts := []runtime.AppletOption{
 		runtime.WithCanvasMeta(l.conf.Meta),
+		runtime.WithLocation(l.conf.Location),
 		runtime.WithLanguage(l.conf.Language),
 	}
 

@@ -11,6 +11,8 @@ export const previewSlice = createSlice({
             width: 64,
             height: 32,
             is2x: null,
+            timezone: '',
+            locale: '',
         }
     },
     reducers: {
@@ -41,6 +43,14 @@ export const previewSlice = createSlice({
                 up.value.is2x = action.payload.is2x;
             }
 
+            if ('timezone' in action.payload) {
+                up.value.timezone = action.payload.timezone || '';
+            }
+
+            if ('locale' in action.payload) {
+                up.value.locale = action.payload.locale || '';
+            }
+
             return up;
         },
         loading: (state = initialState, action) => {
@@ -55,8 +65,26 @@ export const previewSlice = createSlice({
                 }
             }
         },
+        setTimezone: (state = initialState, action) => {
+            return {
+                ...state,
+                value: {
+                    ...state.value,
+                    timezone: action.payload || '',
+                }
+            }
+        },
+        setLocale: (state = initialState, action) => {
+            return {
+                ...state,
+                value: {
+                    ...state.value,
+                    locale: action.payload || '',
+                }
+            }
+        },
     },
 });
 
-export const { update, loading, setScale } = previewSlice.actions;
+export const { update, loading, setScale, setTimezone, setLocale } = previewSlice.actions;
 export default previewSlice.reducer;

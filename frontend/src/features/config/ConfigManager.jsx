@@ -10,6 +10,8 @@ export default function ConfigManager() {
     const loading = useSelector(state => state.param.loading);
     const preview = useSelector(state => state.preview);
     const renderScale = useSelector(state => state.preview.value.is2x);
+    const metaTimezone = useSelector(state => state.preview.value.timezone);
+    const metaLocale = useSelector(state => state.preview.value.locale);
     const navigate = useNavigate();
 
     const updatePreviews = (formData, params) => {
@@ -34,6 +36,12 @@ export default function ConfigManager() {
             formData.set(id, item.value);
         });
 
+        // metadata fields that should not collide with app config
+        params.set('_metaTimezone', metaTimezone || '');
+        formData.set('_metaTimezone', metaTimezone || '');
+        params.set('_metaLocale', metaLocale || '');
+        formData.set('_metaLocale', metaLocale || '');
+
         if (renderScale !== null && renderScale !== undefined) {
             const scaleValue = renderScale ? '2' : '1';
             params.set('_renderScale', scaleValue);
@@ -43,7 +51,7 @@ export default function ConfigManager() {
         if (!loading || !('img' in preview)) {
             updatePreviews(formData, params);
         }
-    }, [config, renderScale]);
+    }, [config, renderScale, metaTimezone, metaLocale]);
 
     return null;
 }
