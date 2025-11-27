@@ -383,6 +383,7 @@ type Response struct {
 func (r *Response) Struct() *starlarkstruct.Struct {
 	return starlarkstruct.FromStringDict(starlarkstruct.Default, starlark.StringDict{
 		"url":         starlark.String(r.Request.URL.String()),
+		"status":      starlark.String(r.Status),
 		"status_code": starlark.MakeInt(r.StatusCode),
 		"headers":     r.HeadersDict(),
 		"encoding":    starlark.String(strings.Join(r.TransferEncoding, ",")),
