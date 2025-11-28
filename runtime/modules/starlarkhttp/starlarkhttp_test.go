@@ -151,6 +151,7 @@ load("http.star", "http")
 def main():
     assert.eq(http.status_text(200), "OK")
     assert.eq(http.status_text(404), "Not Found")
+    assert.eq(http.status_text(999), "")
 `
 
 	app, err := runtime.NewApplet("test.star", []byte(source), runtime.WithTests(t))
