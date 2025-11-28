@@ -188,7 +188,7 @@ jobs:
 
           # Update package.json version
           npm install
-          npm version $VERSION --no-git-tag-version
+          npm version $VERSION --no-git-tag-version --allow-same-version
           npm run build
 
           # Commit and push the change
