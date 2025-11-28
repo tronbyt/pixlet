@@ -36,10 +36,23 @@ individual modules, please refer to the Starlib documentation.
 | [`encoding/json.star`](https://github.com/qri-io/starlib/tree/master/encoding/json) | JSON encoding and decoding |
 | [`hash.star`](https://github.com/qri-io/starlib/tree/master/hash) | MD5, SHA1, SHA256 hash generation  |
 | [`html.star`](https://github.com/qri-io/starlib/tree/master/html) | jQuery-like functions for HTML  |
-| [`http.star`](https://github.com/qri-io/starlib/tree/master/http) | HTTP client |
 | [`math.star`](https://github.com/qri-io/starlib/tree/master/math) | Mathematical functions and constants |
 | [`re.star`](https://github.com/qri-io/starlib/tree/master/re) | Regular expressions |
 | [`time.star`](https://github.com/qri-io/starlib/tree/master/time) | Time operations |
+
+## Starlib HTTP
+
+Pixlet includes an enhanced version of the Starlib HTTP module.
+
+Additional features:
+- HTTP client accepts a parameter `ttl_seconds` to optionally cache HTTP responses.
+- Responses include a `status` property which contains the status text and the status code (e.g. "401 Unauthorized").
+- Additional function `http.status_text(code)` allows an applet to get the status text for a given status code (e.g. "Unauthorized").
+
+| Module                                                            | Description              |
+|-------------------------------------------------------------------|--------------------------|
+| [`http.star`](https://github.com/qri-io/starlib/tree/master/http) | HTTP client with caching |
+
 
 ## Pixlet module: Cache
 
