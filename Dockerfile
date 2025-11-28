@@ -43,7 +43,8 @@ EOT
 
 COPY . .
 COPY --from=frontend /app/dist frontend/dist
-RUN STATIC=1 CC=xx-clang CGO_ENABLED=1 make build GO_CMD=xx-go
+ARG PIXLET_VERSION
+RUN STATIC=1 CC=xx-clang CGO_ENABLED=1 GO_CMD=xx-go make build
 
 FROM scratch
 
