@@ -24,24 +24,20 @@ do
 
 	PIXLET=pixlet
 	LIBPIXLET=libpixlet.so
-	if [[ $ARCH == "linux-arm64"  ]]; then
-		echo "linux-arm64"
+	if [[ $ARCH == "linux-arm64" || $ARCH == "linux-amd64" ]]; then
+		echo "$ARCH"
 		CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s '-extldflags=-static -lsharpyuv' -X 'github.com/tronbyt/pixlet/runtime.Version=${PIXLET_VERSION}'" -tags=gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${PIXLET}" github.com/tronbyt/pixlet
-		CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s" -tags=lib,gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${LIBPIXLET}" -buildmode=c-shared library/library.go
-	elif [[ $ARCH == "linux-amd64"  ]]; then
-		echo "linux-amd64"
-		CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s '-extldflags=-static -lsharpyuv' -X 'github.com/tronbyt/pixlet/runtime.Version=${PIXLET_VERSION}'" -tags=gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${PIXLET}" github.com/tronbyt/pixlet
-		CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s" -tags=lib,gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${LIBPIXLET}" -buildmode=c-shared library/library.go
+		CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s" -tags=lib,gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${LIBPIXLET}" -buildmode=c-shared library
 	elif [[ $ARCH == "windows-amd64"  ]]; then
 		echo "windows-amd64"
 		PIXLET=pixlet.exe
 		LIBPIXLET=pixlet.dll
-		go build -ldflags="-w -s '-extldflags=-static -lsharpyuv' -X 'github.com/tronbyt/pixlet/runtime.Version=${PIXLET_VERSION}'" -tags=timetzdata,gzip_fonts -trimpath -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${PIXLET} github.com/tronbyt/pixlet
-		go build -ldflags="-w -s '-extldflags=-static -lsharpyuv'" -tags=lib,gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${LIBPIXLET}" library/library.go
+		go build -ldflags="-w -s '-extldflags=-static -lsharpyuv' -X 'github.com/tronbyt/pixlet/runtime.Version=${PIXLET_VERSION}'" -tags=timetzdata,gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${PIXLET}" github.com/tronbyt/pixlet
+		go build -ldflags="-w -s '-extldflags=-static -lsharpyuv'" -tags=lib,gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${LIBPIXLET}" -buildmode=c-shared library
 	else
 		echo "other"
 		CGO_CFLAGS="-I/tmp/${LIBWEBP_VERSION}/${ARCH}/include" CGO_LDFLAGS="-L/tmp/${LIBWEBP_VERSION}/${ARCH}/lib" CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s -X 'github.com/tronbyt/pixlet/runtime.Version=${PIXLET_VERSION}'" -tags=gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${PIXLET}" github.com/tronbyt/pixlet
-		CGO_CFLAGS="-I/tmp/${LIBWEBP_VERSION}/${ARCH}/include" CGO_LDFLAGS="-L/tmp/${LIBWEBP_VERSION}/${ARCH}/lib" CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s" -tags=lib,gzip_fonts -trimpath -o build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/libpixlet.so library/library.go
+		CGO_CFLAGS="-I/tmp/${LIBWEBP_VERSION}/${ARCH}/include" CGO_LDFLAGS="-L/tmp/${LIBWEBP_VERSION}/${ARCH}/lib" CGO_ENABLED=1 GOOS=$RELEASE_PLATFORM GOARCH=$RELEASE_ARCH go build -ldflags="-w -s" -tags=lib,gzip_fonts -trimpath -o "build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/libpixlet.so" -buildmode=c-shared library
 	fi
 
 	echo "Built ./build/${RELEASE_PLATFORM}_${RELEASE_ARCH}/${PIXLET} successfully"
