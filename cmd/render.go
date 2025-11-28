@@ -21,6 +21,7 @@ import (
 const webpLevelFlag = "webp-level"
 
 type renderOptions struct {
+	log               *slog.Logger
 	configJSON        string
 	output            string
 	magnify           int
@@ -38,6 +39,7 @@ type renderOptions struct {
 
 func newRenderOptions() *renderOptions {
 	return &renderOptions{
+		log:               slog.Default(),
 		magnify:           1,
 		imageOutputFormat: "webp",
 		maxDuration:       15 * time.Second,
@@ -198,7 +200,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		outPath += ".avif"
 	default:
 		if opts.imageOutputFormat != "webp" {
-			slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.imageOutputFormat)
+			opts.log.Warn("Invalid image format; defaulting to WebP.", "format", opts.imageOutputFormat)
 		}
 		outPath += ".webp"
 		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
@@ -284,6 +286,6 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		return fmt.Errorf("writing %s: %s", outPath, err)
 	}
 
-	slog.Info("Rendered image", "path", outPath)
+	opts.log.Info("Rendered image", "path", outPath)
 	return nil
 }

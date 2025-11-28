@@ -3,12 +3,15 @@ package cmd
 import (
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/lmittmann/tint"
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/community"
 	"github.com/tronbyt/pixlet/manifest"
@@ -119,6 +122,13 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 		renderOpts := newRenderOptions()
 		renderOpts.silenceOutput = true
 		renderOpts.output = f.Name()
+		renderOpts.log = slog.New(
+			tint.NewHandler(os.Stderr, &tint.Options{
+				Level:      slog.LevelWarn,
+				TimeFormat: time.TimeOnly,
+				NoColor:    !isatty.IsTerminal(os.Stderr.Fd()),
+			}),
+		)
 
 		err = renderRun(cmd, []string{path}, renderOpts)
 		if err != nil {
