@@ -132,6 +132,9 @@ func WithPrintDisabled() AppletOption {
 func WithCanvasMeta(m canvas.Metadata) AppletOption {
 	return func(a *Applet) error {
 		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
+			if a.Manifest == nil || !a.Manifest.Supports2x {
+				m.Is2x = false
+			}
 			canvas.AttachToThread(t, m)
 			return t
 		})
