@@ -53,7 +53,7 @@ func TestSecretDecrypt(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEqual(t, encrypted, "")
 
-src := fmt.Sprintf(`
+	src := fmt.Sprintf(`
 load("render.star", "render")
 load("schema.star", "schema")
 load("secret.star", "secret")
@@ -103,7 +103,7 @@ func TestSecretDoesntDecryptWithoutKey(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEqual(t, encrypted, "")
 
-src := fmt.Sprintf(`
+	src := fmt.Sprintf(`
 load("render.star", "render")
 load("schema.star", "schema")
 load("secret.star", "secret")

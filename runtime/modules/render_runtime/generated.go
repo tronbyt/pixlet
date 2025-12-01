@@ -2404,6 +2404,7 @@ func newWrappedText(
 		linespacing starlark.Int
 		color       starlark.String
 		align       starlark.String
+		wordbreak   starlark.Bool
 	)
 
 	if err := starlark.UnpackArgs(
@@ -2416,6 +2417,7 @@ func newWrappedText(
 		"linespacing?", &linespacing,
 		"color?", &color,
 		"align?", &align,
+		"wordbreak?", &wordbreak,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for WrappedText: %s", err)
 	}
@@ -2455,6 +2457,8 @@ func newWrappedText(
 
 	w.Align = align.GoString()
 
+	w.WordBreak = bool(wordbreak)
+
 	w.frame_count = starlark.NewBuiltin("frame_count", wrappedtextFrameCount)
 	if err := w.Init(thread); err != nil {
 		return nil, err
@@ -2476,6 +2480,7 @@ func (w *WrappedText) AttrNames() []string {
 		"linespacing",
 		"color",
 		"align",
+		"wordbreak",
 	}
 }
 
@@ -2495,6 +2500,8 @@ func (w *WrappedText) Attr(name string) (starlark.Value, error) {
 		return w.starlarkColor, nil
 	case "align":
 		return starlark.String(w.Align), nil
+	case "wordbreak":
+		return starlark.Bool(w.WordBreak), nil
 	case "frame_count":
 		return w.frame_count.BindReceiver(w), nil
 	default:
