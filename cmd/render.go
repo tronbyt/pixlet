@@ -10,10 +10,9 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/encode"
-	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/text/language"
 )
@@ -28,13 +27,11 @@ type renderOptions struct {
 	imageOutputFormat string
 	maxDuration       time.Duration
 	silenceOutput     bool
-	width             int
-	height            int
 	timeout           time.Duration
 	colorFilter       string
-	output2x          bool
 	webpLevel         int32
 	locale            string
+	flags.Meta
 }
 
 func newRenderOptions() *renderOptions {
@@ -43,10 +40,9 @@ func newRenderOptions() *renderOptions {
 		magnify:           1,
 		imageOutputFormat: "webp",
 		maxDuration:       15 * time.Second,
-		width:             render.DefaultFrameWidth,
-		height:            render.DefaultFrameHeight,
 		timeout:           30 * time.Second,
 		webpLevel:         encode.WebPLevelDefault,
+		Meta:              flags.NewMeta(),
 	}
 }
 
@@ -103,24 +99,6 @@ containing multiple Starlark files and resources.
 		return s, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.Flags().IntVarP(
-		&opts.width,
-		"width",
-		"w",
-		opts.width,
-		"Set width",
-	)
-	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
-
-	cmd.Flags().IntVarP(
-		&opts.height,
-		"height",
-		"t",
-		opts.height,
-		"Set height",
-	)
-	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
-
 	cmd.Flags().DurationVarP(
 		&opts.maxDuration,
 		"max-duration",
@@ -139,13 +117,6 @@ containing multiple Starlark files and resources.
 	)
 	_ = cmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
 
-	cmd.Flags().BoolVarP(
-		&opts.output2x,
-		"2x",
-		"2",
-		opts.output2x,
-		"Render at 2x resolution",
-	)
 	cmd.Flags().Int32VarP(
 		&opts.webpLevel,
 		webpLevelFlag,
@@ -157,6 +128,8 @@ containing multiple Starlark files and resources.
 
 	cmd.Flags().StringVar(&opts.locale, "locale", opts.locale, "Locale to use for rendering")
 	_ = cmd.RegisterFlagCompletionFunc("locale", cobra.NoFileCompletions)
+
+	opts.Meta.Register(cmd)
 
 	return cmd
 }
@@ -186,7 +159,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		outPath = strings.TrimSuffix(path, ".star")
 	}
 
-	if opts.output2x {
+	if opts.Is2x {
 		outPath += "@2x"
 	}
 
@@ -260,11 +233,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	buf, _, err := loader.RenderApplet(
 		path,
 		config,
-		loader.WithMeta(canvas.Metadata{
-			Width:  opts.width,
-			Height: opts.height,
-			Is2x:   opts.output2x,
-		}),
+		loader.WithMeta(opts.Metadata),
 		loader.WithMaxDuration(opts.maxDuration),
 		loader.WithTimeout(opts.timeout),
 		loader.WithImageFormat(imageFormat),

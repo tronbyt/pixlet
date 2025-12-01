@@ -6,15 +6,19 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
 type schemaOptions struct {
 	output string
+	flags.Meta
 }
 
 func NewSchemaCmd() *cobra.Command {
-	opts := &schemaOptions{}
+	opts := &schemaOptions{
+		Meta: flags.NewMeta(),
+	}
 
 	cmd := &cobra.Command{
 		Use:   "schema [path]",
@@ -36,13 +40,17 @@ JSON format.
 	cmd.Flags().StringVarP(&opts.output, "output", "o", opts.output, "Path for schema")
 	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
 
+	opts.Meta.Register(cmd)
+
 	return cmd
 }
 
 func schemaRun(args []string, opts *schemaOptions) error {
 	path := args[0]
 
-	applet, err := runtime.NewAppletFromPath(path)
+	applet, err := runtime.NewAppletFromPath(
+		path, runtime.WithCanvasMeta(opts.Metadata),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}
