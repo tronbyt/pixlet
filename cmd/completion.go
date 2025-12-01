@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/schema"
 )
@@ -58,7 +59,11 @@ func completeRender(_ *cobra.Command, args []string, toComplete string) ([]cobra
 		return []string{"star"}, cobra.ShellCompDirectiveFilterFileExt
 	}
 
-	applet, err := runtime.NewAppletFromPath(args[0])
+	applet, err := runtime.NewAppletFromPath(
+		args[0],
+		runtime.WithPrintDisabled(),
+		runtime.WithCanvasMeta(flags.NewMeta().Metadata),
+	)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}

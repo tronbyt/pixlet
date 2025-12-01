@@ -11,7 +11,7 @@ import (
 	pprof_driver "github.com/google/pprof/driver"
 	pprof_profile "github.com/google/pprof/profile"
 	"github.com/spf13/cobra"
-	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"go.starlark.net/starlark"
 
@@ -20,16 +20,13 @@ import (
 
 type profileOptions struct {
 	pprofCommand string
-	width        int
-	height       int
-	output2x     bool
+	flags.Meta
 }
 
 func NewProfileCmd() *cobra.Command {
 	opts := &profileOptions{
 		pprofCommand: "top 10",
-		width:        render.DefaultFrameWidth,
-		height:       render.DefaultFrameHeight,
+		Meta:         flags.NewMeta(),
 	}
 
 	cmd := &cobra.Command{
@@ -46,29 +43,8 @@ func NewProfileCmd() *cobra.Command {
 		&opts.pprofCommand, "pprof", "", opts.pprofCommand, "Command to call pprof with",
 	)
 	_ = cmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
-	cmd.Flags().IntVarP(
-		&opts.width,
-		"width",
-		"w",
-		opts.width,
-		"Set width",
-	)
-	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
-	cmd.Flags().IntVarP(
-		&opts.height,
-		"height",
-		"t",
-		opts.height,
-		"Set height",
-	)
-	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
-	cmd.Flags().BoolVarP(
-		&opts.output2x,
-		"2x",
-		"2",
-		opts.output2x,
-		"Render at 2x resolution",
-	)
+
+	opts.Meta.Register(cmd)
 
 	return cmd
 }
@@ -117,7 +93,7 @@ func profileRun(args []string, opts *profileOptions) error {
 		config[split[0]] = split[1]
 	}
 
-	profile, err := ProfileApp(path, config, opts.width, opts.height, opts.output2x)
+	profile, err := ProfileApp(path, config, opts.Metadata)
 	if err != nil {
 		return err
 	}
@@ -134,7 +110,7 @@ func profileRun(args []string, opts *profileOptions) error {
 	return nil
 }
 
-func ProfileApp(path string, config map[string]string, width int, height int, is2x bool) (*pprof_profile.Profile, error) {
+func ProfileApp(path string, config map[string]string, meta canvas.Metadata) (*pprof_profile.Profile, error) {
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
@@ -142,11 +118,7 @@ func ProfileApp(path string, config map[string]string, width int, height int, is
 	applet, err := runtime.NewAppletFromPath(
 		path,
 		runtime.WithPrintDisabled(),
-		runtime.WithCanvasMeta(canvas.Metadata{
-			Width:  width,
-			Height: height,
-			Is2x:   is2x,
-		}),
+		runtime.WithCanvasMeta(meta),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load applet: %w", err)

@@ -14,6 +14,7 @@ import (
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/community"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/manifest"
 )
 
@@ -138,7 +139,7 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 		}
 
 		// Check performance.
-		p, err := ProfileApp(path, map[string]string{}, 64, 32, false)
+		p, err := ProfileApp(path, map[string]string{}, flags.NewMeta().Metadata)
 		if err != nil {
 			return fmt.Errorf("could not profile app: %w", err)
 		}

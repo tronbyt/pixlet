@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 
 	"github.com/tronbyt/pixlet/icons"
 	"github.com/tronbyt/pixlet/runtime"
@@ -30,7 +31,11 @@ func ValidateIcons(_ *cobra.Command, args []string) error {
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
-	applet, err := runtime.NewAppletFromPath(path, runtime.WithPrintDisabled())
+	applet, err := runtime.NewAppletFromPath(
+		path,
+		runtime.WithPrintDisabled(),
+		runtime.WithCanvasMeta(flags.NewMeta().Metadata),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}

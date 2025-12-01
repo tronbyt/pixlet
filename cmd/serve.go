@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/encode"
-	"github.com/tronbyt/pixlet/render"
-	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server"
 	"github.com/tronbyt/pixlet/server/loader"
 )
@@ -21,10 +20,8 @@ type serveOptions struct {
 	configOutFile string
 	maxDuration   time.Duration
 	timeout       time.Duration
-	width         int
-	height        int
-	output2x      bool
 	webpLevel     int32
+	flags.Meta
 }
 
 func NewServeCmd() *cobra.Command {
@@ -36,9 +33,8 @@ func NewServeCmd() *cobra.Command {
 		format:      "webp",
 		maxDuration: 15 * time.Second,
 		timeout:     30 * time.Second,
-		width:       render.DefaultFrameWidth,
-		height:      render.DefaultFrameHeight,
 		webpLevel:   encode.WebPLevelDefault,
+		Meta:        flags.NewMeta(),
 	}
 
 	cmd := &cobra.Command{
@@ -62,7 +58,7 @@ containing multiple Starlark files and resources.`,
 	_ = cmd.RegisterFlagCompletionFunc("host", cobra.NoFileCompletions)
 	cmd.Flags().IntVarP(&opts.port, "port", "p", opts.port, "Port for serving rendered images")
 	_ = cmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
-	cmd.Flags().BoolVarP(&opts.watch, "watch", "w", opts.watch, "Reload scripts on change. Does not recurse sub-directories.")
+	cmd.Flags().BoolVar(&opts.watch, "watch", opts.watch, "Reload scripts on change. Does not recurse sub-directories.")
 	cmd.Flags().DurationVarP(&opts.maxDuration, "max-duration", "d", opts.maxDuration, "Maximum allowed animation duration")
 	_ = cmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
 	cmd.Flags().DurationVarP(&opts.timeout, "timeout", "", opts.timeout, "Timeout for execution")
@@ -71,11 +67,6 @@ containing multiple Starlark files and resources.`,
 	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
 	cmd.Flags().StringVarP(&opts.path, "path", "", opts.path, "Path to serve the app on")
 	_ = cmd.RegisterFlagCompletionFunc("path", cobra.NoFileCompletions)
-	cmd.Flags().IntVar(&opts.width, "width", opts.width, "Set width")
-	_ = cmd.RegisterFlagCompletionFunc("width", cobra.NoFileCompletions)
-	cmd.Flags().IntVarP(&opts.height, "height", "t", opts.height, "Set height")
-	_ = cmd.RegisterFlagCompletionFunc("height", cobra.NoFileCompletions)
-	cmd.Flags().BoolVarP(&opts.output2x, "2x", "2", opts.output2x, "Render at 2x resolution (initial value for the UI toggle)")
 	cmd.Flags().Int32VarP(
 		&opts.webpLevel,
 		webpLevelFlag,
@@ -84,6 +75,8 @@ containing multiple Starlark files and resources.`,
 		"WebP compression level (0–9): 0 fast/large, 9 slow/small",
 	)
 	_ = cmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
+
+	opts.Meta.Register(cmd)
 
 	return cmd
 }
@@ -111,11 +104,7 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		opts.watch,
 		args[0],
 		opts.configOutFile,
-		loader.WithMeta(canvas.Metadata{
-			Width:  opts.width,
-			Height: opts.height,
-			Is2x:   opts.output2x,
-		}),
+		loader.WithMeta(opts.Metadata),
 		loader.WithMaxDuration(opts.maxDuration),
 		loader.WithTimeout(opts.timeout),
 		loader.WithImageFormat(imageFormat),
