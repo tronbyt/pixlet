@@ -36,20 +36,27 @@ import (
 // DOC(Width): Scale image to this width
 // DOC(Height): Scale image to this height
 // DOC(Delay): (Read-only) Frame delay in ms, for animated GIFs
+// DOC(HoldFrames): Number of render frames to hold each animation frame, default is 1.
 type Image struct {
 	Src           string `starlark:"src,required"`
 	Width, Height int
 	Delay         int `starlark:"delay,readonly"`
+	HoldFrames    int `starlark:"hold_frames"`
 
 	imgs []image.Image
 }
 
 func (p *Image) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
-	return p.imgs[ModInt(frameIdx, len(p.imgs))].Bounds()
+	return p.frameImg(frameIdx).Bounds()
 }
 
 func (p *Image) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
-	dc.DrawImage(p.imgs[ModInt(frameIdx, len(p.imgs))], 0, 0)
+	dc.DrawImage(p.frameImg(frameIdx), 0, 0)
+}
+
+func (p *Image) frameImg(frameIdx int) image.Image {
+	i := ModInt(frameIdx/p.HoldFrames, len(p.imgs))
+	return p.imgs[i]
 }
 
 func (p *Image) Size() (int, int) {
@@ -57,7 +64,7 @@ func (p *Image) Size() (int, int) {
 }
 
 func (p *Image) FrameCount(bounds image.Rectangle) int {
-	return len(p.imgs)
+	return len(p.imgs) * p.HoldFrames
 }
 
 func (p *Image) InitFromGIF(data []byte) error {
@@ -191,6 +198,10 @@ func (p *Image) Init(*starlark.Thread) error {
 		for i := range p.imgs {
 			p.imgs[i] = resize.Resize(uint(nw), uint(nh), p.imgs[i], resize.NearestNeighbor)
 		}
+	}
+
+	if p.HoldFrames < 1 {
+		p.HoldFrames = 1
 	}
 
 	return nil

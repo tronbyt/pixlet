@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // A base4 encoded PNG depicting a red rectangle with a centered red
@@ -104,6 +105,8 @@ func TestImageScaleAspectRatioHeight(t *testing.T) {
 	assert.Equal(t, 6, im.Bounds().Dy())
 }
 
+const testGIF = "R0lGODlhBQAEAPAAAAAAAAAAACH5BAF7AAAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAABQAEAAACBgRiaLmLBQAh+QQBewAAACwAAAAABQAEAAACBYRzpqhXACH5BAF7AAAALAAAAAAFAAQAAAIGDG6Qp8wFACH5BAF7AAAALAAAAAAFAAQAAAIGRIBnyMoFADs="
+
 func TestImageAnimatedGif(t *testing.T) {
 	// Animated 5x4 GIF with 4 frames:
 	//
@@ -116,8 +119,6 @@ func TestImageAnimatedGif(t *testing.T) {
 	// next row.
 	//
 	// GIF has no disposal method set, and a delay of 1230 ms
-
-	const testGIF = "R0lGODlhBQAEAPAAAAAAAAAAACH5BAF7AAAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAABQAEAAACBgRiaLmLBQAh+QQBewAAACwAAAAABQAEAAACBYRzpqhXACH5BAF7AAAALAAAAAAFAAQAAAIGDG6Qp8wFACH5BAF7AAAALAAAAAAFAAQAAAIGRIBnyMoFADs="
 
 	raw, _ := base64.StdEncoding.DecodeString(testGIF)
 	img := &Image{Src: string(raw)}
@@ -173,4 +174,18 @@ func TestImageAnimatedGif(t *testing.T) {
 		".xx..",
 		"...xx",
 	}, PaintWidget(img, image.Rect(0, 0, 100, 100), 5)))
+}
+
+func TestImageAnimatedGifWithHoldFrames(t *testing.T) {
+	raw, _ := base64.StdEncoding.DecodeString(testGIF)
+	img := &Image{Src: string(raw), HoldFrames: 2}
+	require.NoError(t, img.Init(nil))
+
+	assert.Equal(t, 8, img.FrameCount(image.Rect(0, 0, 0, 0)))
+	assert.Equal(t, img.frameImg(0), img.frameImg(1))
+	assert.NotEqual(t, img.frameImg(1), img.frameImg(2))
+	assert.Equal(t, img.frameImg(2), img.frameImg(3))
+	assert.Equal(t, img.frameImg(4), img.frameImg(5))
+	assert.NotEqual(t, img.frameImg(3), img.frameImg(4))
+	assert.Equal(t, img.frameImg(6), img.frameImg(7))
 }
