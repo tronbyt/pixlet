@@ -239,3 +239,27 @@ func TestWrappedTextMissingFont(t *testing.T) {
 	text := &WrappedText{Content: "AB CD.", Font: "missing"}
 	assert.Error(t, text.Init(nil))
 }
+
+func TestWrappedTextWordBreak(t *testing.T) {
+	// A long word that definitely doesn't fit in 10 pixels.
+	// Default font is usually around 5-6 pixels wide per char.
+	content := "LONGLONGWORD"
+	width := 10
+
+	// Case 1: WordBreak = false (default)
+	text := &WrappedText{Content: content, Width: width}
+	assert.NoError(t, text.Init(nil))
+
+	bounds := text.PaintBounds(image.Rect(0, 0, 100, 100), 0)
+	// Should be single line height (e.g. 8 or similar)
+	singleLineHeight := bounds.Dy()
+
+	// Case 2: WordBreak = true
+	text2 := &WrappedText{Content: content, Width: width, WordBreak: true}
+	assert.NoError(t, text2.Init(nil))
+
+	bounds2 := text2.PaintBounds(image.Rect(0, 0, 100, 100), 0)
+
+	// Should be multiple lines, so height should be significantly larger.
+	assert.Greater(t, bounds2.Dy(), singleLineHeight, "WordBreak should wrap text and increase height")
+}

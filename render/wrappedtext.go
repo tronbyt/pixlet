@@ -3,6 +3,7 @@ package render
 import (
 	"image"
 	"image/color"
+	"strings"
 
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/tools/i18n"
@@ -52,6 +53,7 @@ type WrappedText struct {
 	LineSpacing int
 	Color       color.Color
 	Align       string
+	WordBreak   bool
 
 	face font.Face
 }
@@ -102,7 +104,7 @@ func (tw *WrappedText) PaintBounds(bounds image.Rectangle, frameIdx int) image.R
 	dc.SetFontFace(tw.face)
 	w := 0.0
 	h := 0.0
-	for _, line := range dc.WordWrap(tw.Content, float64(width)) {
+	for _, line := range wrapContent(dc, tw.face, tw.Content, float64(width), tw.WordBreak) {
 		lw, lh := dc.MeasureString(line)
 		if lw > w {
 			w = lw
@@ -152,7 +154,7 @@ func (tw *WrappedText) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx in
 		dc.SetColor(DefaultFontColor)
 	}
 
-	lines := dc.WordWrap(tw.Content, float64(width))
+	lines := wrapContent(dc, tw.face, tw.Content, float64(width), tw.WordBreak)
 	for i, line := range lines {
 		lines[i] = i18n.VisualBidiString(line)
 	}
@@ -197,4 +199,52 @@ func drawStringWrapped(dc *gg.Context, lines []string, x, y, ax, ay, width, line
 		dc.DrawStringAnchored(line, x, y, ax, ay)
 		y += fontHeight * lineSpacing
 	}
+}
+
+func wrapContent(dc *gg.Context, face font.Face, text string, width float64, wordBreak bool) []string {
+	lines := dc.WordWrap(text, width)
+	if !wordBreak {
+		return lines
+	}
+
+	var newLines []string
+	for _, line := range lines {
+		lineWidth, _ := dc.MeasureString(line)
+		if lineWidth <= width {
+			newLines = append(newLines, line)
+			continue
+		}
+
+		// Force break the line
+		var sb strings.Builder
+		currentWidth := 0.0
+
+		for _, r := range line {
+			advance, ok := face.GlyphAdvance(r)
+			if !ok {
+				// This is unlikely with BDF fonts which have a glyph for every rune.
+				// Treat as zero-width if it happens.
+				advance = 0
+			}
+			rw := float64(advance >> 6)
+
+			if sb.Len() > 0 && currentWidth+rw > width {
+				newLines = append(newLines, sb.String())
+				sb.Reset()
+				currentWidth = 0.0
+			}
+			sb.WriteRune(r)
+			currentWidth += rw
+
+			if sb.Len() == 1 && currentWidth > width {
+				newLines = append(newLines, sb.String())
+				sb.Reset()
+				currentWidth = 0.0
+			}
+		}
+		if sb.Len() > 0 {
+			newLines = append(newLines, sb.String())
+		}
+	}
+	return newLines
 }
