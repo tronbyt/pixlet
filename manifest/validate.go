@@ -12,14 +12,13 @@ import (
 const (
 	// Our longest app name to date. This can be updated, but it will need to
 	// be tested in the mobile app.
-	MaxNameLength = 17
+	MaxNameLength = 32
 
 	// Our longest app summary to date. This can be updated, but it will need to
 	// be tested in the mobile app.
-	MaxSummaryLength = 27
+	MaxSummaryLength = 32
 
-	dash       = '-'
-	underscore = '_'
+	dash = '-'
 )
 
 var punctuation []string = []string{
