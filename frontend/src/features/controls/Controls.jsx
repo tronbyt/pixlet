@@ -85,7 +85,7 @@ export default function Controls() {
 
         const file = new Blob([uint8Array], { type: 'image/' + imageType });
         element.href = URL.createObjectURL(file);
-        element.download = `tidbyt-preview-${date}.${imageType}`;
+        element.download = `pixlet-preview-${date}.${imageType}`;
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
     }
