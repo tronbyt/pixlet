@@ -20,7 +20,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.25.4"
+          go-version: "1.25.5"
 
       - name: Install buildifier
         run: make install-buildifier
@@ -43,7 +43,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.25.4"
+          go-version: "1.25.5"
 
       - name: Install Node
         uses: actions/setup-node@v6
@@ -59,8 +59,8 @@ jobs:
           install: >-
             make
             curl
-            mingw-w64-x86_64-go
             mingw-w64-x86_64-toolchain
+          path-type: inherit
 
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-24.04' || matrix.os == 'ubuntu-24.04-arm'
