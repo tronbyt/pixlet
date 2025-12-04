@@ -43,6 +43,9 @@ type Manifest struct {
 
 	// MinPixletVersion returns an error if the current version of Pixlet is too old.
 	MinPixletVersion string `json:"minPixletVersion,omitempty" yaml:"minPixletVersion,omitempty"`
+
+	// Broken indicates that an app is intentionally broken and should be skipped by checks.
+	Broken bool `json:"broken,omitempty" yaml:"broken,omitempty"`
 }
 
 // LoadManifest reads a manifest from an io.Reader, with the most common reader

@@ -20,6 +20,7 @@ import (
 
 type checkOptions struct {
 	recursive     bool
+	skipBroken    bool
 	maxRenderTime time.Duration
 }
 
@@ -50,6 +51,7 @@ Discord if you get stuck.`,
 	}
 
 	cmd.Flags().BoolVarP(&opts.recursive, "recursive", "r", opts.recursive, "find apps recursively")
+	cmd.Flags().BoolVarP(&opts.skipBroken, "skip-broken", "s", opts.skipBroken, "skip apps marked as broken in their manifest")
 	cmd.Flags().DurationVarP(&opts.maxRenderTime, "max-render-time", "", opts.maxRenderTime, "override the default max render time")
 	_ = cmd.RegisterFlagCompletionFunc("max-render-time", cobra.NoFileCompletions)
 
@@ -57,72 +59,79 @@ Discord if you get stuck.`,
 }
 
 func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
-	if opts.recursive {
-		// TODO: implement recursive traversal for check command.
-	}
-
-	// check every path.
 	foundIssue := false
-	for _, path := range args {
+
+	// checkApp is a helper to run checks on a single app.
+	checkApp := func(path string) bool {
 		// check if path exists, and whether it is a directory or a file
 		info, err := os.Stat(path)
 		if err != nil {
-			return fmt.Errorf("failed to stat %s: %w", path, err)
+			// This path might be checked inside a WalkDir where we expect it to exist,
+			// or passed as an argument.
+			// If it's passed as arg, we want to error out.
+			// But checkApp helper needs to be robust.
+			// Let's rely on failure() to report issues.
+			failure(path, fmt.Errorf("failed to stat %s: %w", path, err), "ensure the path exists")
+			return true
 		}
 
 		baseDir := path
 		if !info.IsDir() {
 			if !strings.HasSuffix(path, ".star") {
-				return fmt.Errorf("script file must have suffix .star: %s", path)
+				failure(path, fmt.Errorf("script file must have suffix .star: %s", path), "ensure the script file ends with .star")
+				return true
 			}
 			baseDir = filepath.Dir(path)
 		}
 
 		fsys := os.DirFS(baseDir)
 
+		// Check if app manifest exists and load it.
+		manifestFile := filepath.Join(baseDir, manifest.ManifestFileName)
+		manifestBytes, err := os.ReadFile(manifestFile)
+		if err != nil {
+			if os.IsNotExist(err) {
+				failure(path, fmt.Errorf("couldn't find app manifest"), fmt.Sprintf("try `pixlet community create-manifest %s`", manifestFile))
+			} else {
+				failure(path, fmt.Errorf("couldn't read app manifest: %w", err), "ensure the manifest file is readable")
+			}
+			return true
+		}
+
+		m, err := manifest.LoadManifest(strings.NewReader(string(manifestBytes)))
+		if err != nil {
+			failure(path, fmt.Errorf("couldn't parse app manifest: %w", err), "ensure the manifest file is valid YAML")
+			return true
+		}
+
+		if err := m.Validate(); err != nil {
+			failure(path, fmt.Errorf("manifest didn't validate: %w", err), "try correcting the validation issue by updating your manifest")
+			return true
+		}
+
+		if opts.skipBroken && m.Broken {
+			fmt.Printf("Skipping %s: marked as broken in manifest\n", path)
+			return false
+		}
+
 		// Check if an app can load.
 		err = community.LoadApp(cmd, []string{path})
 		if err != nil {
-			foundIssue = true
 			failure(path, fmt.Errorf("app failed to load: %w", err), "try `pixlet community load-app` and resolve any runtime issues")
-			continue
+			return true
 		}
 
 		// Ensure icons are valid.
 		err = community.ValidateIcons(cmd, []string{path})
 		if err != nil {
-			foundIssue = true
 			failure(path, fmt.Errorf("app has invalid icons: %w", err), "try `pixlet community list-icons` for the full list of valid icons")
-			continue
+			return true
 		}
-
-		// Check app manifest exists
-		if !doesManifestExist(baseDir) {
-			foundIssue = true
-			failure(path, fmt.Errorf("couldn't find app manifest"), fmt.Sprintf("try `pixlet community create-manifest %s`", filepath.Join(baseDir, manifest.ManifestFileName)))
-			continue
-		}
-
-		// Validate manifest.
-		manifestFile := filepath.Join(baseDir, manifest.ManifestFileName)
-		err = community.ValidateManifest(cmd, []string{manifestFile})
-		if err != nil {
-			foundIssue = true
-			failure(path, fmt.Errorf("manifest didn't validate: %w", err), "try correcting the validation issue by updating your manifest")
-			continue
-		}
-
-		// Create temporary file for app rendering.
-		f, err := os.CreateTemp("", "pixlet-check-"+filepath.Base(baseDir)+"-*")
-		if err != nil {
-			return fmt.Errorf("could not create temp file for rendering, check your system: %w", err)
-		}
-		defer os.Remove(f.Name())
 
 		// Check if app renders.
 		renderOpts := newRenderOptions()
 		renderOpts.silenceOutput = true
-		renderOpts.output = f.Name()
+		renderOpts.output = os.DevNull
 		renderOpts.log = slog.New(
 			tint.NewHandler(os.Stderr, &tint.Options{
 				Level:      slog.LevelWarn,
@@ -133,26 +142,26 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 
 		err = renderRun(cmd, []string{path}, renderOpts)
 		if err != nil {
-			foundIssue = true
 			failure(path, fmt.Errorf("app failed to render: %w", err), "try `pixlet render` and resolve any runtime issues")
-			continue
+			return true
 		}
 
 		// Check performance.
 		p, err := ProfileApp(path, map[string]string{}, flags.NewMeta().Metadata)
 		if err != nil {
-			return fmt.Errorf("could not profile app: %w", err)
+			failure(path, fmt.Errorf("app profiling failed: %w", err), "try `pixlet profile` to debug performance issues")
+			return true
 		}
 		if p.DurationNanos > opts.maxRenderTime.Nanoseconds() {
-			foundIssue = true
 			failure(
 				path,
 				fmt.Errorf("app takes too long to render %s", time.Duration(p.DurationNanos)),
 				fmt.Sprintf("try optimizing your app using `pixlet profile %s` to get it under %s", path, time.Duration(opts.maxRenderTime)),
 			)
-			continue
+			return true
 		}
 
+		issueFound := false
 		// run format and lint on *.star files in the fs
 		fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
 			if err != nil {
@@ -168,23 +177,65 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 			formatOpts := newFormatOptions()
 			formatOpts.dryRun = true
 			if err := formatRun([]string{realPath}, formatOpts); err != nil {
-				foundIssue = true
 				failure(p, fmt.Errorf("app is not formatted correctly: %w", err), fmt.Sprintf("try `pixlet format %s`", realPath))
+				issueFound = true
 			}
 
 			lintOpts := newLintOptions()
 			lintOpts.outputFormat = "off"
 			err = lintRun([]string{realPath}, lintOpts)
 			if err != nil {
-				foundIssue = true
 				failure(p, fmt.Errorf("app has lint warnings: %w", err), fmt.Sprintf("try `pixlet lint --fix %s`", realPath))
+				issueFound = true
 			}
 
 			return nil
 		})
 
+		if issueFound {
+			return true
+		}
+
 		// If we're here, the app and manifest are good to go!
 		success(path)
+		return false
+	}
+
+	for _, path := range args {
+		info, err := os.Stat(path)
+		if err != nil {
+			return fmt.Errorf("failed to stat %s: %w", path, err)
+		}
+
+		if opts.recursive && info.IsDir() {
+			err := filepath.WalkDir(path, func(walkPath string, d fs.DirEntry, err error) error {
+				if err != nil {
+					return err
+				}
+
+				if d.IsDir() {
+					// Skip subdirectories that start with a dot.
+					if walkPath != path && strings.HasPrefix(d.Name(), ".") {
+						return filepath.SkipDir
+					}
+					return nil
+				}
+
+				if d.Name() == manifest.ManifestFileName {
+					if checkApp(filepath.Dir(walkPath)) {
+						foundIssue = true
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				return fmt.Errorf("failed to walk %s: %w", path, err)
+			}
+		} else {
+			if checkApp(path) {
+				foundIssue = true
+			}
+		}
 	}
 
 	if foundIssue {
@@ -194,19 +245,6 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 	return nil
 }
 
-func doesManifestExist(dir string) bool {
-	file := filepath.Join(dir, manifest.ManifestFileName)
-	_, err := os.Stat(file)
-	if os.IsNotExist(err) {
-		return false
-	}
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
 
 func success(app string) {
 	c := color.New(color.FgGreen)
@@ -238,3 +276,4 @@ func failure(app string, err error, sol string) {
 	fmt.Printf("  ▪️ Problem: %v\n", problem)
 	fmt.Printf("  ▪️ Solution: %v\n", sol)
 }
+
