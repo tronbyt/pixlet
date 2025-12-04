@@ -93,10 +93,17 @@ export default function Controls() {
     function downloadConfig() {
         const date = new Date().getTime();
         const element = document.createElement("a");
-        const jsonData = config;
+        const jsonData = Object.fromEntries(
+            Object.entries(config).map(([key, val]) => {
+                if (val && typeof val === 'object' && 'value' in val) {
+                    return [key, val.value];
+                }
+                return [key, val];
+            })
+        );
 
         // Use Blob object for JSON
-        const file = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+        const file = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
         element.href = URL.createObjectURL(file);
         element.download = `config-${date}.json`;
         document.body.appendChild(element); // Required for this to work in FireFox
@@ -119,7 +126,15 @@ export default function Controls() {
             reader.onload = function () {
                 let contents = reader.result;
                 let json = JSON.parse(contents);
-                setConfig(json);
+                const newConfig = Object.fromEntries(
+                    Object.entries(json).map(([key, val]) => {
+                        if (val && typeof val === 'object' && 'value' in val && 'id' in val) {
+                            return [key, val];
+                        }
+                        return [key, { id: key, value: val }];
+                    })
+                );
+                setConfig(newConfig);
             };
 
             reader.onerror = function () {
