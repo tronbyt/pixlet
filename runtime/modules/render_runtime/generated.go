@@ -832,6 +832,8 @@ func newImage(
 		src    starlark.String
 		width  starlark.Int
 		height starlark.Int
+
+		hold_frames starlark.Int
 	)
 
 	if err := starlark.UnpackArgs(
@@ -840,6 +842,7 @@ func newImage(
 		"src", &src,
 		"width?", &width,
 		"height?", &height,
+		"hold_frames?", &hold_frames,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Image: %s", err)
 	}
@@ -860,6 +863,12 @@ func newImage(
 	}
 	w.Height = int(heightInt)
 
+	hold_framesInt, err := starlarkutil.AsInt64(hold_frames)
+	if err != nil {
+		return nil, fmt.Errorf("parsing hold_frames: %w", err)
+	}
+	w.HoldFrames = int(hold_framesInt)
+
 	w.size = starlark.NewBuiltin("size", imageSize)
 	w.frame_count = starlark.NewBuiltin("frame_count", imageFrameCount)
 	if err := w.Init(thread); err != nil {
@@ -879,6 +888,7 @@ func (w *Image) AttrNames() []string {
 		"width",
 		"height",
 		"delay",
+		"hold_frames",
 	}
 }
 
@@ -892,6 +902,8 @@ func (w *Image) Attr(name string) (starlark.Value, error) {
 		return starlark.MakeInt(int(w.Height)), nil
 	case "delay":
 		return starlark.MakeInt(int(w.Delay)), nil
+	case "hold_frames":
+		return starlark.MakeInt(int(w.HoldFrames)), nil
 	case "size":
 		return w.size.BindReceiver(w), nil
 	case "frame_count":

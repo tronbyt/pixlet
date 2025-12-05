@@ -195,6 +195,7 @@ the `delay` attribute.
 | `width` | `int` | Scale image to this width | N |
 | `height` | `int` | Scale image to this height | N |
 | `delay` | `int` | (Read-only) Frame delay in ms, for animated GIFs | N |
+| `hold_frames` | `int` | Number of render frames to hold each animation frame, default is 1. | N |
 
 ## Marquee
 Marquee scrolls its child horizontally or vertically.
