@@ -225,7 +225,7 @@ jobs:
               --generate-notes \
               build/*.tar.gz
       - name: Bump pixlet Homebrew formula
-        uses: dawidd6/action-homebrew-bump-formula@v6
+        uses: dawidd6/action-homebrew-bump-formula@v7
         with:
           token: ${{ secrets.HOMEBREW_BUMP_TOKEN }}
           formula: pixlet
@@ -235,7 +235,7 @@ jobs:
           force: false
           no_fork: true
       - name: Bump libpixlet Homebrew formula
-        uses: dawidd6/action-homebrew-bump-formula@v6
+        uses: dawidd6/action-homebrew-bump-formula@v7
         with:
           token: ${{ secrets.HOMEBREW_BUMP_TOKEN }}
           formula: libpixlet
