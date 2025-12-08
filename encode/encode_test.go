@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gen2brain/webp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tronbyt/go-libwebp/webp"
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
 )
@@ -315,18 +315,9 @@ def main():
 		return delays
 	}
 	webpDelays := func(webpData []byte) []int {
-		decoder, err := webp.NewAnimationDecoder(webpData)
+		img, err := webp.DecodeAll(bytes.NewReader(webpData))
 		assert.NoError(t, err)
-		img, err := decoder.Decode()
-		assert.NoError(t, err)
-		delays := []int{}
-		last := 0
-		for _, t := range img.Timestamp {
-			d := t - last
-			last = t
-			delays = append(delays, d)
-		}
-		return delays
+		return img.Delay
 	}
 
 	// With 500ms delay per frame, total duration will be

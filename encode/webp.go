@@ -1,14 +1,16 @@
 package encode
 
 import (
+	"bytes"
 	"fmt"
+	"image"
 	"log/slog"
 	"os"
 	"strconv"
 	"sync/atomic"
 	"time"
 
-	"github.com/tronbyt/go-libwebp/webp"
+	"github.com/HugoSmits86/nativewebp"
 )
 
 const (
@@ -43,24 +45,12 @@ func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) 
 		return []byte{}, nil
 	}
 
-	bounds := images[0].Bounds()
-	anim, err := webp.NewAnimationEncoder(
-		bounds.Dx(),
-		bounds.Dy(),
-		WebPKMin,
-		WebPKMax,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", "initializing encoder", err)
-	}
-	defer anim.Close()
+	frames := make([]image.Image, 0, len(images))
+	durations := make([]uint, 0, len(images))
+	disposals := make([]uint, 0, len(images))
 
 	remainingDuration := maxDuration
-	level := int(webpLevel.Load())
-	config, err := webp.ConfigLosslessPreset(level)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", "configuring encoder", err)
-	}
+
 	for _, im := range images {
 		frameDuration := time.Duration(s.delay) * time.Millisecond
 
@@ -71,21 +61,35 @@ func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) 
 			remainingDuration -= frameDuration
 		}
 
-		if err := anim.AddFrame(im, frameDuration, config); err != nil {
-			return nil, fmt.Errorf("%s: %w", "adding frame", err)
-		}
+		frames = append(frames, im)
+		durations = append(durations, uint(frameDuration.Milliseconds()))
+		disposals = append(disposals, 0) // 0 = Unspecified
 
 		if maxDuration > 0 && remainingDuration <= 0 {
 			break
 		}
 	}
 
-	buf, err := anim.Assemble()
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", "encoding animation", err)
+	buf := new(bytes.Buffer)
+	if len(frames) == 1 {
+		if err := nativewebp.Encode(buf, frames[0], nil); err != nil {
+			return nil, fmt.Errorf("%s: %w", "encoding image", err)
+		}
+	} else {
+		anim := nativewebp.Animation{
+			Images:          frames,
+			Durations:       durations,
+			Disposals:       disposals,
+			LoopCount:       0,
+			BackgroundColor: 0x00000000,
+		}
+
+		if err := nativewebp.EncodeAll(buf, &anim, nil); err != nil {
+			return nil, fmt.Errorf("%s: %w", "encoding animation", err)
+		}
 	}
 
-	return buf, nil
+	return buf.Bytes(), nil
 }
 
 func SetWebPLevel(level int32) {
