@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.8.0 AS xx
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.9.0 AS xx
 
 FROM --platform=$BUILDPLATFORM node:25-alpine AS frontend
 WORKDIR /app
