@@ -1,26 +1,26 @@
 package render
 
 import (
+	"bytes"
 	"fmt"
 
-	"github.com/tronbyt/go-libwebp/webp"
+	"github.com/gen2brain/webp"
 )
 
 func (p *Image) InitFromWebP(data []byte) error {
-	decoder, err := webp.NewAnimationDecoder(data)
-	if err != nil {
-		return fmt.Errorf("creating animation decoder: %v", err)
-	}
-
-	img, err := decoder.Decode()
+	webpImage, err := webp.DecodeAll(bytes.NewReader(data))
 	if err != nil {
 		return fmt.Errorf("decoding image data: %v", err)
 	}
 
-	p.Delay = img.Timestamp[0]
-	for _, im := range img.Image {
-		p.imgs = append(p.imgs, im)
+	p.Delay = 0
+	if len(webpImage.Image) > 0 {
+		// The delays in webpImage.Delay are in milliseconds
+		p.Delay = webpImage.Delay[0]
 	}
+
+	// append all frames at once
+	p.imgs = append(p.imgs, webpImage.Image...)
 
 	return nil
 }

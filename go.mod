@@ -3,6 +3,7 @@ module github.com/tronbyt/pixlet
 go 1.25.5
 
 require (
+	github.com/HugoSmits86/nativewebp v1.2.1
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/bazelbuild/buildtools v0.0.0-20251112105957-8e68360eeafa
 	github.com/dustin/go-humanize v1.0.1
@@ -10,6 +11,7 @@ require (
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4
 	github.com/fatih/color v1.18.0
 	github.com/fsnotify/fsnotify v1.9.0
+	github.com/gen2brain/webp v0.5.5
 	github.com/gitsight/go-vcsurl v1.0.1
 	github.com/go-git/go-git/v5 v5.16.3
 	github.com/go-playground/validator/v10 v10.28.0
@@ -34,7 +36,6 @@ require (
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
 	github.com/stretchr/testify v1.11.1
 	github.com/tronbyt/gg v0.0.0-20220808163829-95806fa1d427
-	github.com/tronbyt/go-libwebp v0.0.0-20250308222421-079fb191728f
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
 	go.starlark.net v0.0.0-20251109183026-be02852a5e1f
@@ -89,6 +90,7 @@ require (
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/tetratelabs/wazero v1.9.0 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
