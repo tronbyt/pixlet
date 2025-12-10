@@ -1,6 +1,6 @@
 {
   "name": "pixlet",
-  "version": "0.49.4",
+  "version": "0.49.5",
   "description": "[![Build & test](https://github.com/tidbyt/pixlet/workflows/Build%20&%20test/badge.svg)](https://github.com/tidbyt/pixlet/actions?query=workflow%3A%22Build+%26+test%22+branch%3Amain) [![GoDoc](https://godoc.org/github.com/tidbyt/pixlet/runtime?status.svg)](https://godoc.org/github.com/tidbyt/pixlet/runtime)",
   "main": "src/index.jsx",
   "directories": {
