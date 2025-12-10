@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gen2brain/webp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/render"
@@ -314,11 +313,6 @@ def main():
 		}
 		return delays
 	}
-	webpDelays := func(webpData []byte) []int {
-		img, err := webp.DecodeAll(bytes.NewReader(webpData))
-		assert.NoError(t, err)
-		return img.Delay
-	}
 
 	// With 500ms delay per frame, total duration will be
 	// 50000. The encode methods should truncate this down to
@@ -330,7 +324,7 @@ def main():
 	webpData, err := ScreensFromRoots(roots, 64, 32).EncodeWebP(3 * time.Second)
 	assert.NoError(t, err)
 	assert.Equal(t, []int{500, 500, 500, 500, 500, 500}, gifDelays(gifData))
-	assert.Equal(t, []int{500, 500, 500, 500, 500, 500}, webpDelays(webpData))
+	assert.Equal(t, []int{500, 500, 500, 500, 500, 500}, webpDelays(t, webpData))
 
 	// 2200 ms -> 5 frames, with last given only 200ms
 	gifData, err = ScreensFromRoots(roots, 64, 32).EncodeGIF(2*time.Second + 200*time.Millisecond)
@@ -338,7 +332,7 @@ def main():
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(2*time.Second + 200*time.Millisecond)
 	assert.NoError(t, err)
 	assert.Equal(t, []int{500, 500, 500, 500, 200}, gifDelays(gifData))
-	assert.Equal(t, []int{500, 500, 500, 500, 200}, webpDelays(webpData))
+	assert.Equal(t, []int{500, 500, 500, 500, 200}, webpDelays(t, webpData))
 
 	// 100 ms -> single frame. Its duration will differ between
 	// gif and webp, but is also irrelevant.
@@ -347,14 +341,14 @@ def main():
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(100 * time.Millisecond)
 	assert.NoError(t, err)
 	assert.Equal(t, []int{100}, gifDelays(gifData))
-	assert.Equal(t, []int{0}, webpDelays(webpData))
+	assert.Equal(t, []int{0}, webpDelays(t, webpData))
 
 	// 60000 ms -> all 100 frames, 500 ms each.
 	gifData, err = ScreensFromRoots(roots, 64, 32).EncodeGIF(time.Minute)
 	assert.NoError(t, err)
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(time.Minute)
 	assert.NoError(t, err)
-	assert.Equal(t, gifDelays(gifData), webpDelays(webpData))
+	assert.Equal(t, gifDelays(gifData), webpDelays(t, webpData))
 	for _, d := range gifDelays(gifData) {
 		assert.Equal(t, 500, d)
 	}
@@ -364,7 +358,7 @@ def main():
 	assert.NoError(t, err)
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(0)
 	assert.NoError(t, err)
-	assert.Equal(t, gifDelays(gifData), webpDelays(webpData))
+	assert.Equal(t, gifDelays(gifData), webpDelays(t, webpData))
 	for _, d := range gifDelays(gifData) {
 		assert.Equal(t, 500, d)
 	}

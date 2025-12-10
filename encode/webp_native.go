@@ -1,37 +1,15 @@
+//go:build nativewebp
+
 package encode
 
 import (
 	"bytes"
 	"fmt"
 	"image"
-	"log/slog"
-	"os"
-	"strconv"
-	"sync/atomic"
 	"time"
 
 	"github.com/HugoSmits86/nativewebp"
 )
-
-const (
-	WebPLevelDefault = int32(6)
-	webpLevelEnv     = "PIXLET_WEBP_LEVEL"
-)
-
-var webpLevel atomic.Int32
-
-func init() {
-	if raw := os.Getenv(webpLevelEnv); raw != "" {
-		parsed, err := strconv.ParseInt(raw, 10, 32)
-		if err == nil {
-			SetWebPLevel(int32(parsed))
-			return
-		}
-		slog.Warn(webpLevelEnv+" is invalid; using default.", "error", err)
-	}
-
-	webpLevel.Store(WebPLevelDefault)
-}
 
 // Renders a screen to WebP. Optionally pass filters for
 // postprocessing each individual frame.
@@ -90,12 +68,4 @@ func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) 
 	}
 
 	return buf.Bytes(), nil
-}
-
-func SetWebPLevel(level int32) {
-	if level < 0 || level > 9 {
-		slog.Warn("WebP level is out of range (0-9); using default.", "value", level)
-		return
-	}
-	webpLevel.Store(level)
 }

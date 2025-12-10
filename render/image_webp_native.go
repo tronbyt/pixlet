@@ -1,3 +1,5 @@
+//go:build nativewebp
+
 package render
 
 import (
@@ -10,7 +12,7 @@ import (
 func (p *Image) InitFromWebP(data []byte) error {
 	webpImage, err := webp.DecodeAll(bytes.NewReader(data))
 	if err != nil {
-		return fmt.Errorf("decoding image data: %v", err)
+		return fmt.Errorf("decoding image data: %w", err)
 	}
 
 	p.Delay = 0
