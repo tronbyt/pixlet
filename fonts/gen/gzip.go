@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func main() {
@@ -58,6 +59,8 @@ func compress(root *os.Root, path string) error {
 	defer out.Close()
 
 	gzw := gzip.NewWriter(out)
+	gzw.Header.ModTime = time.Time{}
+	gzw.Header.Name = path
 
 	if _, err := io.Copy(gzw, in); err != nil {
 		return err
@@ -67,5 +70,5 @@ func compress(root *os.Root, path string) error {
 		return err
 	}
 
-	return out.Close()
+	return nil
 }

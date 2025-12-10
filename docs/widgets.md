@@ -504,7 +504,7 @@ Alignment of the text is controlled by passing one of the following `align` valu
 | `linespacing` | `int` | Controls spacing between lines | N |
 | `color` | `color` | Desired font color | N |
 | `align` | `str` | Text Alignment | N |
-| `wordbreak` | `bool` | If true, words longer than `width` will be broken across multiple lines. | N |
+| `wordbreak` | `bool` | If true, long words that exceed the width will be broken to fit | N |
 
 #### Example
 ```

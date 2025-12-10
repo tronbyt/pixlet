@@ -36,6 +36,7 @@ const (
 // DOC(LineSpacing): Controls spacing between lines
 // DOC(Color): Desired font color
 // DOC(Align): Text Alignment
+// DOC(WordBreak): If true, long words that exceed the width will be broken to fit
 // EXAMPLE BEGIN
 //
 //	render.WrappedText(
