@@ -38,13 +38,13 @@ ARG TARGETPLATFORM
 RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=private <<EOT
   set -eux
   apt-get update
-  xx-apt-get install -y --no-install-recommends gcc g++
+  xx-apt-get install -y --no-install-recommends gcc g++ libwebp-dev
 EOT
 
 COPY . .
 COPY --from=frontend /app/dist frontend/dist
 ARG PIXLET_VERSION
-RUN STATIC=1 CC=xx-clang CGO_ENABLED=0 GO_CMD=xx-go make build
+RUN STATIC=1 CC=xx-clang CGO_ENABLED=1 GO_CMD=xx-go make build
 
 FROM scratch
 

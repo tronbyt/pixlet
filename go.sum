@@ -310,6 +310,8 @@ github.com/tetratelabs/wazero v1.9.0/go.mod h1:TSbcXCfFP0L2FGkRPxHphadXPjo1T6W+C
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tronbyt/gg v0.0.0-20220808163829-95806fa1d427 h1:ZtI+sSJ6at2TpZXcxnUNrHqeTYbQeYmCEn08+J1vs24=
 github.com/tronbyt/gg v0.0.0-20220808163829-95806fa1d427/go.mod h1:wjdMaUjKINeop89o25+l/doQeDpzXNQdiGpnZxBRRkA=
+github.com/tronbyt/go-libwebp v0.0.0-20250308222421-079fb191728f h1:ygboQdmQbZkgKhkHICbrJ1mgqZQKEY7vTAzF3oEAd+o=
+github.com/tronbyt/go-libwebp v0.0.0-20250308222421-079fb191728f/go.mod h1:d5Q0l+y8kcSncX4xm18IAE8oNSCmnveQxdGEFGNZOBw=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/vmihailenco/msgpack/v5 v5.4.1 h1:cQriyiUvjTwOHg8QZaPihLWeRAAVoCpE00IUPn0Bjt8=
 github.com/vmihailenco/msgpack/v5 v5.4.1/go.mod h1:GaZTsDaehaPpQVyxrf5mtQlH+pc21PIudVV/E3rRQok=
