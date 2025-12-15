@@ -160,7 +160,7 @@ jobs:
           PIXLET_VERSION: ${{ github.ref_name }}
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: release-artifacts-${{ matrix.os }}
           path: build
