@@ -1,16 +1,12 @@
 load("humanize.star", "humanize")
 load("render.star", "render")
 load("schema.star", "schema")
-load("time.star", "time")
 
 DEFAULT_COUNTER = "1337"
 DEFAULT_APPS = "42"
-DEFAULT_TIMEZONE = "America/New_York"
 
 def main(config):
-    tz = config.get("$tz", DEFAULT_TIMEZONE)
     num_apps = config.get("num_apps", DEFAULT_APPS)
-    now = time.now()
 
     return render.Root(
         child = render.Column(
