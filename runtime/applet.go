@@ -294,7 +294,7 @@ func ExtractRoots(val starlark.Value) ([]render.Root, error) {
 
 // RunWithConfig exceutes the applet's main function, passing it configuration as a
 // starlark dict. It returns the render roots that are returned by the applet.
-func (a *Applet) RunWithConfig(ctx context.Context, config map[string]string) (roots []render.Root, err error) {
+func (a *Applet) RunWithConfig(ctx context.Context, config map[string]any) (roots []render.Root, err error) {
 	var args starlark.Tuple
 	if a.mainFun.NumParams() > 0 {
 		starlarkConfig := AppletConfig(config)
@@ -316,7 +316,7 @@ func (a *Applet) RunWithConfig(ctx context.Context, config map[string]string) (r
 
 // CallSchemaHandler calls a schema handler, passing it a single
 // string parameter and returning a single string value.
-func (app *Applet) CallSchemaHandler(ctx context.Context, handlerName, parameter string, config map[string]string) (result string, err error) {
+func (app *Applet) CallSchemaHandler(ctx context.Context, handlerName, parameter string, config map[string]any) (result string, err error) {
 	handler, found := app.Schema.Handlers[handlerName]
 	if !found {
 		return "", fmt.Errorf("no exported handler named '%s'", handlerName)

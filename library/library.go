@@ -72,7 +72,7 @@ func render_app(
 	path := C.GoString(pathPtr)
 	configStr := C.GoString(configPtr)
 
-	var config map[string]string
+	var config map[string]any
 	if err := json.Unmarshal([]byte(configStr), &config); err != nil {
 		return nil, C.int(statusErrInvalidConfig), nil, C.CString(fmt.Sprintf("error parsing config: %v", err))
 	}
@@ -181,7 +181,7 @@ func call_handler(
 ) (*C.char, C.int, *C.char) {
 	path := C.GoString(pathPtr)
 
-	var config map[string]string
+	var config map[string]any
 	if configStr := C.GoString(configPtr); configStr != "" {
 		if err := json.Unmarshal([]byte(configStr), &config); err != nil {
 			return nil, C.int(statusErrInvalidConfig), C.CString(fmt.Sprintf("error parsing config: %v", err))

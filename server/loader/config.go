@@ -11,7 +11,7 @@ import (
 
 type RenderConfig struct {
 	Path          string
-	Config        map[string]string
+	Config        map[string]any
 	Meta          canvas.Metadata
 	MaxDuration   time.Duration
 	Timeout       time.Duration
@@ -22,7 +22,7 @@ type RenderConfig struct {
 	Filters       encode.RenderFilters
 }
 
-func NewRenderConfig(path string, config map[string]string, options ...Option) *RenderConfig {
+func NewRenderConfig(path string, config map[string]any, options ...Option) *RenderConfig {
 	conf := &RenderConfig{
 		Path:   path,
 		Config: config,

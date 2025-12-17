@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -8,7 +9,7 @@ import (
 	"go.starlark.net/starlark"
 )
 
-type AppletConfig map[string]string
+type AppletConfig map[string]any
 
 func (a AppletConfig) AttrNames() []string {
 	return []string{
@@ -33,13 +34,13 @@ func (a AppletConfig) Attr(name string) (starlark.Value, error) {
 }
 
 func (a AppletConfig) Get(key starlark.Value) (starlark.Value, bool, error) {
-	switch v := key.(type) {
-	case starlark.String:
-		val, found := a[v.GoString()]
-		return starlark.String(val), found, nil
-	default:
-		return nil, false, nil
+	if v, ok := key.(starlark.String); ok {
+		if val, found := a[v.GoString()]; found {
+			str, ok := normalizeValue(val)
+			return starlark.String(str), ok, nil
+		}
 	}
+	return nil, false, nil
 }
 
 func (a AppletConfig) String() string       { return "AppletConfig(...)" }
@@ -64,12 +65,12 @@ func (a AppletConfig) getString(thread *starlark.Thread, _ *starlark.Builtin, ar
 		return nil, fmt.Errorf("unpacking arguments for config.str: %v", err)
 	}
 
-	val, ok := a[key.GoString()]
-	if !ok {
-		return def, nil
-	} else {
-		return starlark.String(val), nil
+	if val, ok := a[key.GoString()]; ok {
+		if str, ok := normalizeValue(val); ok {
+			return starlark.String(str), nil
+		}
 	}
+	return def, nil
 }
 
 func (a AppletConfig) getBoolean(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -84,11 +85,35 @@ func (a AppletConfig) getBoolean(thread *starlark.Thread, _ *starlark.Builtin, a
 		return nil, fmt.Errorf("unpacking arguments for config.bool: %v", err)
 	}
 
-	val, ok := a[key.GoString()]
-	if !ok {
-		return def, nil
-	} else {
-		b, _ := strconv.ParseBool(val)
-		return starlark.Bool(b), nil
+	if val, ok := a[key.GoString()]; ok {
+		switch val := val.(type) {
+		case bool:
+			return starlark.Bool(val), nil
+		case string:
+			b, err := strconv.ParseBool(val)
+			return starlark.Bool(b), err
+		default:
+			if str, ok := normalizeValue(val); ok {
+				b, err := strconv.ParseBool(str)
+				return starlark.Bool(b), err
+			}
+		}
 	}
+	return def, nil
+}
+
+func normalizeValue(val any) (string, bool) {
+	if val == nil {
+		return "", false
+	}
+
+	if str, ok := val.(string); ok {
+		return str, true
+	}
+
+	if b, err := json.Marshal(val); err == nil {
+		return string(b), true
+	}
+
+	return fmt.Sprintf("%v", val), true
 }

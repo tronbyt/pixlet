@@ -49,7 +49,7 @@ type Loader struct {
 	fileChanges      chan bool
 	watch            bool
 	applet           runtime.Applet
-	configChanges    chan map[string]string
+	configChanges    chan map[string]any
 	requestedChanges chan bool
 	updatesChan      chan Update
 	resultsChan      chan Update
@@ -87,7 +87,7 @@ func NewLoader(
 		watch:            watch,
 		applet:           runtime.Applet{},
 		updatesChan:      updatesChan,
-		configChanges:    make(chan map[string]string, 100),
+		configChanges:    make(chan map[string]any, 100),
 		requestedChanges: make(chan bool, 100),
 		resultsChan:      make(chan Update, 100),
 		initialLoad:      make(chan bool),
@@ -113,7 +113,7 @@ func NewLoader(
 // and sent out as an update. If there is a file change, we update the applet
 // and send out the update over the updatesChan.
 func (l *Loader) Run(ctx context.Context) error {
-	config := make(map[string]string)
+	config := make(map[string]any)
 
 	for {
 		select {
@@ -273,7 +273,7 @@ func (l *Loader) Location() *time.Location {
 // get each others update. At the time of writing, this method is only called
 // when you refresh a webpage during app development - so it doesn't seem likely
 // that it's going to cause issues in the short term.
-func (l *Loader) LoadApplet(config map[string]string) (string, error) {
+func (l *Loader) LoadApplet(config map[string]any) (string, error) {
 	l.configChanges <- config
 	l.requestedChanges <- true
 	result := <-l.resultsChan
@@ -296,7 +296,7 @@ func (l *Loader) GetSchema() []byte {
 	return b
 }
 
-func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]string, handlerName, parameter string) (string, error) {
+func (l *Loader) CallSchemaHandler(ctx context.Context, config map[string]any, handlerName, parameter string) (string, error) {
 	<-l.initialLoad
 	return l.applet.CallSchemaHandler(ctx, handlerName, parameter, config)
 }
@@ -318,7 +318,7 @@ func (l *Loader) loadApplet() error {
 	return nil
 }
 
-func (l *Loader) renderApplet(ctx context.Context, config map[string]string) (string, error) {
+func (l *Loader) renderApplet(ctx context.Context, config map[string]any) (string, error) {
 	if l.watch {
 		if err := l.loadApplet(); err != nil {
 			return "", err
@@ -394,7 +394,7 @@ func (l *Loader) Meta() canvas.Metadata {
 	return l.conf.Meta
 }
 
-func RenderApplet(path string, config map[string]string, options ...Option) ([]byte, []string, error) {
+func RenderApplet(path string, config map[string]any, options ...Option) ([]byte, []string, error) {
 	conf := NewRenderConfig(path, config, options...)
 
 	opts := []runtime.AppletOption{

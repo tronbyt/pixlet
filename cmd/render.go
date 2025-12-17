@@ -184,7 +184,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		outPath = opts.output
 	}
 
-	config := map[string]string{}
+	config := map[string]any{}
 
 	if opts.configJSON != "" {
 		// Open the JSON file.

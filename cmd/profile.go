@@ -84,7 +84,7 @@ func (u *printUI) SetAutoComplete(complete func(string) string) {}
 func profileRun(args []string, opts *profileOptions) error {
 	path := args[0]
 
-	config := map[string]string{}
+	config := map[string]any{}
 	for _, param := range args[1:] {
 		split := strings.Split(param, "=")
 		if len(split) != 2 {
@@ -110,7 +110,7 @@ func profileRun(args []string, opts *profileOptions) error {
 	return nil
 }
 
-func ProfileApp(path string, config map[string]string, meta canvas.Metadata) (*pprof_profile.Profile, error) {
+func ProfileApp(path string, config map[string]any, meta canvas.Metadata) (*pprof_profile.Profile, error) {
 	cache := runtime.NewInMemoryCache()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)

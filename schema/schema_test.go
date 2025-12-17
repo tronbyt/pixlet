@@ -1264,7 +1264,7 @@ def main():
 	app, err := loadApp(t, code)
 	assert.NoError(t, err)
 
-	config := map[string]string{
+	config := map[string]any{
 		"password": "secret",
 	}
 
