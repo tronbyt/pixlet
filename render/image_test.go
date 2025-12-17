@@ -189,3 +189,35 @@ func TestImageAnimatedGifWithHoldFrames(t *testing.T) {
 	assert.NotEqual(t, img.frameImg(3), img.frameImg(4))
 	assert.Equal(t, img.frameImg(6), img.frameImg(7))
 }
+
+func TestImageSVG(t *testing.T) {
+	// Simple SVG: 10x10, left half red, right half transparent (default)
+	svg := `
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+  <rect x="0" y="0" width="5" height="10" fill="#FF0000"/>
+</svg>
+`
+	img := &Image{Src: svg}
+	err := img.Init(nil)
+	require.NoError(t, err)
+
+	w, h := img.Size()
+	assert.Equal(t, 10, w)
+	assert.Equal(t, 10, h)
+
+	im := PaintWidget(img, image.Rect(0, 0, 0, 0), 0)
+
+	// Expect left half red, right half transparent
+	assert.Equal(t, nil, checkImage([]string{
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+		"rrrrr.....",
+	}, im))
+}
