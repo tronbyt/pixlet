@@ -125,7 +125,7 @@ def main():
 }
 
 func TestRunMainAcceptsConfig(t *testing.T) {
-	config := map[string]string{
+	config := map[string]any{
 		"one":     "1",
 		"two":     "2",
 		"toggle1": "true",
@@ -405,7 +405,7 @@ def main(config):
 	require.NotNil(t, app)
 	_, err = app.RunWithConfig(
 		t.Context(),
-		map[string]string{"ZIP_BYTES": buf.String()},
+		map[string]any{"ZIP_BYTES": buf.String()},
 	)
 	assert.NoError(t, err)
 

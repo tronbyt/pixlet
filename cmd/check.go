@@ -147,7 +147,7 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 		}
 
 		// Check performance.
-		p, err := ProfileApp(path, map[string]string{}, flags.NewMeta().Metadata)
+		p, err := ProfileApp(path, map[string]any{}, flags.NewMeta().Metadata)
 		if err != nil {
 			failure(path, fmt.Errorf("app profiling failed: %w", err), "try `pixlet profile` to debug performance issues")
 			return true
@@ -245,7 +245,6 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 	return nil
 }
 
-
 func success(app string) {
 	c := color.New(color.FgGreen)
 	c.Printf("✔️ %s\n", app)
@@ -276,4 +275,3 @@ func failure(app string, err error, sol string) {
 	fmt.Printf("  ▪️ Problem: %v\n", problem)
 	fmt.Printf("  ▪️ Solution: %v\n", sol)
 }
-

@@ -95,7 +95,7 @@ func (s *Server) Run(ctx context.Context) error {
 		g.Go(func() error {
 			return s.watcher.Run(ctx)
 		})
-		s.loader.LoadApplet(make(map[string]string))
+		s.loader.LoadApplet(make(map[string]any))
 	}
 
 	return g.Wait()

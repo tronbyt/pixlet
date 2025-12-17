@@ -49,9 +49,9 @@ type previewData struct {
 	Err       string `json:"error,omitempty"`
 }
 type handlerRequest struct {
-	Config map[string]string `json:"config"`
-	ID     string            `json:"id"`
-	Param  string            `json:"param"`
+	Config map[string]any `json:"config"`
+	ID     string         `json:"id"`
+	Param  string         `json:"param"`
 }
 
 const renderScaleField = "_renderScale"
@@ -221,7 +221,7 @@ func (b *Browser) imageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config := make(map[string]string)
+	config := make(map[string]any)
 	for k, val := range r.Form {
 		config[k] = val[0]
 	}
@@ -267,7 +267,7 @@ func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config := make(map[string]string)
+	config := make(map[string]any)
 	for k, val := range r.Form {
 		config[k] = val[0]
 	}

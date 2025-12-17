@@ -38,7 +38,7 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(bodyBytes, &result)
 
-	config := make(map[string]string)
+	config := make(map[string]any)
 	for k, val := range result {
 		switch k {
 		case "deviceID":

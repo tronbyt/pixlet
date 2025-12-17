@@ -60,14 +60,14 @@ func NewAPICmd() *cobra.Command {
 }
 
 type renderRequest struct {
-	Path        string            `json:"path"`
-	Config      map[string]string `json:"config"`
-	Width       int               `json:"width"`
-	Height      int               `json:"height"`
-	Magnify     int               `json:"magnify"`
-	ColorFilter string            `json:"color_filter,omitempty"`
-	Output2x    bool              `json:"2x,omitempty"`
-	Locale      string            `json:"locale,omitempty"`
+	Path        string         `json:"path"`
+	Config      map[string]any `json:"config"`
+	Width       int            `json:"width"`
+	Height      int            `json:"height"`
+	Magnify     int            `json:"magnify"`
+	ColorFilter string         `json:"color_filter,omitempty"`
+	Output2x    bool           `json:"2x,omitempty"`
+	Locale      string         `json:"locale,omitempty"`
 }
 
 func validatePath(path string) bool {
