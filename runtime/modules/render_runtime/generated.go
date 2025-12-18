@@ -833,7 +833,8 @@ func newImage(
 		width  starlark.Int
 		height starlark.Int
 
-		hold_frames starlark.Int
+		hold_frames    starlark.Int
+		upscale_method starlark.String
 	)
 
 	if err := starlark.UnpackArgs(
@@ -843,6 +844,7 @@ func newImage(
 		"width?", &width,
 		"height?", &height,
 		"hold_frames?", &hold_frames,
+		"upscale_method?", &upscale_method,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Image: %s", err)
 	}
@@ -869,6 +871,8 @@ func newImage(
 	}
 	w.HoldFrames = int(hold_framesInt)
 
+	w.UpscaleMethod = upscale_method.GoString()
+
 	w.size = starlark.NewBuiltin("size", imageSize)
 	w.frame_count = starlark.NewBuiltin("frame_count", imageFrameCount)
 	if err := w.Init(thread); err != nil {
@@ -889,6 +893,7 @@ func (w *Image) AttrNames() []string {
 		"height",
 		"delay",
 		"hold_frames",
+		"upscale_method",
 	}
 }
 
@@ -904,6 +909,8 @@ func (w *Image) Attr(name string) (starlark.Value, error) {
 		return starlark.MakeInt(int(w.Delay)), nil
 	case "hold_frames":
 		return starlark.MakeInt(int(w.HoldFrames)), nil
+	case "upscale_method":
+		return starlark.String(w.UpscaleMethod), nil
 	case "size":
 		return w.size.BindReceiver(w), nil
 	case "frame_count":

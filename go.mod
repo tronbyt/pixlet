@@ -26,6 +26,7 @@ require (
 	github.com/newm4n/go-dfe v0.0.0-20210113055126-9d5f01722db9
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nlepage/go-tarfs v1.2.1
+	github.com/pokemium/hq2xgo v1.0.0
 	github.com/qri-io/starlib v0.5.1-0.20220611014110-7fb7ff9ec804
 	github.com/redis/go-redis/v9 v9.16.0
 	github.com/rivo/uniseg v0.4.7

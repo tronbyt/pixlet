@@ -8,12 +8,14 @@ import (
 	"image/color"
 	"image/draw"
 	"image/gif"
+	"log/slog"
 
 	// register image formats
 	_ "image/jpeg"
 	_ "image/png"
 
 	"github.com/nfnt/resize"
+	hq2x "github.com/pokemium/hq2xgo"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
 	"github.com/tronbyt/gg"
@@ -36,11 +38,14 @@ import (
 // DOC(Height): Scale image to this height
 // DOC(Delay): (Read-only) Frame delay in ms, for animated GIFs
 // DOC(HoldFrames): Number of render frames to hold each animation frame, default is 1.
+// DOC(UpscaleMethod): Method used to upscale images when rendering to 2x.
 type Image struct {
 	Src           string `starlark:"src,required"`
 	Width, Height int
 	Delay         int `starlark:"delay,readonly"`
 	HoldFrames    int `starlark:"hold_frames"`
+	// TODO: Validate value
+	UpscaleMethod string `starlark:"upscale_method"`
 
 	imgs []image.Image
 }
@@ -185,8 +190,28 @@ func (p *Image) Init(*starlark.Thread) error {
 			nh = int(float64(nw) * (float64(h) / float64(w)))
 		}
 
-		for i := range p.imgs {
-			p.imgs[i] = resize.Resize(uint(nw), uint(nh), p.imgs[i], resize.NearestNeighbor)
+		if p.UpscaleMethod == "hq2x" && nw == w*2 && nh == h*2 {
+			// TODO: Remove this log
+			slog.Info("Using hq2x upscaler")
+			for i := range p.imgs {
+				var rgbaSrc *image.RGBA
+				if src, ok := p.imgs[i].(*image.RGBA); ok {
+					rgbaSrc = src
+				} else {
+					bounds := p.imgs[i].Bounds()
+					rgbaSrc = image.NewRGBA(bounds)
+					draw.Draw(rgbaSrc, bounds, p.imgs[i], image.Point{}, draw.Src)
+				}
+				dst, err := hq2x.HQ2x(rgbaSrc)
+				if err != nil {
+					return err
+				}
+				p.imgs[i] = dst
+			}
+		} else {
+			for i := range p.imgs {
+				p.imgs[i] = resize.Resize(uint(nw), uint(nh), p.imgs[i], resize.NearestNeighbor)
+			}
 		}
 	}
 

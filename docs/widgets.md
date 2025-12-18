@@ -196,6 +196,7 @@ the `delay` attribute.
 | `height` | `int` | Scale image to this height | N |
 | `delay` | `int` | (Read-only) Frame delay in ms, for animated GIFs | N |
 | `hold_frames` | `int` | Number of render frames to hold each animation frame, default is 1. | N |
+| `upscale_method` | `str` | Method used to upscale images when rendering to 2x. | N |
 
 ## Marquee
 Marquee scrolls its child horizontally or vertically.
