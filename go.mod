@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/HugoSmits86/nativewebp v1.2.1
 	github.com/antchfx/xmlquery v1.5.0
-	github.com/bazelbuild/buildtools v0.0.0-20251112105957-8e68360eeafa
+	github.com/bazelbuild/buildtools v0.0.0-20251219084625-9e5607d3130a
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ebitengine/purego v0.9.1
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4
@@ -13,9 +13,9 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gen2brain/webp v0.5.5
 	github.com/gitsight/go-vcsurl v1.0.1
-	github.com/go-git/go-git/v5 v5.16.3
-	github.com/go-playground/validator/v10 v10.28.0
-	github.com/google/pprof v0.0.0-20251007162407-5df77e3f7d1d
+	github.com/go-git/go-git/v5 v5.16.4
+	github.com/go-playground/validator/v10 v10.29.0
+	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f
 	github.com/google/tink/go v1.7.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/lmittmann/tint v1.1.2
@@ -27,23 +27,23 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nlepage/go-tarfs v1.2.1
 	github.com/qri-io/starlib v0.5.1-0.20220611014110-7fb7ff9ec804
-	github.com/redis/go-redis/v9 v9.16.0
+	github.com/redis/go-redis/v9 v9.17.2
 	github.com/rivo/uniseg v0.4.7
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
 	github.com/stretchr/testify v1.11.1
 	github.com/tronbyt/gg v0.0.0-20220808163829-95806fa1d427
-	github.com/tronbyt/go-libwebp v0.0.0-20250308222421-079fb191728f
+	github.com/tronbyt/go-libwebp v0.0.0-20251112225040-cf43c5d662de
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
 	go.starlark.net v0.0.0-20251109183026-be02852a5e1f
-	golang.org/x/image v0.33.0
-	golang.org/x/mod v0.29.0
-	golang.org/x/sync v0.18.0
-	golang.org/x/text v0.31.0
+	golang.org/x/image v0.34.0
+	golang.org/x/mod v0.31.0
+	golang.org/x/sync v0.19.0
+	golang.org/x/text v0.32.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -99,7 +99,7 @@ require (
 	golang.org/x/exp v0.0.0-20250911091902-df9299821621 // indirect
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/tools v0.38.0 // indirect
+	golang.org/x/tools v0.39.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
