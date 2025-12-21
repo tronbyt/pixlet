@@ -11,17 +11,12 @@ RUN npm ci
 COPY frontend .
 RUN npm run build
 
-# Can't use Alpine because of
-# - https://github.com/golang/go/issues/54805: libpixlet.so can't be loaded dynamically
-# - https://github.com/python/cpython/issues/109332: CPython doesn't support musl
-FROM --platform=$BUILDPLATFORM golang:1.25.5 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25.5-alpine AS builder
 WORKDIR /pixlet
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN --mount=type=cache,target=/var/lib/apt/lists <<EOT
+RUN --mount=type=cache,target=/var/cache/apk <<EOT
   set -eux
-  apt-get update
-  apt-get install -y --no-install-recommends \
+  apk add --no-cache \
     ca-certificates \
     clang \
     git \
@@ -35,10 +30,9 @@ RUN go mod download
 COPY --from=xx / /
 
 ARG TARGETPLATFORM
-RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=private <<EOT
+RUN --mount=type=cache,target=/var/cache/apk,sharing=private <<EOT
   set -eux
-  apt-get update
-  xx-apt-get install -y --no-install-recommends gcc g++ libwebp-dev
+  xx-apk add --no-cache gcc g++ libwebp-dev libwebp-static
 EOT
 
 COPY . .
@@ -51,7 +45,5 @@ FROM scratch
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /pixlet/pixlet /bin/pixlet
-COPY --from=builder /pixlet/libpixlet.so /lib/libpixlet.so
-COPY --from=builder /pixlet/libpixlet.h /usr/include/libpixlet/libpixlet.h
 
 ENTRYPOINT ["/bin/pixlet"]
