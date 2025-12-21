@@ -240,16 +240,6 @@ jobs:
           revision: ${{ github.sha }}
           force: false
           no_fork: true
-      - name: Bump libpixlet Homebrew formula
-        uses: dawidd6/action-homebrew-bump-formula@v7
-        with:
-          token: ${{ secrets.HOMEBREW_BUMP_TOKEN }}
-          formula: libpixlet
-          tap: tronbyt/homebrew-tronbyt
-          tag: ${{ inputs.version || github.ref_name }}
-          revision: ${{ github.sha }}
-          force: false
-          no_fork: true
 
   build-and-push-image:
     runs-on: ubuntu-latest

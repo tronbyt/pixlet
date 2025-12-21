@@ -10,11 +10,6 @@ pixlet
 pixlet.exe
 pixlet.wasm
 
-# Pixlet library
-libpixlet.so
-libpixlet.h
-pixlet.dll
-
 # Releases
 build/
 out/

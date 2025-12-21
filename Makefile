@@ -5,12 +5,10 @@ OS = $(shell uname -s)
 
 ifeq ($(OS),Windows_NT)
 	BINARY = pixlet.exe
-	LIBRARY = pixlet.dll
 	LDFLAGS = -ldflags="-s '-extldflags=-static -lsharpyuv' -X 'github.com/tronbyt/pixlet/runtime.Version=$(PIXLET_VERSION)'"
 	TAGS = -tags timetzdata,gzip_fonts
 else
 	BINARY = pixlet
-	LIBRARY = libpixlet.so
 	ifeq ($(STATIC),1)
 		TAGS = -tags netgo,osusergo,gzip_fonts
 		LDFLAGS = -ldflags="-s -w -linkmode=external '-extldflags=-static -lsharpyuv -lm' -X 'github.com/tronbyt/pixlet/runtime.Version=$(PIXLET_VERSION)'"
@@ -38,7 +36,6 @@ bench:
 
 build: gzip_fonts
 	$(GO_CMD) build $(LDFLAGS) $(TAGS) -o $(BINARY) github.com/tronbyt/pixlet
-	CGO_LDFLAGS=$(CGO_LDFLAGS) $(GO_CMD) build $(LDFLAGS) -tags lib,gzip_fonts -o $(LIBRARY) -buildmode=c-shared ./library
 
 widgets:
 	 $(GO_CMD) run ./runtime/gen

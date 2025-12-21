@@ -1,5 +1,3 @@
-//go:build !lib
-
 package frontend
 
 import "embed"
