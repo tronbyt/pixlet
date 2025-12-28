@@ -172,6 +172,25 @@ def main(config):
 	assert.Equal(t, 3, len(roots))
 }
 
+func TestWhileStatement(t *testing.T) {
+	src := `
+load("render.star", "render")
+def main():
+    i = 0
+    while i < 3:
+        i += 1
+    if i != 3:
+        fail("while loop failed")
+    return render.Root(child=render.Box())
+`
+	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	assert.NoError(t, err)
+	assert.NotNil(t, app)
+	roots, err := app.Run(t.Context())
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(roots))
+}
+
 func TestLoadMultipleFiles(t *testing.T) {
 	mainSrc := `
 load("render.star", "render")
