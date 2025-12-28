@@ -578,8 +578,10 @@ func (a *Applet) ensureLoaded(fsys fs.FS, pathToLoad string, currentlyLoading ..
 	case ".star":
 		globals, err := starlark.ExecFileOptions(
 			&syntax.FileOptions{
-				Set:       true,
-				Recursion: true,
+				Set:             true,
+				Recursion:       true,
+				While:           true,
+				TopLevelControl: true,
 			},
 			thread,
 			path.Join(a.ID, pathToLoad),
