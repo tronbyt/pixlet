@@ -102,7 +102,7 @@ func (t *ColorTransform) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx 
 
 	// Create temporary context to render child
 	tempDC := gg.NewContext(childBounds.Dx(), childBounds.Dy())
-	t.Child.Paint(tempDC, bounds, frameIdx)
+t.Child.Paint(tempDC, image.Rect(0, 0, childBounds.Dx(), childBounds.Dy()), frameIdx)
 
 	// Get the rendered image
 	img := tempDC.Image()
