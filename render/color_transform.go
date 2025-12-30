@@ -8,6 +8,13 @@ import (
 	"github.com/tronbyt/gg"
 )
 
+// Luminance weights for RGB to grayscale conversion (ITU-R BT.601 standard)
+const (
+	luminanceRed   = 0.299
+	luminanceGreen = 0.587
+	luminanceBlue  = 0.114
+)
+
 // ColorTransform applies color transformations to its child widget.
 //
 // ColorTransform allows you to modify the appearance of any widget by applying
@@ -129,36 +136,30 @@ func (t *ColorTransform) applyColorTransformations(img image.Image) image.Image 
 	// Get transformation values with defaults
 	// Negative values mean "not set", use 1.0 as default (no change)
 	// 0 is a valid value: 0 brightness = black, 0 saturation = grayscale, 0 opacity = transparent
-	brightness := t.Brightness
-	if brightness < 0 {
-		brightness = 1.0
-	}
-	saturation := t.Saturation
-	if saturation < 0 {
-		saturation = 1.0
-	}
+	brightness := normalizeTransformValue(t.Brightness)
+	saturation := normalizeTransformValue(t.Saturation)
+	opacity := normalizeTransformValue(t.Opacity)
 	hueRotate := t.HueRotate
-	opacity := t.Opacity
-	if opacity < 0 {
-		opacity = 1.0
-	}
+
+	// Pre-calculate flags for which transformations are active
+	applyBrightness := brightness != 1.0
+	applySaturation := saturation != 1.0
+	applyHueRotate := hueRotate != 0
+	applyOpacity := opacity != 1.0
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			c := img.At(x, y)
 			r, g, b, a := c.RGBA()
 
-			// Convert from 16-bit to 8-bit
-			r8 := uint8(r >> 8)
-			g8 := uint8(g >> 8)
-			b8 := uint8(b >> 8)
-			a8 := uint8(a >> 8)
+			// Skip fully transparent pixels if opacity transformation isn't reducing it further
+			if a == 0 && opacity >= 1.0 {
+				result.SetRGBA(x, y, color.RGBA{R: 0, G: 0, B: 0, A: 0})
+				continue
+			}
 
 			// Convert to float for calculations
-			rf := float64(r8) / 255.0
-			gf := float64(g8) / 255.0
-			bf := float64(b8) / 255.0
-			af := float64(a8) / 255.0
+			rf, gf, bf, af := rgba16ToFloat(r, g, b, a)
 
 			// Apply invert
 			if t.Invert {
@@ -168,16 +169,16 @@ func (t *ColorTransform) applyColorTransformations(img image.Image) image.Image 
 			}
 
 			// Apply brightness
-			if brightness != 1.0 {
+			if applyBrightness {
 				rf *= brightness
 				gf *= brightness
 				bf *= brightness
 			}
 
 			// Apply saturation
-			if saturation != 1.0 {
-				// Convert to grayscale using luminance weights
-				gray := 0.299*rf + 0.587*gf + 0.114*bf
+			if applySaturation {
+				// Convert to grayscale using standard luminance weights
+				gray := luminanceRed*rf + luminanceGreen*gf + luminanceBlue*bf
 				// Interpolate between grayscale and original
 				rf = gray + saturation*(rf-gray)
 				gf = gray + saturation*(gf-gray)
@@ -185,16 +186,14 @@ func (t *ColorTransform) applyColorTransformations(img image.Image) image.Image 
 			}
 
 			// Apply hue rotation
-			if hueRotate != 0 {
+			if applyHueRotate {
 				rf, gf, bf = rotateHue(rf, gf, bf, hueRotate)
 			}
 
 			// Apply tint
 			if t.Tint != nil {
 				tr, tg, tb, _ := t.Tint.RGBA()
-				trf := float64(tr>>8) / 255.0
-				tgf := float64(tg>>8) / 255.0
-				tbf := float64(tb>>8) / 255.0
+				trf, tgf, tbf, _ := rgba16ToFloat(tr, tg, tb, 0)
 
 				// Blend original with tint (multiply blend mode)
 				rf *= trf
@@ -203,7 +202,7 @@ func (t *ColorTransform) applyColorTransformations(img image.Image) image.Image 
 			}
 
 			// Apply opacity
-			if opacity != 1.0 {
+			if applyOpacity {
 				af *= opacity
 			}
 
@@ -220,17 +219,16 @@ func (t *ColorTransform) applyColorTransformations(img image.Image) image.Image 
 	return result
 }
 
-// rotateHue rotates the hue of an RGB color by the given degrees
+// rotateHue rotates the hue of an RGB color by the specified degrees.
+// This is done by converting to HSL color space, rotating the hue component,
+// and converting back to RGB.
 func rotateHue(r, g, b, degrees float64) (float64, float64, float64) {
 	// Convert RGB to HSL
 	h, s, l := rgbToHSL(r, g, b)
 
-	// Rotate hue
-	h += degrees
-	for h >= 360 {
-		h -= 360
-	}
-	for h < 0 {
+	// Rotate hue and normalize to [0, 360)
+	h = math.Mod(h+degrees, 360)
+	if h < 0 {
 		h += 360
 	}
 
@@ -238,7 +236,8 @@ func rotateHue(r, g, b, degrees float64) (float64, float64, float64) {
 	return hslToRGB(h, s, l)
 }
 
-// rgbToHSL converts RGB (0-1) to HSL (H: 0-360, S: 0-1, L: 0-1)
+// rgbToHSL converts RGB color space (each component 0-1) to HSL color space
+// (H: 0-360 degrees, S: 0-1, L: 0-1). This uses the standard HSL conversion algorithm.
 func rgbToHSL(r, g, b float64) (h, s, l float64) {
 	max := math.Max(math.Max(r, g), b)
 	min := math.Min(math.Min(r, g), b)
@@ -273,7 +272,9 @@ func rgbToHSL(r, g, b float64) (h, s, l float64) {
 	return h, s, l
 }
 
-// hslToRGB converts HSL (H: 0-360, S: 0-1, L: 0-1) to RGB (0-1)
+// hslToRGB converts HSL color space (H: 0-360 degrees, S: 0-1, L: 0-1)
+// back to RGB color space (each component 0-1). This uses the standard HSL to RGB
+// conversion algorithm.
 func hslToRGB(h, s, l float64) (r, g, b float64) {
 	if s == 0 {
 		// Achromatic
@@ -297,13 +298,14 @@ func hslToRGB(h, s, l float64) (r, g, b float64) {
 	return r, g, b
 }
 
-// hueToRGB is a helper function for HSL to RGB conversion
+// hueToRGB is a helper function for HSL to RGB conversion that calculates
+// the RGB component value based on the temporary values p and q, and the
+// adjusted hue value t.
 func hueToRGB(p, q, t float64) float64 {
-	for t < 0 {
+	// Normalize t to [0, 360)
+	t = math.Mod(t, 360)
+	if t < 0 {
 		t += 360
-	}
-	for t >= 360 {
-		t -= 360
 	}
 
 	if t < 60 {
@@ -318,7 +320,24 @@ func hueToRGB(p, q, t float64) float64 {
 	return p
 }
 
-// clampFloat clamps a float64 value to [0, 1] and converts to uint8
+// normalizeTransformValue returns 1.0 (no change) if the value is negative (indicating "not set"),
+// otherwise returns the value as-is. This allows 0 to be a valid transformation value while
+// using negative values as a sentinel for "use default".
+func normalizeTransformValue(value float64) float64 {
+	if value < 0 {
+		return 1.0
+	}
+	return value
+}
+
+// rgba16ToFloat converts 16-bit RGBA values (as returned by color.Color.RGBA())
+// to normalized float64 values in the range [0, 1] for easier color manipulation.
+func rgba16ToFloat(r, g, b, a uint32) (float64, float64, float64, float64) {
+	return float64(r>>8) / 255.0, float64(g>>8) / 255.0, float64(b>>8) / 255.0, float64(a>>8) / 255.0
+}
+
+// clampFloat clamps a float64 value to the range [0, 1] and converts it to
+// a uint8 value in the range [0, 255] for use in color.RGBA.
 func clampFloat(f float64) uint8 {
 	if f < 0 {
 		return 0
