@@ -57,6 +57,7 @@ func LoadRenderModule() (starlark.StringDict, error) {
 					"Sequence":    starlark.NewBuiltin("Sequence", newSequence),
 					"Stack":       starlark.NewBuiltin("Stack", newStack),
 					"Text":        starlark.NewBuiltin("Text", newText),
+					"ColorTransform":   starlark.NewBuiltin("ColorTransform", newColorTransform),
 					"WrappedText": starlark.NewBuiltin("WrappedText", newWrappedText),
 				},
 			},
@@ -2391,6 +2392,217 @@ func textFrameCount(
 	}
 
 	w := b.Receiver().(*Text)
+	count := w.FrameCount(r)
+
+	return starlark.MakeInt(count), nil
+}
+
+type ColorTransform struct {
+	render.ColorTransform
+	starlarkChild      starlark.Value
+	starlarkBrightness starlark.Value
+	starlarkSaturation starlark.Value
+	starlarkHueRotate  starlark.Value
+	starlarkOpacity    starlark.Value
+	starlarkTint       starlark.String
+	frame_count        *starlark.Builtin
+}
+
+func newColorTransform(
+	thread *starlark.Thread,
+	_ *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple,
+) (starlark.Value, error) {
+	var (
+		child      starlark.Value
+		brightness starlark.Value
+		saturation starlark.Value
+		hue_rotate starlark.Value
+		opacity    starlark.Value
+		invert     starlark.Bool
+		tint       starlark.String
+	)
+
+	if err := starlark.UnpackArgs(
+		"ColorTransform",
+		args, kwargs,
+		"child", &child,
+		"brightness?", &brightness,
+		"saturation?", &saturation,
+		"hue_rotate?", &hue_rotate,
+		"opacity?", &opacity,
+		"invert?", &invert,
+		"tint?", &tint,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for ColorTransform: %s", err)
+	}
+
+	w := &ColorTransform{}
+
+	if child != nil {
+		childWidget, ok := child.(Widget)
+		if !ok {
+			return nil, fmt.Errorf(
+				"invalid type for child: %s (expected Widget)",
+				child.Type(),
+			)
+		}
+		w.Child = childWidget.AsRenderWidget()
+		w.starlarkChild = child
+	}
+
+	w.starlarkBrightness = brightness
+	if brightness != nil {
+		if val, ok := starlark.AsFloat(w.starlarkBrightness); ok {
+			w.Brightness = val
+		} else {
+			return nil, fmt.Errorf("expected number, but got: %s", w.starlarkBrightness.String())
+		}
+	} else {
+		// Default: -1 means "not set", will be treated as 1.0 (no change)
+		w.Brightness = -1.0
+	}
+
+	w.starlarkSaturation = saturation
+	if saturation != nil {
+		if val, ok := starlark.AsFloat(w.starlarkSaturation); ok {
+			w.Saturation = val
+		} else {
+			return nil, fmt.Errorf("expected number, but got: %s", w.starlarkSaturation.String())
+		}
+	} else {
+		// Default: -1 means "not set", will be treated as 1.0 (no change)
+		w.Saturation = -1.0
+	}
+
+	w.starlarkHueRotate = hue_rotate
+	if hue_rotate != nil {
+		if val, ok := starlark.AsFloat(w.starlarkHueRotate); ok {
+			w.HueRotate = val
+		} else {
+			return nil, fmt.Errorf("expected number, but got: %s", w.starlarkHueRotate.String())
+		}
+	}
+	// hue_rotate defaults to 0 (no rotation), which is correct
+
+	w.starlarkOpacity = opacity
+	if opacity != nil {
+		if val, ok := starlark.AsFloat(w.starlarkOpacity); ok {
+			w.Opacity = val
+		} else {
+			return nil, fmt.Errorf("expected number, but got: %s", w.starlarkOpacity.String())
+		}
+	} else {
+		// Default: -1 means "not set", will be treated as 1.0 (fully opaque)
+		w.Opacity = -1.0
+	}
+
+	w.Invert = bool(invert)
+
+	w.starlarkTint = tint
+	if tint.Len() > 0 {
+		c, err := render.ParseColor(tint.GoString())
+		if err != nil {
+			return nil, fmt.Errorf("tint is not a valid hex string: %s", tint.String())
+		}
+		w.Tint = c
+	}
+
+	w.frame_count = starlark.NewBuiltin("frame_count", transformFrameCount)
+
+	return w, nil
+}
+
+func (w *ColorTransform) AsRenderWidget() render.Widget {
+	return &w.ColorTransform
+}
+
+func (w *ColorTransform) AttrNames() []string {
+	return []string{
+		"child",
+		"brightness",
+		"saturation",
+		"hue_rotate",
+		"opacity",
+		"invert",
+		"tint",
+	}
+}
+
+func (w *ColorTransform) Attr(name string) (starlark.Value, error) {
+	switch name {
+	case "child":
+		return w.starlarkChild, nil
+	case "brightness":
+		return w.starlarkBrightness, nil
+	case "saturation":
+		return w.starlarkSaturation, nil
+	case "hue_rotate":
+		return w.starlarkHueRotate, nil
+	case "opacity":
+		return w.starlarkOpacity, nil
+	case "invert":
+		return starlark.Bool(w.Invert), nil
+	case "tint":
+		return w.starlarkTint, nil
+	case "frame_count":
+		return w.frame_count.BindReceiver(w), nil
+	default:
+		return nil, nil
+	}
+}
+
+func (w *ColorTransform) String() string       { return "ColorTransform(...)" }
+func (w *ColorTransform) Type() string         { return "ColorTransform" }
+func (w *ColorTransform) Freeze()              {}
+func (w *ColorTransform) Truth() starlark.Bool { return true }
+
+func (w *ColorTransform) Hash() (uint32, error) {
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	return uint32(sum), err
+}
+
+func transformFrameCount(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+
+	var (
+		bounds starlark.Tuple
+	)
+
+	if err := starlark.UnpackArgs(
+		"frame_count",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for frame_count: %s", err)
+	}
+
+	r := image.Rect(0, 0, 64, 32)
+	if bounds != nil && bounds.Len() == 4 {
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
+	w := b.Receiver().(*ColorTransform)
 	count := w.FrameCount(r)
 
 	return starlark.MakeInt(count), nil

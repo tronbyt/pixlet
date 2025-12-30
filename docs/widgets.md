@@ -98,6 +98,57 @@ render.Circle(
 ```
 ![](img/widget_Circle_0.gif)
 
+## ColorTransform
+ColorTransform applies color transformations to its child widget.
+
+ColorTransform allows you to modify the appearance of any widget by applying
+various color and appearance effects. This is useful for creating effects
+like silhouettes, grayscale images, color overlays, and more.
+
+All transformation parameters are optional and can be combined.
+
+#### Attributes
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| `child` | `Widget` | Widget to apply transformations to | **Y** |
+| `brightness` | `float / int` | Brightness multiplier (0=black, 1=normal, >1=brighter) | N |
+| `saturation` | `float / int` | Color saturation (0=grayscale, 1=normal) | N |
+| `hue_rotate` | `float / int` | Hue rotation in degrees (0-360) | N |
+| `opacity` | `float / int` | Opacity/transparency (0=invisible, 1=opaque) | N |
+| `invert` | `bool` | Whether to invert all colors | N |
+| `tint` | `color` | Color to blend with the image | N |
+
+#### Example
+```
+# Create a black silhouette (on white background)
+render.ColorTransform(
+    child=render.Image(src = BTC_ICON),
+    brightness=0.0,
+)
+```
+![](img/widget_ColorTransform_0.png)
+
+#### Example
+```
+# Grayscale with transparency
+render.ColorTransform(
+    child=render.Image(src = BTC_ICON),
+    saturation=0.0,
+    opacity=0.5,
+)
+```
+![](img/widget_ColorTransform_1.png)
+
+#### Example
+```
+# Red tint
+render.ColorTransform(
+    child=render.Image(src = BTC_ICON),
+    hue_rotate=90,
+),
+```
+![](img/widget_ColorTransform_2.png)
+
 ## Column
 Column lays out and draws its children vertically (in a column).
 

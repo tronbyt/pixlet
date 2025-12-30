@@ -86,6 +86,7 @@ var Packages = []Package{
 			reflect.ValueOf(new(render.Sequence)),
 			reflect.ValueOf(new(render.Stack)),
 			reflect.ValueOf(new(render.Text)),
+			reflect.ValueOf(new(render.ColorTransform)),
 			reflect.ValueOf(new(render.WrappedText)),
 		},
 	},
