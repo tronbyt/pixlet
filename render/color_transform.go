@@ -33,9 +33,9 @@ const (
 //
 // EXAMPLE BEGIN
 //
-//	# Create a black silhouette
+//	# Create a black silhouette (on white background)
 //	render.ColorTransform(
-//	    child=render.Image(src=icon_data),
+//	    child=render.Image(src = BTC_ICON),
 //	    brightness=0.0,
 //	)
 //
@@ -45,7 +45,7 @@ const (
 //
 //	# Grayscale with transparency
 //	render.ColorTransform(
-//	    child=render.Text("Hello"),
+//	    child=render.Image(src = BTC_ICON),
 //	    saturation=0.0,
 //	    opacity=0.5,
 //	)
@@ -54,12 +54,11 @@ const (
 //
 // EXAMPLE BEGIN
 //
-//	# Red tint with hue shift
+//	# Red tint
 //	render.ColorTransform(
-//	    child=render.Box(width=20, height=20, color="#0f0"),
-//	    tint="#ff0000",
-//	    hue_rotate=180,
-//	)
+//	    child=render.Image(src = BTC_ICON),
+//	    hue_rotate=90,
+//	),
 //
 // EXAMPLE END
 type ColorTransform struct {
@@ -109,7 +108,7 @@ func (t *ColorTransform) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx 
 
 	// Create temporary context to render child
 	tempDC := gg.NewContext(childBounds.Dx(), childBounds.Dy())
-t.Child.Paint(tempDC, image.Rect(0, 0, childBounds.Dx(), childBounds.Dy()), frameIdx)
+	t.Child.Paint(tempDC, image.Rect(0, 0, childBounds.Dx(), childBounds.Dy()), frameIdx)
 
 	// Get the rendered image
 	img := tempDC.Image()

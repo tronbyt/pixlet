@@ -125,8 +125,10 @@ render.ColorTransform(
     child=render.Image(src = BTC_ICON),
     brightness=0.0,
 )
+
+#
 ```
-![](img/widget_ColorTransform_0.png)
+![](img/widget_ColorTransform_0.gif)
 
 #### Example
 ```
@@ -136,8 +138,10 @@ render.ColorTransform(
     saturation=0.0,
     opacity=0.5,
 )
+
+#
 ```
-![](img/widget_ColorTransform_1.png)
+![](img/widget_ColorTransform_1.gif)
 
 #### Example
 ```
@@ -147,7 +151,7 @@ render.ColorTransform(
     hue_rotate=90,
 ),
 ```
-![](img/widget_ColorTransform_2.png)
+![](img/widget_ColorTransform_2.gif)
 
 ## Column
 Column lays out and draws its children vertically (in a column).
