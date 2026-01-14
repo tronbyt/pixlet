@@ -5,6 +5,7 @@ go 1.25.5
 require (
 	github.com/HugoSmits86/nativewebp v1.2.1
 	github.com/antchfx/xmlquery v1.5.0
+	github.com/anthonynsimon/bild v0.14.0
 	github.com/bazelbuild/buildtools v0.0.0-20251219084625-9e5607d3130a
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ebitengine/purego v0.9.1
