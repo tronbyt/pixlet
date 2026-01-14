@@ -12,7 +12,7 @@ for i, {{ .StarlarkName}}Val := range iterutil.Enumerate({{ .StarlarkName }}.Ele
 		)
 	}
 
-	w.{{ .GoName }} = append(w.{{ .GoName }}, {{ .StarlarkName }}Child.AsRenderWidget())
+	w.{{ .GoPath }} = append(w.{{ .GoPath }}, {{ .StarlarkName }}Child.AsRenderWidget())
 }
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 {{- end }}

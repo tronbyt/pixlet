@@ -24,6 +24,7 @@ import (
 
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/render/animation"
+	"github.com/tronbyt/pixlet/render/filter"
 )
 
 //go:embed *.tmpl */*.tmpl
@@ -110,6 +111,37 @@ var Packages = []Package{
 
 			// Legacy
 			reflect.ValueOf(new(animation.AnimatedPositioned)),
+		},
+	},
+	{
+		Name:           "filter",
+		Directory:      "render/filter",
+		ImportPath:     "github.com/tronbyt/pixlet/render/filter",
+		HeaderTemplate: "header/filters.tmpl",
+		TypeTemplate:   "type.tmpl",
+		CodePath:       "runtime/modules/filter_runtime/generated.go",
+		DocTemplate:    "docs/filters.tmpl",
+		DocPath:        "docs/filters.md",
+		GoRootName:     "render_runtime.Root",
+		GoWidgetName:   "render_runtime.Widget",
+		Types: []reflect.Value{
+			reflect.ValueOf(new(filter.Blur)),
+			reflect.ValueOf(new(filter.Brightness)),
+			reflect.ValueOf(new(filter.Contrast)),
+			reflect.ValueOf(new(filter.EdgeDetection)),
+			reflect.ValueOf(new(filter.Emboss)),
+			reflect.ValueOf(new(filter.FlipHorizontal)),
+			reflect.ValueOf(new(filter.FlipVertical)),
+			reflect.ValueOf(new(filter.Gamma)),
+			reflect.ValueOf(new(filter.Grayscale)),
+			reflect.ValueOf(new(filter.Hue)),
+			reflect.ValueOf(new(filter.Invert)),
+			reflect.ValueOf(new(filter.Rotate)),
+			reflect.ValueOf(new(filter.Saturation)),
+			reflect.ValueOf(new(filter.Sepia)),
+			reflect.ValueOf(new(filter.Sharpen)),
+			reflect.ValueOf(new(filter.Shear)),
+			reflect.ValueOf(new(filter.Threshold)),
 		},
 	},
 }
@@ -250,6 +282,7 @@ var TypeMap = map[reflect.Type]Type{
 // This definition is passed to the templating engine.
 type GeneratedAttr struct {
 	GoName        string
+	GoPath        string
 	GoType        string
 	GoWidgetName  string
 	StarlarkName  string
@@ -303,7 +336,12 @@ func allFields(val reflect.Value) []reflect.StructField {
 func toGeneratedAttribute(typ reflect.Type, field reflect.StructField) (*GeneratedAttr, error) {
 	result := &GeneratedAttr{
 		GoName:       field.Name,
+		GoPath:       field.Name,
 		StarlarkName: strings.ToLower(field.Name),
+	}
+
+	if field.Name == typ.Name() {
+		result.GoPath = typ.Name() + "." + field.Name
 	}
 
 	// Fields can be tagged `starlark:"<name>[<param>...]"` to control the attribute name in Starlark.

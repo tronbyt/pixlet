@@ -1,6 +1,6 @@
 {{ if not .IsReadOnly }}
 if val, err := starlark.AsInt32({{ .StarlarkName }}); err == nil {
-	w.{{ .GoName }} = int32(val)
+	w.{{ .GoPath }} = int32(val)
 } else {
 	return nil, err
 }

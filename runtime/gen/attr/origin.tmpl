@@ -1,9 +1,9 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 if {{ .StarlarkName }} == nil {
-	w.{{ .GoName }} = animation.DefaultOrigin
+	w.{{ .GoPath }} = animation.DefaultOrigin
 } else if val, ok := {{ .StarlarkName }}.(*Origin); ok {
-	w.{{ .GoName }} = val.Origin
+	w.{{ .GoPath }} = val.Origin
 } else {
 	return nil, fmt.Errorf("invalid type for origin: %s (expected Origin)", {{ .StarlarkName }}.Type())
 }

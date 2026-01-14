@@ -5,6 +5,6 @@ if {{ .StarlarkName }}.Len() > 0 {
 	if err != nil {
 		return nil, fmt.Errorf("{{ .StarlarkName }} is not a valid hex string: %s", {{ .StarlarkName }}.String())
 	}
-	w.{{ .GoName }} = c
+	w.{{ .GoPath }} = c
 }
 {{- end }}

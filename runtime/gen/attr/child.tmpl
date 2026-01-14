@@ -7,7 +7,7 @@ if {{ .StarlarkName }} != nil {
 			{{ .StarlarkName }}.Type(),
 		)
 	}
-	w.{{ .GoName }} = {{ .StarlarkName }}Widget.AsRenderWidget()
+	w.{{ .GoPath }} = {{ .StarlarkName }}Widget.AsRenderWidget()
 	w.starlark{{ .GoName }} = {{ .StarlarkName }}
 }
 {{- end }}

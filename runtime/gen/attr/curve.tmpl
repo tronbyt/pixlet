@@ -1,9 +1,9 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 if {{ .StarlarkName }} == nil {
-	w.{{ .GoName }} = animation.DefaultCurve
+	w.{{ .GoPath }} = animation.DefaultCurve
 } else if val, err := CurveFromStarlark({{ .StarlarkName }}); err == nil {
-	w.{{ .GoName }} = val
+	w.{{ .GoPath }} = val
 } else {
 	return nil, err
 }

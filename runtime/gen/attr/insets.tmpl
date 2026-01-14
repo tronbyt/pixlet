@@ -6,10 +6,10 @@ case starlark.Int:
 	if err != nil {
 		return nil, fmt.Errorf("parsing {{ .StarlarkName }}: %w", err)
 	}
-	w.{{ .GoName }}.Left = int({{ .StarlarkName }}Int)
-	w.{{ .GoName }}.Top = int({{ .StarlarkName }}Int)
-	w.{{ .GoName }}.Right = int({{ .StarlarkName }}Int)
-	w.{{ .GoName }}.Bottom = int({{ .StarlarkName }}Int)
+	w.{{ .GoPath }}.Left = int({{ .StarlarkName }}Int)
+	w.{{ .GoPath }}.Top = int({{ .StarlarkName }}Int)
+	w.{{ .GoPath }}.Right = int({{ .StarlarkName }}Int)
+	w.{{ .GoPath }}.Bottom = int({{ .StarlarkName }}Int)
 case starlark.Tuple:
 	{{ .StarlarkName }}List := []starlark.Value({{ .StarlarkName }}Val)
 	if len({{ .StarlarkName }}List) != 4 {
@@ -30,10 +30,10 @@ case starlark.Tuple:
 		}
 		{{ .StarlarkName }}ListInt[i] = int({{ .StarlarkName }}Int)
 	}
-	w.{{ .GoName }}.Left = {{ .StarlarkName }}ListInt[0]
-	w.{{ .GoName }}.Top = {{ .StarlarkName }}ListInt[1]
-	w.{{ .GoName }}.Right = {{ .StarlarkName }}ListInt[2]
-	w.{{ .GoName }}.Bottom = {{ .StarlarkName }}ListInt[3]
+	w.{{ .GoPath }}.Left = {{ .StarlarkName }}ListInt[0]
+	w.{{ .GoPath }}.Top = {{ .StarlarkName }}ListInt[1]
+	w.{{ .GoPath }}.Right = {{ .StarlarkName }}ListInt[2]
+	w.{{ .GoPath }}.Bottom = {{ .StarlarkName }}ListInt[3]
 default:
 	return nil, fmt.Errorf("{{ .StarlarkName }} must be int or 4-tuple of int")
 }

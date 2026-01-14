@@ -29,6 +29,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/animation_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
 	"github.com/tronbyt/pixlet/runtime/modules/file"
+	"github.com/tronbyt/pixlet/runtime/modules/filter_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/hmac"
 	"github.com/tronbyt/pixlet/runtime/modules/humanize"
 	"github.com/tronbyt/pixlet/runtime/modules/i18n_runtime"
@@ -816,6 +817,9 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 
 	case "assert.star":
 		return starlarktest.LoadAssertModule()
+
+	case "filter.star":
+		return filter_runtime.LoadModule()
 
 	default:
 		return nil, fmt.Errorf("invalid module: %s", module)

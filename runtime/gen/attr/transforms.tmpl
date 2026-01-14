@@ -3,11 +3,11 @@ w.starlark{{ .GoName }} = {{ .StarlarkName }}
 for i := range {{ .StarlarkName }}.Len() {
 	switch {{ .StarlarkName }}Val := {{ .StarlarkName }}.Index(i).(type) {
 	case *Translate:
-		w.{{ .GoName }} = append(w.{{ .GoName }}, {{ .StarlarkName }}Val.Translate)
+		w.{{ .GoPath }} = append(w.{{ .GoPath }}, {{ .StarlarkName }}Val.Translate)
 	case *Scale:
-		w.{{ .GoName }} = append(w.{{ .GoName }}, {{ .StarlarkName }}Val.Scale)
+		w.{{ .GoPath }} = append(w.{{ .GoPath }}, {{ .StarlarkName }}Val.Scale)
 	case *Rotate:
-		w.{{ .GoName }} = append(w.{{ .GoName }}, {{ .StarlarkName }}Val.Rotate)
+		w.{{ .GoPath }} = append(w.{{ .GoPath }}, {{ .StarlarkName }}Val.Rotate)
 	default:
 		return nil, fmt.Errorf("expected transform, but got '%s'", {{ .StarlarkName }}Val.Type())
 	}
