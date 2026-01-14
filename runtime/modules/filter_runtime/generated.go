@@ -942,7 +942,7 @@ func flipverticalFrameCount(
 type Gamma struct {
 	filter.Gamma
 	starlarkWidget starlark.Value
-	starlarkValue  starlark.Value
+	starlarkGamma  starlark.Value
 	frame_count    *starlark.Builtin
 }
 
@@ -980,11 +980,11 @@ func newGamma(
 		w.starlarkWidget = child
 	}
 
-	w.starlarkValue = gamma
-	if val, ok := starlark.AsFloat(w.starlarkValue); ok {
-		w.Value = val
+	w.starlarkGamma = gamma
+	if val, ok := starlark.AsFloat(w.starlarkGamma); ok {
+		w.Gamma.Gamma = val
 	} else {
-		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkValue.String())
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkGamma.String())
 	}
 
 	w.frame_count = starlark.NewBuiltin("frame_count", gammaFrameCount)
@@ -1008,7 +1008,7 @@ func (w *Gamma) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "gamma":
-		return w.starlarkValue, nil
+		return w.starlarkGamma, nil
 	case "frame_count":
 		return w.frame_count.BindReceiver(w), nil
 	default:

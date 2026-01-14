@@ -282,6 +282,7 @@ var TypeMap = map[reflect.Type]Type{
 // This definition is passed to the templating engine.
 type GeneratedAttr struct {
 	GoName        string
+	GoPath        string
 	GoType        string
 	GoWidgetName  string
 	StarlarkName  string
@@ -335,7 +336,12 @@ func allFields(val reflect.Value) []reflect.StructField {
 func toGeneratedAttribute(typ reflect.Type, field reflect.StructField) (*GeneratedAttr, error) {
 	result := &GeneratedAttr{
 		GoName:       field.Name,
+		GoPath:       field.Name,
 		StarlarkName: strings.ToLower(field.Name),
+	}
+
+	if field.Name == typ.Name() {
+		result.GoPath = typ.Name() + "." + field.Name
 	}
 
 	// Fields can be tagged `starlark:"<name>[<param>...]"` to control the attribute name in Starlark.

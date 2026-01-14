@@ -2,11 +2,11 @@
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 switch {{ .StarlarkName }} {
 case "forwards":
-	w.{{ .GoName }} = animation.FillModeForwards{}
+	w.{{ .GoPath }} = animation.FillModeForwards{}
 case "backwards":
-	w.{{ .GoName }} = animation.FillModeBackwards{}
+	w.{{ .GoPath }} = animation.FillModeBackwards{}
 case "":
-	w.{{ .GoName }} = animation.DefaultFillMode
+	w.{{ .GoPath }} = animation.DefaultFillMode
 default:
 	return nil, fmt.Errorf("invalid type for fill_mode: %s (expected 'forwards' or 'backwards')", {{ .StarlarkName }}.Type())
 }

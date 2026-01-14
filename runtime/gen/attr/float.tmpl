@@ -1,7 +1,7 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 if val, ok := starlark.AsFloat(w.starlark{{ .GoName }}); ok {
-	w.{{ .GoName }} = val
+	w.{{ .GoPath }} = val
 } else {
 	return nil, fmt.Errorf("expected number, but got: %s", w.starlark{{ .GoName }}.String())
 }

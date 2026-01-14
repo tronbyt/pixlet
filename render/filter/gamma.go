@@ -11,7 +11,7 @@ import (
 // Gamma applies gamma correction to the child widget.
 //
 // DOC(Widget): The widget to apply gamma correction to.
-// DOC(Value): The gamma value. 1.0 is no change, < 1.0 darkens, > 1.0 lightens.
+// DOC(Gamma): The gamma value. 1.0 is no change, < 1.0 darkens, > 1.0 lightens.
 //
 // EXAMPLE BEGIN
 //
@@ -23,11 +23,11 @@ import (
 // EXAMPLE END
 type Gamma struct {
 	render.Widget `starlark:"child,required"`
-	Value         float64 `starlark:"gamma,required"`
+	Gamma         float64 `starlark:"gamma,required"`
 }
 
 func (g Gamma) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	paint(dc, g.Widget, bounds, frameIdx, func(img image.Image) image.Image {
-		return adjust.Gamma(img, g.Value)
+		return adjust.Gamma(img, g.Gamma)
 	})
 }

@@ -3,5 +3,5 @@
 if err != nil {
 	return nil, fmt.Errorf("parsing {{ .StarlarkName }}: %w", err)
 }
-w.{{ .GoName }} = int({{ .StarlarkName }}Int)
+w.{{ .GoPath }} = int({{ .StarlarkName }}Int)
 {{- end }}

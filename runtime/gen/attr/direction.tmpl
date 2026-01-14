@@ -2,15 +2,15 @@
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 switch {{ .StarlarkName }} {
 case "normal":
-	w.{{ .GoName }} = animation.DirectionNormal
+	w.{{ .GoPath }} = animation.DirectionNormal
 case "reverse":
-	w.{{ .GoName }} = animation.DirectionReverse
+	w.{{ .GoPath }} = animation.DirectionReverse
 case "alternate":
-	w.{{ .GoName }} = animation.DirectionAlternate
+	w.{{ .GoPath }} = animation.DirectionAlternate
 case "alternate-reverse":
-	w.{{ .GoName }} = animation.DirectionAlternateReverse
+	w.{{ .GoPath }} = animation.DirectionAlternateReverse
 case "":
-	w.{{ .GoName }} = animation.DefaultDirection
+	w.{{ .GoPath }} = animation.DefaultDirection
 default:
 	return nil, fmt.Errorf("invalid type for direction: %s (expected 'normal', 'reverse', 'alternate' or 'alternate-reverse')", {{ .StarlarkName }}.Type())
 }

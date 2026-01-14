@@ -1,7 +1,7 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 if val, err := DataSeriesFromStarlark({{ .StarlarkName }}); err == nil {
-	w.{{ .GoName }} = val
+	w.{{ .GoPath }} = val
 } else {
 	return nil, err
 }
