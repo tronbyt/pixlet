@@ -38,3 +38,25 @@ func paint(dc *gg.Context, w render.Widget, bounds image.Rectangle, frameIdx int
 	// Draw the result onto the main context
 	dc.DrawImage(res, dx, dy)
 }
+
+func paintWithTransform(dc *gg.Context, w render.Widget, bounds image.Rectangle, frameIdx int, applyTransform func(dc *gg.Context)) {
+	cb := w.PaintBounds(bounds, frameIdx)
+
+	cx := float64(bounds.Min.X) + float64(bounds.Dx())/2.0
+	cy := float64(bounds.Min.Y) + float64(bounds.Dy())/2.0
+
+	dc.Push()
+	defer dc.Pop()
+
+	// Center transform origin
+	dc.Translate(cx, cy)
+
+	// Apply the specific transformation
+	applyTransform(dc)
+
+	// Translate to child's origin
+	dc.Translate(float64(-cb.Dx())/2.0, float64(-cb.Dy())/2.0)
+
+	// Paint child at (0,0) relative to the transformed origin
+	w.Paint(dc, image.Rect(0, 0, cb.Dx(), cb.Dy()), frameIdx)
+}

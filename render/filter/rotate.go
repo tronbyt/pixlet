@@ -46,21 +46,7 @@ func (r Rotate) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangl
 }
 
 func (r Rotate) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
-	cb := r.Widget.PaintBounds(bounds, frameIdx)
-
-	// Calculate center of the provided (expanded) bounds
-	cx := float64(bounds.Min.X) + float64(bounds.Dx())/2.0
-	cy := float64(bounds.Min.Y) + float64(bounds.Dy())/2.0
-
-	dc.Push()
-
-	// Move to center, rotate, then move back by half the child's size.
-	// This places the child's center at the center of the bounds.
-	dc.Translate(cx, cy)
-	dc.Rotate(gg.Radians(r.Angle))
-	dc.Translate(float64(-cb.Dx())/2.0, float64(-cb.Dy())/2.0)
-
-	// Paint child at (0,0) relative to the transformed origin
-	r.Widget.Paint(dc, image.Rect(0, 0, cb.Dx(), cb.Dy()), frameIdx)
-	dc.Pop()
+	paintWithTransform(dc, r.Widget, bounds, frameIdx, func(dc *gg.Context) {
+		dc.Rotate(gg.Radians(r.Angle))
+	})
 }
