@@ -72,6 +72,15 @@ Transform by scaling by a given factor.
 | `x` | `float / int` | Horizontal scale factor | **Y** |
 | `y` | `float / int` | Vertical scale factor | **Y** |
 
+## Shear
+Transform by shearing by a given X and Y angle in degrees.
+
+#### Attributes
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| `x_angle` | `float / int` | The angle to shear horizontally in degrees. | N |
+| `y_angle` | `float / int` | The angle to shear vertically in degrees. | N |
+
 ## Transformation
 Transformation makes it possible to animate a child widget by
 transitioning between transforms which are applied to the child wiget.

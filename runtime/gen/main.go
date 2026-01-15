@@ -106,6 +106,7 @@ var Packages = []Package{
 			reflect.ValueOf(new(animation.Origin)),
 			reflect.ValueOf(new(animation.Rotate)),
 			reflect.ValueOf(new(animation.Scale)),
+			reflect.ValueOf(new(animation.Shear)),
 			reflect.ValueOf(new(animation.Transformation)),
 			reflect.ValueOf(new(animation.Translate)),
 
