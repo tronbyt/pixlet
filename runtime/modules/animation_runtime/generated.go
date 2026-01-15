@@ -452,7 +452,7 @@ func newRotate(
 	w.starlarkAngle = angle
 	if val, ok := starlark.AsFloat(w.starlarkAngle); ok {
 		w.Angle = val
-	} else {
+	} else if w.starlarkAngle != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkAngle.String())
 	}
 
@@ -515,14 +515,14 @@ func newScale(
 	w.starlarkX = x
 	if val, ok := starlark.AsFloat(w.starlarkX); ok {
 		w.X = val
-	} else {
+	} else if w.starlarkX != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkX.String())
 	}
 
 	w.starlarkY = y
 	if val, ok := starlark.AsFloat(w.starlarkY); ok {
 		w.Y = val
-	} else {
+	} else if w.starlarkY != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkY.String())
 	}
 
@@ -853,14 +853,14 @@ func newTranslate(
 	w.starlarkX = x
 	if val, ok := starlark.AsFloat(w.starlarkX); ok {
 		w.X = val
-	} else {
+	} else if w.starlarkX != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkX.String())
 	}
 
 	w.starlarkY = y
 	if val, ok := starlark.AsFloat(w.starlarkY); ok {
 		w.Y = val
-	} else {
+	} else if w.starlarkY != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkY.String())
 	}
 

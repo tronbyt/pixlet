@@ -98,7 +98,7 @@ func newBlur(
 	w.starlarkRadius = radius
 	if val, ok := starlark.AsFloat(w.starlarkRadius); ok {
 		w.Radius = val
-	} else {
+	} else if w.starlarkRadius != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkRadius.String())
 	}
 
@@ -230,7 +230,7 @@ func newBrightness(
 	w.starlarkChange = change
 	if val, ok := starlark.AsFloat(w.starlarkChange); ok {
 		w.Change = val
-	} else {
+	} else if w.starlarkChange != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkChange.String())
 	}
 
@@ -362,7 +362,7 @@ func newContrast(
 	w.starlarkFactor = factor
 	if val, ok := starlark.AsFloat(w.starlarkFactor); ok {
 		w.Factor = val
-	} else {
+	} else if w.starlarkFactor != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkFactor.String())
 	}
 
@@ -494,7 +494,7 @@ func newEdgeDetection(
 	w.starlarkRadius = radius
 	if val, ok := starlark.AsFloat(w.starlarkRadius); ok {
 		w.Radius = val
-	} else {
+	} else if w.starlarkRadius != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkRadius.String())
 	}
 
@@ -983,7 +983,7 @@ func newGamma(
 	w.starlarkGamma = gamma
 	if val, ok := starlark.AsFloat(w.starlarkGamma); ok {
 		w.Gamma.Gamma = val
-	} else {
+	} else if w.starlarkGamma != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkGamma.String())
 	}
 
@@ -1234,7 +1234,7 @@ func newHue(
 	w.starlarkChange = change
 	if val, ok := starlark.AsFloat(w.starlarkChange); ok {
 		w.Change = val
-	} else {
+	} else if w.starlarkChange != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkChange.String())
 	}
 
@@ -1485,7 +1485,7 @@ func newRotate(
 	w.starlarkAngle = angle
 	if val, ok := starlark.AsFloat(w.starlarkAngle); ok {
 		w.Angle = val
-	} else {
+	} else if w.starlarkAngle != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkAngle.String())
 	}
 
@@ -1617,7 +1617,7 @@ func newSaturation(
 	w.starlarkFactor = factor
 	if val, ok := starlark.AsFloat(w.starlarkFactor); ok {
 		w.Factor = val
-	} else {
+	} else if w.starlarkFactor != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkFactor.String())
 	}
 
@@ -1990,14 +1990,14 @@ func newShear(
 	w.starlarkXAngle = x_angle
 	if val, ok := starlark.AsFloat(w.starlarkXAngle); ok {
 		w.XAngle = val
-	} else {
+	} else if w.starlarkXAngle != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkXAngle.String())
 	}
 
 	w.starlarkYAngle = y_angle
 	if val, ok := starlark.AsFloat(w.starlarkYAngle); ok {
 		w.YAngle = val
-	} else {
+	} else if w.starlarkYAngle != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkYAngle.String())
 	}
 
@@ -2132,7 +2132,7 @@ func newThreshold(
 	w.starlarkLevel = level
 	if val, ok := starlark.AsFloat(w.starlarkLevel); ok {
 		w.Level = val
-	} else {
+	} else if w.starlarkLevel != nil {
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkLevel.String())
 	}
 
