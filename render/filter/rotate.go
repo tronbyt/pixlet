@@ -4,7 +4,6 @@ import (
 	"image"
 	"math"
 
-	"github.com/anthonynsimon/bild/transform"
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render"
 )
@@ -47,9 +46,21 @@ func (r Rotate) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangl
 }
 
 func (r Rotate) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
-	paint(dc, r.Widget, bounds, frameIdx, func(img image.Image) image.Image {
-		// Rotate returns an image.RGBA, resizing options can be passed.
-		// passing ResizeBounds: true so the image expands to fit the rotated content.
-		return transform.Rotate(img, r.Angle, &transform.RotationOptions{ResizeBounds: true})
-	})
+	cb := r.Widget.PaintBounds(bounds, frameIdx)
+
+	// Calculate center of the provided (expanded) bounds
+	cx := float64(bounds.Min.X) + float64(bounds.Dx())/2.0
+	cy := float64(bounds.Min.Y) + float64(bounds.Dy())/2.0
+
+	dc.Push()
+
+	// Move to center, rotate, then move back by half the child's size.
+	// This places the child's center at the center of the bounds.
+	dc.Translate(cx, cy)
+	dc.Rotate(gg.Radians(r.Angle))
+	dc.Translate(float64(-cb.Dx())/2.0, float64(-cb.Dy())/2.0)
+
+	// Paint child at (0,0) relative to the transformed origin
+	r.Widget.Paint(dc, image.Rect(0, 0, cb.Dx(), cb.Dy()), frameIdx)
+	dc.Pop()
 }
