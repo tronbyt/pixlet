@@ -40,3 +40,7 @@ func LoadAnimationModule() (starlark.StringDict, error) {
 
 	return animationModule.module, nil
 }
+
+type transformUnwrapper interface {
+	AsAnimationTransform() animation.Transform
+}

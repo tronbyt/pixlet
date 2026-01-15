@@ -72,6 +72,12 @@ func (w *{{ .GoName }}) AsRenderWidget() render.Widget {
 }
 {{- end }}
 
+{{ if .HasTransform -}}
+func (w *{{ .GoName }}) AsAnimationTransform() animation.Transform {
+	return w.{{ .GoName }}
+}
+{{- end }}
+
 func (w *{{ .GoName }}) AttrNames() []string {
 	return []string{
 {{- range .Attributes }}
