@@ -45,6 +45,10 @@ func LoadAnimationModule() (starlark.StringDict, error) {
 	return animationModule.module, nil
 }
 
+type transformUnwrapper interface {
+	AsAnimationTransform() animation.Transform
+}
+
 type AnimatedPositioned struct {
 	animation.AnimatedPositioned
 	starlarkChild starlark.Value
@@ -296,15 +300,10 @@ func newKeyframe(
 
 	w.starlarkTransforms = transforms
 	for i := range transforms.Len() {
-		switch transformsVal := transforms.Index(i).(type) {
-		case *Translate:
-			w.Transforms = append(w.Transforms, transformsVal.Translate)
-		case *Scale:
-			w.Transforms = append(w.Transforms, transformsVal.Scale)
-		case *Rotate:
-			w.Transforms = append(w.Transforms, transformsVal.Rotate)
-		default:
-			return nil, fmt.Errorf("expected transform, but got '%s'", transformsVal.Type())
+		if val, ok := transforms.Index(i).(transformUnwrapper); ok {
+			w.Transforms = append(w.Transforms, val.AsAnimationTransform())
+		} else {
+			return nil, fmt.Errorf("expected transform, but got '%s'", transforms.Index(i).Type())
 		}
 	}
 
@@ -459,6 +458,10 @@ func newRotate(
 	return w, nil
 }
 
+func (w *Rotate) AsAnimationTransform() animation.Transform {
+	return w.Rotate
+}
+
 func (w *Rotate) AttrNames() []string {
 	return []string{
 		"angle",
@@ -527,6 +530,10 @@ func newScale(
 	}
 
 	return w, nil
+}
+
+func (w *Scale) AsAnimationTransform() animation.Transform {
+	return w.Scale
 }
 
 func (w *Scale) AttrNames() []string {
@@ -865,6 +872,10 @@ func newTranslate(
 	}
 
 	return w, nil
+}
+
+func (w *Translate) AsAnimationTransform() animation.Transform {
+	return w.Translate
 }
 
 func (w *Translate) AttrNames() []string {

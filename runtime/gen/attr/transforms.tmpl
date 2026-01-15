@@ -1,15 +1,10 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 for i := range {{ .StarlarkName }}.Len() {
-	switch {{ .StarlarkName }}Val := {{ .StarlarkName }}.Index(i).(type) {
-	case *Translate:
-		w.{{ .GoPath }} = append(w.{{ .GoPath }}, {{ .StarlarkName }}Val.Translate)
-	case *Scale:
-		w.{{ .GoPath }} = append(w.{{ .GoPath }}, {{ .StarlarkName }}Val.Scale)
-	case *Rotate:
-		w.{{ .GoPath }} = append(w.{{ .GoPath }}, {{ .StarlarkName }}Val.Rotate)
-	default:
-		return nil, fmt.Errorf("expected transform, but got '%s'", {{ .StarlarkName }}Val.Type())
+	if val, ok := {{ .StarlarkName }}.Index(i).(transformUnwrapper); ok {
+		w.{{ .GoPath }} = append(w.{{ .GoPath }}, val.AsAnimationTransform())
+	} else {
+		return nil, fmt.Errorf("expected transform, but got '%s'", {{ .StarlarkName }}.Index(i).Type())
 	}
 }
 {{- end }}

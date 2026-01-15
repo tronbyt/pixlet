@@ -309,6 +309,7 @@ type GeneratedType struct {
 	Attributes        []*GeneratedAttr
 	HasSize           bool
 	HasInit           bool
+	HasTransform      bool
 	Documentation     string
 	Examples          []string
 }
@@ -396,6 +397,10 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 
 	if typ.ConvertibleTo(toDecayedType(new(render.WidgetWithInit))) {
 		result.HasInit = true
+	}
+
+	if typ.Implements(reflect.TypeOf((*animation.Transform)(nil)).Elem()) {
+		result.HasTransform = true
 	}
 
 	// Unwrap any pointer types.
