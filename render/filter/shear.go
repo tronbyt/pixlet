@@ -62,10 +62,10 @@ func (s Shear) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	sy := 0.0
 
 	if s.XAngle != 0 {
-		sx = -math.Tan(s.XAngle * math.Pi / 180)
+		sx = math.Tan(s.XAngle * math.Pi / 180)
 	}
 	if s.YAngle != 0 {
-		sy = -math.Tan(s.YAngle * math.Pi / 180)
+		sy = math.Tan(s.YAngle * math.Pi / 180)
 	}
 
 	dc.Push()
