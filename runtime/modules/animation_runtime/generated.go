@@ -35,6 +35,7 @@ func LoadAnimationModule() (starlark.StringDict, error) {
 					"Origin":             starlark.NewBuiltin("Origin", newOrigin),
 					"Rotate":             starlark.NewBuiltin("Rotate", newRotate),
 					"Scale":              starlark.NewBuiltin("Scale", newScale),
+					"Shear":              starlark.NewBuiltin("Shear", newShear),
 					"Transformation":     starlark.NewBuiltin("Transformation", newTransformation),
 					"Translate":          starlark.NewBuiltin("Translate", newTranslate),
 				},
@@ -560,6 +561,83 @@ func (w *Scale) Freeze()              {}
 func (w *Scale) Truth() starlark.Bool { return true }
 
 func (w *Scale) Hash() (uint32, error) {
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	return uint32(sum), err
+}
+
+type Shear struct {
+	animation.Shear
+	starlarkXAngle starlark.Value
+	starlarkYAngle starlark.Value
+}
+
+func newShear(
+	thread *starlark.Thread,
+	_ *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple,
+) (starlark.Value, error) {
+	var (
+		x_angle starlark.Value
+		y_angle starlark.Value
+	)
+
+	if err := starlark.UnpackArgs(
+		"Shear",
+		args, kwargs,
+		"x_angle?", &x_angle,
+		"y_angle?", &y_angle,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for Shear: %s", err)
+	}
+
+	w := &Shear{}
+
+	w.starlarkXAngle = x_angle
+	if val, ok := starlark.AsFloat(w.starlarkXAngle); ok {
+		w.XAngle = val
+	} else if w.starlarkXAngle != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkXAngle.String())
+	}
+
+	w.starlarkYAngle = y_angle
+	if val, ok := starlark.AsFloat(w.starlarkYAngle); ok {
+		w.YAngle = val
+	} else if w.starlarkYAngle != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkYAngle.String())
+	}
+
+	return w, nil
+}
+
+func (w *Shear) AsAnimationTransform() animation.Transform {
+	return w.Shear
+}
+
+func (w *Shear) AttrNames() []string {
+	return []string{
+		"x_angle",
+		"y_angle",
+	}
+}
+
+func (w *Shear) Attr(name string) (starlark.Value, error) {
+	switch name {
+	case "x_angle":
+		return w.starlarkXAngle, nil
+	case "y_angle":
+		return w.starlarkYAngle, nil
+	default:
+		return nil, nil
+	}
+}
+
+func (w *Shear) String() string       { return "Shear(...)" }
+func (w *Shear) Type() string         { return "Shear" }
+func (w *Shear) Freeze()              {}
+func (w *Shear) Truth() starlark.Bool { return true }
+
+func (w *Shear) Hash() (uint32, error) {
 	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
 	return uint32(sum), err
 }
