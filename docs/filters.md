@@ -275,15 +275,14 @@ Shear shears the child widget horizontally and/or vertically.
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `child` | `Widget` | The widget to shear. | **Y** |
-| `x_angle` | `float / int` | The angle to shear horizontally in degrees. | **Y** |
-| `y_angle` | `float / int` | The angle to shear vertically in degrees. | **Y** |
+| `x_angle` | `float / int` | The angle to shear horizontally in degrees. | N |
+| `y_angle` | `float / int` | The angle to shear vertically in degrees. | N |
 
 #### Example
 ```starlark
 filter.Shear(
     child = render.Image(src="...", width=64, height=64),
     x_angle = 10.0,
-    y_angle = 0.0,
 )
 ```
 ![Shear Example](img/filter_Shear_0.webp)

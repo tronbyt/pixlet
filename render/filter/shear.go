@@ -19,14 +19,13 @@ import (
 //	filter.Shear(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    x_angle = 10.0,
-//	    y_angle = 0.0,
 //	)
 //
 // EXAMPLE END
 type Shear struct {
 	render.Widget `starlark:"child,required"`
-	XAngle        float64 `starlark:"x_angle,required"`
-	YAngle        float64 `starlark:"y_angle,required"`
+	XAngle        float64 `starlark:"x_angle"`
+	YAngle        float64 `starlark:"y_angle"`
 }
 
 func (s Shear) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

@@ -1967,8 +1967,8 @@ func newShear(
 		"Shear",
 		args, kwargs,
 		"child", &child,
-		"x_angle", &x_angle,
-		"y_angle", &y_angle,
+		"x_angle?", &x_angle,
+		"y_angle?", &y_angle,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Shear: %s", err)
 	}
