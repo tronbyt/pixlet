@@ -319,7 +319,7 @@ func writeOutput(pngFileName string, index map[string]image.Rectangle, fallback 
 	})
 	for _, k := range keys {
 		xy := index[k]
-		b.WriteString(fmt.Sprintf("\t%q: image.Rectangle{Min: image.Point{X:%d, Y:%d}, Max: image.Point{X:%d, Y:%d}},\n", k, xy.Min.X, xy.Min.Y, xy.Max.X, xy.Max.Y))
+		b.WriteString(fmt.Sprintf("\t%q: {Min: image.Point{X:%d, Y:%d}, Max: image.Point{X:%d, Y:%d}},\n", k, xy.Min.X, xy.Min.Y, xy.Max.X, xy.Max.Y))
 	}
 	b.WriteString("}\n\n")
 
