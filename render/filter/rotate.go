@@ -32,7 +32,7 @@ func (r Rotate) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangl
 	// Calculate rotated bounds
 	// Width' = Width * |cos A| + Height * |sin A|
 	// Height' = Width * |sin A| + Height * |cos A|
-	rad := r.Angle * math.Pi / 180
+	rad := gg.Radians(r.Angle)
 	cos := math.Abs(math.Cos(rad))
 	sin := math.Abs(math.Sin(rad))
 

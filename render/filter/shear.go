@@ -38,13 +38,11 @@ func (s Shear) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle
 	nh := h
 
 	if s.XAngle != 0 {
-		rad := s.XAngle * math.Pi / 180
-		nw += h * math.Abs(math.Tan(rad))
+		nw += h * math.Abs(math.Tan(gg.Radians(s.XAngle)))
 	}
 
 	if s.YAngle != 0 {
-		rad := s.YAngle * math.Pi / 180
-		nh += w * math.Abs(math.Tan(rad))
+		nh += w * math.Abs(math.Tan(gg.Radians(s.YAngle)))
 	}
 
 	return image.Rect(0, 0, int(math.Ceil(nw)), int(math.Ceil(nh)))
@@ -57,14 +55,13 @@ func (s Shear) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	cx := float64(bounds.Min.X) + float64(bounds.Dx())/2.0
 	cy := float64(bounds.Min.Y) + float64(bounds.Dy())/2.0
 
-	sx := 0.0
-	sy := 0.0
+	var sx, sy float64
 
 	if s.XAngle != 0 {
-		sx = math.Tan(s.XAngle * math.Pi / 180)
+		sx = math.Tan(gg.Radians(s.XAngle))
 	}
 	if s.YAngle != 0 {
-		sy = math.Tan(s.YAngle * math.Pi / 180)
+		sy = math.Tan(gg.Radians(s.YAngle))
 	}
 
 	dc.Push()
