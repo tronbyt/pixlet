@@ -19,6 +19,8 @@ func ExtendTransforms(lhs []Transform, rhs []Transform) []Transform {
 				lhs = append(lhs, ScaleDefault)
 			case Rotate:
 				lhs = append(lhs, RotateDefault)
+			case Shear:
+				lhs = append(lhs, ShearDefault)
 			}
 		}
 	}
