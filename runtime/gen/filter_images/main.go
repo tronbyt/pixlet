@@ -107,7 +107,6 @@ filter.Sharpen(
 filter.Shear(
     child = %s,
     x_angle = 10.0,
-    y_angle = 0.0,
 )
 `,
 		"filter_Threshold_0": `

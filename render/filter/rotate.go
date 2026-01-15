@@ -4,7 +4,6 @@ import (
 	"image"
 	"math"
 
-	"github.com/anthonynsimon/bild/transform"
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render"
 )
@@ -33,7 +32,7 @@ func (r Rotate) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangl
 	// Calculate rotated bounds
 	// Width' = Width * |cos A| + Height * |sin A|
 	// Height' = Width * |sin A| + Height * |cos A|
-	rad := r.Angle * math.Pi / 180
+	rad := gg.Radians(r.Angle)
 	cos := math.Abs(math.Cos(rad))
 	sin := math.Abs(math.Sin(rad))
 
@@ -47,9 +46,7 @@ func (r Rotate) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangl
 }
 
 func (r Rotate) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
-	paint(dc, r.Widget, bounds, frameIdx, func(img image.Image) image.Image {
-		// Rotate returns an image.RGBA, resizing options can be passed.
-		// passing ResizeBounds: true so the image expands to fit the rotated content.
-		return transform.Rotate(img, r.Angle, &transform.RotationOptions{ResizeBounds: true})
+	paintWithTransform(dc, r.Widget, bounds, frameIdx, func(dc *gg.Context) {
+		dc.Rotate(gg.Radians(r.Angle))
 	})
 }

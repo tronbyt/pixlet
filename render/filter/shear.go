@@ -4,7 +4,6 @@ import (
 	"image"
 	"math"
 
-	"github.com/anthonynsimon/bild/transform"
 	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render"
 )
@@ -20,14 +19,13 @@ import (
 //	filter.Shear(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    x_angle = 10.0,
-//	    y_angle = 0.0,
 //	)
 //
 // EXAMPLE END
 type Shear struct {
 	render.Widget `starlark:"child,required"`
-	XAngle        float64 `starlark:"x_angle,required"`
-	YAngle        float64 `starlark:"y_angle,required"`
+	XAngle        float64 `starlark:"x_angle"`
+	YAngle        float64 `starlark:"y_angle"`
 }
 
 func (s Shear) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
@@ -40,26 +38,26 @@ func (s Shear) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle
 	nh := h
 
 	if s.XAngle != 0 {
-		rad := s.XAngle * math.Pi / 180
-		nw += h * math.Abs(math.Tan(rad))
+		nw += h * math.Abs(math.Tan(gg.Radians(s.XAngle)))
 	}
 
 	if s.YAngle != 0 {
-		rad := s.YAngle * math.Pi / 180
-		nh += w * math.Abs(math.Tan(rad))
+		nh += w * math.Abs(math.Tan(gg.Radians(s.YAngle)))
 	}
 
 	return image.Rect(0, 0, int(math.Ceil(nw)), int(math.Ceil(nh)))
 }
 
 func (s Shear) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
-	paint(dc, s.Widget, bounds, frameIdx, func(img image.Image) image.Image {
-		if s.XAngle != 0 {
-			img = transform.ShearH(img, s.XAngle)
-		}
-		if s.YAngle != 0 {
-			img = transform.ShearV(img, s.YAngle)
-		}
-		return img
+	var sx, sy float64
+	if s.XAngle != 0 {
+		sx = math.Tan(gg.Radians(s.XAngle))
+	}
+	if s.YAngle != 0 {
+		sy = math.Tan(gg.Radians(s.YAngle))
+	}
+
+	paintWithTransform(dc, s.Widget, bounds, frameIdx, func(dc *gg.Context) {
+		dc.Shear(sx, sy)
 	})
 }
