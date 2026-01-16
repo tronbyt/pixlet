@@ -298,7 +298,7 @@ func ExtractRoots(val starlark.Value) ([]render.Root, error) {
 func (a *Applet) RunWithConfig(ctx context.Context, config map[string]any) (roots []render.Root, err error) {
 	var args starlark.Tuple
 	if a.mainFun.NumParams() > 0 {
-		starlarkConfig := AppletConfig(config)
+		starlarkConfig := NewAppletConfig(config, a.Schema)
 		args = starlark.Tuple{starlarkConfig}
 	}
 
@@ -328,7 +328,7 @@ func (app *Applet) CallSchemaHandler(ctx context.Context, handlerName, parameter
 	}
 
 	if handler.Function.NumParams() > 1 {
-		args = append(args, AppletConfig(config))
+		args = append(args, NewAppletConfig(config, app.Schema))
 	}
 
 	resultVal, err := app.Call(ctx, handler.Function, args...)

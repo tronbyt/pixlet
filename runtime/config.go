@@ -6,10 +6,26 @@ import (
 	"strconv"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
 )
 
-type AppletConfig map[string]any
+func NewAppletConfig(config map[string]any, sch *schema.Schema) AppletConfig {
+	var defaults map[string]string
+	if sch != nil {
+		defaults = make(map[string]string, len(sch.Fields))
+		for _, field := range sch.Fields {
+			defaults[field.ID] = field.Default
+		}
+	}
+
+	return AppletConfig{config, defaults}
+}
+
+type AppletConfig struct {
+	config   map[string]any
+	defaults map[string]string
+}
 
 func (a AppletConfig) AttrNames() []string {
 	return []string{
@@ -33,14 +49,33 @@ func (a AppletConfig) Attr(name string) (starlark.Value, error) {
 	}
 }
 
-func (a AppletConfig) Get(key starlark.Value) (starlark.Value, bool, error) {
-	if v, ok := key.(starlark.String); ok {
-		if val, found := a[v.GoString()]; found {
-			str, ok := normalizeValue(val)
-			return starlark.String(str), ok, nil
+func (a AppletConfig) get(key string) (value any, isDefault bool, ok bool) {
+	if val, found := a.config[key]; found {
+		return val, false, found
+	}
+
+	if a.defaults != nil {
+		if val, found := a.defaults[key]; found && val != "" {
+			return val, true, true
 		}
 	}
-	return nil, false, nil
+
+	return nil, false, false
+}
+
+func (a AppletConfig) Get(key starlark.Value) (starlark.Value, bool, error) {
+	strKey, ok := key.(starlark.String)
+	if !ok {
+		return nil, false, nil
+	}
+
+	val, _, found := a.get(strKey.GoString())
+	if !found {
+		return nil, false, nil
+	}
+
+	strVal, ok := normalizeValue(val)
+	return starlark.String(strVal), ok, nil
 }
 
 func (a AppletConfig) String() string       { return "AppletConfig(...)" }
@@ -53,10 +88,9 @@ func (a AppletConfig) Hash() (uint32, error) {
 	return uint32(sum), err
 }
 
-func (a AppletConfig) getString(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+func (a AppletConfig) getString(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var key starlark.String
-	var def starlark.Value
-	def = starlark.None
+	var def starlark.Value = starlark.None
 
 	if err := starlark.UnpackPositionalArgs(
 		"str", args, kwargs, 1,
@@ -65,18 +99,18 @@ func (a AppletConfig) getString(thread *starlark.Thread, _ *starlark.Builtin, ar
 		return nil, fmt.Errorf("unpacking arguments for config.str: %v", err)
 	}
 
-	if val, ok := a[key.GoString()]; ok {
+	if val, isDefault, ok := a.get(key.GoString()); ok && (!isDefault || len(args) == 1) {
 		if str, ok := normalizeValue(val); ok {
 			return starlark.String(str), nil
 		}
 	}
+
 	return def, nil
 }
 
-func (a AppletConfig) getBoolean(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+func (a AppletConfig) getBoolean(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var key starlark.String
-	var def starlark.Value
-	def = starlark.None
+	var def starlark.Value = starlark.None
 
 	if err := starlark.UnpackPositionalArgs(
 		"bool", args, kwargs, 1,
@@ -85,7 +119,7 @@ func (a AppletConfig) getBoolean(thread *starlark.Thread, _ *starlark.Builtin, a
 		return nil, fmt.Errorf("unpacking arguments for config.bool: %v", err)
 	}
 
-	if val, ok := a[key.GoString()]; ok {
+	if val, isDefault, ok := a.get(key.GoString()); ok && (!isDefault || len(args) == 1) {
 		switch val := val.(type) {
 		case bool:
 			return starlark.Bool(val), nil
@@ -99,6 +133,7 @@ func (a AppletConfig) getBoolean(thread *starlark.Thread, _ *starlark.Builtin, a
 			}
 		}
 	}
+
 	return def, nil
 }
 
