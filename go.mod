@@ -1,12 +1,12 @@
 module github.com/tronbyt/pixlet
 
-go 1.25.5
+go 1.25.6
 
 require (
 	github.com/HugoSmits86/nativewebp v1.2.1
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/anthonynsimon/bild v0.14.0
-	github.com/bazelbuild/buildtools v0.0.0-20251219084625-9e5607d3130a
+	github.com/bazelbuild/buildtools v0.0.0-20260113134051-f026de8858b3
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ebitengine/purego v0.9.1
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4
@@ -15,8 +15,8 @@ require (
 	github.com/gen2brain/webp v0.5.5
 	github.com/gitsight/go-vcsurl v1.0.1
 	github.com/go-git/go-git/v5 v5.16.4
-	github.com/go-playground/validator/v10 v10.29.0
-	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f
+	github.com/go-playground/validator/v10 v10.30.1
+	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83
 	github.com/google/tink/go v1.7.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/lmittmann/tint v1.1.2
@@ -37,14 +37,14 @@ require (
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
 	github.com/stretchr/testify v1.11.1
 	github.com/tronbyt/gg v0.0.0-20220808163829-95806fa1d427
-	github.com/tronbyt/go-libwebp v0.0.0-20251112225040-cf43c5d662de
+	github.com/tronbyt/go-libwebp v0.0.0-20251221160926-0c04b4a7738a
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
-	go.starlark.net v0.0.0-20251109183026-be02852a5e1f
-	golang.org/x/image v0.34.0
-	golang.org/x/mod v0.31.0
+	go.starlark.net v0.0.0-20260102030733-3fee463870c9
+	golang.org/x/image v0.35.0
+	golang.org/x/mod v0.32.0
 	golang.org/x/sync v0.19.0
-	golang.org/x/text v0.32.0
+	golang.org/x/text v0.33.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -64,7 +64,7 @@ require (
 	github.com/dmarkham/enumer v1.6.1 // indirect
 	github.com/dustmop/soup v1.1.2-0.20190516214245-38228baa104e // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.11 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.6.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -96,11 +96,11 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/exp v0.0.0-20250911091902-df9299821621 // indirect
-	golang.org/x/net v0.47.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/tools v0.39.0 // indirect
+	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/tools v0.40.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
