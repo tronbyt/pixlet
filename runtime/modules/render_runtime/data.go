@@ -91,3 +91,37 @@ func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
 
 	return result, nil
 }
+
+func VerticesFromStarlark(value starlark.Value) ([]render.Point, error) {
+	iterable, ok := value.(starlark.Iterable)
+	if !ok {
+		return nil, fmt.Errorf("vertices must be iterable, found %s", value.Type())
+	}
+
+	n := starlark.Len(value)
+	if n < 0 {
+		n = 0
+	}
+	result := make([]render.Point, 0, n)
+
+	iter := iterable.Iterate()
+	defer iter.Done()
+	var v starlark.Value
+	for i := 0; iter.Next(&v); i++ {
+		tuple, ok := v.(starlark.Tuple)
+		if !ok || tuple.Len() != 2 {
+			return nil, fmt.Errorf("vertex %d must be a 2-tuple (x, y)", i)
+		}
+
+		x, okX := starlark.AsFloat(tuple.Index(0))
+		y, okY := starlark.AsFloat(tuple.Index(1))
+
+		if !okX || !okY {
+			return nil, fmt.Errorf("vertex %d coordinates must be numbers", i)
+		}
+
+		result = append(result, render.Point{X: x, Y: y})
+	}
+
+	return result, nil
+}

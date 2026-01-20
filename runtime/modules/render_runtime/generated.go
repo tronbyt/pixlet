@@ -43,15 +43,18 @@ func LoadRenderModule() (starlark.StringDict, error) {
 				Members: starlark.StringDict{
 					"fonts":       fnt,
 					"Animation":   starlark.NewBuiltin("Animation", newAnimation),
+					"Arc":         starlark.NewBuiltin("Arc", newArc),
 					"Box":         starlark.NewBuiltin("Box", newBox),
 					"Circle":      starlark.NewBuiltin("Circle", newCircle),
 					"Column":      starlark.NewBuiltin("Column", newColumn),
 					"Emoji":       starlark.NewBuiltin("Emoji", newEmoji),
 					"Image":       starlark.NewBuiltin("Image", newImage),
+					"Line":        starlark.NewBuiltin("Line", newLine),
 					"Marquee":     starlark.NewBuiltin("Marquee", newMarquee),
 					"Padding":     starlark.NewBuiltin("Padding", newPadding),
 					"PieChart":    starlark.NewBuiltin("PieChart", newPieChart),
 					"Plot":        starlark.NewBuiltin("Plot", newPlot),
+					"Polygon":     starlark.NewBuiltin("Polygon", newPolygon),
 					"Root":        starlark.NewBuiltin("Root", newRoot),
 					"Row":         starlark.NewBuiltin("Row", newRow),
 					"Sequence":    starlark.NewBuiltin("Sequence", newSequence),
@@ -202,6 +205,200 @@ func animationFrameCount(
 	}
 
 	w := b.Receiver().(*Animation)
+	count := w.FrameCount(r)
+
+	return starlark.MakeInt(count), nil
+}
+
+type Arc struct {
+	render.Arc
+	starlarkX          starlark.Value
+	starlarkY          starlark.Value
+	starlarkRadius     starlark.Value
+	starlarkStartAngle starlark.Value
+	starlarkEndAngle   starlark.Value
+	starlarkColor      starlark.String
+	starlarkWidth      starlark.Value
+	frame_count        *starlark.Builtin
+}
+
+func newArc(
+	thread *starlark.Thread,
+	_ *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple,
+) (starlark.Value, error) {
+	var (
+		x           starlark.Value
+		y           starlark.Value
+		radius      starlark.Value
+		start_angle starlark.Value
+		end_angle   starlark.Value
+		color       starlark.String
+		width       starlark.Value
+	)
+
+	if err := starlark.UnpackArgs(
+		"Arc",
+		args, kwargs,
+		"x", &x,
+		"y", &y,
+		"radius", &radius,
+		"start_angle", &start_angle,
+		"end_angle", &end_angle,
+		"color", &color,
+		"width", &width,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for Arc: %s", err)
+	}
+
+	w := &Arc{}
+
+	w.starlarkX = x
+	if val, ok := starlark.AsFloat(w.starlarkX); ok {
+		w.X = val
+	} else if w.starlarkX != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkX.String())
+	}
+
+	w.starlarkY = y
+	if val, ok := starlark.AsFloat(w.starlarkY); ok {
+		w.Y = val
+	} else if w.starlarkY != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkY.String())
+	}
+
+	w.starlarkRadius = radius
+	if val, ok := starlark.AsFloat(w.starlarkRadius); ok {
+		w.Radius = val
+	} else if w.starlarkRadius != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkRadius.String())
+	}
+
+	w.starlarkStartAngle = start_angle
+	if val, ok := starlark.AsFloat(w.starlarkStartAngle); ok {
+		w.StartAngle = val
+	} else if w.starlarkStartAngle != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkStartAngle.String())
+	}
+
+	w.starlarkEndAngle = end_angle
+	if val, ok := starlark.AsFloat(w.starlarkEndAngle); ok {
+		w.EndAngle = val
+	} else if w.starlarkEndAngle != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkEndAngle.String())
+	}
+
+	w.starlarkColor = color
+	if color.Len() > 0 {
+		c, err := render.ParseColor(color.GoString())
+		if err != nil {
+			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+		}
+		w.Color = c
+	}
+
+	w.starlarkWidth = width
+	if val, ok := starlark.AsFloat(w.starlarkWidth); ok {
+		w.Width = val
+	} else if w.starlarkWidth != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkWidth.String())
+	}
+
+	w.frame_count = starlark.NewBuiltin("frame_count", arcFrameCount)
+
+	return w, nil
+}
+
+func (w *Arc) AsRenderWidget() render.Widget {
+	return &w.Arc
+}
+
+func (w *Arc) AttrNames() []string {
+	return []string{
+		"x",
+		"y",
+		"radius",
+		"start_angle",
+		"end_angle",
+		"color",
+		"width",
+	}
+}
+
+func (w *Arc) Attr(name string) (starlark.Value, error) {
+	switch name {
+	case "x":
+		return w.starlarkX, nil
+	case "y":
+		return w.starlarkY, nil
+	case "radius":
+		return w.starlarkRadius, nil
+	case "start_angle":
+		return w.starlarkStartAngle, nil
+	case "end_angle":
+		return w.starlarkEndAngle, nil
+	case "color":
+		return w.starlarkColor, nil
+	case "width":
+		return w.starlarkWidth, nil
+	case "frame_count":
+		return w.frame_count.BindReceiver(w), nil
+	default:
+		return nil, nil
+	}
+}
+
+func (w *Arc) String() string       { return "Arc(...)" }
+func (w *Arc) Type() string         { return "Arc" }
+func (w *Arc) Freeze()              {}
+func (w *Arc) Truth() starlark.Bool { return true }
+
+func (w *Arc) Hash() (uint32, error) {
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	return uint32(sum), err
+}
+
+func arcFrameCount(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+
+	var (
+		bounds starlark.Tuple
+	)
+
+	if err := starlark.UnpackArgs(
+		"frame_count",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for frame_count: %s", err)
+	}
+
+	r := image.Rect(0, 0, 64, 32)
+	if bounds != nil && bounds.Len() == 4 {
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
+	w := b.Receiver().(*Arc)
 	count := w.FrameCount(r)
 
 	return starlark.MakeInt(count), nil
@@ -983,6 +1180,187 @@ func imageFrameCount(
 	return starlark.MakeInt(count), nil
 }
 
+type Line struct {
+	render.Line
+	starlarkX1    starlark.Value
+	starlarkY1    starlark.Value
+	starlarkX2    starlark.Value
+	starlarkY2    starlark.Value
+	starlarkColor starlark.String
+	starlarkWidth starlark.Value
+	frame_count   *starlark.Builtin
+}
+
+func newLine(
+	thread *starlark.Thread,
+	_ *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple,
+) (starlark.Value, error) {
+	var (
+		x1    starlark.Value
+		y1    starlark.Value
+		x2    starlark.Value
+		y2    starlark.Value
+		color starlark.String
+		width starlark.Value
+	)
+
+	if err := starlark.UnpackArgs(
+		"Line",
+		args, kwargs,
+		"x1", &x1,
+		"y1", &y1,
+		"x2", &x2,
+		"y2", &y2,
+		"color", &color,
+		"width", &width,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for Line: %s", err)
+	}
+
+	w := &Line{}
+
+	w.starlarkX1 = x1
+	if val, ok := starlark.AsFloat(w.starlarkX1); ok {
+		w.X1 = val
+	} else if w.starlarkX1 != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkX1.String())
+	}
+
+	w.starlarkY1 = y1
+	if val, ok := starlark.AsFloat(w.starlarkY1); ok {
+		w.Y1 = val
+	} else if w.starlarkY1 != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkY1.String())
+	}
+
+	w.starlarkX2 = x2
+	if val, ok := starlark.AsFloat(w.starlarkX2); ok {
+		w.X2 = val
+	} else if w.starlarkX2 != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkX2.String())
+	}
+
+	w.starlarkY2 = y2
+	if val, ok := starlark.AsFloat(w.starlarkY2); ok {
+		w.Y2 = val
+	} else if w.starlarkY2 != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkY2.String())
+	}
+
+	w.starlarkColor = color
+	if color.Len() > 0 {
+		c, err := render.ParseColor(color.GoString())
+		if err != nil {
+			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+		}
+		w.Color = c
+	}
+
+	w.starlarkWidth = width
+	if val, ok := starlark.AsFloat(w.starlarkWidth); ok {
+		w.Width = val
+	} else if w.starlarkWidth != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkWidth.String())
+	}
+
+	w.frame_count = starlark.NewBuiltin("frame_count", lineFrameCount)
+
+	return w, nil
+}
+
+func (w *Line) AsRenderWidget() render.Widget {
+	return &w.Line
+}
+
+func (w *Line) AttrNames() []string {
+	return []string{
+		"x1",
+		"y1",
+		"x2",
+		"y2",
+		"color",
+		"width",
+	}
+}
+
+func (w *Line) Attr(name string) (starlark.Value, error) {
+	switch name {
+	case "x1":
+		return w.starlarkX1, nil
+	case "y1":
+		return w.starlarkY1, nil
+	case "x2":
+		return w.starlarkX2, nil
+	case "y2":
+		return w.starlarkY2, nil
+	case "color":
+		return w.starlarkColor, nil
+	case "width":
+		return w.starlarkWidth, nil
+	case "frame_count":
+		return w.frame_count.BindReceiver(w), nil
+	default:
+		return nil, nil
+	}
+}
+
+func (w *Line) String() string       { return "Line(...)" }
+func (w *Line) Type() string         { return "Line" }
+func (w *Line) Freeze()              {}
+func (w *Line) Truth() starlark.Bool { return true }
+
+func (w *Line) Hash() (uint32, error) {
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	return uint32(sum), err
+}
+
+func lineFrameCount(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+
+	var (
+		bounds starlark.Tuple
+	)
+
+	if err := starlark.UnpackArgs(
+		"frame_count",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for frame_count: %s", err)
+	}
+
+	r := image.Rect(0, 0, 64, 32)
+	if bounds != nil && bounds.Len() == 4 {
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
+	w := b.Receiver().(*Line)
+	count := w.FrameCount(r)
+
+	return starlark.MakeInt(count), nil
+}
+
 type Marquee struct {
 	render.Marquee
 	starlarkChild starlark.Value
@@ -1726,6 +2104,134 @@ func plotFrameCount(
 	}
 
 	w := b.Receiver().(*Plot)
+	count := w.FrameCount(r)
+
+	return starlark.MakeInt(count), nil
+}
+
+type Polygon struct {
+	render.Polygon
+	starlarkVertices *starlark.List
+	starlarkColor    starlark.String
+	frame_count      *starlark.Builtin
+}
+
+func newPolygon(
+	thread *starlark.Thread,
+	_ *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple,
+) (starlark.Value, error) {
+	var (
+		vertices *starlark.List
+		color    starlark.String
+	)
+
+	if err := starlark.UnpackArgs(
+		"Polygon",
+		args, kwargs,
+		"vertices", &vertices,
+		"color", &color,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for Polygon: %s", err)
+	}
+
+	w := &Polygon{}
+	w.starlarkVertices = vertices
+	if val, err := VerticesFromStarlark(vertices); err == nil {
+		w.Vertices = val
+	} else {
+		return nil, err
+	}
+
+	w.starlarkColor = color
+	if color.Len() > 0 {
+		c, err := render.ParseColor(color.GoString())
+		if err != nil {
+			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+		}
+		w.Color = c
+	}
+
+	w.frame_count = starlark.NewBuiltin("frame_count", polygonFrameCount)
+
+	return w, nil
+}
+
+func (w *Polygon) AsRenderWidget() render.Widget {
+	return &w.Polygon
+}
+
+func (w *Polygon) AttrNames() []string {
+	return []string{
+		"vertices",
+		"color",
+	}
+}
+
+func (w *Polygon) Attr(name string) (starlark.Value, error) {
+	switch name {
+	case "vertices":
+		return w.starlarkVertices, nil
+	case "color":
+		return w.starlarkColor, nil
+	case "frame_count":
+		return w.frame_count.BindReceiver(w), nil
+	default:
+		return nil, nil
+	}
+}
+
+func (w *Polygon) String() string       { return "Polygon(...)" }
+func (w *Polygon) Type() string         { return "Polygon" }
+func (w *Polygon) Freeze()              {}
+func (w *Polygon) Truth() starlark.Bool { return true }
+
+func (w *Polygon) Hash() (uint32, error) {
+	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	return uint32(sum), err
+}
+
+func polygonFrameCount(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+
+	var (
+		bounds starlark.Tuple
+	)
+
+	if err := starlark.UnpackArgs(
+		"frame_count",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for frame_count: %s", err)
+	}
+
+	r := image.Rect(0, 0, 64, 32)
+	if bounds != nil && bounds.Len() == 4 {
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
+	w := b.Receiver().(*Polygon)
 	count := w.FrameCount(r)
 
 	return starlark.MakeInt(count), nil
