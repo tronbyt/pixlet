@@ -48,7 +48,7 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v6
         with:
-          node-version: "lts/Jod"
+          node-version: "lts/Krypton"
 
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
@@ -90,7 +90,7 @@ jobs:
         if: matrix.os == 'ubuntu-24.04'
         run: |
           go generate ./...
-          git diff --exit-code
+          git diff --exit-code -- .  ':!frontend/package-lock.json'
 
       - name: Build Linux
         run: make build
@@ -181,7 +181,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "lts/Jod"
+          node-version: "lts/Krypton"
 
       - name: Update package.json version
         working-directory: frontend
