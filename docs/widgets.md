@@ -46,6 +46,20 @@ render.Animation(
 ```
 ![](img/widget_Animation_0.gif)
 
+## Arc
+Arc draws an arc. The arc is centered at (x, y).
+
+#### Attributes
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| `x` | `float / int` | The x-coordinate of the center of the arc. | **Y** |
+| `y` | `float / int` | The y-coordinate of the center of the arc. | **Y** |
+| `radius` | `float / int` | The radius of the arc. | **Y** |
+| `start_angle` | `float / int` | The starting angle of the arc, in radians. | **Y** |
+| `end_angle` | `float / int` | The ending angle of the arc, in radians. | **Y** |
+| `color` | `color` | The color of the arc. | **Y** |
+| `width` | `float / int` | The width of the arc. | **Y** |
+
 ## Box
 A Box is a rectangular widget that can hold a child widget.
 
@@ -197,6 +211,19 @@ the `delay` attribute.
 | `delay` | `int` | (Read-only) Frame delay in ms, for animated GIFs | N |
 | `hold_frames` | `int` | Number of render frames to hold each animation frame, default is 1. | N |
 
+## Line
+Line draws a line from (x1, y1) to (x2, y2).
+
+#### Attributes
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| `x1` | `float / int` | The x-coordinate of the starting point. | **Y** |
+| `y1` | `float / int` | The y-coordinate of the starting point. | **Y** |
+| `x2` | `float / int` | The x-coordinate of the ending point. | **Y** |
+| `y2` | `float / int` | The y-coordinate of the ending point. | **Y** |
+| `color` | `color` | The color of the line. | **Y** |
+| `width` | `float / int` | The width of the line. | **Y** |
+
 ## Marquee
 Marquee scrolls its child horizontally or vertically.
 
@@ -323,6 +350,15 @@ render.Plot(
 ),
 ```
 ![](img/widget_Plot_0.gif)
+
+## Polygon
+Polygon draws a polygon.
+
+#### Attributes
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| `vertices` | `[(float, float)]` | A list of (x, y) tuples representing the vertices of the polygon. | **Y** |
+| `color` | `color` | The color of the polygon. | **Y** |
 
 ## Root
 Every Widget tree has a Root.

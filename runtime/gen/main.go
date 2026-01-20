@@ -73,15 +73,18 @@ var Packages = []Package{
 		GoWidgetName:   "Widget",
 		Types: []reflect.Value{
 			reflect.ValueOf(new(render.Animation)),
+			reflect.ValueOf(new(render.Arc)),
 			reflect.ValueOf(new(render.Box)),
 			reflect.ValueOf(new(render.Circle)),
 			reflect.ValueOf(new(render.Column)),
 			reflect.ValueOf(new(render.Emoji)),
 			reflect.ValueOf(new(render.Image)),
+			reflect.ValueOf(new(render.Line)),
 			reflect.ValueOf(new(render.Marquee)),
 			reflect.ValueOf(new(render.Padding)),
 			reflect.ValueOf(new(render.PieChart)),
 			reflect.ValueOf(new(render.Plot)),
+			reflect.ValueOf(new(render.Polygon)),
 			reflect.ValueOf(new(render.Root)),
 			reflect.ValueOf(new(render.Row)),
 			reflect.ValueOf(new(render.Sequence)),
@@ -276,6 +279,12 @@ var TypeMap = map[reflect.Type]Type{
 		GoType:       "*starlark.List",
 		DocType:      "[Transform]",
 		TemplatePath: "attr/transforms.tmpl",
+	},
+	toDecayedType(new([]render.Point)): {
+		GoType:        "*starlark.List",
+		DocType:       `[(float, float)]`,
+		TemplatePath:  "attr/vertices.tmpl",
+		GenerateField: true,
 	},
 }
 

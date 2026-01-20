@@ -1,0 +1,6 @@
+	w.starlark{{ .GoName }} = {{ .StarlarkName }}
+	if val, err := VerticesFromStarlark({{ .StarlarkName }}); err == nil {
+		w.{{ .GoName }} = val
+	} else {
+		return nil, err
+	}
