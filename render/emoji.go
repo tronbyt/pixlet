@@ -21,7 +21,7 @@ import (
 //
 // EXAMPLE BEGIN
 //
-//	render.Emoji(emoji="😀", height=32) // Large smiley face
+//	render.Emoji(emoji="😀", height=32) # Large smiley face
 //
 // EXAMPLE END
 type Emoji struct {

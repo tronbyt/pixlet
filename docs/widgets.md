@@ -202,7 +202,7 @@ used in text rendering.
 
 #### Example
 ```
-render.Emoji(emoji="😀", height=32) // Large smiley face
+render.Emoji(emoji="😀", height=32) # Large smiley face
 ```
 ![](img/widget_Emoji_0.gif)
 
@@ -378,7 +378,7 @@ render.Plot(
     x_lim = (0, 9),
     y_lim = (-5, 7),
     fill = True,
-),
+)
 ```
 ![](img/widget_Plot_0.gif)
 
@@ -508,11 +508,11 @@ out the [animation](animation.md) documentation.
 ```
 render.Sequence(
     children = [
-        animation.Transformation(...),
-        animation.Transformation(...),
-        ...
+        render.Box(width=10, height=10, color="#f00"),
+        render.Box(width=10, height=10, color="#0f0"),
+        render.Box(width=10, height=10, color="#00f"),
     ],
-),
+)
 ```
 ![](img/widget_Sequence_0.gif)
 

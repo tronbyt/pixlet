@@ -49,7 +49,7 @@ var FillDampFactor uint8 = 0x55
 //	    x_lim = (0, 9),
 //	    y_lim = (-5, 7),
 //	    fill = True,
-//	),
+//	)
 //
 // EXAMPLE END
 type Plot struct {
