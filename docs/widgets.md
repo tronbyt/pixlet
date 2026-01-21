@@ -60,6 +60,22 @@ Arc draws an arc. The arc is centered at (x, y).
 | `color` | `color` | The color of the arc. | **Y** |
 | `width` | `float / int` | The width of the arc. | **Y** |
 
+#### Example
+```
+render.Arc(
+
+x = 10,
+y = 10,
+radius = 10,
+start_angle = 0,
+end_angle = 3.14 * 1.5,
+width = 3,
+color = "#0ff",
+
+)
+```
+![](img/widget_Arc_0.gif)
+
 ## Box
 A Box is a rectangular widget that can hold a child widget.
 
@@ -186,7 +202,7 @@ used in text rendering.
 
 #### Example
 ```
-render.Emoji(emoji="😀", height=32) // Large smiley face
+render.Emoji(emoji="😀", height=32) # Large smiley face
 ```
 ![](img/widget_Emoji_0.gif)
 
@@ -223,6 +239,21 @@ Line draws a line from (x1, y1) to (x2, y2).
 | `y2` | `float / int` | The y-coordinate of the ending point. | **Y** |
 | `color` | `color` | The color of the line. | **Y** |
 | `width` | `float / int` | The width of the line. | **Y** |
+
+#### Example
+```
+render.Line(
+
+x1 = 0,
+y1 = 0,
+x2 = 63,
+y2 = 31,
+width = 1,
+color = "#fff",
+
+)
+```
+![](img/widget_Line_0.gif)
 
 ## Marquee
 Marquee scrolls its child horizontally or vertically.
@@ -347,7 +378,7 @@ render.Plot(
     x_lim = (0, 9),
     y_lim = (-5, 7),
     fill = True,
-),
+)
 ```
 ![](img/widget_Plot_0.gif)
 
@@ -358,7 +389,22 @@ Polygon draws a polygon.
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `vertices` | `[(float, float)]` | A list of (x, y) tuples representing the vertices of the polygon. | **Y** |
-| `color` | `color` | The color of the polygon. | **Y** |
+| `fill_color` | `color` | The color used to fill the polygon. | N |
+| `stroke_color` | `color` | The color used to draw the polygon's stroke. | N |
+| `stroke_width` | `float / int` | The width of the polygon's stroke. | N |
+
+#### Example
+```
+render.Polygon(
+
+vertices = [(0, 0), (20, 0), (20, 10), (0, 10)],
+fill_color = "#00f",
+stroke_color = "#fff",
+stroke_width = 1,
+
+)
+```
+![](img/widget_Polygon_0.gif)
 
 ## Root
 Every Widget tree has a Root.
@@ -462,11 +508,11 @@ out the [animation](animation.md) documentation.
 ```
 render.Sequence(
     children = [
-        animation.Transformation(...),
-        animation.Transformation(...),
-        ...
+        render.Box(width=10, height=10, color="#f00"),
+        render.Box(width=10, height=10, color="#0f0"),
+        render.Box(width=10, height=10, color="#00f"),
     ],
-),
+)
 ```
 ![](img/widget_Sequence_0.gif)
 

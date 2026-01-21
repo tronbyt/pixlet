@@ -22,11 +22,11 @@ import (
 //
 //	render.Sequence(
 //	    children = [
-//	        animation.Transformation(...),
-//	        animation.Transformation(...),
-//	        ...
+//	        render.Box(width=10, height=10, color="#f00"),
+//	        render.Box(width=10, height=10, color="#0f0"),
+//	        render.Box(width=10, height=10, color="#00f"),
 //	    ],
-//	),
+//	)
 //
 // EXAMPLE END
 type Sequence struct {

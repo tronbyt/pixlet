@@ -16,6 +16,19 @@ import (
 // DOC(Y2): The y-coordinate of the ending point.
 // DOC(Color): The color of the line.
 // DOC(Width): The width of the line.
+//
+// EXAMPLE BEGIN
+// render.Line(
+//
+//	x1 = 0,
+//	y1 = 0,
+//	x2 = 63,
+//	y2 = 31,
+//	width = 1,
+//	color = "#fff",
+//
+// )
+// EXAMPLE END
 type Line struct {
 	Widget
 	X1    float64     `starlark:"x1,required"`

@@ -17,6 +17,20 @@ import (
 // DOC(EndAngle): The ending angle of the arc, in radians.
 // DOC(Color): The color of the arc.
 // DOC(Width): The width of the arc.
+//
+// EXAMPLE BEGIN
+// render.Arc(
+//
+//	x = 10,
+//	y = 10,
+//	radius = 10,
+//	start_angle = 0,
+//	end_angle = 3.14 * 1.5,
+//	width = 3,
+//	color = "#0ff",
+//
+// )
+// EXAMPLE END
 type Arc struct {
 	Widget
 	X          float64     `starlark:"x,required"`

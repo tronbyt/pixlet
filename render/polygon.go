@@ -15,11 +15,26 @@ type Point struct {
 // Polygon draws a polygon.
 //
 // DOC(Vertices): A list of (x, y) tuples representing the vertices of the polygon.
-// DOC(Color): The color of the polygon.
+// DOC(FillColor): The color used to fill the polygon.
+// DOC(StrokeColor): The color used to draw the polygon's stroke.
+// DOC(StrokeWidth): The width of the polygon's stroke.
+//
+// EXAMPLE BEGIN
+// render.Polygon(
+//
+//	vertices = [(0, 0), (20, 0), (20, 10), (0, 10)],
+//	fill_color = "#00f",
+//	stroke_color = "#fff",
+//	stroke_width = 1,
+//
+// )
+// EXAMPLE END
 type Polygon struct {
 	Widget
-	Vertices []Point     `starlark:"vertices,required"`
-	Color    color.Color `starlark:"color,required"`
+	Vertices    []Point     `starlark:"vertices,required"`
+	FillColor   color.Color `starlark:"fill_color"`
+	StrokeColor color.Color `starlark:"stroke_color"`
+	StrokeWidth float64     `starlark:"stroke_width"`
 }
 
 func (p Polygon) getBounds() (minX, maxX, minY, maxY float64) {
@@ -40,6 +55,15 @@ func (p Polygon) getBounds() (minX, maxX, minY, maxY float64) {
 			maxY = pt.Y
 		}
 	}
+
+	if p.StrokeColor != nil && p.StrokeWidth > 0 {
+		halfWidth := p.StrokeWidth / 2.0
+		minX -= halfWidth
+		maxX += halfWidth
+		minY -= halfWidth
+		maxY += halfWidth
+	}
+
 	return
 }
 
@@ -62,7 +86,6 @@ func (p Polygon) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 
 	dc.Push()
 	dc.Translate(-minX, -minY)
-	dc.SetColor(p.Color)
 
 	for i, pt := range p.Vertices {
 		if i == 0 {
@@ -71,9 +94,23 @@ func (p Polygon) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 			dc.LineTo(pt.X, pt.Y)
 		}
 	}
-
 	dc.ClosePath()
-	dc.Fill()
+
+	if p.FillColor != nil {
+		dc.SetColor(p.FillColor)
+		if p.StrokeColor != nil && p.StrokeWidth > 0 {
+			dc.FillPreserve()
+		} else {
+			dc.Fill()
+		}
+	}
+
+	if p.StrokeColor != nil && p.StrokeWidth > 0 {
+		dc.SetColor(p.StrokeColor)
+		dc.SetLineWidth(p.StrokeWidth)
+		dc.Stroke()
+	}
+
 	dc.Pop()
 }
 

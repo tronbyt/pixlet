@@ -2111,9 +2111,11 @@ func plotFrameCount(
 
 type Polygon struct {
 	render.Polygon
-	starlarkVertices *starlark.List
-	starlarkColor    starlark.String
-	frame_count      *starlark.Builtin
+	starlarkVertices    *starlark.List
+	starlarkFillColor   starlark.String
+	starlarkStrokeColor starlark.String
+	starlarkStrokeWidth starlark.Value
+	frame_count         *starlark.Builtin
 }
 
 func newPolygon(
@@ -2123,15 +2125,19 @@ func newPolygon(
 	kwargs []starlark.Tuple,
 ) (starlark.Value, error) {
 	var (
-		vertices *starlark.List
-		color    starlark.String
+		vertices     *starlark.List
+		fill_color   starlark.String
+		stroke_color starlark.String
+		stroke_width starlark.Value
 	)
 
 	if err := starlark.UnpackArgs(
 		"Polygon",
 		args, kwargs,
 		"vertices", &vertices,
-		"color", &color,
+		"fill_color?", &fill_color,
+		"stroke_color?", &stroke_color,
+		"stroke_width?", &stroke_width,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Polygon: %s", err)
 	}
@@ -2144,13 +2150,29 @@ func newPolygon(
 		return nil, err
 	}
 
-	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	w.starlarkFillColor = fill_color
+	if fill_color.Len() > 0 {
+		c, err := render.ParseColor(fill_color.GoString())
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("fill_color is not a valid hex string: %s", fill_color.String())
 		}
-		w.Color = c
+		w.FillColor = c
+	}
+
+	w.starlarkStrokeColor = stroke_color
+	if stroke_color.Len() > 0 {
+		c, err := render.ParseColor(stroke_color.GoString())
+		if err != nil {
+			return nil, fmt.Errorf("stroke_color is not a valid hex string: %s", stroke_color.String())
+		}
+		w.StrokeColor = c
+	}
+
+	w.starlarkStrokeWidth = stroke_width
+	if val, ok := starlark.AsFloat(w.starlarkStrokeWidth); ok {
+		w.StrokeWidth = val
+	} else if w.starlarkStrokeWidth != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkStrokeWidth.String())
 	}
 
 	w.frame_count = starlark.NewBuiltin("frame_count", polygonFrameCount)
@@ -2165,7 +2187,9 @@ func (w *Polygon) AsRenderWidget() render.Widget {
 func (w *Polygon) AttrNames() []string {
 	return []string{
 		"vertices",
-		"color",
+		"fill_color",
+		"stroke_color",
+		"stroke_width",
 	}
 }
 
@@ -2173,8 +2197,12 @@ func (w *Polygon) Attr(name string) (starlark.Value, error) {
 	switch name {
 	case "vertices":
 		return w.starlarkVertices, nil
-	case "color":
-		return w.starlarkColor, nil
+	case "fill_color":
+		return w.starlarkFillColor, nil
+	case "stroke_color":
+		return w.starlarkStrokeColor, nil
+	case "stroke_width":
+		return w.starlarkStrokeWidth, nil
 	case "frame_count":
 		return w.frame_count.BindReceiver(w), nil
 	default:

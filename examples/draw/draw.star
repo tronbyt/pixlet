@@ -26,7 +26,9 @@ def main():
                     pad = (10, 5, 0, 0),
                     child = render.Polygon(
                         vertices = [(0, 0), (44, 0), (44, 10), (0, 10)],
-                        color = "#f0f",
+                        stroke_color = "#0f0",
+                        stroke_width = 2,
+                        fill_color = "#f0f",
                     ),
                 ),
                 render.Padding(
