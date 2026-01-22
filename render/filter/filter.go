@@ -31,12 +31,13 @@ func paint(dc *gg.Context, w render.Widget, bounds image.Rectangle, frameIdx int
 	res := fn(dc2.Image())
 
 	// Calculate the position to draw the result to keep it centered
-	// relative to the bounds.
-	dx := (bounds.Dx() - res.Bounds().Dx()) / 2
-	dy := (bounds.Dy() - res.Bounds().Dy()) / 2
+	// relative to the original child bounds.
+	// If the image size hasn't changed, dx and dy will be 0.
+	dx := (res.Bounds().Dx() - cb.Dx()) / 2
+	dy := (res.Bounds().Dy() - cb.Dy()) / 2
 
 	// Draw the result onto the main context
-	dc.DrawImage(res, dx, dy)
+	dc.DrawImage(res, -dx, -dy)
 }
 
 func paintWithTransform(dc *gg.Context, w render.Widget, bounds image.Rectangle, frameIdx int, applyTransform func(dc *gg.Context)) {
