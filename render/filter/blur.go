@@ -55,8 +55,6 @@ func (b Blur) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	// Apply the blur
 	img := blur.Gaussian(dc2.Image(), b.Radius)
 
-	// Draw the result centered in the bounds
-	dx := (bounds.Dx() - img.Bounds().Dx()) / 2
-	dy := (bounds.Dy() - img.Bounds().Dy()) / 2
-	dc.DrawImage(img, dx, dy)
+	// Draw the result at 0,0 because we expanded PaintBounds to match
+	dc.DrawImage(img, 0, 0)
 }
