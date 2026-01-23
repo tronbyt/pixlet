@@ -6,6 +6,9 @@ on:
       - main
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+  pull_request:
+    branches:
+      - "*"
 
 env:
   REGISTRY: ghcr.io
@@ -26,15 +29,33 @@ jobs:
         run: make install-buildifier
 
       - name: Run buildifier
-        run: buildifier -d -r ./
+        run: buildifier -d -r ./ 
 
   build-and-test-release:
     name: Build and Test Release Artifacts
     strategy:
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-24.04
+            release_arch: linux-amd64
+          - os: ubuntu-24.04-arm
+            release_arch: linux-arm64
+          - os: macos-15-intel
+            release_arch: darwin-amd64
+            library_path: "/usr/local/lib"
+            cgo_cppflags: "-I/usr/local/include"
+          - os: macos-latest
+            release_arch: darwin-arm64
+            library_path: "/opt/homebrew/lib"
+            cgo_cppflags: "-I/opt/homebrew/include"
+          - os: windows-latest
+            release_arch: windows-amd64
 
     runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.os == 'windows-latest' && 'msys2 {0}' || 'bash' }}
 
     steps:
       - name: Checkout code
@@ -52,7 +73,7 @@ jobs:
 
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
-        if: matrix.os == 'windows-latest'
+        if: runner.os == 'Windows'
         with:
           msystem: mingw64
           update: true
@@ -63,16 +84,17 @@ jobs:
           path-type: inherit
 
       - name: Install Linux dependencies
-        if: matrix.os == 'ubuntu-24.04' || matrix.os == 'ubuntu-24.04-arm'
-        run: sudo ./scripts/setup-linux.sh
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libwebp-dev
 
       - name: Install macOS dependencies
-        if: matrix.os == 'macos-latest'
-        run: ./scripts/setup-macos.sh
+        if: runner.os == 'macOS'
+        run: brew install webp
 
       - name: Install Windows dependencies
-        if: matrix.os == 'windows-latest'
-        shell: msys2 {0}
+        if: runner.os == 'Windows'
         run: |
           set MSYSTEM=MINGW64
           curl -LO https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-libwebp-1.6.0-1-any.pkg.tar.zst
@@ -81,6 +103,16 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm install
+
+      - name: Update package.json version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        working-directory: frontend
+        env:
+          tag: ${{ github.ref_name }}
+        run: |
+          VERSION=${tag#v}
+          npm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Build frontend
         working-directory: frontend
@@ -92,74 +124,46 @@ jobs:
           go generate ./...
           git diff --exit-code -- .  ':!frontend/package-lock.json'
 
-      - name: Build Linux
-        run: make build
-        if: matrix.os == 'ubuntu-24.04' || matrix.os == 'ubuntu-24.04-arm'
-
-      - name: Build macOS
-        run: make build
-        if: matrix.os == 'macos-latest'
+      - name: Build
+        run: go build -tags="timetzdata,gzip_fonts,netgo,osusergo" github.com/tronbyt/pixlet
         env:
-          LIBRARY_PATH: "/opt/homebrew/lib"
-          CGO_CPPFLAGS: "-I/opt/homebrew/include"
+          LIBRARY_PATH: ${{ matrix.library_path }}
+          CGO_CPPFLAGS: ${{ matrix.cgo_cppflags }}
 
-      - name: Build Windows
-        shell: msys2 {0}
+      - name: Test
+        run: go test -tags="timetzdata,gzip_fonts,netgo,osusergo" -v -cover ./...
+        env:
+          LIBRARY_PATH: ${{ matrix.library_path }}
+          CGO_CPPFLAGS: ${{ matrix.cgo_cppflags }}
+
+      - name: Build Release
+        if: github.event_name != 'pull_request'
         run: |
-          set MSYSTEM=MINGW64
-          make build
-        if: matrix.os == 'windows-latest'
+          mkdir -p build
+          LDFLAGS="-w -s -X 'github.com/tronbyt/pixlet/runtime.Version=${{ github.ref_name }}'"
+          if [ "${{ runner.os }}" != "macOS" ]; then
+             LDFLAGS="$LDFLAGS '-extldflags=-static -lsharpyuv'"
+          fi
+          
+          CGO_ENABLED=1 go build \
+            -ldflags="$LDFLAGS" \
+            -tags="timetzdata,gzip_fonts,netgo,osusergo" \
+            -trimpath \
+            -o build/ \
+            github.com/tronbyt/pixlet
 
-      - name: Test Linux
-        run: make test
-        if: matrix.os == 'ubuntu-24.04' || matrix.os == 'ubuntu-24.04-arm'
+          BINARY="pixlet"
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            BINARY="pixlet.exe"
+          fi
 
-      - name: Test macOS
-        run: make test
-        if: matrix.os == 'macos-latest'
+          tar -cvz -C build -f "build/pixlet_${{ github.ref_name }}_${{ matrix.release_arch }}.tar.gz" "$BINARY"
         env:
-          LIBRARY_PATH: "/opt/homebrew/lib"
-          CGO_CPPFLAGS: "-I/opt/homebrew/include"
-
-      - name: Test Windows
-        shell: msys2 {0}
-        run: |
-          set MSYSTEM=MINGW64
-          make test
-        if: matrix.os == 'windows-latest'
-
-      - name: Build Release Linux (amd64)
-        if: matrix.os == 'ubuntu-24.04'
-        run: make release-linux
-        env:
-          PIXLET_VERSION: ${{ github.ref_name }}
-          RELEASE_ARCHS: linux-amd64
-
-      - name: Build Release Linux (arm64)
-        if: matrix.os == 'ubuntu-24.04-arm'
-        run: make release-linux
-        env:
-          PIXLET_VERSION: ${{ github.ref_name }}
-          RELEASE_ARCHS: linux-arm64
-
-      - name: Build Release macOS
-        if: matrix.os == 'macos-latest'
-        run: make release-macos
-        env:
-          PIXLET_VERSION: ${{ github.ref_name }}
-          LIBRARY_PATH: "/opt/homebrew/lib"
-          CGO_CPPFLAGS: "-I/opt/homebrew/include"
-
-      - name: Build Release Windows
-        if: matrix.os == 'windows-latest'
-        shell: msys2 {0}
-        run: |
-          set MSYSTEM=MINGW64
-          make release-windows
-        env:
-          PIXLET_VERSION: ${{ github.ref_name }}
+          LIBRARY_PATH: ${{ matrix.library_path }}
+          CGO_CPPFLAGS: ${{ matrix.cgo_cppflags }}
 
       - name: Upload Release Artifacts
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v6
         with:
           name: release-artifacts-${{ matrix.os }}
@@ -168,7 +172,7 @@ jobs:
   update-package-json:
     name: Update package.json version
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request'
     permissions:
       contents: write
 
@@ -207,8 +211,8 @@ jobs:
   create-release:
     name: Create Github Release
     runs-on: ubuntu-latest
-    needs: [build-and-test-release, update-package-json]
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build-and-test-release]
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request'
     permissions:
       contents: write
 
@@ -232,6 +236,7 @@ jobs:
               build/*.tar.gz
 
   build-and-push-image:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
@@ -259,7 +264,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-          flavor: |
+          flavor:
             latest=true
             prefix=
             suffix=
