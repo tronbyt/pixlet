@@ -11,6 +11,7 @@ import (
 
 type Sound struct {
 	SchemaSound
+
 	file *file.File
 }
 

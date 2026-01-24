@@ -428,7 +428,6 @@ func TestMarqueeOffsetEnd(t *testing.T) {
 	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 8)))
 	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 9)))
 	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 1024)))
-
 }
 
 func TestMarqueeDelayScrollOffsetStart(t *testing.T) {

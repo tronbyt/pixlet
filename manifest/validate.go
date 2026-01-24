@@ -3,6 +3,7 @@ package manifest
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"unicode"
 
 	"golang.org/x/text/cases"
@@ -10,11 +11,11 @@ import (
 )
 
 const (
-	// Our longest app name to date. This can be updated, but it will need to
+	// MaxNameLength is our longest app name to date. This can be updated, but it will need to
 	// be tested in the mobile app.
 	MaxNameLength = 32
 
-	// Our longest app summary to date. This can be updated, but it will need to
+	// MaxSummaryLength is our longest app summary to date. This can be updated, but it will need to
 	// be tested in the mobile app.
 	MaxSummaryLength = 32
 
@@ -27,10 +28,16 @@ var punctuation []string = []string{
 	"?",
 }
 
-var titleCaser cases.Caser
+var (
+	titleCaser     cases.Caser
+	titleCaserOnce sync.Once
+)
 
-func init() {
-	titleCaser = cases.Title(language.English, cases.NoLower)
+func getTitleCaser() cases.Caser {
+	titleCaserOnce.Do(func() {
+		titleCaser = cases.Title(language.English, cases.NoLower)
+	})
+	return titleCaser
 }
 
 // ValidateName ensures the app name provided adheres to the standards for app
@@ -71,7 +78,7 @@ func ValidateSummary(summary string) error {
 	}
 
 	words := strings.Split(summary, " ")
-	if len(words) > 0 && words[0] != titleCaser.String(words[0]) {
+	if len(words) > 0 && words[0] != getTitleCaser().String(words[0]) {
 		return fmt.Errorf("app summaries should start with an uppercased character")
 	}
 
@@ -97,7 +104,7 @@ func ValidateDesc(desc string) error {
 	}
 
 	words := strings.Split(desc, " ")
-	if len(words) > 0 && words[0] != titleCaser.String(words[0]) {
+	if len(words) > 0 && words[0] != getTitleCaser().String(words[0]) {
 		return fmt.Errorf("app descriptions should start with an uppercased character")
 	}
 
@@ -130,7 +137,7 @@ func ValidateID(id string) error {
 	}
 
 	for _, r := range id {
-		if !(unicode.IsLetter(r) || unicode.IsNumber(r) || r == dash) {
+		if !unicode.IsLetter(r) && !unicode.IsNumber(r) && r != dash {
 			return fmt.Errorf("ids can only contain letters, numbers, or a dash character")
 		}
 	}
@@ -146,7 +153,7 @@ func titleCase(input string) string {
 		if strings.Contains(smallwords, " "+word+" ") && word != string(word[0]) {
 			words[index] = word
 		} else {
-			words[index] = titleCaser.String(word)
+			words[index] = getTitleCaser().String(word)
 		}
 	}
 

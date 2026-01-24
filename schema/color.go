@@ -12,6 +12,7 @@ import (
 
 type Color struct {
 	SchemaField
+
 	starlarkPalette *starlark.List
 }
 
@@ -102,7 +103,7 @@ func newColor(
 		}
 
 		s.Palette = append(s.Palette, hex)
-		s.starlarkPalette.Append(starlark.String(hex))
+		_ = s.starlarkPalette.Append(starlark.String(hex))
 	}
 
 	return s, nil
@@ -120,7 +121,6 @@ func (s *Color) AttrNames() []string {
 
 func (s *Color) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

@@ -58,7 +58,7 @@ import (
 //	    ],
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Column struct {
 	Children   []Widget `starlark:"children,required"`
 	MainAlign  string   `starlark:"main_align"`

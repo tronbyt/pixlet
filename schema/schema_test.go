@@ -672,7 +672,7 @@ def main():
 	assert.NoError(t, err)
 
 	var s schema.Schema
-	json.Unmarshal([]byte(jsonSchema), &s)
+	_ = json.Unmarshal([]byte(jsonSchema), &s)
 
 	assert.Equal(t, schema.Schema{
 		Version: "1",
@@ -689,7 +689,7 @@ def main():
 }
 
 // Verifies that schema returned by a generated field's handler is
-// validated
+// validated.
 func TestSchemaWithGeneratedHandlerMalformed(t *testing.T) {
 	code := `
 def get_schema():
@@ -732,7 +732,7 @@ def main():
 }
 
 // Verifies that schema returned by a generated field's handler is
-// validated
+// validated.
 func TestSchemaWithGeneratedHandlerMissing(t *testing.T) {
 	code := `
 def get_schema():
@@ -1200,9 +1200,9 @@ def get_schema():
             ),
         ]
     )
-    
+
 def main():
-    return None 
+    return None
     `
 
 	vfs := fstest.MapFS{

@@ -6,7 +6,7 @@ import (
 	"github.com/tronbyt/gg"
 )
 
-// A vector draws its children either vertically or horizontally (like
+// Vector draws its children either vertically or horizontally (like
 // a row or a column).
 //
 // A vector has a main axis along which children are draw. The main
@@ -141,19 +141,13 @@ func (v Vector) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	spacingResidual := 0
 
 	// The amount of space we have to play with
-	remaining := (dx*(width-sumW) + dy*(height-sumH))
-	if remaining < 0 {
-		remaining = 0
-	}
+	remaining := max((dx*(width-sumW) + dy*(height-sumH)), 0)
 
 	switch v.MainAlign {
 	case "start":
 		// all = 0
 	case "end":
-		offset = dx*(width-sumW) + dy*(height-sumH)
-		if offset < 0 {
-			offset = 0
-		}
+		offset = max(dx*(width-sumW)+dy*(height-sumH), 0)
 	case "space_evenly":
 		spacing = remaining / (len(childrenBounds) + 1)
 		spacingResidual = remaining % (len(childrenBounds) + 1)

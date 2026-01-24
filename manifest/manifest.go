@@ -67,7 +67,7 @@ func (m *Manifest) WriteManifest(w io.Writer) error {
 		return fmt.Errorf("could not marshal manifest: %w", err)
 	}
 
-	fmt.Fprintf(w, "---\n")
+	_, _ = fmt.Fprintf(w, "---\n")
 
 	_, err = w.Write(b)
 	if err != nil {

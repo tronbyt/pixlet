@@ -42,21 +42,21 @@ import (
 	"go.starlark.net/starlarkstruct"
 )
 
-// AsString unquotes a starlark string value
+// AsString unquotes a starlark string value.
 func AsString(x starlark.Value) (string, error) {
 	return strconv.Unquote(x.String())
 }
 
 // ModuleName defines the expected name for this Module when used
-// in starlark's load() function, eg: load('http.star', 'http')
+// in starlark's load() function, eg: load('http.star', 'http').
 const ModuleName = "http.star"
 
 var (
 	// StarlarkHTTPClient is the http client used to create the http module. override with
-	// a custom client before calling LoadModule
+	// a custom client before calling LoadModule.
 	StarlarkHTTPClient = http.DefaultClient
 	// StarlarkHTTPGuard is a global RequestGuard used in LoadModule. override with a custom
-	// implementation before calling LoadModule
+	// implementation before calling LoadModule.
 	StarlarkHTTPGuard RequestGuard
 )
 
@@ -68,7 +68,7 @@ const (
 	formEncodingURL       = "application/x-www-form-urlencoded"
 )
 
-// LoadModule creates an http Module
+// LoadModule creates an http Module.
 func LoadModule() (starlark.StringDict, error) {
 	var m = &Module{cli: StarlarkHTTPClient}
 	if StarlarkHTTPGuard != nil {
@@ -81,24 +81,24 @@ func LoadModule() (starlark.StringDict, error) {
 }
 
 // RequestGuard controls access to http by checking before making requests
-// if Allowed returns an error the request will be denied
+// if Allowed returns an error the request will be denied.
 type RequestGuard interface {
 	Allowed(thread *starlark.Thread, req *http.Request) (*http.Request, error)
 }
 
 // Module joins http tools to a dataset, allowing dataset
-// to follow along with http requests
+// to follow along with http requests.
 type Module struct {
 	cli *http.Client
 	rg  RequestGuard
 }
 
-// Struct returns this module's methods as a starlark Struct
+// Struct returns this module's methods as a starlark Struct.
 func (m *Module) Struct() *starlarkstruct.Struct {
 	return starlarkstruct.FromStringDict(starlarkstruct.Default, m.StringDict())
 }
 
-// StringDict returns all module methods in a starlark.StringDict
+// StringDict returns all module methods in a starlark.StringDict.
 func (m *Module) StringDict() starlark.StringDict {
 	return starlark.StringDict{
 		"get":         starlark.NewBuiltin("get", m.reqMethod("get")),
@@ -111,7 +111,7 @@ func (m *Module) StringDict() starlark.StringDict {
 	}
 }
 
-// reqMethod is a factory function for generating starlark builtin functions for different http request methods
+// reqMethod is a factory function for generating starlark builtin functions for different http request methods.
 func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	return func(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 		var (
@@ -344,7 +344,7 @@ func SetBody(req *http.Request, body starlark.String, formData *starlark.Dict, f
 		case formEncodingMultipart:
 			var b bytes.Buffer
 			mw := multipart.NewWriter(&b)
-			defer mw.Close()
+			defer func() { _ = mw.Close() }()
 
 			contentType = mw.FormDataContentType()
 
@@ -375,12 +375,12 @@ func SetBody(req *http.Request, body starlark.String, formData *starlark.Dict, f
 }
 
 // Response represents an HTTP response, wrapping a go http.Response with
-// starlark methods
+// starlark methods.
 type Response struct {
 	http.Response
 }
 
-// Struct turns a response into a *starlark.Struct
+// Struct turns a response into a *starlark.Struct.
 func (r *Response) Struct() *starlarkstruct.Struct {
 	return starlarkstruct.FromStringDict(starlarkstruct.Default, starlark.StringDict{
 		"url":         starlark.String(r.Request.URL.String()),
@@ -394,7 +394,7 @@ func (r *Response) Struct() *starlarkstruct.Struct {
 	})
 }
 
-// HeadersDict flops
+// HeadersDict flops.
 func (r *Response) HeadersDict() *starlark.Dict {
 	d := new(starlark.Dict)
 	for key, vals := range r.Header {
@@ -405,22 +405,22 @@ func (r *Response) HeadersDict() *starlark.Dict {
 	return d
 }
 
-// Text returns the raw data as a string
+// Text returns the raw data as a string.
 func (r *Response) Text(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
 	}
-	r.Body.Close()
+	_ = r.Body.Close()
 	// reset reader to allow multiple calls
 	r.Body = io.NopCloser(bytes.NewReader(data))
 
 	return starlark.String(string(data)), nil
 }
 
-// JSON attempts to parse the response body as JSON
+// JSON attempts to parse the response body as JSON.
 func (r *Response) JSON(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var data interface{}
+	var data any
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -430,7 +430,7 @@ func (r *Response) JSON(thread *starlark.Thread, _ *starlark.Builtin, args starl
 	if err := json.Unmarshal(body, &data); err != nil {
 		return nil, err
 	}
-	r.Body.Close()
+	_ = r.Body.Close()
 	// reset reader to allow multiple calls
 	r.Body = io.NopCloser(bytes.NewReader(body))
 	return util.Marshal(data)

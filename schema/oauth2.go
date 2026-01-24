@@ -10,6 +10,7 @@ import (
 
 type OAuth2 struct {
 	SchemaField
+
 	starlarkScopes *starlark.List
 }
 
@@ -90,7 +91,6 @@ func (s *OAuth2) AttrNames() []string {
 
 func (s *OAuth2) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

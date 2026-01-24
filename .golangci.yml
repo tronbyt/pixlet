@@ -1,0 +1,27 @@
+version: "2"
+
+linters:
+  default: fast
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - modernize
+    - staticcheck
+    - unused
+  disable:
+    - cyclop
+    - depguard
+    - dupl
+    - funcorder
+    - funlen
+    - gocognit
+    - gocyclo
+    - godox
+    - lll
+    - maintidx
+    - mnd
+    - nestif
+    - nlreturn
+    - testpackage
+    - wsl

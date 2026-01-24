@@ -23,7 +23,7 @@ import (
 //
 //	render.Emoji(emoji="😀", height=32) # Large smiley face
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Emoji struct {
 	EmojiStr      string `starlark:"emoji,required"`
 	Width, Height int
@@ -84,10 +84,9 @@ func (e *Emoji) Init(*starlark.Thread) error {
 	// Compute the desired scale and choose the smallest integer >= it.
 	sx := float64(nw) / float64(w)
 	sy := float64(nh) / float64(h)
-	upFactor := int(math.Ceil(math.Max(sx, sy)))
-	if upFactor < 2 {
-		upFactor = 2 // oversample a bit to improve output quality
-	}
+	upFactor := max(int(math.Ceil(math.Max(sx, sy))),
+		// oversample a bit to improve output quality
+		2)
 
 	// Cap to avoid large intermediates
 	const maxFactor = 10

@@ -58,7 +58,7 @@ func TestInterpolateTransforms(t *testing.T) {
 	assert.Equal(t, []Transform{Translate{Vec2f{X: 2.5, Y: 2.5}}, Scale{Vec2f{X: 1.5, Y: 1.5}}}, result)
 
 	// Mismatched transforms are not supported for simplicity reasons.
-	result, ok = InterpolateTransforms(
+	_, ok = InterpolateTransforms(
 		[]Transform{Scale{Vec2f{X: 1.0, Y: 1.0}}, Translate{Vec2f{X: 100, Y: 100}}},
 		[]Transform{Rotate{Angle: 90.0}, Scale{Vec2f{X: 2.0, Y: 2.0}}},
 		0.5)

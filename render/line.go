@@ -28,9 +28,10 @@ import (
 //	color = "#fff",
 //
 // )
-// EXAMPLE END
+// EXAMPLE END.
 type Line struct {
 	Widget
+
 	X1    float64     `starlark:"x1,required"`
 	Y1    float64     `starlark:"y1,required"`
 	X2    float64     `starlark:"x2,required"`

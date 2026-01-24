@@ -16,7 +16,7 @@ const testPNG = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAMCAYAAABbayygAAAAOUlEQVQoU2P8z8D
 func TestImage(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
 	img := &Image{Src: string(raw)}
-	img.Init(nil)
+	require.NoError(t, img.Init(nil))
 
 	// Size of Image is independent of bounds
 	im := PaintWidget(img, image.Rect(0, 0, 0, 0), 0)
@@ -63,7 +63,7 @@ func TestImage(t *testing.T) {
 func TestImageScale(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
 	img := &Image{Src: string(raw), Width: 5, Height: 6}
-	img.Init(nil)
+	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
 	assert.Equal(t, 5, w)
@@ -79,7 +79,7 @@ func TestImageScale(t *testing.T) {
 func TestImageScaleAspectRatioWidth(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
 	img := &Image{Src: string(raw), Width: 5}
-	img.Init(nil)
+	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
 	assert.Equal(t, 5, w)
@@ -95,7 +95,7 @@ func TestImageScaleAspectRatioWidth(t *testing.T) {
 func TestImageScaleAspectRatioHeight(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
 	img := &Image{Src: string(raw), Height: 6}
-	img.Init(nil)
+	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
 	assert.Equal(t, 5, w)
@@ -122,7 +122,7 @@ func TestImageAnimatedGif(t *testing.T) {
 
 	raw, _ := base64.StdEncoding.DecodeString(testGIF)
 	img := &Image{Src: string(raw)}
-	img.Init(nil)
+	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
 	assert.Equal(t, 5, w)

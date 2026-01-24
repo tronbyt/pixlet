@@ -30,9 +30,10 @@ import (
 //	color = "#0ff",
 //
 // )
-// EXAMPLE END
+// EXAMPLE END.
 type Arc struct {
 	Widget
+
 	X          float64     `starlark:"x,required"`
 	Y          float64     `starlark:"y,required"`
 	Radius     float64     `starlark:"radius,required"`

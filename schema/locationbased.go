@@ -61,7 +61,6 @@ func (s *LocationBased) AttrNames() []string {
 
 func (s *LocationBased) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

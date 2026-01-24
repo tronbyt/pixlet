@@ -11,8 +11,7 @@ import (
 type contextKey string
 
 func TestThreadContext(t *testing.T) {
-	var key contextKey
-	key = "foo"
+	var key contextKey = "foo"
 	val := "bar"
 
 	ctx := context.WithValue(t.Context(), key, val)

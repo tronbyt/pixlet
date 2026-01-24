@@ -15,9 +15,9 @@ type Widget interface {
 	FrameCount(bounds image.Rectangle) int
 }
 
-// Widgets can require initialization
+// WidgetWithInit is an interface for widgets that require initialization.
 type WidgetWithInit interface {
-	Init(*starlark.Thread) error
+	Init(thread *starlark.Thread) error
 }
 
 // WidgetStaticSize has inherent size and width known before painting.
@@ -25,8 +25,8 @@ type WidgetStaticSize interface {
 	Size() (int, int)
 }
 
-// Computes a (mod m). Useful for handling frameIdx > num available
-// frames in Widget.Paint()
+// ModInt computes a (mod m). Useful for handling frameIdx > num available
+// frames in Widget.Paint().
 func ModInt(a, m int) int {
 	a = a % m
 	if a < 0 {
@@ -35,7 +35,7 @@ func ModInt(a, m int) int {
 	return a
 }
 
-// Computes the maximum frame count of a slice of widgets.
+// MaxFrameCount computes the maximum frame count of a slice of widgets.
 func MaxFrameCount(widgets []Widget, bounds image.Rectangle) int {
 	m := 1
 

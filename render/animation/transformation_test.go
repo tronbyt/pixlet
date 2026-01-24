@@ -182,7 +182,6 @@ func TestTransformationScale(t *testing.T) {
 		"rrrrrrrrr",
 		"rrrrrrrrr",
 	}, im))
-
 }
 
 func TestTransformationRotate(t *testing.T) {

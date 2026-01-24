@@ -14,7 +14,7 @@ func webpDelays(t *testing.T, webpData []byte) []int {
 	assert.NoError(t, err)
 	img, err := decoder.Decode()
 	assert.NoError(t, err)
-	delays := []int{}
+	delays := make([]int, 0, len(img.Timestamp))
 	last := 0
 	for _, ts := range img.Timestamp {
 		d := ts - last

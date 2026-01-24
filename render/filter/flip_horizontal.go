@@ -18,7 +18,7 @@ import (
 //	    child = render.Image(src="...", width=64, height=64),
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type FlipHorizontal struct {
 	render.Widget `starlark:"child,required"`
 }

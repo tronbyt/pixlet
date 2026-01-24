@@ -45,7 +45,7 @@ const (
 //	    color="#fa0",
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type WrappedText struct {
 	Content     string `starlark:"content,required"`
 	Font        string
@@ -89,10 +89,7 @@ func (tw *WrappedText) PaintBounds(bounds image.Rectangle, frameIdx int) image.R
 	if width == 0 {
 		width = bounds.Dx()
 	}
-	height := tw.Height
-	if height == 0 {
-		height = bounds.Dy()
-	}
+	var height int
 	linespace := float64(tw.LineSpacing)
 	if linespace <= 0 {
 		linespace = 0

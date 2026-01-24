@@ -20,10 +20,11 @@ import (
 //	    level = 128.0,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Threshold struct {
 	render.Widget `starlark:"child,required"`
-	Level         float64 `starlark:"level,required"`
+
+	Level float64 `starlark:"level,required"`
 }
 
 func (t Threshold) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {

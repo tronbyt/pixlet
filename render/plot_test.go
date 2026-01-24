@@ -104,10 +104,9 @@ func TestPlotComputeLimits(t *testing.T) {
 		{2, 3.14},
 	}
 	check(2, 2.5, 3.14-0.5, 3.14+0.5)
-
 }
 
-// Tests of the internal translatePoints() method
+// Tests of the internal translatePoints() method.
 func TestPlotTranslatePoints(t *testing.T) {
 	p := Plot{
 		Width:  10,
@@ -200,7 +199,6 @@ func TestPlotFlatLine(t *testing.T) {
 		"..........",
 		"..........",
 	}, PaintWidget(p, image.Rect(0, 0, 100, 100), 0)))
-
 }
 
 func TestPlotVerticalLine(t *testing.T) {
@@ -298,7 +296,6 @@ func TestPlotJaggedLine(t *testing.T) {
 		".........1...1111...",
 		"..........111.......",
 	}, PaintWidget(p, image.Rect(0, 0, 100, 100), 0)))
-
 }
 
 func TestPlotEmpty(t *testing.T) {
@@ -329,7 +326,6 @@ func TestPlotEmpty(t *testing.T) {
 		"..........",
 		"..........",
 	}, PaintWidget(p, image.Rect(0, 0, 100, 100), 0)))
-
 }
 
 func TestPlotFewPoints(t *testing.T) {
@@ -369,7 +365,6 @@ func TestPlotFewPoints(t *testing.T) {
 		"11......11",
 		"1111111111",
 	}, PaintWidget(p, image.Rect(0, 0, 100, 100), 0)))
-
 }
 
 func TestPlotInvertedColor(t *testing.T) {
@@ -423,7 +418,6 @@ func TestPlotInvertedColor(t *testing.T) {
 		"........2..2........",
 		"........2222........",
 	}, PaintWidget(p, image.Rect(0, 0, 100, 100), 0)))
-
 }
 
 func TestPlotSurfaceFill(t *testing.T) {
@@ -596,5 +590,4 @@ func TestPlotScatter(t *testing.T) {
 		"..........",
 		"..........",
 	}, PaintWidget(p, image.Rect(0, 0, 100, 100), 0)))
-
 }

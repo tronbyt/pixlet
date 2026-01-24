@@ -17,7 +17,7 @@ improvements!
 
 
 ## AnimatedPositioned
-Animate a widget from start to end coordinates.
+AnimatedPositioned animates a widget from start to end coordinates.
 
 **DEPRECATED**: Please use `animation.Transformation` instead.
 
@@ -32,10 +32,10 @@ Animate a widget from start to end coordinates.
 | `y_start` | `int` | Vertical start coordinate | N |
 | `y_end` | `int` | Vertical end coordinate | N |
 | `delay` | `int` | Delay before animation in frames | N |
-| `hold` | `int` | Delay after animation in frames | N |
+| `hold` | `int` | Delay after animation in frames. | N |
 
 ## Keyframe
-A keyframe defining specific point in time in the animation.
+Keyframe defines a specific point in time in the animation.
 
 The keyframe _percentage_ can is expressed as a floating point value between `0.0` and `1.0`.
 
@@ -44,36 +44,36 @@ The keyframe _percentage_ can is expressed as a floating point value between `0.
 | --- | --- | --- | --- |
 | `percentage` | `float` | Percentage of the time at which this keyframe occurs through the animation. | **Y** |
 | `transforms` | `[Transform]` | List of transforms at this keyframe to interpolate to or from. | **Y** |
-| `curve` | `str / function` | Easing curve to use, default is 'linear' | N |
+| `curve` | `str / function` | Easing curve to use, default is 'linear'. | N |
 
 ## Origin
-An relative anchor point to use for scaling and rotation transforms.
+Origin is a relative anchor point to use for scaling and rotation transforms.
 
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `x` | `float` | Horizontal anchor point | **Y** |
-| `y` | `float` | Vertical anchor point | **Y** |
+| `y` | `float` | Vertical anchor point. | **Y** |
 
 ## Rotate
-Transform by rotating by a given angle in degrees.
+Rotate transforms by rotating by a given angle in degrees.
 
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
-| `angle` | `float / int` | Angle to rotate by in degrees | **Y** |
+| `angle` | `float / int` | Angle to rotate by in degrees. | **Y** |
 
 ## Scale
-Transform by scaling by a given factor.
+Scale transforms by scaling by a given factor.
 
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `x` | `float / int` | Horizontal scale factor | **Y** |
-| `y` | `float / int` | Vertical scale factor | **Y** |
+| `y` | `float / int` | Vertical scale factor. | **Y** |
 
 ## Shear
-Transform by shearing by a given X and Y angle in degrees.
+Shear transforms by shearing by a given X and Y angle in degrees.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -125,7 +125,7 @@ keyframe, while a value of `backwards` will rever to the transforms
 of the first keyframe.
 
 When translating the child widget on the X- or Y-axis, it often is
-desireable to round to even integers, which can be controlled via
+desirable to round to even integers, which can be controlled via
 `rounding`, which defaults to `round`. Possible values are `round` to
 round to the nearest integer, `floor` to round down, `ceil` to round
 up or `none` to not perform any rounding. Rounding only is applied for
@@ -134,6 +134,20 @@ translation transforms, but not to scaling or rotation transforms.
 If `wait_for_child` is set to `True`, the animation will finish and
 then wait for all child frames to play before restarting. If it is set
 to `False`, it will not wait.
+
+
+
+
+
+
+
+
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -175,10 +189,10 @@ animation.Transformation(
 ![](img/widget_Transformation_0.gif)
 
 ## Translate
-Transform by translating by a given offset.
+Translate transforms by translating by a given offset.
 
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `x` | `float / int` | Horizontal offset | **Y** |
-| `y` | `float / int` | Vertical offset | **Y** |
+| `y` | `float / int` | Vertical offset. | **Y** |

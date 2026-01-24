@@ -83,7 +83,6 @@ def main():
 
 	roots, _ = app.Run(t.Context())
 	assert.Equal(t, 3, len(roots))
-
 }
 
 func TestCacheNoInit(t *testing.T) {

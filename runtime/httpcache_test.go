@@ -158,11 +158,11 @@ func TestDetermineTTLJitter(t *testing.T) {
 		Header: map[string][]string{
 			"X-Tidbyt-Cache-Seconds": {"60"},
 		},
-		Method: "GET",
+		Method: http.MethodGet,
 	}
 
 	res := &http.Response{
-		StatusCode: 200,
+		StatusCode: http.StatusOK,
 	}
 
 	jitterRand = rand.New(rand.NewSource(50))
@@ -172,11 +172,11 @@ func TestDetermineTTLJitter(t *testing.T) {
 
 func TestDetermineTTLNoHeaders(t *testing.T) {
 	req := &http.Request{
-		Method: "GET",
+		Method: http.MethodGet,
 	}
 
 	res := &http.Response{
-		StatusCode: 200,
+		StatusCode: http.StatusOK,
 	}
 
 	ttl := DetermineTTL(req, res)

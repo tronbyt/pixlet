@@ -116,7 +116,6 @@ func TestWrappedTextWithsize(t *testing.T) {
 }
 
 func TestWrappedTextLineSpacing(t *testing.T) {
-
 	// Single pixel line space
 	text := &WrappedText{Content: "AB CD.", LineSpacing: 1}
 	assert.NoError(t, text.Init(nil))

@@ -28,6 +28,7 @@ func NewGetCmd() *cobra.Command {
 var ErrKeyNotFound = fmt.Errorf("key not found")
 
 func getRun(_ *cobra.Command, args []string) error {
+	InitConfig()
 	key := args[0]
 
 	if !Config.IsSet(key) {

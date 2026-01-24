@@ -10,7 +10,7 @@ import (
 
 var DefaultPlotColor = color.RGBA{0xff, 0xff, 0xff, 0xff}
 
-// surface fill gets line color dampened by this factor
+// FillDampFactor determines how much surface fill gets line color dampened.
 var FillDampFactor uint8 = 0x55
 
 // Plot is a widget that draws a data series.
@@ -51,7 +51,7 @@ var FillDampFactor uint8 = 0x55
 //	    fill = True,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Plot struct {
 	// Coordinates of points to plot
 	Data [][2]float64 `starlark:"data,required"`
@@ -85,9 +85,8 @@ type Plot struct {
 	invThreshold int
 }
 
-// Computes X and Y limits
+// Computes X and Y limits.
 func (p *Plot) computeLimits() (float64, float64, float64, float64) {
-
 	// If all limits are set by user, no computation is required
 	if !math.IsNaN(p.XLim[0]) && !math.IsNaN(p.XLim[1]) &&
 		!math.IsNaN(p.YLim[0]) && !math.IsNaN(p.YLim[1]) {
@@ -171,7 +170,7 @@ func (p *Plot) computeLimits() (float64, float64, float64, float64) {
 	return xLimMin, xLimMax, yLimMin, yLimMax
 }
 
-// Maps the points in X and Y to positions on the canvas
+// Maps the points in X and Y to positions on the canvas.
 func (p *Plot) translatePoints() []PathPoint {
 	xLimMin, xLimMax, yLimMin, yLimMax := p.computeLimits()
 

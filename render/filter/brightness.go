@@ -20,10 +20,11 @@ import (
 //	    change = -0.5,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Brightness struct {
 	render.Widget `starlark:"child,required"`
-	Change        float64 `starlark:"change,required"`
+
+	Change float64 `starlark:"change,required"`
 }
 
 func (b Brightness) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {

@@ -20,10 +20,11 @@ import (
 //	    gamma = 0.5,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Gamma struct {
 	render.Widget `starlark:"child,required"`
-	Gamma         float64 `starlark:"gamma,required"`
+
+	Gamma float64 `starlark:"gamma,required"`
 }
 
 func (g Gamma) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {

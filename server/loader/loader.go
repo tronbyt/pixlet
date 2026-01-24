@@ -59,11 +59,12 @@ type Loader struct {
 }
 
 type Update struct {
+	canvas.Metadata
+
 	Image     string
 	ImageType string
 	Schema    string
-	canvas.Metadata
-	Err error
+	Err       error
 }
 
 // NewLoader instantiates a new loader structure. The loader will read off of
@@ -286,7 +287,6 @@ func (l *Loader) GetSchema() []byte {
 	s := l.applet.Schema
 	if s == nil {
 		s = &schema.Schema{}
-
 	}
 
 	b, err := json.Marshal(s)
@@ -422,7 +422,7 @@ func RenderApplet(path string, config map[string]any, options ...Option) ([]byte
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}
-	defer applet.Close()
+	defer func() { _ = applet.Close() }()
 
 	if conf.Meta.Is2x && (applet.Manifest == nil || !applet.Manifest.Supports2x) {
 		conf.Meta.Is2x = false

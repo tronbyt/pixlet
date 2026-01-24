@@ -36,7 +36,7 @@ func FromFS(fs fs.FS) (*AppBundle, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not open manifest: %w", err)
 	}
-	defer m.Close()
+	defer func() { _ = m.Close() }()
 
 	man, err := manifest.LoadManifest(m)
 	if err != nil {
@@ -62,12 +62,12 @@ func LoadBundle(in io.Reader) (*AppBundle, error) {
 	if err != nil {
 		return nil, fmt.Errorf("creating gzip reader: %w", err)
 	}
-	defer gzr.Close()
+	defer func() { _ = gzr.Close() }()
 
 	// read the entire tarball into memory so that we can seek
 	// around it, and so that the underlying reader can be closed.
 	var b bytes.Buffer
-	io.Copy(&b, gzr)
+	_, _ = io.Copy(&b, gzr)
 
 	r := bytes.NewReader(b.Bytes())
 	fs, err := tarfs.New(r)

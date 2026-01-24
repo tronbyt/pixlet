@@ -90,7 +90,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 		return nil, fmt.Errorf("failed to generate cache key: %w", err)
 	}
 
-	if req.Method == "GET" || req.Method == "HEAD" || req.Method == "POST" {
+	if req.Method == http.MethodGet || req.Method == http.MethodHead || req.Method == http.MethodPost {
 		b, exists, err := c.cache.Get(nil, key)
 		if exists && err == nil {
 			if res, err := http.ReadResponse(bufio.NewReader(bytes.NewReader(b)), req); err == nil {
@@ -105,7 +105,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 		resp.Body = http.MaxBytesReader(nil, resp.Body, c.MaxResponseBytes)
 	}
 
-	if err == nil && (req.Method == "GET" || req.Method == "HEAD" || req.Method == "POST") {
+	if err == nil && (req.Method == http.MethodGet || req.Method == http.MethodHead || req.Method == http.MethodPost) {
 		ser, err := httputil.DumpResponse(resp, true)
 		if err != nil {
 			// if httputil.DumpResponse fails, it leaves the response body in an
@@ -114,7 +114,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 		}
 
 		ttl := DetermineTTL(req, resp)
-		c.cache.Set(nil, key, ser, int64(ttl.Seconds()))
+		_ = c.cache.Set(nil, key, ser, int64(ttl.Seconds()))
 		resp.Header.Set("tidbyt-cache-status", "MISS")
 	}
 
@@ -166,7 +166,7 @@ func DetermineTTL(req *http.Request, resp *http.Response) time.Duration {
 func determineTTL(req *http.Request, resp *http.Response) time.Duration {
 	// If the response is a 429, we want to cache the response for the duration
 	// the remote server told us to wait before retrying.
-	if resp.StatusCode == 429 {
+	if resp.StatusCode == http.StatusTooManyRequests {
 		retry := MinRequestTTL
 		retryAfter := resp.Header.Get("Retry-After")
 		if retryAfter != "" {
@@ -193,7 +193,7 @@ func determineTTL(req *http.Request, resp *http.Response) time.Duration {
 
 	// We don't want to cache POST requests unless the developer explicitly
 	// requests it.
-	if ttl == 0 && !(req.Method == "GET" || req.Method == "HEAD") {
+	if ttl == 0 && req.Method != http.MethodGet && req.Method != http.MethodHead {
 		return MinRequestTTL
 	}
 
@@ -258,14 +258,14 @@ func determineDeveloperTTL(req *http.Request) time.Duration {
 	return 0
 }
 
-func parseCacheControl(header string) map[string]interface{} {
-	directives := make(map[string]interface{})
+func parseCacheControl(header string) map[string]any {
+	directives := make(map[string]any)
 
-	for _, directive := range strings.Split(header, ",") {
+	for directive := range strings.SplitSeq(header, ",") {
 		parts := strings.SplitN(strings.TrimSpace(directive), "=", 2)
 
 		key := strings.ToLower(parts[0])
-		var value interface{} = true
+		var value any = true
 
 		if len(parts) > 1 {
 			value = parts[1]

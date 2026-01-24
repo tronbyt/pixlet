@@ -41,12 +41,9 @@ widgets:
 	 $(GO_CMD) run ./runtime/gen
 	 gofmt -s -w ./
 
-install-buildifier:
-	$(GO_CMD) install github.com/bazelbuild/buildtools/buildifier@v0.0.0-20260113134051-f026de8858b3
-
 lint:
-	@ buildifier --version >/dev/null 2>&1 || $(MAKE) install-buildifier
-	buildifier -r ./
+	$(GO_CMD) tool buildifier -r ./
+	golangci-lint run
 
 format: lint
 

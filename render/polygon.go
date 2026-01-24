@@ -28,9 +28,10 @@ type Point struct {
 //	stroke_width = 1,
 //
 // )
-// EXAMPLE END
+// EXAMPLE END.
 type Polygon struct {
 	Widget
+
 	Vertices    []Point     `starlark:"vertices,required"`
 	FillColor   color.Color `starlark:"fill_color"`
 	StrokeColor color.Color `starlark:"stroke_color"`

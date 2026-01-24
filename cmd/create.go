@@ -11,7 +11,7 @@ import (
 	"github.com/tronbyt/pixlet/tools/repo"
 )
 
-// NewCreate prompts the user for info and generates a new app.
+// NewCreateCmd prompts the user for info and generates a new app.
 func NewCreateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create",

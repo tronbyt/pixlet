@@ -119,7 +119,7 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 // of the first keyframe.
 //
 // When translating the child widget on the X- or Y-axis, it often is
-// desireable to round to even integers, which can be controlled via
+// desirable to round to even integers, which can be controlled via
 // `rounding`, which defaults to `round`. Possible values are `round` to
 // round to the nearest integer, `floor` to round down, `ceil` to round
 // up or `none` to not perform any rounding. Rounding only is applied for
@@ -163,7 +163,7 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 //	    ],
 //	),
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Transformation struct {
 	Child        render.Widget `starlark:"child,required"`
 	Keyframes    []Keyframe    `starlark:"keyframes,required"`
@@ -178,25 +178,25 @@ type Transformation struct {
 	WaitForChild bool          `starlark:"wait_for_child"`
 }
 
-func (self *Transformation) Init(*starlark.Thread) error {
-	self.Keyframes = processKeyframes(self.Keyframes)
+func (t *Transformation) Init(thread *starlark.Thread) error {
+	t.Keyframes = processKeyframes(t.Keyframes)
 
 	return nil
 }
 
-func (self *Transformation) FrameCount(bounds image.Rectangle) int {
-	fc := self.Direction.FrameCount(self.Delay, self.Duration)
-	cfc := self.Child.FrameCount(bounds)
+func (t *Transformation) FrameCount(bounds image.Rectangle) int {
+	fc := t.Direction.FrameCount(t.Delay, t.Duration)
+	cfc := t.Child.FrameCount(bounds)
 
-	if self.WaitForChild && cfc > fc {
+	if t.WaitForChild && cfc > fc {
 		return cfc
 	}
 
 	return fc
 }
 
-func (self *Transformation) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
-	w, h := self.Width, self.Height
+func (t *Transformation) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
+	w, h := t.Width, t.Height
 
 	if w == 0 {
 		w = bounds.Dx()
@@ -208,26 +208,26 @@ func (self *Transformation) PaintBounds(bounds image.Rectangle, frameIdx int) im
 	return image.Rect(0, 0, w, h)
 }
 
-func (self *Transformation) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
-	bounds = self.PaintBounds(bounds, frameIdx)
-	cb := self.Child.PaintBounds(bounds, frameIdx)
+func (t *Transformation) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
+	bounds = t.PaintBounds(bounds, frameIdx)
+	cb := t.Child.PaintBounds(bounds, frameIdx)
 
 	// As the origin might have been specified in relative units,
 	// transform it given the child widget bounds.
-	origin := self.Origin.Transform(cb)
+	origin := t.Origin.Transform(cb)
 
 	// Calculate the overall animation progress.
-	progress := self.Direction.Progress(
-		self.Delay,
-		self.Duration,
-		self.FillMode.Value(),
+	progress := t.Direction.Progress(
+		t.Delay,
+		t.Duration,
+		t.FillMode.Value(),
 		frameIdx,
 	)
 
 	dc.Push()
 
 	// Find the adjacent keyframes to interpolate between.
-	if from, to, err := findKeyframes(self.Keyframes, progress); err == nil {
+	if from, to, err := findKeyframes(t.Keyframes, progress); err == nil {
 		// Rescale animation progress to progress between keyframes and apply easing curve.
 		progress = Rescale(from.Percentage.Value, to.Percentage.Value, 0.0, 1.0, progress)
 		progress = from.Curve.Transform(progress)
@@ -235,12 +235,12 @@ func (self *Transformation) Paint(dc *gg.Context, bounds image.Rectangle, frameI
 		// Interpolate between transforms and apply them in order.
 		if transforms, ok := InterpolateTransforms(from.Transforms, to.Transforms, progress); ok {
 			for _, transform := range transforms {
-				transform.Apply(dc, origin, self.Rounding)
+				transform.Apply(dc, origin, t.Rounding)
 			}
 		}
 	}
 
-	self.Child.Paint(dc, bounds, frameIdx)
+	t.Child.Paint(dc, bounds, frameIdx)
 
 	dc.Pop()
 }

@@ -26,6 +26,7 @@ func NewSetCmd() *cobra.Command {
 }
 
 func setRun(_ *cobra.Command, args []string) error {
+	InitConfig()
 	key, val := args[0], args[1]
 
 	Config.Set(key, val)

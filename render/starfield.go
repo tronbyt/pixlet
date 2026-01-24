@@ -36,7 +36,9 @@ func (s *Star) Tick() {
 	s.D *= 1 - s.V
 }
 
-// TODO: use PolyLine from path.go instead
+// DrawLine draws a line from (x0, y0) to (x1, y1).
+//
+// TODO: use PolyLine from path.go instead.
 func DrawLine(dc *gg.Context, x0, y0, x1, y1 int) {
 	dx := x1 - x0
 	if dx < 0 {

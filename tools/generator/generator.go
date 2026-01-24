@@ -40,11 +40,6 @@ type Generator struct {
 	root     string
 }
 
-type appsDef struct {
-	Imports  []string
-	Packages []string
-}
-
 // NewGenerator creates an instantiated generator with the templates parsed.
 func NewGenerator(appType AppType, root string) (*Generator, error) {
 	starTmpl, err := template.New("star").Parse(starSource)
@@ -105,7 +100,7 @@ func (g *Generator) writeManifest(app *manifest.Manifest) error {
 	if err != nil {
 		return fmt.Errorf("couldn't create manifest file: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	return app.WriteManifest(f)
 }
@@ -126,7 +121,7 @@ func (g *Generator) generateStarlark(app *manifest.Manifest) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	err = g.starTmpl.Execute(file, app)
 	if err != nil {

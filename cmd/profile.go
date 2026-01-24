@@ -19,8 +19,9 @@ import (
 )
 
 type profileOptions struct {
-	pprofCommand string
 	flags.Meta
+
+	pprofCommand string
 }
 
 func NewProfileCmd() *cobra.Command {
@@ -44,12 +45,12 @@ func NewProfileCmd() *cobra.Command {
 	)
 	_ = cmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
 
-	opts.Meta.Register(cmd)
+	opts.Register(cmd)
 
 	return cmd
 }
 
-// We save the profile into an in-memory buffer, which is simpler than the tool expects.
+// FetchFunc saves the profile into an in-memory buffer, which is simpler than the tool expects.
 // Simple adapter to pipe it through.
 type FetchFunc func(src string, duration, timeout time.Duration) (*pprof_profile.Profile, string, error)
 
@@ -62,7 +63,7 @@ func MakeFetchFunc(prof *pprof_profile.Profile) FetchFunc {
 	}
 }
 
-// Calls the pprof program to print the top users of CPU, then exit
+// Calls the pprof program to print the top users of CPU, then exit.
 type printUI struct {
 	command string
 	printed bool
@@ -75,8 +76,8 @@ func (u *printUI) ReadLine(prompt string) (string, error) {
 	u.printed = true
 	return u.command, nil
 }
-func (u *printUI) Print(args ...interface{})                    {}
-func (u *printUI) PrintErr(args ...interface{})                 {}
+func (u *printUI) Print(args ...any)                            {}
+func (u *printUI) PrintErr(args ...any)                         {}
 func (u *printUI) IsTerminal() bool                             { return false }
 func (u *printUI) WantBrowser() bool                            { return false }
 func (u *printUI) SetAutoComplete(complete func(string) string) {}
@@ -123,7 +124,7 @@ func ProfileApp(path string, config map[string]any, meta canvas.Metadata) (*ppro
 	if err != nil {
 		return nil, fmt.Errorf("failed to load applet: %w", err)
 	}
-	defer applet.Close()
+	defer func() { _ = applet.Close() }()
 
 	buf := new(bytes.Buffer)
 	if err = starlark.StartProfile(buf); err != nil {

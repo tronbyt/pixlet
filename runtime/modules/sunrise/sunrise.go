@@ -60,7 +60,7 @@ func sunrise(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, 
 	lng := float64(starLng)
 	date := time.Time(starDate)
 	rise, _ := gosunrise.SunriseSunset(lat, lng, date.Year(), date.Month(), date.Day())
-	if rise == empty {
+	if rise.Equal(empty) {
 		return starlark.None, nil
 	}
 
@@ -88,7 +88,7 @@ func sunset(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, k
 	lng := float64(starLng)
 	date := time.Time(starDate)
 	_, set := gosunrise.SunriseSunset(lat, lng, date.Year(), date.Month(), date.Day())
-	if set == empty {
+	if set.Equal(empty) {
 		return starlark.None, nil
 	}
 
@@ -145,7 +145,7 @@ func elevation_time(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 	date := time.Time(starDate)
 
 	morning, evening := gosunrise.TimeOfElevation(lat, lng, elev, date.Year(), date.Month(), date.Day())
-	if morning == empty || evening == empty {
+	if morning.Equal(empty) || evening.Equal(empty) {
 		return starlark.None, nil
 	}
 	starMorning := startime.Time(morning)

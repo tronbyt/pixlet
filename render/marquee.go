@@ -45,7 +45,7 @@ import (
 //	    offset_end=32,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Marquee struct {
 	Child           Widget `starlark:"child,required"`
 	Width           int    `starlark:"width"`
@@ -91,15 +91,9 @@ func (m Marquee) FrameCount(bounds image.Rectangle) int {
 		return 1
 	}
 
-	offstart := m.OffsetStart
-	if offstart < -cw {
-		offstart = -cw
-	}
+	offstart := max(m.OffsetStart, -cw)
 
-	offend := m.OffsetEnd
-	if offend < -cw {
-		offend = -cw
-	}
+	offend := max(m.OffsetEnd, -cw)
 
 	delay := m.Delay
 	// If start and end offsets are identical, do not
@@ -127,15 +121,9 @@ func (m Marquee) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 		size = m.Width
 	}
 
-	offstart := m.OffsetStart
-	if offstart < -cw {
-		offstart = -cw
-	}
+	offstart := max(m.OffsetStart, -cw)
 
-	offend := m.OffsetEnd
-	if offend < -cw {
-		offend = -cw
-	}
+	offend := max(m.OffsetEnd, -cw)
 
 	delay := m.Delay
 	loopIdx := cw + offstart + delay
@@ -148,10 +136,11 @@ func (m Marquee) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 		offset = 0
 
 		//modify alignment
-		if m.Align == "center" {
+		switch m.Align {
+		case "center":
 			align = 0.5
 			offset = size / 2
-		} else if m.Align == "end" {
+		case "end":
 			align = 1.0
 			offset = size
 		}

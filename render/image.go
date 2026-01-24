@@ -9,7 +9,7 @@ import (
 	"image/draw"
 	"image/gif"
 
-	// register image formats
+	// register image formats.
 	_ "image/jpeg"
 	_ "image/png"
 

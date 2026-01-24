@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,37 +30,44 @@ const (
 	APITokenEnv = "PIXLET_TOKEN"
 )
 
-var Config = viper.New()
+var (
+	Config     = viper.New()
+	ConfigOnce sync.Once
+)
 
-func init() {
-	if ucd, err := os.UserConfigDir(); err == nil {
-		configPath := filepath.Join(ucd, "tronbyt")
+func InitConfig() {
+	ConfigOnce.Do(func() {
+		if ucd, err := os.UserConfigDir(); err == nil {
+			configPath := filepath.Join(ucd, "tronbyt")
 
-		if err := os.MkdirAll(configPath, os.ModePerm); err == nil {
-			Config.AddConfigPath(configPath)
+			if err := os.MkdirAll(configPath, os.ModePerm); err == nil {
+				Config.AddConfigPath(configPath)
+			}
 		}
-	}
 
-	Config.SetConfigName("config")
-	Config.SetConfigType("yaml")
-	Config.SetConfigPermissions(0600)
+		Config.SetConfigName("config")
+		Config.SetConfigType("yaml")
+		Config.SetConfigPermissions(0600)
 
-	Config.SafeWriteConfig()
-	Config.ReadInConfig()
+		_ = Config.SafeWriteConfig()
+		_ = Config.ReadInConfig()
+	})
 }
 
-var ErrNoURL = fmt.Errorf("Tronbyt URL not set. Use `tronbyt config set url <url>` to set it.")
+var ErrNoURL = fmt.Errorf("tronbyt URL not set. Use `tronbyt config set url <url>` to set it")
 
 func GetURL() (string, error) {
+	InitConfig()
 	if url := Config.GetString(URLKey); url != "" {
 		return url, nil
 	}
 	return "", ErrNoURL
 }
 
-var ErrNoToken = fmt.Errorf("Tronbyt API token not set. Use `tronbyt config set token <token>` to set it.")
+var ErrNoToken = fmt.Errorf("tronbyt API token not set. Use `tronbyt config set token <token>` to set it")
 
 func GetToken() (string, error) {
+	InitConfig()
 	if token := os.Getenv(APITokenEnv); token != "" {
 		return token, nil
 	}

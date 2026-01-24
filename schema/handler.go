@@ -64,7 +64,6 @@ func (s *Handler) AttrNames() []string {
 
 func (s *Handler) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "handler":
 		return s.Function, nil
 

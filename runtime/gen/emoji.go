@@ -178,7 +178,6 @@ func buildSheet(glyphs []glyph) (*image.NRGBA, map[string]image.Rectangle, image
 			cursorX = 0
 			cursorY += rowHeight
 			rowHeight = 0
-			rowWidth = 0
 		}
 
 		placements = append(placements, placement{

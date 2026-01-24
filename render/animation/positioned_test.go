@@ -111,7 +111,6 @@ func TestPositionedLinearCurve(t *testing.T) {
 		"..........",
 		".....rrrr.",
 	}, im))
-
 }
 
 func TestPositionedEaseIn(t *testing.T) {
@@ -283,7 +282,7 @@ func TestPositionedDelayAndHold(t *testing.T) {
 }
 
 // If child is animated, then that animation plays while the position
-// changes
+// changes.
 func TestPositionedChildAnimation(t *testing.T) {
 	// A box alternating color and size each frame
 	child := render.Animation{

@@ -163,7 +163,7 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 
 		issueFound := false
 		// run format and lint on *.star files in the fs
-		fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
+		_ = fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -247,12 +247,12 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 
 func success(app string) {
 	c := color.New(color.FgGreen)
-	c.Printf("✔️ %s\n", app)
+	_, _ = c.Printf("✔️ %s\n", app)
 }
 
 func failure(app string, err error, sol string) {
 	c := color.New(color.FgRed)
-	c.Printf("✖ %s\n", app)
+	_, _ = c.Printf("✖ %s\n", app)
 
 	// Ensure multiline errors are properly indented.
 	multilineError := strings.Split(err.Error(), "\n")

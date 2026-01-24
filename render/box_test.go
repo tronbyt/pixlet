@@ -8,9 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// A box without a child is just a box
+// A box without a child is just a box.
 func TestBoxNoChild(t *testing.T) {
-
 	// Transparent by default
 	box := Box{}
 	im := PaintWidget(box, image.Rect(0, 0, 5, 5), 0)
@@ -63,9 +62,8 @@ func TestBoxNoChild(t *testing.T) {
 	}, im))
 }
 
-// Box with child centers the child
+// Box with child centers the child.
 func TestBoxChildCenter(t *testing.T) {
-
 	box := Box{
 		Child: Box{
 			Color:  color.RGBA{0xff, 0, 0, 0xff},
@@ -109,7 +107,7 @@ func TestBoxChildCenter(t *testing.T) {
 	}, im))
 }
 
-// Box can place padding around child
+// Box can place padding around child.
 func TestBoxPadding(t *testing.T) {
 	// No padding and the child box will fill the bounds
 	box := Box{

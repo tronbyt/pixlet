@@ -44,8 +44,8 @@ func listFontsRun(cmd *cobra.Command, _ []string) error {
 
 	entries := make([]fontEntry, 0, len(dir))
 	for _, entry := range dir {
-		if strings.HasSuffix(entry.Name(), fonts.Ext) {
-			name := strings.TrimSuffix(entry.Name(), fonts.Ext)
+		if before, ok := strings.CutSuffix(entry.Name(), fonts.Ext); ok {
+			name := before
 
 			b, err := fonts.GetBytes(name)
 			if err != nil {

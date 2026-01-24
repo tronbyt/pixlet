@@ -88,6 +88,7 @@ type Widget interface {
 
 type Animation struct {
 	render.Animation
+
 	starlarkChildren *starlark.List
 	frame_count      *starlark.Builtin
 }
@@ -170,7 +171,6 @@ func animationFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -212,6 +212,7 @@ func animationFrameCount(
 
 type Arc struct {
 	render.Arc
+
 	starlarkX          starlark.Value
 	starlarkY          starlark.Value
 	starlarkRadius     starlark.Value
@@ -364,7 +365,6 @@ func arcFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -406,6 +406,7 @@ func arcFrameCount(
 
 type Box struct {
 	render.Box
+
 	starlarkChild starlark.Value
 	starlarkColor starlark.String
 	frame_count   *starlark.Builtin
@@ -531,7 +532,6 @@ func boxFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -573,6 +573,7 @@ func boxFrameCount(
 
 type Circle struct {
 	render.Circle
+
 	starlarkColor starlark.String
 	starlarkChild starlark.Value
 	frame_count   *starlark.Builtin
@@ -676,7 +677,6 @@ func circleFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -718,6 +718,7 @@ func circleFrameCount(
 
 type Column struct {
 	render.Column
+
 	starlarkChildren *starlark.List
 	frame_count      *starlark.Builtin
 }
@@ -821,7 +822,6 @@ func columnFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -863,6 +863,7 @@ func columnFrameCount(
 
 type Emoji struct {
 	render.Emoji
+
 	size        *starlark.Builtin
 	frame_count *starlark.Builtin
 }
@@ -958,7 +959,6 @@ func emojiSize(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	w := b.Receiver().(*Emoji)
 	width, height := w.Size()
 
@@ -973,7 +973,6 @@ func emojiFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1015,6 +1014,7 @@ func emojiFrameCount(
 
 type Image struct {
 	render.Image
+
 	size        *starlark.Builtin
 	frame_count *starlark.Builtin
 }
@@ -1125,7 +1125,6 @@ func imageSize(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	w := b.Receiver().(*Image)
 	width, height := w.Size()
 
@@ -1140,7 +1139,6 @@ func imageFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1182,6 +1180,7 @@ func imageFrameCount(
 
 type Line struct {
 	render.Line
+
 	starlarkX1    starlark.Value
 	starlarkY1    starlark.Value
 	starlarkX2    starlark.Value
@@ -1321,7 +1320,6 @@ func lineFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1363,6 +1361,7 @@ func lineFrameCount(
 
 type Marquee struct {
 	render.Marquee
+
 	starlarkChild starlark.Value
 	frame_count   *starlark.Builtin
 }
@@ -1509,7 +1508,6 @@ func marqueeFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1551,6 +1549,7 @@ func marqueeFrameCount(
 
 type Padding struct {
 	render.Padding
+
 	starlarkChild starlark.Value
 	starlarkPad   starlark.Value
 	starlarkColor starlark.String
@@ -1695,7 +1694,6 @@ func paddingFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1737,6 +1735,7 @@ func paddingFrameCount(
 
 type PieChart struct {
 	render.PieChart
+
 	starlarkColors  *starlark.List
 	starlarkWeights *starlark.List
 	frame_count     *starlark.Builtin
@@ -1833,7 +1832,6 @@ func piechartFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1875,6 +1873,7 @@ func piechartFrameCount(
 
 type Plot struct {
 	render.Plot
+
 	starlarkData              *starlark.List
 	starlarkColor             starlark.String
 	starlarkColorInverted     starlark.String
@@ -2069,7 +2068,6 @@ func plotFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -2111,6 +2109,7 @@ func plotFrameCount(
 
 type Polygon struct {
 	render.Polygon
+
 	starlarkVertices    *starlark.List
 	starlarkFillColor   starlark.String
 	starlarkStrokeColor starlark.String
@@ -2225,7 +2224,6 @@ func polygonFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -2267,6 +2265,7 @@ func polygonFrameCount(
 
 type Root struct {
 	render.Root
+
 	starlarkChild starlark.Value
 }
 
@@ -2365,6 +2364,7 @@ func (w *Root) Hash() (uint32, error) {
 
 type Row struct {
 	render.Row
+
 	starlarkChildren *starlark.List
 	frame_count      *starlark.Builtin
 }
@@ -2468,7 +2468,6 @@ func rowFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -2510,6 +2509,7 @@ func rowFrameCount(
 
 type Sequence struct {
 	render.Sequence
+
 	starlarkChildren *starlark.List
 	frame_count      *starlark.Builtin
 }
@@ -2592,7 +2592,6 @@ func sequenceFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -2634,6 +2633,7 @@ func sequenceFrameCount(
 
 type Stack struct {
 	render.Stack
+
 	starlarkChildren *starlark.List
 	frame_count      *starlark.Builtin
 }
@@ -2716,7 +2716,6 @@ func stackFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -2758,6 +2757,7 @@ func stackFrameCount(
 
 type Text struct {
 	render.Text
+
 	starlarkColor starlark.String
 	size          *starlark.Builtin
 	frame_count   *starlark.Builtin
@@ -2875,7 +2875,6 @@ func textSize(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	w := b.Receiver().(*Text)
 	width, height := w.Size()
 
@@ -2890,7 +2889,6 @@ func textFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -2932,6 +2930,7 @@ func textFrameCount(
 
 type WrappedText struct {
 	render.WrappedText
+
 	starlarkColor starlark.String
 	frame_count   *starlark.Builtin
 }
@@ -3070,7 +3069,6 @@ func wrappedtextFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)

@@ -21,7 +21,7 @@ func NewListIconsCmd() *cobra.Command {
 }
 
 func listIconsRun(_ *cobra.Command, _ []string) error {
-	iconSet := []string{}
+	iconSet := make([]string, 0, len(icons.IconsMap))
 	for icon := range icons.IconsMap {
 		iconSet = append(iconSet, icon)
 	}

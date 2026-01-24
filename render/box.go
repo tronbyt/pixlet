@@ -31,7 +31,7 @@ import (
 //	    )
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Box struct {
 	Child         Widget
 	Width, Height int

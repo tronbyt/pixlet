@@ -42,7 +42,7 @@ func TestLoadManifest(t *testing.T) {
 	p := filepath.Join("testdata", "manifest.yaml")
 	f, err := os.Open(p)
 	assert.NoError(t, err)
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	m, err := manifest.LoadManifest(f)
 	assert.NoError(t, err)

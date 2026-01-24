@@ -20,10 +20,11 @@ import (
 //	    change = 180.0,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Hue struct {
 	render.Widget `starlark:"child,required"`
-	Change        float64 `starlark:"change,required"`
+
+	Change float64 `starlark:"change,required"`
 }
 
 func (h Hue) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {

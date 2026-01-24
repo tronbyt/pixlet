@@ -20,10 +20,11 @@ import (
 //	    radius = 2.0,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type EdgeDetection struct {
 	render.Widget `starlark:"child,required"`
-	Radius        float64 `starlark:"radius,required"`
+
+	Radius float64 `starlark:"radius,required"`
 }
 
 func (e EdgeDetection) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {

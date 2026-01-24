@@ -1,4 +1,3 @@
-// Package bundle provides primitives for bundling apps for portability.
 package bundle
 
 import (
@@ -16,7 +15,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
-type WriteOption interface{}
+type WriteOption any
 
 type withoutRuntimeOption struct{}
 
@@ -40,7 +39,7 @@ func (b *AppBundle) WriteBundleToPath(dir string, opts ...WriteOption) error {
 	if err != nil {
 		return fmt.Errorf("could not create file for bundle: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	return b.WriteBundle(f, opts...)
 }
@@ -78,10 +77,10 @@ func (ab *AppBundle) WriteBundle(out io.Writer, opts ...WriteOption) error {
 
 	// Setup writers.
 	gzw := gzip.NewWriter(out)
-	defer gzw.Close()
+	defer func() { _ = gzw.Close() }()
 
 	tw := tar.NewWriter(gzw)
-	defer tw.Close()
+	defer func() { _ = tw.Close() }()
 
 	// Write manifest.
 	buff := &bytes.Buffer{}

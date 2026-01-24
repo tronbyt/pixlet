@@ -61,7 +61,6 @@ func (s *Typeahead) AttrNames() []string {
 
 func (s *Typeahead) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

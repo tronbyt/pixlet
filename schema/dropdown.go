@@ -10,6 +10,7 @@ import (
 
 type Dropdown struct {
 	SchemaField
+
 	starlarkOptions *starlark.List
 }
 
@@ -81,7 +82,6 @@ func (s *Dropdown) AttrNames() []string {
 
 func (s *Dropdown) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

@@ -33,7 +33,7 @@ import (
 
 func runBuildifier(args []string, lint string, mode string, format string, recursive bool, verbose bool) int {
 	tf := &utils.TempFile{}
-	defer tf.Clean()
+	defer func() { _ = tf.Clean() }()
 
 	exitCode := 0
 	var diagnostics *utils.Diagnostics
@@ -247,7 +247,7 @@ func processFile(filename string, data []byte, lint string, displayFileNames boo
 	case "pipe":
 		// pipe mode - reading from stdin, writing to stdout.
 		// ("pipe" is not from the command line; it is set above in main.)
-		os.Stdout.Write(ndata)
+		_, _ = os.Stdout.Write(ndata)
 
 	case "fix":
 		// fix mode: update files in place as needed.

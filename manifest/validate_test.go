@@ -18,7 +18,7 @@ func TestValidateName(t *testing.T) {
 		{input: "Cool app", shouldErr: true},
 		{input: "cool app", shouldErr: true},
 		{input: "coolApp", shouldErr: true},
-		{input: "Really Really Long Long Long Long Long App Name", shouldErr: true},
+		{input: "An exceptionally lengthy and excessively wordy application title which surpasses the maximum allowed limit", shouldErr: true},
 		{input: "", shouldErr: true},
 		{input: "Clark's App", shouldErr: false},
 	}
@@ -42,7 +42,7 @@ func TestValidateSummary(t *testing.T) {
 
 	tests := []test{
 		{input: "A cool app", shouldErr: false},
-		{input: "A really really really really really really really really really really really cool app", shouldErr: true},
+		{input: "A really very extremely incredibly super duper extra highly mega ultra cool app", shouldErr: true},
 		{input: "A cool app.", shouldErr: true},
 		{input: "A cool app!", shouldErr: true},
 		{input: "A cool app?", shouldErr: true},
@@ -109,5 +109,4 @@ func TestValidateID(t *testing.T) {
 			assert.NoError(t, err)
 		}
 	}
-
 }
