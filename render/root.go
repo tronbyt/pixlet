@@ -20,7 +20,7 @@ const (
 	DefaultMaxFrameCount = 2000
 )
 
-// Every Widget tree has a Root.
+// Root is the top level of every Widget tree.
 //
 // The child widget, and all its descendants, will be drawn on a 64x32
 // canvas. Root places its child in the upper left corner of the
@@ -37,7 +37,7 @@ const (
 // DOC(Child): Widget to render
 // DOC(Delay): Frame delay in milliseconds
 // DOC(MaxAge): Expiration time in seconds
-// DOC(ShowFullAnimation): Request animation is shown in full, regardless of app cycle speed
+// DOC(ShowFullAnimation): Request animation is shown in full, regardless of app cycle speed.
 type Root struct {
 	Child             Widget `starlark:"child,required"`
 	Delay             int32  `starlark:"delay"`
@@ -50,23 +50,18 @@ type Root struct {
 
 type RootPaintOption func(*Root)
 
-// WithMaxParallelFrames sets the maximum number of frames that will
-// be painted in parallel.
-//
-// By default, only `runtime.NumCPU()` frames are painted in parallel.
-// Higher parallelism consumes more memory, and doesn't usually make
-// sense since painting is CPU-bouond.
-func WithMaxParallelFrames(max int) RootPaintOption {
+func WithMaxParallelFrames(maxFrames int) RootPaintOption {
 	return func(r *Root) {
-		r.maxParallelFrames = max
+		r.maxParallelFrames = maxFrames
 	}
 }
 
-// WithMaxFrameCount sets the maximum number of frames that will be
-// rendered when calling `Paint`.
-func WithMaxFrameCount(max int) RootPaintOption {
+// WithMaxFrameCount sets the maximum number of frames that will be rendered.
+// If a widget tree has more frames than this, the number of frames will be
+// capped.
+func WithMaxFrameCount(maxFrames int) RootPaintOption {
 	return func(r *Root) {
-		r.maxFrameCount = max
+		r.maxFrameCount = maxFrames
 	}
 }
 
@@ -81,10 +76,7 @@ func (r Root) Paint(width, height int, solidBackground bool, opts ...RootPaintOp
 		r.maxFrameCount = DefaultMaxFrameCount
 	}
 
-	numFrames := r.Child.FrameCount(image.Rect(0, 0, width, height))
-	if numFrames > r.maxFrameCount {
-		numFrames = r.maxFrameCount
-	}
+	numFrames := min(r.Child.FrameCount(image.Rect(0, 0, width, height)), r.maxFrameCount)
 
 	frames := make([]image.Image, numFrames)
 
@@ -124,7 +116,7 @@ func (r Root) Paint(width, height int, solidBackground bool, opts ...RootPaintOp
 
 // PaintRoots draws >=1 Roots which must all have the same dimensions.
 func PaintRoots(width, height int, solidBackground bool, roots ...Root) []image.Image {
-	var images []image.Image
+	var images = make([]image.Image, 0, len(roots))
 	for _, r := range roots {
 		images = append(images, r.Paint(width, height, solidBackground)...)
 	}

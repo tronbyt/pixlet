@@ -20,6 +20,8 @@ import (
 const webpLevelFlag = "webp-level"
 
 type renderOptions struct {
+	flags.Meta
+
 	log               *slog.Logger
 	configJSON        string
 	output            string
@@ -31,7 +33,6 @@ type renderOptions struct {
 	colorFilter       string
 	webpLevel         int32
 	locale            string
-	flags.Meta
 }
 
 func newRenderOptions() *renderOptions {
@@ -91,7 +92,7 @@ containing multiple Starlark files and resources.
 		`Apply a color filter. (See "pixlet community list-color-filters")`,
 	)
 	_ = cmd.RegisterFlagCompletionFunc("color-filter", func(cmd *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
-		var s []string
+		s := make([]string, 0, len(encode.ColorFilterValues()))
 		for _, v := range encode.ColorFilterValues() {
 			desc, _ := v.Description()
 			s = append(s, v.String()+"\t"+desc)
@@ -129,7 +130,7 @@ containing multiple Starlark files and resources.
 	cmd.Flags().StringVar(&opts.locale, "locale", opts.locale, "Locale to use for rendering")
 	_ = cmd.RegisterFlagCompletionFunc("locale", cobra.NoFileCompletions)
 
-	opts.Meta.Register(cmd)
+	opts.Register(cmd)
 
 	return cmd
 }

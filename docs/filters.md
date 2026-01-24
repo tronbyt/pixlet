@@ -15,6 +15,11 @@ load("filter.star", "filter")
 ## Blur
 Blur applies a Gaussian blur to the child widget.
 
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -32,6 +37,11 @@ filter.Blur(
 
 ## Brightness
 Brightness adjusts the brightness of the child widget.
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -51,6 +61,11 @@ filter.Brightness(
 ## Contrast
 Contrast adjusts the contrast of the child widget.
 
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -68,6 +83,11 @@ filter.Contrast(
 
 ## EdgeDetection
 EdgeDetection applies an edge detection filter to the child widget.
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -87,6 +107,10 @@ filter.EdgeDetection(
 ## Emboss
 Emboss applies an emboss filter to the child widget.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -102,6 +126,10 @@ filter.Emboss(
 
 ## FlipHorizontal
 FlipHorizontal flips the child widget horizontally.
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -119,6 +147,10 @@ filter.FlipHorizontal(
 ## FlipVertical
 FlipVertical flips the child widget vertically.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -134,6 +166,11 @@ filter.FlipVertical(
 
 ## Gamma
 Gamma applies gamma correction to the child widget.
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -153,6 +190,10 @@ filter.Gamma(
 ## Grayscale
 Grayscale converts the child widget to grayscale.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -168,6 +209,11 @@ filter.Grayscale(
 
 ## Hue
 Hue adjusts the hue of the child widget.
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -187,6 +233,10 @@ filter.Hue(
 ## Invert
 Invert inverts the colors of the child widget.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -202,6 +252,11 @@ filter.Invert(
 
 ## Rotate
 Rotate rotates the child widget by the specified angle.
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -221,6 +276,11 @@ filter.Rotate(
 ## Saturation
 Saturation adjusts the saturation of the child widget.
 
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -239,6 +299,10 @@ filter.Saturation(
 ## Sepia
 Sepia applies a sepia filter to the child widget.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -255,6 +319,10 @@ filter.Sepia(
 ## Sharpen
 Sharpen sharpens the child widget.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -270,6 +338,12 @@ filter.Sharpen(
 
 ## Shear
 Shear shears the child widget horizontally and/or vertically.
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -289,6 +363,11 @@ filter.Shear(
 
 ## Threshold
 Threshold applies a threshold filter to the child widget, making it black and white.
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |

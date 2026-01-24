@@ -307,7 +307,7 @@ def main():
 	gifDelays := func(gifData []byte) []int {
 		im, err := gif.DecodeAll(bytes.NewBuffer(gifData))
 		assert.NoError(t, err)
-		delays := []int{}
+		delays := make([]int, 0, len(im.Delay))
 		for _, d := range im.Delay {
 			delays = append(delays, d*10)
 		}
@@ -362,5 +362,4 @@ def main():
 	for _, d := range gifDelays(gifData) {
 		assert.Equal(t, 500, d)
 	}
-
 }

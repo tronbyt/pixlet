@@ -6,13 +6,13 @@ type FillMode interface {
 
 type FillModeForwards struct{}
 
-func (self FillModeForwards) Value() float64 {
+func (f FillModeForwards) Value() float64 {
 	return 1.0
 }
 
 type FillModeBackwards struct{}
 
-func (self FillModeBackwards) Value() float64 {
+func (f FillModeBackwards) Value() float64 {
 	return 0.0
 }
 

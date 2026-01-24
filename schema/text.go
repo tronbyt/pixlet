@@ -63,7 +63,6 @@ func (s *Text) AttrNames() []string {
 
 func (s *Text) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

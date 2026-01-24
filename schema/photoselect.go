@@ -57,7 +57,6 @@ func (s *PhotoSelect) AttrNames() []string {
 
 func (s *PhotoSelect) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

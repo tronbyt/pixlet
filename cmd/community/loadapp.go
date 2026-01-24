@@ -36,7 +36,7 @@ func LoadApp(_ *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}
-	defer app.Close()
+	defer func() { _ = app.Close() }()
 
 	return nil
 }

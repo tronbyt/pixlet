@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -18,22 +19,27 @@ const (
 	webpLevelEnv     = "PIXLET_WEBP_LEVEL"
 )
 
-var webpLevel atomic.Int32
+var (
+	webpLevel     atomic.Int32
+	webpLevelOnce sync.Once
+)
 
-func init() {
-	if raw := os.Getenv(webpLevelEnv); raw != "" {
-		parsed, err := strconv.ParseInt(raw, 10, 32)
-		if err == nil {
-			SetWebPLevel(int32(parsed))
-			return
+func initWebPLevel() {
+	webpLevelOnce.Do(func() {
+		if raw := os.Getenv(webpLevelEnv); raw != "" {
+			parsed, err := strconv.ParseInt(raw, 10, 32)
+			if err == nil {
+				SetWebPLevel(int32(parsed))
+				return
+			}
+			slog.Warn(webpLevelEnv+" is invalid; using default.", "error", err)
 		}
-		slog.Warn(webpLevelEnv+" is invalid; using default.", "error", err)
-	}
 
-	webpLevel.Store(WebPLevelDefault)
+		webpLevel.Store(WebPLevelDefault)
+	})
 }
 
-// Renders a screen to WebP. Optionally pass filters for
+// EncodeWebP renders a screen to WebP. Optionally pass filters for
 // postprocessing each individual frame.
 func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
 	images, err := s.render(filters...)
@@ -44,6 +50,8 @@ func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) 
 	if len(images) == 0 {
 		return []byte{}, nil
 	}
+
+	initWebPLevel()
 
 	bounds := images[0].Bounds()
 	anim, err := webp.NewAnimationEncoder(

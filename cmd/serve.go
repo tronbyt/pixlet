@@ -12,6 +12,8 @@ import (
 )
 
 type serveOptions struct {
+	flags.Meta
+
 	host          string
 	port          int
 	path          string
@@ -21,7 +23,6 @@ type serveOptions struct {
 	maxDuration   time.Duration
 	timeout       time.Duration
 	webpLevel     int32
-	flags.Meta
 }
 
 func NewServeCmd() *cobra.Command {
@@ -76,7 +77,7 @@ containing multiple Starlark files and resources.`,
 	)
 	_ = cmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
 
-	opts.Meta.Register(cmd)
+	opts.Register(cmd)
 
 	return cmd
 }

@@ -37,7 +37,6 @@ func (a AppletConfig) AttrNames() []string {
 
 func (a AppletConfig) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "get", "str":
 		return starlark.NewBuiltin("str", a.getString), nil
 

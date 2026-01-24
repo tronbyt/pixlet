@@ -32,9 +32,9 @@ func newOption(
 	}
 
 	s := &Option{}
-	s.SchemaOption.Text = display.GoString()
-	s.SchemaOption.Display = display.GoString()
-	s.SchemaOption.Value = value.GoString()
+	s.Text = display.GoString()
+	s.Display = display.GoString()
+	s.Value = value.GoString()
 
 	return s, nil
 }
@@ -51,7 +51,6 @@ func (s *Option) AttrNames() []string {
 
 func (s *Option) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "display":
 		return starlark.String(s.Text), nil
 

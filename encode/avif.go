@@ -27,7 +27,7 @@ const (
 	AVIF_SPEED_FASTEST = int32(10)
 )
 
-// Renders screens to AVIF. Optionally pass filters for postprocessing
+// EncodeAVIF renders screens to AVIF. Optionally pass filters for postprocessing
 // each individual frame.
 func (s *Screens) EncodeAVIF(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
 	avifOnce.Do(func() {
@@ -276,9 +276,10 @@ type avifImageMirror struct {
 
 func loadAvif() (uintptr, error) {
 	libname := "libavif.so"
-	if runtime.GOOS == "windows" {
+	switch runtime.GOOS {
+	case "windows":
 		libname = "avif.dll"
-	} else if runtime.GOOS == "darwin" {
+	case "darwin":
 		libname = "libavif.dylib"
 	}
 

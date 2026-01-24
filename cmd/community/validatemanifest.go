@@ -33,7 +33,7 @@ func ValidateManifest(_ *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("couldn't open manifest: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	m, err := manifest.LoadManifest(f)
 	if err != nil {

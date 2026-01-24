@@ -42,6 +42,7 @@ var favicon []byte
 // previewData is used to populate the HTML template.
 type previewData struct {
 	canvas.Metadata
+
 	Title     string `json:"title"`
 	Image     string `json:"img"`
 	ImageType string `json:"img_type"`
@@ -162,23 +163,23 @@ func (b *Browser) Run(ctx context.Context) error {
 
 func (b *Browser) faviconHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/png")
-	w.Write(favicon)
+	_, _ = w.Write(favicon)
 }
 
 func (b *Browser) healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (b *Browser) schemaHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(b.loader.GetSchema())
+	_, _ = w.Write(b.loader.GetSchema())
 }
 
 func (b *Browser) schemaHandlerHandler(w http.ResponseWriter, r *http.Request) {
 	handler := r.PathValue("handler")
 	if handler == "" {
-		w.WriteHeader(404)
-		fmt.Fprintln(w, "no handler")
+		w.WriteHeader(http.StatusNotFound)
+		_, _ = fmt.Fprintln(w, "no handler")
 		return
 	}
 
@@ -186,20 +187,20 @@ func (b *Browser) schemaHandlerHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(msg)
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
 		return
 	}
 
 	data, err := b.loader.CallSchemaHandler(r.Context(), msg.Config, handler, msg.Param)
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(data))
+	_, _ = w.Write([]byte(data))
 }
 
 func (b *Browser) imageHandler(w http.ResponseWriter, r *http.Request) {
@@ -244,7 +245,7 @@ func (b *Browser) imageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(data)
+	_, _ = w.Write(data)
 }
 
 func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
@@ -290,13 +291,13 @@ func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 
 	d, err := json.Marshal(data)
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(d)
+	_, _ = w.Write(d)
 }
 
 func (b *Browser) websocketHandler(w http.ResponseWriter, r *http.Request) {

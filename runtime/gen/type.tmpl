@@ -1,7 +1,8 @@
 
 type {{ .GoName }} struct {
 	{{ .GoNameWithPackage }}
-{{- range .Attributes }}
+
+{{ range .Attributes }}
 {{- if or .GenerateField (eq .GoType "starlark.Value") (eq .GoType "starlark.Tuple") (eq .GoType "*starlark.List") }}
 	starlark{{ .GoName }} {{ .GoType }}
 {{- end }}
@@ -131,7 +132,6 @@ func {{ .GoName | ToLower }}Size(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	w := b.Receiver().(*{{ .GoName }})
 	width, height := w.Size()
 
@@ -148,7 +148,6 @@ func {{ .GoName | ToLower }}FrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)

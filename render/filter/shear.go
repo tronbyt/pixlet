@@ -21,11 +21,12 @@ import (
 //	    x_angle = 10.0,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Shear struct {
 	render.Widget `starlark:"child,required"`
-	XAngle        float64 `starlark:"x_angle"`
-	YAngle        float64 `starlark:"y_angle"`
+
+	XAngle float64 `starlark:"x_angle"`
+	YAngle float64 `starlark:"y_angle"`
 }
 
 func (s Shear) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

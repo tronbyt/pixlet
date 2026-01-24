@@ -98,10 +98,7 @@ func VerticesFromStarlark(value starlark.Value) ([]render.Point, error) {
 		return nil, fmt.Errorf("vertices must be iterable, found %s", value.Type())
 	}
 
-	n := starlark.Len(value)
-	if n < 0 {
-		n = 0
-	}
+	n := max(starlark.Len(value), 0)
 	result := make([]render.Point, 0, n)
 
 	iter := iterable.Iterate()

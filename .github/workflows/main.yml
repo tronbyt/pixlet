@@ -25,11 +25,19 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Install buildifier
-        run: make install-buildifier
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libwebp-dev
 
       - name: Run buildifier
-        run: buildifier -d -r ./ 
+        run: go tool buildifier -d -r ./
+
+      - name: Lint Go
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+          args: --timeout=5m
 
   build-and-test-release:
     name: Build and Test Release Artifacts
@@ -144,7 +152,7 @@ jobs:
           if [ "${{ runner.os }}" != "macOS" ]; then
              LDFLAGS="$LDFLAGS '-extldflags=-static -lsharpyuv'"
           fi
-          
+
           CGO_ENABLED=1 go build \
             -ldflags="$LDFLAGS" \
             -tags="timetzdata,gzip_fonts,netgo,osusergo" \

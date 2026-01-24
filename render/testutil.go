@@ -23,7 +23,7 @@ type ImageChecker struct {
 }
 
 func (ic ImageChecker) Check(expected []string, actual image.Image) error {
-	var runes [][]string
+	runes := make([][]string, 0, len(expected))
 
 	for _, str := range expected {
 		runes = append(runes, strings.Split(str, ""))
@@ -87,11 +87,6 @@ func (ic ImageChecker) PrintImage(im image.Image) {
 		}
 		fmt.Printf("\n")
 	}
-}
-
-func printExpectedActual(expected []string, actual image.Image) {
-	ic := ImageChecker{Palette: DefaultPalette}
-	ic.PrintDiff(expected, actual)
 }
 
 func checkImage(expected []string, actual image.Image) error {

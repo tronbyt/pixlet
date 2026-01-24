@@ -28,6 +28,8 @@ func ExtendTransforms(lhs []Transform, rhs []Transform) []Transform {
 	return lhs
 }
 
+// InterpolateTransforms interpolates between two lists of transforms.
+//
 // See: https://www.w3.org/TR/css-transforms-1/#interpolation-of-transforms
 func InterpolateTransforms(lhs, rhs []Transform, progress float64) (result []Transform, ok bool) {
 	if len(lhs) == 0 && len(rhs) == 0 {

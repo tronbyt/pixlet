@@ -1,0 +1,32 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: go-fmt
+        name: go fmt
+        entry: gofmt -w
+        language: system
+        types: [go]
+      - id: go-mod-tidy
+        name: go mod tidy
+        entry: go mod tidy
+        language: system
+        files: "go.mod|go.sum"
+        pass_filenames: false
+      - id: go-test
+        name: go test
+        entry: go test ./...
+        language: system
+        types: [go]
+        pass_filenames: false
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v2.8.0
+    hooks:
+      - id: golangci-lint

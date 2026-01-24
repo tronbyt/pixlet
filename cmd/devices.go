@@ -56,7 +56,7 @@ func devicesRun(opts *devicesOptions) error {
 func getDevices(creds apiCredentials) iter.Seq2[*tronbytapi.Device, error] {
 	return func(yield func(*tronbytapi.Device, error) bool) {
 		client := &http.Client{}
-		req, err := http.NewRequest("GET", fmt.Sprintf("%s/v0/devices", creds.baseURL), nil)
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/v0/devices", creds.baseURL), nil)
 		if err != nil {
 			yield(nil, fmt.Errorf("creating request: %w", err))
 			return
@@ -70,7 +70,7 @@ func getDevices(creds apiCredentials) iter.Seq2[*tronbytapi.Device, error] {
 			return
 		}
 
-		if resp.StatusCode != 200 {
+		if resp.StatusCode != http.StatusOK {
 			body, _ := io.ReadAll(resp.Body)
 			yield(nil, fmt.Errorf("tronbyt api error %s: %s", resp.Status, body))
 			return

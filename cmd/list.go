@@ -47,7 +47,7 @@ func listRun(cmd *cobra.Command, args []string, opts *listOptions) error {
 	deviceID := args[0]
 
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
-	defer w.Flush()
+	defer func() { _ = w.Flush() }()
 
 	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
 	if err != nil {
@@ -59,7 +59,7 @@ func listRun(cmd *cobra.Command, args []string, opts *listOptions) error {
 			return err
 		}
 
-		fmt.Fprintf(w, "%s\t%s\n", inst.Id, inst.AppId)
+		_, _ = fmt.Fprintf(w, "%s\t%s\n", inst.Id, inst.AppId)
 	}
 
 	return nil
@@ -69,7 +69,7 @@ func getInstallations(deviceID string, creds apiCredentials) iter.Seq2[*tronbyta
 	return func(yield func(*tronbytapi.Installation, error) bool) {
 		client := &http.Client{}
 		req, err := http.NewRequest(
-			"GET",
+			http.MethodGet,
 			fmt.Sprintf("%s/v0/devices/%s/installations", creds.baseURL, deviceID), nil)
 		if err != nil {
 			yield(nil, fmt.Errorf("creating request: %w", err))
@@ -85,7 +85,7 @@ func getInstallations(deviceID string, creds apiCredentials) iter.Seq2[*tronbyta
 		}
 
 		body, _ := io.ReadAll(resp.Body)
-		if resp.StatusCode != 200 {
+		if resp.StatusCode != http.StatusOK {
 			yield(nil, fmt.Errorf("tronbyt api error %s: %s", resp.Status, body))
 			return
 		}

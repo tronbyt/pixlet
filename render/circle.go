@@ -24,7 +24,7 @@ import (
 //	    child=render.Circle(color="#0ff", diameter=10),
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Circle struct {
 	Child    Widget
 	Color    color.Color `starlark:"color, required"`

@@ -20,10 +20,11 @@ import (
 //	    angle = 10.0,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Rotate struct {
 	render.Widget `starlark:"child,required"`
-	Angle         float64 `starlark:"angle,required"`
+
+	Angle float64 `starlark:"angle,required"`
 }
 
 func (r Rotate) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

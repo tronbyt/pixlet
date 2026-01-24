@@ -20,10 +20,11 @@ import (
 //	    factor = 2.0,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Contrast struct {
 	render.Widget `starlark:"child,required"`
-	Factor        float64 `starlark:"factor,required"`
+
+	Factor float64 `starlark:"factor,required"`
 }
 
 func (c Contrast) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {

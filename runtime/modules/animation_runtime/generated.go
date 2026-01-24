@@ -52,6 +52,7 @@ type transformUnwrapper interface {
 
 type AnimatedPositioned struct {
 	animation.AnimatedPositioned
+
 	starlarkChild starlark.Value
 	starlarkCurve starlark.Value
 	frame_count   *starlark.Builtin
@@ -221,7 +222,6 @@ func animatedpositionedFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -263,6 +263,7 @@ func animatedpositionedFrameCount(
 
 type Keyframe struct {
 	animation.Keyframe
+
 	starlarkPercentage starlark.Value
 	starlarkTransforms *starlark.List
 	starlarkCurve      starlark.Value
@@ -353,6 +354,7 @@ func (w *Keyframe) Hash() (uint32, error) {
 
 type Origin struct {
 	animation.Origin
+
 	starlarkX starlark.Value
 	starlarkY starlark.Value
 }
@@ -426,6 +428,7 @@ func (w *Origin) Hash() (uint32, error) {
 
 type Rotate struct {
 	animation.Rotate
+
 	starlarkAngle starlark.Value
 }
 
@@ -490,6 +493,7 @@ func (w *Rotate) Hash() (uint32, error) {
 
 type Scale struct {
 	animation.Scale
+
 	starlarkX starlark.Value
 	starlarkY starlark.Value
 }
@@ -567,6 +571,7 @@ func (w *Scale) Hash() (uint32, error) {
 
 type Shear struct {
 	animation.Shear
+
 	starlarkXAngle starlark.Value
 	starlarkYAngle starlark.Value
 }
@@ -644,6 +649,7 @@ func (w *Shear) Hash() (uint32, error) {
 
 type Transformation struct {
 	animation.Transformation
+
 	starlarkChild     starlark.Value
 	starlarkKeyframes *starlark.List
 	starlarkOrigin    starlark.Value
@@ -867,7 +873,6 @@ func transformationFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -909,6 +914,7 @@ func transformationFrameCount(
 
 type Translate struct {
 	animation.Translate
+
 	starlarkX starlark.Value
 	starlarkY starlark.Value
 }

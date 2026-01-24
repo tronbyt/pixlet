@@ -10,6 +10,7 @@ import (
 
 type Notification struct {
 	SchemaField
+
 	Builder        *starlark.Function `json:"-"`
 	starlarkSounds *starlark.List
 }
@@ -82,7 +83,6 @@ func (s *Notification) AttrNames() []string {
 
 func (s *Notification) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

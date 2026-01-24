@@ -93,7 +93,7 @@ func (cp *CircularPath) Point(i int) (int, int) {
 	return cp.Radius + cp.points[i].X, cp.Radius + cp.points[i].Y
 }
 
-// PolyLine draws straight lines passing through a list of vertices
+// PolyLine draws straight lines passing through a list of vertices.
 type PolyLine struct {
 	Vertices []PathPoint
 	path     []PathPoint

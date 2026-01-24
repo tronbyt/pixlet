@@ -116,10 +116,10 @@ func WithSecretDecryptionKey(key *SecretDecryptionKey) AppletOption {
 	}
 }
 
-func WithPrintFunc(print PrintFunc) AppletOption {
+func WithPrintFunc(printFunc PrintFunc) AppletOption {
 	return func(a *Applet) error {
 		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
-			t.Print = print
+			t.Print = printFunc
 			return t
 		})
 		return nil
@@ -395,7 +395,7 @@ func (app *Applet) RunTests(t *testing.T) {
 	}
 }
 
-// Calls any callable from Applet.Globals. Pass args and receive a
+// Call calls any callable from Applet.Globals. Pass args and receive a
 // starlark Value, or an error if you're unlucky.
 func (a *Applet) Call(ctx context.Context, callable *starlark.Function, args ...starlark.Value) (val starlark.Value, err error) {
 	defer func() {
@@ -487,7 +487,7 @@ func (a *Applet) loadManifest(fsys fs.FS, pathToLoad string) (err error) {
 	if err != nil {
 		return fmt.Errorf("opening %s: %w", pathToLoad, err)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	a.Manifest, err = manifest.LoadManifest(r)
 	if err != nil {
@@ -680,7 +680,7 @@ func loadLocale(fsys fs.FS, b *catalog.Builder, name string) error {
 	if err != nil {
 		return fmt.Errorf("opening locale file %s: %w", name, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var msgs map[string]string
 	if err := json.NewDecoder(f).Decode(&msgs); err != nil {

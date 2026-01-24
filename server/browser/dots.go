@@ -64,7 +64,6 @@ func dotHandler(w http.ResponseWriter, r *http.Request) {
 		if v != 0 {
 			radius = v
 		}
-
 	}
 
 	var b bytes.Buffer

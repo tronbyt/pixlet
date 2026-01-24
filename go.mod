@@ -6,7 +6,7 @@ require (
 	github.com/HugoSmits86/nativewebp v1.2.1
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/anthonynsimon/bild v0.14.0
-	github.com/bazelbuild/buildtools v0.0.0-20260113134051-f026de8858b3
+	github.com/bazelbuild/buildtools v0.0.0-20260121081817-bbf01ec6cb49
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ebitengine/purego v0.9.1
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4
@@ -105,4 +105,7 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
 
-tool github.com/dmarkham/enumer
+tool (
+	github.com/bazelbuild/buildtools/buildifier
+	github.com/dmarkham/enumer
+)

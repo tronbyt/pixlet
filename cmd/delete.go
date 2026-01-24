@@ -54,7 +54,7 @@ func deleteRun(_ *cobra.Command, args []string, opts *deleteOptions) error {
 
 	client := &http.Client{}
 	req, err := http.NewRequest(
-		"DELETE",
+		http.MethodDelete,
 		fmt.Sprintf("%s/v0/devices/%s/installations/%s", creds.baseURL, deviceID, installationID),
 		nil,
 	)
@@ -69,11 +69,11 @@ func deleteRun(_ *cobra.Command, args []string, opts *deleteOptions) error {
 		return fmt.Errorf("deleting via API: %w", err)
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		slog.Error("Tronbyt API returned an error", "status", resp.Status)
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
-		return fmt.Errorf("Tronbyt API returned status: %s", resp.Status)
+		return fmt.Errorf("tronbyt API returned status: %s", resp.Status)
 	}
 
 	return nil

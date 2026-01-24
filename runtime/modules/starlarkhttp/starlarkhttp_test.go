@@ -35,6 +35,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarktest"
+	"go.starlark.net/syntax"
 )
 
 func TestAsString(t *testing.T) {
@@ -49,7 +50,7 @@ func TestAsString(t *testing.T) {
 
 	for i, c := range cases {
 		got, err := starlarkhttp.AsString(c.in)
-		if !(err == nil && c.err == "" || err != nil && err.Error() == c.err) {
+		if (err == nil && c.err != "") || (err != nil && err.Error() != c.err) {
 			t.Errorf("case %d error mismatch. expected: '%s', got: '%s'", i, c.err, err)
 			continue
 		}
@@ -61,7 +62,6 @@ func TestAsString(t *testing.T) {
 }
 
 func TestNewModule(t *testing.T) {
-
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Date", "Mon, 01 Jun 2000 00:00:00 GMT")
 		if _, err := w.Write([]byte(`{"hello":"world"}`)); err != nil {
@@ -74,13 +74,13 @@ func TestNewModule(t *testing.T) {
 	starlarktest.SetReporter(thread, t)
 
 	// Execute test file
-	_, err := starlark.ExecFile(thread, "testdata/test.star", nil, nil)
+	_, err := starlark.ExecFileOptions(&syntax.FileOptions{Set: true}, thread, "testdata/test.star", nil, nil)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-// we're ok with testing private functions if it simplifies the test :)
+// we're ok with testing private functions if it simplifies the test :).
 func TestSetBody(t *testing.T) {
 	fd := map[string]string{
 		"foo": "bar baz",
@@ -112,9 +112,9 @@ func TestSetBody(t *testing.T) {
 			}
 		}
 
-		req := httptest.NewRequest("get", "https://example.com", nil)
+		req := httptest.NewRequest(http.MethodGet, "https://example.com", nil)
 		err := starlarkhttp.SetBody(req, c.rawBody, formData, c.formEncoding, c.jsonData)
-		if !(err == nil && c.err == "" || (err != nil && err.Error() == c.err)) {
+		if (err == nil && c.err != "") || (err != nil && err.Error() != c.err) {
 			t.Errorf("case %d error mismatch. expected: %s, got: %s", i, c.err, err)
 			continue
 		}

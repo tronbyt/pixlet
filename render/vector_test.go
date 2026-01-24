@@ -234,7 +234,6 @@ func TestVectorMainAlignStartVertical(t *testing.T) {
 }
 
 func TestVectorMainAlignEnd(t *testing.T) {
-
 	v := Vector{
 		Expanded:  true,
 		Vertical:  true,
@@ -309,7 +308,6 @@ func TestVectorMainAlignEnd(t *testing.T) {
 }
 
 func TestVectorMainAlignSpaceEvenly(t *testing.T) {
-
 	v := Vector{
 		Expanded:  true,
 		Vertical:  false,
@@ -406,7 +404,6 @@ func TestVectorMainAlignSpaceEvenly(t *testing.T) {
 }
 
 func TestVectorCrossAlignCenter(t *testing.T) {
-
 	v := Vector{
 		Expanded:   true,
 		Vertical:   false,
@@ -512,11 +509,9 @@ func TestVectorCrossAlignCenter(t *testing.T) {
 		".bbbbb..",
 		".bbbbb..",
 	}, im))
-
 }
 
 func TestVectorCrossAlignEnd(t *testing.T) {
-
 	v := Vector{
 		Expanded:   true,
 		Vertical:   false,
@@ -566,11 +561,9 @@ func TestVectorCrossAlignEnd(t *testing.T) {
 		"........",
 		"........",
 	}, im))
-
 }
 
 func TestVectorCrossAlignStart(t *testing.T) {
-
 	v := Vector{
 		Expanded:   true,
 		Vertical:   false,
@@ -766,7 +759,6 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 		".....",
 		".....",
 	}, im))
-
 }
 
 func TestVectorMainAlignCenter(t *testing.T) {
@@ -960,5 +952,4 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 		"rrr.......ggggg.......b..............rrr......bbbb",
 		"rrr.......ggggg.......b......ww......rrr......bbbb",
 	}, im))
-
 }

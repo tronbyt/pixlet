@@ -57,7 +57,6 @@ func (s *DateTime) AttrNames() []string {
 
 func (s *DateTime) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

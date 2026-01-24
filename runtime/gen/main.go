@@ -40,7 +40,7 @@ func decay(t reflect.Type) reflect.Type {
 }
 
 // Given an `interface{}` return a `reflect.Type`, with pointer or slice unwrapped.
-func toDecayedType(v interface{}) reflect.Type {
+func toDecayedType(v any) reflect.Type {
 	return decay(reflect.TypeOf(v))
 }
 
@@ -58,7 +58,7 @@ type Package struct {
 	Types          []reflect.Value
 }
 
-// A list of packages and their types to generate code and documentation for.
+// Packages is a list of packages and their types to generate code and documentation for.
 var Packages = []Package{
 	{
 		Name:           "render",
@@ -150,7 +150,7 @@ var Packages = []Package{
 	},
 }
 
-// Defines how to generate code and documentation for type.
+// Type defines how to generate code and documentation for type.
 type Type struct {
 	GoType        string
 	DocType       string
@@ -158,7 +158,7 @@ type Type struct {
 	GenerateField bool
 }
 
-// A map of Go types to an `Attribute` definition.
+// TypeMap is a map of Go types to an `Attribute` definition.
 var TypeMap = map[reflect.Type]Type{
 	// Primitive types
 	toDecayedType(new(string)): {
@@ -190,7 +190,7 @@ var TypeMap = map[reflect.Type]Type{
 	// Render types
 	toDecayedType(new(render.Insets)): {
 		GoType:       "starlark.Value",
-		DocType:      "int / (int, int, int, int)",
+		DocType:      "int / tuple of 3 ints",
 		TemplatePath: "attr/insets.tmpl",
 	},
 	toDecayedType(new(render.Widget)): {
@@ -288,7 +288,7 @@ var TypeMap = map[reflect.Type]Type{
 	},
 }
 
-// Defines a generated "Go to Starlark" attribute.
+// GeneratedAttr defines a generated "Go to Starlark" attribute.
 // This definition is passed to the templating engine.
 type GeneratedAttr struct {
 	GoName        string
@@ -309,7 +309,7 @@ type GeneratedAttr struct {
 	DocType       string
 }
 
-// Defines a generated "Go to Starlark" binding type.
+// GeneratedType defines a generated "Go to Starlark" binding type.
 // This definition is passed to the templating engine.
 type GeneratedType struct {
 	GoName            string
@@ -371,11 +371,12 @@ func toGeneratedAttribute(typ reflect.Type, field reflect.StructField) (*Generat
 
 		for _, attr := range attrs[1:] {
 			attr = strings.TrimSpace(attr)
-			if attr == "required" {
+			switch attr {
+			case "required":
 				result.IsRequired = true
-			} else if attr == "readonly" {
+			case "readonly":
 				result.IsReadOnly = true
-			} else {
+			default:
 				return nil, fmt.Errorf("%s.%s has unsupported tag attribute: '%s'", typ.Name(), field.Name, attr)
 			}
 		}
@@ -409,7 +410,7 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 		result.HasInit = true
 	}
 
-	if typ.Implements(reflect.TypeOf((*animation.Transform)(nil)).Elem()) {
+	if typ.Implements(reflect.TypeFor[animation.Transform]()) {
 		result.HasTransform = true
 	}
 
@@ -473,7 +474,7 @@ func loadTemplate(path string) *template.Template {
 	return tmpl
 }
 
-func renderTemplateToFile(tmpl *template.Template, data interface{}, path string) {
+func renderTemplateToFile(tmpl *template.Template, data any, path string) {
 	outf := must2(os.Create(path))
 	defer func() {
 		must(outf.Close())
@@ -481,14 +482,14 @@ func renderTemplateToFile(tmpl *template.Template, data interface{}, path string
 	must(tmpl.Execute(outf, data))
 }
 
-func renderTemplateToBuffer(tmpl *template.Template, data interface{}, buf *bytes.Buffer) {
+func renderTemplateToBuffer(tmpl *template.Template, data any, buf *bytes.Buffer) {
 	must(tmpl.Execute(buf, data))
 }
 
-func renderTemplateToString(tmpl *template.Template, data interface{}) string {
+func renderTemplateToString(tmpl *template.Template, data any) string {
 	var buf bytes.Buffer
 	renderTemplateToBuffer(tmpl, data, &buf)
-	return string(buf.Bytes())
+	return buf.String()
 }
 
 func attachDocs(pkg Package, types []*GeneratedType) {
@@ -525,14 +526,14 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 		}
 
 		// Examples
-		examples := []string{}
-		for _, group := range exampleRe.FindAllStringSubmatch(docs[type_.GoName], -1) {
+		groups := exampleRe.FindAllStringSubmatch(docs[type_.GoName], -1)
+		examples := make([]string, 0, len(groups))
+		for _, group := range groups {
 			example := strings.TrimSpace(group[1])
 			example = strings.ReplaceAll(example, "\n\t", "\n")
 			examples = append(examples, example)
 		}
 		type_.Examples = examples
-
 	}
 }
 
@@ -593,5 +594,4 @@ func main() {
 	}
 
 	genEmoji()
-
 }

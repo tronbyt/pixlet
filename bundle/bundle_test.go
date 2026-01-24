@@ -28,7 +28,7 @@ func TestBundleWriteAndLoad(t *testing.T) {
 	path := filepath.Join(dir, bundle.AppBundleName)
 	f, err := os.Open(path)
 	assert.NoError(t, err)
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	newBun, err := bundle.LoadBundle(f)
 	assert.NoError(t, err)
 	assert.Equal(t, "test-app", newBun.Manifest.ID)
@@ -69,7 +69,7 @@ func TestBundleWriteAndLoadWithoutRuntime(t *testing.T) {
 	path := filepath.Join(dir, bundle.AppBundleName)
 	f, err := os.Open(path)
 	assert.NoError(t, err)
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	newBun, err := bundle.LoadBundle(f)
 	assert.NoError(t, err)
 	assert.Equal(t, "test-app", newBun.Manifest.ID)
@@ -92,7 +92,7 @@ func TestBundleWriteAndLoadWithoutRuntime(t *testing.T) {
 func TestLoadBundle(t *testing.T) {
 	f, err := os.Open("testdata/bundle.tar.gz")
 	assert.NoError(t, err)
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	ab, err := bundle.LoadBundle(f)
 	assert.NoError(t, err)
 	assert.Equal(t, "test-app", ab.Manifest.ID)
@@ -101,7 +101,7 @@ func TestLoadBundle(t *testing.T) {
 func TestLoadBundleExcessData(t *testing.T) {
 	f, err := os.Open("testdata/excess-files.tar.gz")
 	assert.NoError(t, err)
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	ab, err := bundle.LoadBundle(f)
 	assert.NoError(t, err)

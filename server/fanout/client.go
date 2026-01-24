@@ -61,17 +61,17 @@ func (c *Client) Send(event WebsocketEvent) {
 func (c *Client) Quit() {
 	c.fo.UnregisterClient(c)
 	c.quit <- true
-	c.conn.Close()
+	_ = c.conn.Close()
 }
 
-// reader reads pong messages off of the connection. Once it recieves a message,
-// the deadline is updated for when the next message must be recieved. If we
+// reader reads pong messages off of the connection. Once it receives a message,
+// the deadline is updated for when the next message must be received. If we
 // don't get a message within the deadline, this method calls Quit to clean up
 // the client.
 func (c *Client) reader() {
 	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	_ = c.conn.SetReadDeadline(time.Now().Add(pongWait))
+	c.conn.SetPongHandler(func(string) error { _ = c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
 	for {
 		_, _, err := c.conn.ReadMessage()
@@ -82,7 +82,7 @@ func (c *Client) reader() {
 	}
 }
 
-// writer writes image events over the socket when it recieves messages via
+// writer writes image events over the socket when it receives messages via
 // Send(). It also sends pings to ensure the connection stays alive.
 func (c *Client) writer() {
 	ticker := time.NewTicker(pingPeriod)
@@ -93,12 +93,12 @@ func (c *Client) writer() {
 		case <-c.quit:
 			return
 		case event := <-c.send:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteJSON(event); err != nil {
 				c.Quit()
 			}
 		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				c.Quit()
 			}

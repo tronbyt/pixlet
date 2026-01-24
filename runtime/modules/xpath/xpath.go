@@ -192,7 +192,6 @@ func (x *XPath) AttrNames() []string {
 
 func (x *XPath) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "query":
 		return x.query.BindReceiver(x), nil
 

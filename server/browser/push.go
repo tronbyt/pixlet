@@ -28,15 +28,15 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 		background     bool
 	)
 
-	var result map[string]interface{}
+	var result map[string]any
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
 		return
 	}
 
-	json.Unmarshal(bodyBytes, &result)
+	_ = json.Unmarshal(bodyBytes, &result)
 
 	config := make(map[string]any)
 	for k, val := range result {
@@ -55,6 +55,11 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	img, err := b.loader.LoadApplet(config)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
+		return
+	}
 
 	payload, err := json.Marshal(
 		TidbytPushJSON{
@@ -66,21 +71,21 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
 		return
 	}
 
 	client := &http.Client{}
 	req, err := http.NewRequest(
-		"POST",
+		http.MethodPost,
 		fmt.Sprintf(TidbytAPIPush, deviceID),
 		bytes.NewReader(payload),
 	)
 
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
 		return
 	}
 
@@ -88,15 +93,15 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintln(w, err)
 		return
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		slog.Error("Tidbyt API returned an error", "status", resp.Status)
 		w.WriteHeader(resp.StatusCode)
-		fmt.Fprintln(w, err)
+		_, _ = fmt.Fprintln(w, err)
 
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
@@ -104,5 +109,5 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("{}"))
+	_, _ = w.Write([]byte("{}"))
 }

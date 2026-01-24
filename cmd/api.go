@@ -144,7 +144,7 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 	case loader.ImageAVIF:
 		w.Header().Set("Content-Type", "image/avif")
 	}
-	w.Write(buf)
+	w.Write(buf) //nolint:errcheck
 }
 
 func apiRun(_ *cobra.Command, _ []string, opts *apiOptions) error {

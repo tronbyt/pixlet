@@ -103,12 +103,12 @@ var colorFilters = map[ColorFilter][3][3]float32{
 	},
 }
 
-// MarshalText implements the encoding.TextMarshaler interface for ColorFilter
+// MarshalText implements the encoding.TextMarshaler interface for ColorFilter.
 func (i ColorFilter) MarshalText() ([]byte, error) {
 	return []byte(i.String()), nil
 }
 
-// UnmarshalText implements the encoding.TextUnmarshaler interface for ColorFilter
+// UnmarshalText implements the encoding.TextUnmarshaler interface for ColorFilter.
 func (i *ColorFilter) UnmarshalText(text []byte) error {
 	if len(text) == 0 {
 		*i = ColorNone

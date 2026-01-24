@@ -12,7 +12,7 @@ import (
 	"github.com/ericpauley/go-quantize/quantize"
 )
 
-// Renders a screen to GIF. Optionally pass filters for postprocessing
+// EncodeGIF renders a screen to GIF. Optionally pass filters for postprocessing
 // each individual frame.
 func (s *Screens) EncodeGIF(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
 	images, err := s.render(filters...)

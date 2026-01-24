@@ -27,7 +27,7 @@ func NewWatcher(filename string, fileChanges chan bool) *Watcher {
 // Run starts the file watcher in a blocking fashion. This watches an entire
 // directory and only notifies the channel when the specified file is changed.
 // If there is an error, it's returned. It's up to the caller to respawn the
-// watcher if it's desireable to keep watching.
+// watcher if it's desirable to keep watching.
 //
 // The reason it watches a directory is becausde some editors like VIM write
 // to a swap file and recreate the original file. So we can't simply watch the
@@ -47,12 +47,12 @@ func (w *Watcher) Run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("watching for changes: %w", err)
 	}
-	defer watcher.Close()
+	defer func() { _ = watcher.Close() }()
 
 	if isDir {
-		watcher.Add(w.path)
+		_ = watcher.Add(w.path)
 	} else {
-		watcher.Add(filepath.Dir(w.path))
+		_ = watcher.Add(filepath.Dir(w.path))
 	}
 
 	for {

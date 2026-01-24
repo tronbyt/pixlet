@@ -27,6 +27,10 @@ child is a frame.
 FIXME: Behaviour when children themselves are animated is a bit
 weird. Think and fix.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -48,6 +52,16 @@ render.Animation(
 
 ## Arc
 Arc draws an arc. The arc is centered at (x, y).
+
+
+
+
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -84,6 +98,14 @@ fill all available space, unless `width` and/or `height` is
 provided. Boxes can have a `child`, which will be centered in the
 box, and the child can be padded (via `padding`).
 
+
+
+
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -110,6 +132,12 @@ render.Box(
 Circle draws a circle with the given `diameter` and `color`. If a
 `child` widget is provided, it is drawn in the center of the
 circle.
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -150,6 +178,15 @@ one of the following `cross_align` values:
 - `"start"`: place children at the left
 - `"end"`: place children at the right
 - `"center"`: place children in the center
+
+
+
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -193,6 +230,12 @@ Emoji renders a single emoji at a specified height, maintaining aspect ratio.
 This allows for rendering emojis much larger than the standard 10x10 pixel size
 used in text rendering.
 
+
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -229,6 +272,15 @@ the `delay` attribute.
 
 ## Line
 Line draws a line from (x1, y1) to (x2, y2).
+
+
+
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -277,6 +329,17 @@ one of the following `align` values:
 - `"end"`: place child at the right/bottom
 - `"center"`: place child at the center
 
+
+
+
+
+
+
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -312,14 +375,20 @@ accordingly.
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `child` | `Widget` | The Widget to place padding around | **Y** |
-| `pad` | `int / (int, int, int, int)` | Padding around the child | N |
+| `pad` | `int / tuple of 3 ints` | Padding around the child | N |
 | `expanded` | `bool` | This is a confusing parameter | N |
-| `color` | `color` | Background color | N |
+| `color` | `color` | Background color. | N |
 
 ## PieChart
 PieChart draws a circular pie chart of size `diameter`. It takes two
 arguments for the data: parallel lists `colors` and `weights` representing
 the shading and relative sizes of each data entry.
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -340,6 +409,20 @@ render.PieChart(
 
 ## Plot
 Plot is a widget that draws a data series.
+
+
+
+
+
+
+
+
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -385,6 +468,13 @@ render.Plot(
 ## Polygon
 Polygon draws a polygon.
 
+
+
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -407,7 +497,7 @@ stroke_width = 1,
 ![](img/widget_Polygon_0.gif)
 
 ## Root
-Every Widget tree has a Root.
+Root is the top level of every Widget tree.
 
 The child widget, and all its descendants, will be drawn on a 64x32
 canvas. Root places its child in the upper left corner of the
@@ -427,7 +517,7 @@ displaying stale data in the event of e.g. connectivity issues.
 | `child` | `Widget` | Widget to render | **Y** |
 | `delay` | `int` | Frame delay in milliseconds | N |
 | `max_age` | `int` | Expiration time in seconds | N |
-| `show_full_animation` | `bool` | Request animation is shown in full, regardless of app cycle speed | N |
+| `show_full_animation` | `bool` | Request animation is shown in full, regardless of app cycle speed. | N |
 
 ## Row
 Row lays out and draws its children horizontally (in a row).
@@ -451,6 +541,15 @@ one of the following `cross_align` values:
 - `"start"`: place children at the top
 - `"end"`: place children at the bottom
 - `"center"`: place children at the center
+
+
+
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -499,6 +598,10 @@ It comes in quite useful when chaining animations.
 If you want to know more about that, go check
 out the [animation](animation.md) documentation.
 
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -522,6 +625,10 @@ Stack draws its children on top of each other.
 Just like a stack of pancakes, except with Widgets instead of
 pancakes. The Stack will be given a width and height sufficient to
 fit all its children.
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |
@@ -549,6 +656,14 @@ parameters allow fine tuning of the vertical layout of the
 string. Take a look at the [font documentation](fonts.md) for more
 information.
 
+
+
+
+
+
+
+.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -575,6 +690,16 @@ Alignment of the text is controlled by passing one of the following `align` valu
 - `"left"`: align text to the left
 - `"center"`: align text in the center
 - `"right"`: align text to the right
+
+
+
+
+
+
+
+
+
+.
 
 #### Attributes
 | Name | Type | Description | Required |

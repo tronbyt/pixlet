@@ -24,7 +24,7 @@ import (
 //	    diameter = 30,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type PieChart struct {
 	Colors   []color.Color `starlark:"colors, required"`
 	Weights  []float64     `starlark:"weights, required"`

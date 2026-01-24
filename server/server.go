@@ -79,7 +79,7 @@ func NewServer(
 
 // Run serves the http server and runs forever in a blocking fashion.
 func (s *Server) Run(ctx context.Context) error {
-	defer s.loader.Close()
+	defer func() { _ = s.loader.Close() }()
 
 	g, ctx := errgroup.WithContext(ctx)
 
@@ -95,7 +95,7 @@ func (s *Server) Run(ctx context.Context) error {
 		g.Go(func() error {
 			return s.watcher.Run(ctx)
 		})
-		s.loader.LoadApplet(make(map[string]any))
+		_, _ = s.loader.LoadApplet(make(map[string]any))
 	}
 
 	return g.Wait()

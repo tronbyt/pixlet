@@ -61,7 +61,6 @@ func (s *Toggle) AttrNames() []string {
 
 func (s *Toggle) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "id":
 		return starlark.String(s.ID), nil
 

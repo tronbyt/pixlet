@@ -47,7 +47,7 @@ func completeDevices(cmd *cobra.Command) ([]string, cobra.ShellCompDirective) {
 }
 
 func completeWebPLevel(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-	var s []string
+	s := make([]string, 0, 10)
 	for i := range 10 {
 		s = append(s, strconv.Itoa(i))
 	}
@@ -67,7 +67,7 @@ func completeRender(_ *cobra.Command, args []string, toComplete string) ([]cobra
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
-	defer applet.Close()
+	defer func() { _ = applet.Close() }()
 
 	if applet.Schema == nil {
 		return nil, cobra.ShellCompDirectiveNoFileComp

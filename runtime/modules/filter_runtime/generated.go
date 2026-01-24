@@ -56,6 +56,7 @@ func LoadModule() (starlark.StringDict, error) {
 
 type Blur struct {
 	filter.Blur
+
 	starlarkWidget starlark.Value
 	starlarkRadius starlark.Value
 	frame_count    *starlark.Builtin
@@ -146,7 +147,6 @@ func blurFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -188,6 +188,7 @@ func blurFrameCount(
 
 type Brightness struct {
 	filter.Brightness
+
 	starlarkWidget starlark.Value
 	starlarkChange starlark.Value
 	frame_count    *starlark.Builtin
@@ -278,7 +279,6 @@ func brightnessFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -320,6 +320,7 @@ func brightnessFrameCount(
 
 type Contrast struct {
 	filter.Contrast
+
 	starlarkWidget starlark.Value
 	starlarkFactor starlark.Value
 	frame_count    *starlark.Builtin
@@ -410,7 +411,6 @@ func contrastFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -452,6 +452,7 @@ func contrastFrameCount(
 
 type EdgeDetection struct {
 	filter.EdgeDetection
+
 	starlarkWidget starlark.Value
 	starlarkRadius starlark.Value
 	frame_count    *starlark.Builtin
@@ -542,7 +543,6 @@ func edgedetectionFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -584,6 +584,7 @@ func edgedetectionFrameCount(
 
 type Emboss struct {
 	filter.Emboss
+
 	starlarkWidget starlark.Value
 	frame_count    *starlark.Builtin
 }
@@ -661,7 +662,6 @@ func embossFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -703,6 +703,7 @@ func embossFrameCount(
 
 type FlipHorizontal struct {
 	filter.FlipHorizontal
+
 	starlarkWidget starlark.Value
 	frame_count    *starlark.Builtin
 }
@@ -780,7 +781,6 @@ func fliphorizontalFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -822,6 +822,7 @@ func fliphorizontalFrameCount(
 
 type FlipVertical struct {
 	filter.FlipVertical
+
 	starlarkWidget starlark.Value
 	frame_count    *starlark.Builtin
 }
@@ -899,7 +900,6 @@ func flipverticalFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -941,6 +941,7 @@ func flipverticalFrameCount(
 
 type Gamma struct {
 	filter.Gamma
+
 	starlarkWidget starlark.Value
 	starlarkGamma  starlark.Value
 	frame_count    *starlark.Builtin
@@ -1031,7 +1032,6 @@ func gammaFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1073,6 +1073,7 @@ func gammaFrameCount(
 
 type Grayscale struct {
 	filter.Grayscale
+
 	starlarkWidget starlark.Value
 	frame_count    *starlark.Builtin
 }
@@ -1150,7 +1151,6 @@ func grayscaleFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1192,6 +1192,7 @@ func grayscaleFrameCount(
 
 type Hue struct {
 	filter.Hue
+
 	starlarkWidget starlark.Value
 	starlarkChange starlark.Value
 	frame_count    *starlark.Builtin
@@ -1282,7 +1283,6 @@ func hueFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1324,6 +1324,7 @@ func hueFrameCount(
 
 type Invert struct {
 	filter.Invert
+
 	starlarkWidget starlark.Value
 	frame_count    *starlark.Builtin
 }
@@ -1401,7 +1402,6 @@ func invertFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1443,6 +1443,7 @@ func invertFrameCount(
 
 type Rotate struct {
 	filter.Rotate
+
 	starlarkWidget starlark.Value
 	starlarkAngle  starlark.Value
 	frame_count    *starlark.Builtin
@@ -1533,7 +1534,6 @@ func rotateFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1575,6 +1575,7 @@ func rotateFrameCount(
 
 type Saturation struct {
 	filter.Saturation
+
 	starlarkWidget starlark.Value
 	starlarkFactor starlark.Value
 	frame_count    *starlark.Builtin
@@ -1665,7 +1666,6 @@ func saturationFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1707,6 +1707,7 @@ func saturationFrameCount(
 
 type Sepia struct {
 	filter.Sepia
+
 	starlarkWidget starlark.Value
 	frame_count    *starlark.Builtin
 }
@@ -1784,7 +1785,6 @@ func sepiaFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1826,6 +1826,7 @@ func sepiaFrameCount(
 
 type Sharpen struct {
 	filter.Sharpen
+
 	starlarkWidget starlark.Value
 	frame_count    *starlark.Builtin
 }
@@ -1903,7 +1904,6 @@ func sharpenFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -1945,6 +1945,7 @@ func sharpenFrameCount(
 
 type Shear struct {
 	filter.Shear
+
 	starlarkWidget starlark.Value
 	starlarkXAngle starlark.Value
 	starlarkYAngle starlark.Value
@@ -2048,7 +2049,6 @@ func shearFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)
@@ -2090,6 +2090,7 @@ func shearFrameCount(
 
 type Threshold struct {
 	filter.Threshold
+
 	starlarkWidget starlark.Value
 	starlarkLevel  starlark.Value
 	frame_count    *starlark.Builtin
@@ -2180,7 +2181,6 @@ func thresholdFrameCount(
 	b *starlark.Builtin,
 	args starlark.Tuple,
 	kwargs []starlark.Tuple) (starlark.Value, error) {
-
 	var (
 		bounds starlark.Tuple
 	)

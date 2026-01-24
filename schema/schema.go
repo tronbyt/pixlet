@@ -3,7 +3,9 @@ package schema
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -26,8 +28,8 @@ const (
 // Schema holds a configuration object for an applet. It holds a list of fields
 // that are exported from an applet.
 type Schema struct {
-	Version       string         `json:"version" validate:"required"`
-	Fields        []SchemaField  `json:"schema" validate:"dive"`
+	Version       string         `json:"version"                 validate:"required"`
+	Fields        []SchemaField  `json:"schema"                  validate:"dive"`
 	Notifications []Notification `json:"notifications,omitempty" validate:"dive"`
 
 	Handlers map[string]SchemaHandler `json:"-"`
@@ -35,25 +37,25 @@ type Schema struct {
 
 // SchemaField represents an item in the config used to confgure an applet.
 type SchemaField struct {
-	Type        string            `json:"type" validate:"required,oneof=color datetime dropdown generated location locationbased onoff radio text typeahead oauth2 oauth1 png notification"`
-	ID          string            `json:"id" validate:"required,excludesall=$"`
-	Name        string            `json:"name,omitempty" validate:"required_for=datetime dropdown location locationbased onoff radio text typeahead png"`
+	Type        string            `json:"type"                  validate:"required,oneof=color datetime dropdown generated location locationbased onoff radio text typeahead oauth2 oauth1 png notification"`
+	ID          string            `json:"id"                    validate:"required,excludesall=$"`
+	Name        string            `json:"name,omitempty"        validate:"required_for=datetime dropdown location locationbased onoff radio text typeahead png"`
 	Description string            `json:"description,omitempty"`
-	Icon        string            `json:"icon,omitempty" validate:"forbidden_for=generated"`
-	Visibility  *SchemaVisibility `json:"visibility,omitempty" validate:"omitempty"`
+	Icon        string            `json:"icon,omitempty"        validate:"forbidden_for=generated"`
+	Visibility  *SchemaVisibility `json:"visibility,omitempty"  validate:"omitempty"`
 
 	Default string         `json:"default,omitempty" validate:"required_for=dropdown onoff radio"`
 	Options []SchemaOption `json:"options,omitempty" validate:"required_for=dropdown radio,dive"`
 	Palette []string       `json:"palette,omitempty"`
-	Sounds  []SchemaSound  `json:"sounds,omitempty" validate:"required_for=notification,dive"`
+	Sounds  []SchemaSound  `json:"sounds,omitempty"  validate:"required_for=notification,dive"`
 
-	Source          string             `json:"source,omitempty" validate:"required_for=generated"`
+	Source          string             `json:"source,omitempty"  validate:"required_for=generated"`
 	Handler         string             `json:"handler,omitempty" validate:"required_for=generated locationbased typeahead oauth2"`
 	StarlarkHandler *starlark.Function `json:"-"`
 
-	ClientID              string   `json:"client_id,omitempty" validate:"required_for=oauth2"`
+	ClientID              string   `json:"client_id,omitempty"              validate:"required_for=oauth2"`
 	AuthorizationEndpoint string   `json:"authorization_endpoint,omitempty" validate:"required_for=oauth2"`
-	Scopes                []string `json:"scopes,omitempty" validate:"required_for=oauth2"`
+	Scopes                []string `json:"scopes,omitempty"                 validate:"required_for=oauth2"`
 
 	Secret bool `json:"secret,omitempty" validate:"allowed_for=text"`
 }
@@ -62,23 +64,23 @@ type SchemaField struct {
 // down menu.
 type SchemaOption struct {
 	Display string `json:"display"`
-	Text    string `json:"text" validate:"required"` // The same as display, for legacy reasons.
-	Value   string `json:"value" validate:"required"`
+	Text    string `json:"text"    validate:"required"` // The same as display, for legacy reasons.
+	Value   string `json:"value"   validate:"required"`
 }
 
 // SchemaSound represents a sound that can be played by the applet.
 type SchemaSound struct {
-	ID    string `json:"id" validate:"required"`
+	ID    string `json:"id"    validate:"required"`
 	Title string `json:"title" validate:"required"`
-	Path  string `json:"path" validate:"required"`
+	Path  string `json:"path"  validate:"required"`
 }
 
 // SchemaVisibility enables conditional fields inside of the mobile app. For
 // example, if a field should be invisible until a login is provided.
 type SchemaVisibility struct {
-	Type      string `json:"type" validate:"required,oneof=invisible disabled"`
+	Type      string `json:"type"      validate:"required,oneof=invisible disabled"`
 	Condition string `json:"condition" validate:"required,oneof=equal not_equal"`
-	Variable  string `json:"variable" validate:"required"`
+	Variable  string `json:"variable"  validate:"required"`
 	Value     string `json:"value"`
 }
 
@@ -86,9 +88,9 @@ type SchemaVisibility struct {
 // get back from the schema function.
 type HandlerReturnType int8
 
-// SchemaHandler defines a function and and return type for getting the schema
+// SchemaHandler defines a function and return type for getting the schema
 // for an applet. This can both be the predefined schema function we expect all
-// applets to have for config, but can also be used as a callback for
+// applets to have for config, but can also be used as a callback for.
 type SchemaHandler struct {
 	Function   *starlark.Function
 	ReturnType HandlerReturnType
@@ -129,9 +131,7 @@ func FromStarlark(
 		schema = &starlarkSchema.Schema
 		if schema.Handlers == nil {
 			schema.Handlers = make(map[string]SchemaHandler)
-			for name, schemaHandler := range starlarkSchema.Handlers {
-				schema.Handlers[name] = schemaHandler
-			}
+			maps.Copy(schema.Handlers, starlarkSchema.Handlers)
 		}
 	} else {
 		// this is a legacy path, where the schema was just a dict
@@ -213,7 +213,7 @@ func FromStarlark(
 	return schema, nil
 }
 
-// Encodes a list of schema options into validated json.
+// EncodeOptions encodes a list of schema options into validated json.
 func EncodeOptions(
 	starlarkOptions starlark.Value,
 ) (string, error) {
@@ -249,14 +249,13 @@ func EncodeOptions(
 
 // Transforms a starlark value into Go objects. The value must be a
 // list, dict or string. Or a tree of these.
-func unmarshalStarlark(object starlark.Value) (interface{}, error) {
+func unmarshalStarlark(object starlark.Value) (any, error) {
 	switch v := object.(type) {
-
 	case starlark.String:
 		return v.GoString(), nil
 
 	case *starlark.List:
-		goList := make([]interface{}, 0, v.Len())
+		goList := make([]any, 0, v.Len())
 
 		for listVal := range v.Elements() {
 			goVal, err := unmarshalStarlark(listVal)
@@ -269,7 +268,7 @@ func unmarshalStarlark(object starlark.Value) (interface{}, error) {
 		return goList, nil
 
 	case *starlark.Dict:
-		goMap := make(map[string]interface{})
+		goMap := make(map[string]any)
 
 		for _, key := range v.Keys() {
 			strKey, ok := key.(starlark.String)
@@ -298,7 +297,7 @@ func unmarshalStarlark(object starlark.Value) (interface{}, error) {
 
 // Helper. Verifies that object is string or nil and writes it to *p
 // if string.
-func setString(p *string, object interface{}) string {
+func setString(p *string, object any) string {
 	if object == nil {
 		return ""
 	}
@@ -310,8 +309,8 @@ func setString(p *string, object interface{}) string {
 	return ""
 }
 
-func buildOptions(options interface{}) ([]SchemaOption, error) {
-	optionsList, ok := options.([]interface{})
+func buildOptions(options any) ([]SchemaOption, error) {
+	optionsList, ok := options.([]any)
 	if !ok {
 		return nil, fmt.Errorf("options must be a list")
 	}
@@ -323,7 +322,7 @@ func buildOptions(options interface{}) ([]SchemaOption, error) {
 			continue
 		}
 
-		oMap, ok := o.(map[string]interface{})
+		oMap, ok := o.(map[string]any)
 		if !ok {
 			return nil, fmt.Errorf("entry %d is not dict or Option", j)
 		}
@@ -363,10 +362,8 @@ func validateSchema(schema *Schema) error {
 			return false
 		}
 		schemaField := fl.Parent().Interface().(SchemaField)
-		for _, fieldType := range strings.Split(fl.Param(), " ") {
-			if fieldType == schemaField.Type {
-				return isSet
-			}
+		if slices.Contains(strings.Split(fl.Param(), " "), schemaField.Type) {
+			return isSet
 		}
 		return true
 	}
@@ -379,10 +376,8 @@ func validateSchema(schema *Schema) error {
 			return false
 		}
 		schemaField := fl.Parent().Interface().(SchemaField)
-		for _, fieldType := range strings.Split(fl.Param(), " ") {
-			if fieldType == schemaField.Type {
-				return !isSet
-			}
+		if slices.Contains(strings.Split(fl.Param(), " "), schemaField.Type) {
+			return !isSet
 		}
 		return true
 	}
@@ -398,21 +393,16 @@ func validateSchema(schema *Schema) error {
 		}
 		// field IS set — only valid if Type is in the list
 		schemaField := fl.Parent().Interface().(SchemaField)
-		for _, fieldType := range strings.Split(fl.Param(), " ") {
-			if fieldType == schemaField.Type {
-				return true
-			}
-		}
-		return false
+		return slices.Contains(strings.Split(fl.Param(), " "), schemaField.Type)
 	}
 
 	// NOTE: It could be helpful to also provide an "optional_for"
 	// function, to make sure we catch superfluous tags.
 
 	validate := validator.New()
-	validate.RegisterValidation("required_for", requiredFor)
-	validate.RegisterValidation("forbidden_for", forbiddenFor)
-	validate.RegisterValidation("allowed_for", allowedFor)
+	_ = validate.RegisterValidation("required_for", requiredFor)
+	_ = validate.RegisterValidation("forbidden_for", forbiddenFor)
+	_ = validate.RegisterValidation("allowed_for", allowedFor)
 
 	err := validate.Struct(schema)
 	if err != nil {

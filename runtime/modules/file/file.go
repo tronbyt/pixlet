@@ -25,7 +25,7 @@ func (f *File) readall(thread *starlark.Thread, _ *starlark.Builtin, args starla
 	if err != nil {
 		return nil, err
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	return r.read(thread, nil, nil, nil)
 }
@@ -56,7 +56,6 @@ func (f *File) AttrNames() []string {
 
 func (f *File) Attr(name string) (starlark.Value, error) {
 	switch name {
-
 	case "path":
 		return starlark.String(f.Path), nil
 
@@ -80,6 +79,7 @@ func (f *File) Hash() (uint32, error) {
 
 type Reader struct {
 	io.ReadCloser
+
 	binaryMode bool
 }
 

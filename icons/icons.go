@@ -21,7 +21,7 @@ var IconsMap = map[string]string{
 	"accusoft":                          "accusoft",
 	"addressBook":                       "addressBook",
 	"addressCard":                       "addressCard",
-	"adn":                               "adn",
+	"and":                               "and",
 	"adversal":                          "adversal",
 	"affiliatetheme":                    "affiliatetheme",
 	"airbnb":                            "airbnb",

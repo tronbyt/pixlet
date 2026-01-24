@@ -39,7 +39,7 @@ func ValidateIcons(_ *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)
 	}
-	defer applet.Close()
+	defer func() { _ = applet.Close() }()
 
 	if applet.Schema != nil {
 		for _, field := range applet.Schema.Fields {

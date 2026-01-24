@@ -66,6 +66,7 @@ type Field interface {
 
 type StarlarkSchema struct {
 	Schema
+
 	Handlers              map[string]SchemaHandler
 	starlarkFields        *starlark.List
 	starlarkHandlers      *starlark.List
@@ -124,7 +125,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 				)
 			}
 
-			s.Schema.Fields = append(s.Schema.Fields, f.AsSchemaField())
+			s.Fields = append(s.Fields, f.AsSchemaField())
 		}
 	}
 
@@ -155,7 +156,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 				)
 			}
 
-			s.Schema.Notifications = append(s.Schema.Notifications, *n)
+			s.Notifications = append(s.Notifications, *n)
 		}
 	}
 

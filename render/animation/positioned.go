@@ -9,7 +9,7 @@ import (
 	"github.com/tronbyt/pixlet/render"
 )
 
-// Animate a widget from start to end coordinates.
+// AnimatedPositioned animates a widget from start to end coordinates.
 //
 // **DEPRECATED**: Please use `animation.Transformation` instead.
 //
@@ -21,7 +21,7 @@ import (
 // DOC(Duration): Duration of animation in frames
 // DOC(Curve): Easing curve to use, default is 'linear'
 // DOC(Delay): Delay before animation in frames
-// DOC(Hold): Delay after animation in frames
+// DOC(Hold): Delay after animation in frames.
 type AnimatedPositioned struct {
 	Child    render.Widget `starlark:"child,required"`
 	XStart   int           `starlark:"x_start"`

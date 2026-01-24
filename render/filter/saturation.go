@@ -20,10 +20,11 @@ import (
 //	    factor = 1,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Saturation struct {
 	render.Widget `starlark:"child,required"`
-	Factor        float64 `starlark:"factor,required"`
+
+	Factor float64 `starlark:"factor,required"`
 }
 
 func (s Saturation) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {

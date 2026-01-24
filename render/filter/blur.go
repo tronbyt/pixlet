@@ -21,10 +21,11 @@ import (
 //	    radius = 2.0,
 //	)
 //
-// EXAMPLE END
+// EXAMPLE END.
 type Blur struct {
 	render.Widget `starlark:"child,required"`
-	Radius        float64 `starlark:"radius,required"`
+
+	Radius float64 `starlark:"radius,required"`
 }
 
 func (b Blur) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

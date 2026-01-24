@@ -92,7 +92,7 @@ func pushRun(_ *cobra.Command, args []string, opts *pushOptions) error {
 
 	client := &http.Client{}
 	req, err := http.NewRequest(
-		"POST",
+		http.MethodPost,
 		fmt.Sprintf("%s/v0/devices/%s/push", creds.baseURL, deviceID),
 		bytes.NewReader(payload),
 	)
@@ -107,11 +107,11 @@ func pushRun(_ *cobra.Command, args []string, opts *pushOptions) error {
 		return fmt.Errorf("pushing to API: %w", err)
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		slog.Error("Tronbyt API returned an error", "status", resp.Status)
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(body))
-		return fmt.Errorf("Tronbyt API returned status: %s", resp.Status)
+		return fmt.Errorf("tronbyt API returned status: %s", resp.Status)
 	}
 
 	return nil

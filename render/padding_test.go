@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// By default, padding is added to child, regardless of bounds
+// By default, padding is added to child, regardless of bounds.
 func TestPadding(t *testing.T) {
 	pad := Padding{
 		Child: Box{Width: 3, Height: 3, Color: color.RGBA{0xff, 0, 0, 0xff}},
@@ -49,9 +49,8 @@ func TestPadding(t *testing.T) {
 	}, im))
 }
 
-// If expanded, the full bounds are used and child may be cropped
+// If expanded, the full bounds are used and child may be cropped.
 func TestPaddingExpanded(t *testing.T) {
-
 	// Child fits, so it's placed in upper left corner
 	pad := Padding{
 		Child: Box{Width: 3, Height: 3, Color: color.RGBA{0xff, 0, 0, 0xff}},
@@ -84,7 +83,7 @@ func TestPaddingExpanded(t *testing.T) {
 	}, im))
 }
 
-// Same as TestPadding, with color
+// Same as TestPadding, with color.
 func TestColorPadding(t *testing.T) {
 	pad := Padding{
 		Child: Box{Width: 3, Height: 3, Color: color.RGBA{0xff, 0, 0, 0xff}},
@@ -126,9 +125,8 @@ func TestColorPadding(t *testing.T) {
 	}, im))
 }
 
-// Same as TestPaddingExpanded, with color
+// Same as TestPaddingExpanded, with color.
 func TestColorPaddingExpanded(t *testing.T) {
-
 	// Child fits, so it's placed in upper left corner
 	pad := Padding{
 		Child: Box{Width: 3, Height: 3, Color: color.RGBA{0xff, 0, 0, 0xff}},

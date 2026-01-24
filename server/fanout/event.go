@@ -18,6 +18,8 @@ const (
 
 // WebsocketEvent is a structure used to send messages over the socket.
 type WebsocketEvent struct {
+	canvas.Metadata
+
 	// Message is the contents of the message. This is a webp or gif, base64 encoded.
 	Message string `json:"message"`
 
@@ -26,6 +28,4 @@ type WebsocketEvent struct {
 
 	// Type is the type of message we are sending over the socket.
 	Type string `json:"type"`
-
-	canvas.Metadata
 }
