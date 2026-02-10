@@ -47,7 +47,7 @@
     "@mui/x-date-pickers": "^8.17.0",
     "@reduxjs/toolkit": "^2.10.1",
     "@uiw/react-color": "^2.9.2",
-    "axios": "^1.13.2",
+    "axios": "^1.13.5",
     "axios-retry": "^4.5.0",
     "core-js": "^3.45.1",
     "date-fns": "4.1.0",
