@@ -14,7 +14,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gen2brain/webp v0.5.5
 	github.com/gitsight/go-vcsurl v1.0.1
-	github.com/go-git/go-git/v5 v5.16.4
+	github.com/go-git/go-git/v5 v5.16.5
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83
 	github.com/google/tink/go v1.7.0
