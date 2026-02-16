@@ -11,7 +11,7 @@ RUN npm ci
 COPY frontend .
 RUN npm run build
 
-FROM --platform=$BUILDPLATFORM golang:1.25.7-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26.0-alpine AS builder
 WORKDIR /pixlet
 
 RUN --mount=type=cache,target=/var/cache/apk <<EOT
