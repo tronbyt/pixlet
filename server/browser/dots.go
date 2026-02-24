@@ -71,10 +71,8 @@ func dotHandler(w http.ResponseWriter, r *http.Request) {
 
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>`)
 	b.WriteString("\n")
-	b.WriteString(fmt.Sprintf(
-		`<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" fill="#fff">\n`,
-		width, height,
-	))
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" fill="#fff">\n`,
+		width, height)
 
 	radiusStr := strconv.FormatFloat(radius, 'f', -1, 64)
 	for y := range height {

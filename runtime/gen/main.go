@@ -12,10 +12,10 @@ import (
 	"fmt"
 	"go/doc"
 	"go/format"
-	"go/parser"
 	"go/token"
 	"image/color"
 	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"sort"
@@ -25,6 +25,7 @@ import (
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/render/animation"
 	"github.com/tronbyt/pixlet/render/filter"
+	"golang.org/x/tools/go/packages"
 )
 
 //go:embed *.tmpl */*.tmpl
@@ -497,8 +498,27 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 	fset := token.NewFileSet()
 	docs := map[string]string{}
 
-	astPkgs := must2(parser.ParseDir(fset, pkg.Directory, nil, parser.ParseComments))
-	pkgDoc := doc.New(astPkgs[pkg.Name], pkg.ImportPath, 0)
+	abs, err := filepath.Abs(pkg.Directory)
+	if err != nil {
+		panic(err)
+	}
+
+	cfg := &packages.Config{
+		Mode: packages.LoadFiles | packages.NeedSyntax,
+		Fset: fset,
+	}
+	pkgs, err := packages.Load(cfg, abs)
+	if err != nil {
+		panic(err)
+	}
+	if len(pkgs) != 1 {
+		panic(fmt.Errorf("expected 1 package, got %d", len(pkgs)))
+	}
+	if len(pkgs[0].Errors) > 0 {
+		panic(pkgs[0].Errors[0])
+	}
+
+	pkgDoc := must2(doc.NewFromFiles(fset, pkgs[0].Syntax, pkg.ImportPath))
 	for _, type_ := range pkgDoc.Types {
 		docs[type_.Name] = type_.Doc
 	}
