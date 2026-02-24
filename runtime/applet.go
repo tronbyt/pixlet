@@ -38,6 +38,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
+	modulestrings "github.com/tronbyt/pixlet/runtime/modules/strings"
 	"github.com/tronbyt/pixlet/runtime/modules/sunrise"
 	"github.com/tronbyt/pixlet/runtime/modules/time_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/xpath"
@@ -820,6 +821,9 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 
 	case "filter.star":
 		return filter_runtime.LoadModule()
+
+	case "strings.star":
+		return modulestrings.LoadModule()
 
 	default:
 		return nil, fmt.Errorf("invalid module: %s", module)

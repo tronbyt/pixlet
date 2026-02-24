@@ -347,3 +347,53 @@ def main(config):
     data = yaml.decode(EXAMPLE_YAML)
     return render.Root(render.Text(data["message"]))
 ```
+
+## Pixlet module: Strings
+
+The `strings` module provides string manipulation functions.
+
+| Function | Description |
+| --- | --- |
+| `pad(text, length, align?, char?)` | Returns the string padded to be at least `length` characters long. |
+| `truncate(text, length, ellipsis?)` | Returns the string truncated to be at most `length` characters long. |
+
+### Pad
+
+Parameters:
+- `text`: The string to pad.
+- `length`: The minimum length of the resulting string.
+- `align` (optional): The alignment of the text. Can be "start" (default) or "end".
+- `char` (optional): The character to pad with. Defaults to space.
+
+Example:
+
+```starlark
+load("strings.star", "strings")
+
+def main():
+    print(strings.pad("foo", 5))
+    # Output: "foo  "
+
+    print(strings.pad("foo", 5, "end"))
+    # Output: "  foo"
+```
+
+### Truncate
+
+Parameters:
+- `text`: The string to truncate.
+- `length`: The maximum length of the resulting string.
+- `ellipsis` (optional): The string to append to the truncated text. Defaults to "…".
+
+Example:
+
+```starlark
+load("strings.star", "strings")
+
+def main():
+    print(strings.truncate("hello world", 5))
+    # Output: "hell…"
+
+    print(strings.truncate("hello world", 5, "..."))
+    # Output: "he..."
+```
