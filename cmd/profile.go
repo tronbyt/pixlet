@@ -113,6 +113,7 @@ func profileRun(args []string, opts *profileOptions) error {
 
 func ProfileApp(path string, config map[string]any, meta canvas.Metadata) (*pprof_profile.Profile, error) {
 	cache := runtime.NewInMemoryCache()
+	defer cache.Close()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 

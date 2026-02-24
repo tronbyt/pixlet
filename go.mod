@@ -19,6 +19,7 @@ require (
 	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83
 	github.com/google/tink/go v1.7.0
 	github.com/gorilla/websocket v1.5.3
+	github.com/jellydator/ttlcache/v3 v3.4.0
 	github.com/lmittmann/tint v1.1.2
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-isatty v0.0.20

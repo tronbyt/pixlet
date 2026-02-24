@@ -13,6 +13,7 @@ import (
 
 func TestInitHTTP(t *testing.T) {
 	c := NewInMemoryCache()
+	t.Cleanup(c.Close)
 	InitHTTP(c)
 
 	b, err := os.ReadFile("testdata/httpcache.star")

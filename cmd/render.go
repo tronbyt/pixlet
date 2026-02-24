@@ -212,6 +212,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	}
 
 	cache := runtime.NewInMemoryCache()
+	defer cache.Close()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
