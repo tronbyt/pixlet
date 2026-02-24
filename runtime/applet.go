@@ -27,6 +27,7 @@ import (
 	"github.com/tronbyt/pixlet/manifest"
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime/modules/animation_runtime"
+	modulecolor "github.com/tronbyt/pixlet/runtime/modules/color"
 	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
 	"github.com/tronbyt/pixlet/runtime/modules/file"
 	"github.com/tronbyt/pixlet/runtime/modules/filter_runtime"
@@ -824,6 +825,9 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 
 	case "strings.star":
 		return modulestrings.LoadModule()
+
+	case "color.star":
+		return modulecolor.LoadModule()
 
 	default:
 		return nil, fmt.Errorf("invalid module: %s", module)

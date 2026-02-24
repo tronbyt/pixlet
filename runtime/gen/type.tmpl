@@ -23,7 +23,7 @@ func new{{ .GoName }}(
 ) (starlark.Value, error) {
 	var (
 		{{ range .Attributes -}}
-        {{- if not .IsReadOnly }}{{ .StarlarkName }} {{ .GoType }}{{ end }}
+        {{- if not .IsReadOnly }}{{ .StarlarkName }} {{ .GoType }} {{- with .DefaultValue }} = {{ . }}{{ end }}{{ end }}
 		{{ end }}
 	)
 

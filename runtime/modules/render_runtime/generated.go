@@ -7,6 +7,7 @@ import (
 	"image"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/tronbyt/pixlet/internal/colorutil"
 	"go.starlark.net/starlark"
 
 	"github.com/tronbyt/pixlet/render"
@@ -170,7 +171,7 @@ type Arc struct {
 	starlarkRadius     starlark.Value
 	starlarkStartAngle starlark.Value
 	starlarkEndAngle   starlark.Value
-	starlarkColor      starlark.String
+	starlarkColor      starlark.Value
 	starlarkWidth      starlark.Value
 	frame_count        *starlark.Builtin
 }
@@ -187,7 +188,7 @@ func newArc(
 		radius      starlark.Value
 		start_angle starlark.Value
 		end_angle   starlark.Value
-		color       starlark.String
+		color       starlark.Value = starlark.None
 		width       starlark.Value
 	)
 
@@ -243,10 +244,10 @@ func newArc(
 	}
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
@@ -360,7 +361,7 @@ type Box struct {
 	render.Box
 
 	starlarkChild starlark.Value
-	starlarkColor starlark.String
+	starlarkColor starlark.Value
 	frame_count   *starlark.Builtin
 }
 
@@ -375,7 +376,7 @@ func newBox(
 		width   starlark.Int
 		height  starlark.Int
 		padding starlark.Int
-		color   starlark.String
+		color   starlark.Value = starlark.None
 	)
 
 	if err := starlark.UnpackArgs(
@@ -423,10 +424,10 @@ func newBox(
 	w.Padding = int(paddingInt)
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
@@ -526,7 +527,7 @@ func boxFrameCount(
 type Circle struct {
 	render.Circle
 
-	starlarkColor starlark.String
+	starlarkColor starlark.Value
 	starlarkChild starlark.Value
 	frame_count   *starlark.Builtin
 }
@@ -538,7 +539,7 @@ func newCircle(
 	kwargs []starlark.Tuple,
 ) (starlark.Value, error) {
 	var (
-		color    starlark.String
+		color    starlark.Value = starlark.None
 		diameter starlark.Int
 		child    starlark.Value
 	)
@@ -556,10 +557,10 @@ func newCircle(
 	w := &Circle{}
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
@@ -1137,7 +1138,7 @@ type Line struct {
 	starlarkY1    starlark.Value
 	starlarkX2    starlark.Value
 	starlarkY2    starlark.Value
-	starlarkColor starlark.String
+	starlarkColor starlark.Value
 	starlarkWidth starlark.Value
 	frame_count   *starlark.Builtin
 }
@@ -1153,7 +1154,7 @@ func newLine(
 		y1    starlark.Value
 		x2    starlark.Value
 		y2    starlark.Value
-		color starlark.String
+		color starlark.Value = starlark.None
 		width starlark.Value
 	)
 
@@ -1201,10 +1202,10 @@ func newLine(
 	}
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
@@ -1504,7 +1505,7 @@ type Padding struct {
 
 	starlarkChild starlark.Value
 	starlarkPad   starlark.Value
-	starlarkColor starlark.String
+	starlarkColor starlark.Value
 	frame_count   *starlark.Builtin
 }
 
@@ -1518,7 +1519,7 @@ func newPadding(
 		child    starlark.Value
 		pad      starlark.Value
 		expanded starlark.Bool
-		color    starlark.String
+		color    starlark.Value = starlark.None
 	)
 
 	if err := starlark.UnpackArgs(
@@ -1588,10 +1589,10 @@ func newPadding(
 	w.Expanded = bool(expanded)
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
@@ -1827,12 +1828,12 @@ type Plot struct {
 	render.Plot
 
 	starlarkData              *starlark.List
-	starlarkColor             starlark.String
-	starlarkColorInverted     starlark.String
+	starlarkColor             starlark.Value
+	starlarkColorInverted     starlark.Value
 	starlarkXLim              starlark.Tuple
 	starlarkYLim              starlark.Tuple
-	starlarkFillColor         starlark.String
-	starlarkFillColorInverted starlark.String
+	starlarkFillColor         starlark.Value
+	starlarkFillColorInverted starlark.Value
 	frame_count               *starlark.Builtin
 }
 
@@ -1846,14 +1847,14 @@ func newPlot(
 		data                *starlark.List
 		width               starlark.Int
 		height              starlark.Int
-		color               starlark.String
-		color_inverted      starlark.String
+		color               starlark.Value = starlark.None
+		color_inverted      starlark.Value = starlark.None
 		x_lim               starlark.Tuple
 		y_lim               starlark.Tuple
 		fill                starlark.Bool
 		chart_type          starlark.String
-		fill_color          starlark.String
-		fill_color_inverted starlark.String
+		fill_color          starlark.Value = starlark.None
+		fill_color_inverted starlark.Value = starlark.None
 	)
 
 	if err := starlark.UnpackArgs(
@@ -1896,19 +1897,19 @@ func newPlot(
 	w.Height = int(heightInt)
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
 
 	w.starlarkColorInverted = color_inverted
-	if color_inverted.Len() > 0 {
-		c, err := render.ParseColor(color_inverted.GoString())
+	if color_inverted != starlark.None {
+		c, err := colorutil.Parse(color_inverted)
 		if err != nil {
-			return nil, fmt.Errorf("color_inverted is not a valid hex string: %s", color_inverted.String())
+			return nil, fmt.Errorf("parsing color_inverted: %w", err)
 		}
 		w.ColorInverted = c
 	}
@@ -1932,19 +1933,19 @@ func newPlot(
 	w.ChartType = chart_type.GoString()
 
 	w.starlarkFillColor = fill_color
-	if fill_color.Len() > 0 {
-		c, err := render.ParseColor(fill_color.GoString())
+	if fill_color != starlark.None {
+		c, err := colorutil.Parse(fill_color)
 		if err != nil {
-			return nil, fmt.Errorf("fill_color is not a valid hex string: %s", fill_color.String())
+			return nil, fmt.Errorf("parsing fill_color: %w", err)
 		}
 		w.FillColor = c
 	}
 
 	w.starlarkFillColorInverted = fill_color_inverted
-	if fill_color_inverted.Len() > 0 {
-		c, err := render.ParseColor(fill_color_inverted.GoString())
+	if fill_color_inverted != starlark.None {
+		c, err := colorutil.Parse(fill_color_inverted)
 		if err != nil {
-			return nil, fmt.Errorf("fill_color_inverted is not a valid hex string: %s", fill_color_inverted.String())
+			return nil, fmt.Errorf("parsing fill_color_inverted: %w", err)
 		}
 		w.FillColorInverted = c
 	}
@@ -2063,8 +2064,8 @@ type Polygon struct {
 	render.Polygon
 
 	starlarkVertices    *starlark.List
-	starlarkFillColor   starlark.String
-	starlarkStrokeColor starlark.String
+	starlarkFillColor   starlark.Value
+	starlarkStrokeColor starlark.Value
 	starlarkStrokeWidth starlark.Value
 	frame_count         *starlark.Builtin
 }
@@ -2077,8 +2078,8 @@ func newPolygon(
 ) (starlark.Value, error) {
 	var (
 		vertices     *starlark.List
-		fill_color   starlark.String
-		stroke_color starlark.String
+		fill_color   starlark.Value = starlark.None
+		stroke_color starlark.Value = starlark.None
 		stroke_width starlark.Value
 	)
 
@@ -2102,19 +2103,19 @@ func newPolygon(
 	}
 
 	w.starlarkFillColor = fill_color
-	if fill_color.Len() > 0 {
-		c, err := render.ParseColor(fill_color.GoString())
+	if fill_color != starlark.None {
+		c, err := colorutil.Parse(fill_color)
 		if err != nil {
-			return nil, fmt.Errorf("fill_color is not a valid hex string: %s", fill_color.String())
+			return nil, fmt.Errorf("parsing fill_color: %w", err)
 		}
 		w.FillColor = c
 	}
 
 	w.starlarkStrokeColor = stroke_color
-	if stroke_color.Len() > 0 {
-		c, err := render.ParseColor(stroke_color.GoString())
+	if stroke_color != starlark.None {
+		c, err := colorutil.Parse(stroke_color)
 		if err != nil {
-			return nil, fmt.Errorf("stroke_color is not a valid hex string: %s", stroke_color.String())
+			return nil, fmt.Errorf("parsing stroke_color: %w", err)
 		}
 		w.StrokeColor = c
 	}
@@ -2710,7 +2711,7 @@ func stackFrameCount(
 type Text struct {
 	render.Text
 
-	starlarkColor starlark.String
+	starlarkColor starlark.Value
 	size          *starlark.Builtin
 	frame_count   *starlark.Builtin
 }
@@ -2726,7 +2727,7 @@ func newText(
 		font    starlark.String
 		height  starlark.Int
 		offset  starlark.Int
-		color   starlark.String
+		color   starlark.Value = starlark.None
 	)
 
 	if err := starlark.UnpackArgs(
@@ -2760,10 +2761,10 @@ func newText(
 	w.Offset = int(offsetInt)
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
@@ -2883,7 +2884,7 @@ func textFrameCount(
 type WrappedText struct {
 	render.WrappedText
 
-	starlarkColor starlark.String
+	starlarkColor starlark.Value
 	frame_count   *starlark.Builtin
 }
 
@@ -2899,7 +2900,7 @@ func newWrappedText(
 		height      starlark.Int
 		width       starlark.Int
 		linespacing starlark.Int
-		color       starlark.String
+		color       starlark.Value = starlark.None
 		align       starlark.String
 		wordbreak   starlark.Bool
 	)
@@ -2944,10 +2945,10 @@ func newWrappedText(
 	w.LineSpacing = int(linespacingInt)
 
 	w.starlarkColor = color
-	if color.Len() > 0 {
-		c, err := render.ParseColor(color.GoString())
+	if color != starlark.None {
+		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", color.String())
+			return nil, fmt.Errorf("parsing color: %w", err)
 		}
 		w.Color = c
 	}
