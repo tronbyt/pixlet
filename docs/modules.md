@@ -220,6 +220,118 @@ def main(config):
     )
 ```
 
+### Color
+
+The `render.star` module also provides `color`, which contains color manipulation functions and a `Color` object that can be passed to widgets.
+
+| Function | Description |
+| --- | --- |
+| `rgb(r, g, b, a?)` | Creates a Color object from RGB(A) values. |
+| `hex(value)` | Creates a Color object from a hex string. |
+| `hsv(h, s, v, a?)` | Creates a Color object from HSV(A) values. |
+
+#### Color object
+
+The `Color` object represents a color and provides ways to manipulate and retrieve its components in different formats. It can also be passed to a widget in-place of a hex string.
+
+##### Fields
+
+The following fields are available on a `Color` object and can be both read and written:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `r` | int | Red component (0-255) |
+| `g` | int | Green component (0-255) |
+| `b` | int | Blue component (0-255) |
+| `a` | int | Alpha component (0-255) |
+| `h` | float | Hue (0-360) |
+| `s` | float | Saturation (0-1) |
+| `v` | float | Value (0-1) |
+
+##### Methods
+
+| Method | Description |
+| --- | --- |
+| `hex()` | Returns the color as a hex string (e.g. `#ff0000` or `#ff000080`). |
+| `rgb()` | Returns an `(r, g, b)` tuple. |
+| `rgba()` | Returns an `(r, g, b, a)` tuple. |
+| `hsv()` | Returns an `(h, s, v)` tuple. |
+| `hsva()` | Returns an `(h, s, v, a)` tuple. |
+
+Example:
+
+```starlark
+load("render.star", "color")
+
+def main():
+    c = color.hex("#f00")
+    c.g = 255
+    print(c.hex())
+    # Output: "#ff0"
+
+    c.h = 240 # change to blue
+    print(c.hex())
+    # Output: "#00f"
+```
+
+#### RGB
+
+Creates a color from red, green, blue, and optionally alpha components.
+
+Parameters:
+- `r`, `g`, `b`: Integers (0-255).
+- `a` (optional): Integer (0-255), defaults to 255.
+
+Example:
+
+```starlark
+load("render.star", "color")
+
+def main():
+    c = color.rgb(255, 0, 0)
+    print(c.r, c.g, c.b)
+    # Output: 255 0 0
+```
+
+#### Hex
+
+Creates a color from a hex string (e.g., `#ff0000`, `#f00`, `#ff000080`, or `#f008`).
+
+Parameters:
+- `value`: The hex color string.
+
+Example:
+
+```starlark
+load("render.star", "color")
+
+def main():
+    c = color.hex("#f00")
+    print(c.rgba())
+    # Output: (255, 0, 0, 255)
+```
+
+#### HSV
+
+Creates a color from Hue, Saturation, Value, and optionally alpha components.
+
+Parameters:
+- `h`: Hue (0-360).
+- `s`: Saturation (0-1).
+- `v`: Value (0-1).
+- `a` (optional): Integer (0-255), defaults to 255.
+
+Example:
+
+```starlark
+load("render.star", "color")
+
+def main():
+    c = color.hsv(0, 1, 1)
+    print(c.hex())
+    # Output: "#f00"
+```
+
 ## Pixlet module: Schema
 
 The schema module provides configuration options for your app. See the [schema documentation](schema/schema.md) for more details.

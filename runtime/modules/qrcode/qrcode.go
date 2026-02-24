@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	goqrcode "github.com/skip2/go-qrcode"
-	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/internal/colorutil"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
@@ -40,8 +40,8 @@ func generateQRCode(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 	var (
 		starUrl        starlark.String
 		starSize       starlark.String
-		starColor      starlark.String
-		starBackground starlark.String
+		starColor      starlark.Value = starlark.None
+		starBackground starlark.Value = starlark.None
 	)
 
 	if err := starlark.UnpackArgs(
@@ -89,19 +89,19 @@ func generateQRCode(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 	code.BackgroundColor = color.Transparent
 
 	// Override color if one is provided.
-	if starColor.Len() > 0 {
-		color, err := render.ParseColor(starColor.GoString())
+	if starColor != starlark.None {
+		foreground, err := colorutil.Parse(starColor)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", starColor.String())
+			return nil, fmt.Errorf("parsing foreground color: %w", err)
 		}
-		code.ForegroundColor = color
+		code.ForegroundColor = foreground
 	}
 
 	// Override background if one is provided.
-	if starBackground.Len() > 0 {
-		background, err := render.ParseColor(starBackground.GoString())
+	if starBackground != starlark.None {
+		background, err := colorutil.Parse(starBackground)
 		if err != nil {
-			return nil, fmt.Errorf("color is not a valid hex string: %s", starColor.String())
+			return nil, fmt.Errorf("parsing background color: %w", err)
 		}
 		code.BackgroundColor = background
 	}

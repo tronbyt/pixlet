@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math"
 
+	"github.com/tronbyt/pixlet/internal/colorutil"
 	"github.com/tronbyt/pixlet/render"
 	"go.starlark.net/starlark"
 )
@@ -77,16 +78,11 @@ func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
 	for i := range list.Len() {
 		c := list.Index(i)
 
-		switch v := c.(type) {
-		case starlark.String:
-			c, err := render.ParseColor(v.GoString())
-			if err != nil {
-				return nil, fmt.Errorf("colors[%v] is not a valid hex string: %+v", i, c)
-			}
-			result = append(result, c)
-		default:
-			return nil, fmt.Errorf("colors[%v] is not a valid string", i)
+		parsed, err := colorutil.Parse(c)
+		if err != nil {
+			return nil, fmt.Errorf("parsing color %d: %w", i, err)
 		}
+		result = append(result, parsed)
 	}
 
 	return result, nil

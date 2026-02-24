@@ -157,6 +157,7 @@ type Type struct {
 	DocType       string
 	TemplatePath  string
 	GenerateField bool
+	DefaultValue  string
 }
 
 // TypeMap is a map of Go types to an `Attribute` definition.
@@ -205,10 +206,11 @@ var TypeMap = map[reflect.Type]Type{
 		TemplatePath: "attr/children.tmpl",
 	},
 	toDecayedType(new(color.Color)): {
-		GoType:        "starlark.String",
+		GoType:        "starlark.Value",
 		DocType:       `color`,
 		TemplatePath:  "attr/color.tmpl",
 		GenerateField: true,
+		DefaultValue:  "starlark.None",
 	},
 
 	// Render `PieChart types`
@@ -300,6 +302,7 @@ type GeneratedAttr struct {
 	GenerateField bool
 	IsRequired    bool
 	IsReadOnly    bool
+	DefaultValue  string
 
 	// Template and generated code for handling this attribute.
 	Template *template.Template
@@ -448,6 +451,7 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 				attribute.DocType = t.DocType
 				attribute.Template = loadTemplate(t.TemplatePath)
 				attribute.GenerateField = t.GenerateField
+				attribute.DefaultValue = t.DefaultValue
 			} else {
 				return nil, fmt.Errorf("%s.%s has unsupported type", typ.Name(), field.Name)
 			}

@@ -10,14 +10,34 @@ The easiest way to get started is probably to take a look at some of
 the [examples](../examples/), and then refer to the detailed Widget
 documentation (this document) when the need arises.
 
-A quick note about colors.  When specifying colors, use a CSS-like
-hexdecimal color specification.  Pixlet supports "#rgb", "#rrggbb",
-"#rgba", and "#rrggbbaa" color specifications.
-
 For animated widgets like Marquee, you can also call `frame_count()`
 to work out how many frames are required to display the whole
 animation. You can also call `size()` on dynamically-sized widgets
 like Text to get the width and height.
+
+## Colors
+
+When specifying colors, use a CSS-like hexadecimal color specification
+or a `Color` object from the [`color`](modules.md#pixlet-module-color)
+module.
+
+Pixlet supports `#rgb`, `#rrggbb`, `#rgba`, and `#rrggbbaa` hex
+color specifications. Color objects are useful for programmatically
+manipulating colors.
+
+```starlark
+load("render.star", "color", "render")
+
+def main():
+    # Use a hex string
+    red_box = render.Box(color="#f00")
+
+    # Use a Color object
+    blue = color.rgb(0, 0, 255)
+    # could also be defined as color.hex("#00f") or color.hsv(0, 0, 1)
+    blue_box = render.Box(color=blue)
+    # ...
+```
 
 {{ range . -}}
 {{- if .Documentation }}
