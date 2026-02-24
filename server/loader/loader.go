@@ -49,6 +49,7 @@ type Loader struct {
 	fileChanges      chan bool
 	watch            bool
 	applet           runtime.Applet
+	cache            runtime.Cache
 	configChanges    chan map[string]any
 	requestedChanges chan bool
 	updatesChan      chan Update
@@ -96,9 +97,9 @@ func NewLoader(
 		metaUpdates:      make(chan metaUpdate, 10),
 	}
 
-	cache := runtime.NewInMemoryCache()
-	runtime.InitHTTP(cache)
-	runtime.InitCache(cache)
+	l.cache = runtime.NewInMemoryCache()
+	runtime.InitHTTP(l.cache)
+	runtime.InitCache(l.cache)
 
 	if !l.watch {
 		if err := l.loadApplet(); err != nil {
@@ -206,7 +207,9 @@ func (l *Loader) Run(ctx context.Context) error {
 }
 
 func (l *Loader) Close() error {
-	return l.applet.Close()
+	err := l.applet.Close()
+	l.cache.Close()
+	return err
 }
 
 func (l *Loader) SetIs2x(is2x bool) {

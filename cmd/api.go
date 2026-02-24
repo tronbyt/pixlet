@@ -149,6 +149,7 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 
 func apiRun(_ *cobra.Command, _ []string, opts *apiOptions) error {
 	cache := runtime.NewInMemoryCache()
+	defer cache.Close()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 

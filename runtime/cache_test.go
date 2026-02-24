@@ -31,7 +31,9 @@ def main():
 
     return [render.Root(child=render.Box()) for i in range(int(one) + int(two) + int(three))]
 `
-	InitCache(NewInMemoryCache())
+	c := NewInMemoryCache()
+	t.Cleanup(c.Close)
+	InitCache(c)
 	app, err := NewApplet("test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
@@ -52,7 +54,9 @@ def main():
     cache.set("counter", str(i + 1))
     return frames
 `
-	InitCache(NewInMemoryCache())
+	c := NewInMemoryCache()
+	t.Cleanup(c.Close)
+	InitCache(c)
 	app, err := NewApplet("test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)

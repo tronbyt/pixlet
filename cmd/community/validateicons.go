@@ -28,6 +28,7 @@ func ValidateIcons(_ *cobra.Command, args []string) error {
 	path := args[0]
 
 	cache := runtime.NewInMemoryCache()
+	defer cache.Close()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 

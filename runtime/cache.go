@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jellydator/ttlcache/v3"
 	"github.com/redis/go-redis/v9"
 	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
@@ -18,49 +19,36 @@ const DefaultExpirationSeconds = 60
 type Cache interface {
 	Set(thread *starlark.Thread, key string, value []byte, ttl int64) error
 	Get(thread *starlark.Thread, key string) ([]byte, bool, error)
-}
-
-type InMemoryCacheRecord struct {
-	data       []byte
-	expiration time.Time
+	Close()
 }
 
 type InMemoryCache struct {
-	records map[string]*InMemoryCacheRecord
-	mutex   sync.RWMutex
+	cache *ttlcache.Cache[string, []byte]
 }
 
 func NewInMemoryCache() *InMemoryCache {
-	return &InMemoryCache{records: map[string]*InMemoryCacheRecord{}}
+	c := ttlcache.New[string, []byte](
+		ttlcache.WithDisableTouchOnHit[string, []byte](),
+	)
+	go c.Start()
+	return &InMemoryCache{cache: c}
 }
 
 func (c *InMemoryCache) Get(_ *starlark.Thread, key string) (value []byte, found bool, err error) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-
-	r, found := c.records[key]
-
-	if !found {
+	entry := c.cache.Get(key)
+	if entry == nil {
 		return nil, false, nil
 	}
-
-	if time.Now().After(r.expiration) {
-		return nil, false, nil
-	}
-
-	return r.data, true, nil
+	return entry.Value(), true, nil
 }
 
 func (c *InMemoryCache) Set(_ *starlark.Thread, key string, value []byte, ttl int64) error {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	c.records[key] = &InMemoryCacheRecord{
-		data:       value,
-		expiration: time.Now().Add(time.Duration(ttl) * time.Second),
-	}
-
+	c.cache.Set(key, value, time.Duration(ttl)*time.Second)
 	return nil
+}
+
+func (c *InMemoryCache) Close() {
+	c.cache.Stop()
 }
 
 type RedisCache struct {
@@ -93,6 +81,10 @@ func (c *RedisCache) Get(_ *starlark.Thread, key string) (value []byte, found bo
 func (c *RedisCache) Set(_ *starlark.Thread, key string, value []byte, ttl int64) error {
 	ctx := context.Background()
 	return c.client.Set(ctx, key, value, time.Duration(ttl)*time.Second).Err()
+}
+
+func (c *RedisCache) Close() {
+	_ = c.client.Close()
 }
 
 var (
