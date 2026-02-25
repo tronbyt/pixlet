@@ -88,13 +88,10 @@ func (r Root) Paint(width, height int, solidBackground bool, opts ...RootPaintOp
 	var wg sync.WaitGroup
 	sem := make(chan bool, parallelism)
 	for i := range numFrames {
-		wg.Add(1)
 		sem <- true
-
-		go func(i int) {
+		wg.Go(func() {
 			defer func() {
 				<-sem
-				wg.Done()
 			}()
 
 			dc := gg.NewContext(width, height)
@@ -107,7 +104,7 @@ func (r Root) Paint(width, height int, solidBackground bool, opts ...RootPaintOp
 			r.Child.Paint(dc, image.Rect(0, 0, width, height), i)
 			dc.Pop()
 			frames[i] = dc.Image()
-		}(i)
+		})
 	}
 
 	wg.Wait()
