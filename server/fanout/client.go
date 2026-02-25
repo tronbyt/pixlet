@@ -29,7 +29,7 @@ type Client struct {
 	fo   *Fanout
 	conn *websocket.Conn
 	send chan WebsocketEvent
-	quit chan bool
+	quit chan struct{}
 }
 
 // NewClient instantiates a client with a websocket connection. It spwans off
@@ -41,7 +41,7 @@ func (f *Fanout) NewClient(conn *websocket.Conn) *Client {
 		fo:   f,
 		conn: conn,
 		send: make(chan WebsocketEvent, channelSize),
-		quit: make(chan bool, 1),
+		quit: make(chan struct{}, 1),
 	}
 
 	f.RegisterClient(c)
@@ -60,7 +60,7 @@ func (c *Client) Send(event WebsocketEvent) {
 // Quit will close the connection and unregiseter it from the Fanout.
 func (c *Client) Quit() {
 	c.fo.UnregisterClient(c)
-	c.quit <- true
+	c.quit <- struct{}{}
 	_ = c.conn.Close()
 }
 

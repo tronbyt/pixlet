@@ -12,12 +12,12 @@ import (
 // Watcher is a structure to watch a file for changes and notify a channel.
 type Watcher struct {
 	path        string
-	fileChanges chan bool
+	fileChanges chan struct{}
 }
 
 // NewWatcher instantiates a new watcher with the provided filename and changes
 // channel.
-func NewWatcher(filename string, fileChanges chan bool) *Watcher {
+func NewWatcher(filename string, fileChanges chan struct{}) *Watcher {
 	return &Watcher{
 		path:        filepath.FromSlash(filename),
 		fileChanges: fileChanges,
@@ -70,7 +70,7 @@ func (w *Watcher) Run(ctx context.Context) error {
 			}
 
 			if shouldNotify(event.Op) {
-				w.fileChanges <- true
+				w.fileChanges <- struct{}{}
 			}
 
 		case err, ok := <-watcher.Errors:

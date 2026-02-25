@@ -46,15 +46,15 @@ const (
 type Loader struct {
 	root             *os.Root
 	conf             *RenderConfig
-	fileChanges      chan bool
+	fileChanges      chan struct{}
 	watch            bool
 	applet           runtime.Applet
 	cache            runtime.Cache
 	configChanges    chan map[string]any
-	requestedChanges chan bool
+	requestedChanges chan struct{}
 	updatesChan      chan Update
 	resultsChan      chan Update
-	initialLoad      chan bool
+	initialLoad      chan struct{}
 	configOutFile    string
 	metaUpdates      chan metaUpdate
 }
@@ -76,7 +76,7 @@ func NewLoader(
 	id string,
 	root *os.Root,
 	watch bool,
-	fileChanges chan bool,
+	fileChanges chan struct{},
 	updatesChan chan Update,
 	configOutFile string,
 	options ...Option,
@@ -90,9 +90,9 @@ func NewLoader(
 		applet:           runtime.Applet{},
 		updatesChan:      updatesChan,
 		configChanges:    make(chan map[string]any, 100),
-		requestedChanges: make(chan bool, 100),
+		requestedChanges: make(chan struct{}, 100),
 		resultsChan:      make(chan Update, 100),
-		initialLoad:      make(chan bool),
+		initialLoad:      make(chan struct{}),
 		configOutFile:    configOutFile,
 		metaUpdates:      make(chan metaUpdate, 10),
 	}
@@ -279,7 +279,7 @@ func (l *Loader) Location() *time.Location {
 // that it's going to cause issues in the short term.
 func (l *Loader) LoadApplet(config map[string]any) (string, error) {
 	l.configChanges <- config
-	l.requestedChanges <- true
+	l.requestedChanges <- struct{}{}
 	result := <-l.resultsChan
 	return result.Image, result.Err
 }
