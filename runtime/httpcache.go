@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -31,21 +32,7 @@ const (
 
 // Status codes that are cacheable as defined here:
 // https://developer.mozilla.org/en-US/docs/Glossary/Cacheable
-var cacheableStatusCodes = map[int]bool{
-	200: true,
-	201: true,
-	202: true,
-	203: true,
-	204: true,
-	206: true,
-	300: true,
-	301: true,
-	404: true,
-	405: true,
-	410: true,
-	414: true,
-	501: true,
-}
+var cacheableStatusCodes = []int{200, 201, 202, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501}
 
 var jitterRand *rand.Rand
 
@@ -183,8 +170,7 @@ func determineTTL(req *http.Request, resp *http.Response) time.Duration {
 	}
 
 	// Check the status code to determine if the response is cacheable.
-	_, ok := cacheableStatusCodes[resp.StatusCode]
-	if !ok {
+	if !slices.Contains(cacheableStatusCodes, resp.StatusCode) {
 		return MinRequestTTL
 	}
 
