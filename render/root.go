@@ -86,9 +86,9 @@ func (r Root) Paint(width, height int, solidBackground bool, opts ...RootPaintOp
 	}
 
 	var wg sync.WaitGroup
-	sem := make(chan bool, parallelism)
+	sem := make(chan struct{}, parallelism)
 	for i := range numFrames {
-		sem <- true
+		sem <- struct{}{}
 		wg.Go(func() {
 			defer func() {
 				<-sem

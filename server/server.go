@@ -33,7 +33,7 @@ func NewServer(
 	openBrowser bool,
 	options ...loader.Option,
 ) (*Server, error) {
-	fileChanges := make(chan bool, 100)
+	fileChanges := make(chan struct{}, 100)
 
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(path)

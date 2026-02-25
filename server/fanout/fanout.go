@@ -4,7 +4,7 @@ package fanout
 // when an update comes in on a go channel.
 type Fanout struct {
 	broadcast  chan WebsocketEvent
-	quit       chan bool
+	quit       chan struct{}
 	register   chan *Client
 	unregister chan *Client
 }
@@ -15,7 +15,7 @@ func NewFanout() *Fanout {
 		broadcast:  make(chan WebsocketEvent, channelSize),
 		register:   make(chan *Client, channelSize),
 		unregister: make(chan *Client, channelSize),
-		quit:       make(chan bool, 1),
+		quit:       make(chan struct{}, 1),
 	}
 
 	go fo.run()
@@ -40,7 +40,7 @@ func (fo *Fanout) UnregisterClient(c *Client) {
 
 // Quit stops broadcasting messages over the channel.
 func (fo *Fanout) Quit() {
-	fo.quit <- true
+	fo.quit <- struct{}{}
 }
 
 // run is the main loop. It provides a mechanism to register/unregister clients
