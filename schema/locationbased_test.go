@@ -58,7 +58,7 @@ def main():
 
 `
 
-	app, err := runtime.NewApplet("location_based.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "location_based.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

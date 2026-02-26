@@ -19,7 +19,7 @@ func TestInitHTTP(t *testing.T) {
 	b, err := os.ReadFile("testdata/httpcache.star")
 	assert.NoError(t, err)
 
-	app, err := NewApplet("httpcache.star", b, WithTests(t))
+	app, err := NewApplet(t.Context(), "httpcache.star", b, WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 

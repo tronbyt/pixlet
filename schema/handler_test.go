@@ -27,7 +27,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("handler.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "handler.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
@@ -37,7 +37,7 @@ def main():
 
 func TestHandlerBadParams(t *testing.T) {
 	// Handler is a string
-	app, err := runtime.NewApplet("text.star", []byte(`
+	app, err := runtime.NewApplet(t.Context(), "text.star", []byte(`
 load("schema.star", "schema")
 
 def foobar(param):
@@ -55,7 +55,7 @@ def main():
 	assert.Nil(t, app)
 
 	// Type is not valid
-	app, err = runtime.NewApplet("text.star", []byte(`
+	app, err = runtime.NewApplet(t.Context(), "text.star", []byte(`
 load("schema.star", "schema")
 
 def foobar(param):

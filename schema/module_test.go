@@ -31,7 +31,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("starlark.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "starlark.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
@@ -46,7 +46,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("source.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "source.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

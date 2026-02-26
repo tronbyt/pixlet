@@ -48,7 +48,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("dropdown.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "dropdown.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

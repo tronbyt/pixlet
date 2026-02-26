@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"compress/gzip"
+	"context"
 	"fmt"
 	"io"
 	"io/fs"
@@ -33,7 +34,7 @@ func WithoutRuntime() WriteOption {
 
 // WriteBundleToPath is a helper to be able to write the bundle to a provided
 // directory.
-func (b *AppBundle) WriteBundleToPath(dir string, opts ...WriteOption) error {
+func (b *AppBundle) WriteBundleToPath(ctx context.Context, dir string, opts ...WriteOption) error {
 	path := filepath.Join(dir, AppBundleName)
 	f, err := os.Create(path)
 	if err != nil {
@@ -41,11 +42,11 @@ func (b *AppBundle) WriteBundleToPath(dir string, opts ...WriteOption) error {
 	}
 	defer func() { _ = f.Close() }()
 
-	return b.WriteBundle(f, opts...)
+	return b.WriteBundle(ctx, f, opts...)
 }
 
 // WriteBundle writes a compressed archive to the provided writer.
-func (ab *AppBundle) WriteBundle(out io.Writer, opts ...WriteOption) error {
+func (ab *AppBundle) WriteBundle(ctx context.Context, out io.Writer, opts ...WriteOption) error {
 	var bundleFiles []string
 
 	if slices.Contains(opts, WithoutRuntime()) {
@@ -68,7 +69,7 @@ func (ab *AppBundle) WriteBundle(out io.Writer, opts ...WriteOption) error {
 		// since it could contain a lot of extraneous files. instead, run the
 		// applet and interrogate it for the files it needs to include in the
 		// bundle.
-		app, err := runtime.NewAppletFromFS(ab.Manifest.ID, ab.Source, runtime.WithPrintDisabled())
+		app, err := runtime.NewAppletFromFS(ctx, ab.Manifest.ID, ab.Source, runtime.WithPrintDisabled())
 		if err != nil {
 			return fmt.Errorf("loading applet for bundling: %w", err)
 		}

@@ -72,7 +72,7 @@ def main(config):
 `
 
 func BenchmarkRunAndRender(b *testing.B) {
-	app, err := runtime.NewApplet("benchmark.star", []byte(benchmarkDotStar), runtime.WithTests(b))
+	app, err := runtime.NewApplet(b.Context(), "benchmark.star", []byte(benchmarkDotStar), runtime.WithTests(b))
 	if err != nil {
 		b.Error(err)
 	}

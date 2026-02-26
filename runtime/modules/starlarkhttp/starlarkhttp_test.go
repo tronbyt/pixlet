@@ -154,7 +154,7 @@ def main():
     assert.eq(http.status_text(999), "")
 `
 
-	app, err := runtime.NewApplet("test.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	_, err = app.Run(t.Context())

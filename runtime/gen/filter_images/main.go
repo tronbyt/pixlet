@@ -141,7 +141,7 @@ def main():
     return render.Root(child=w)
 `, assets.Logo, strings.TrimSpace(snippet))
 
-			app, err := runtime.NewApplet(name, []byte(src))
+			app, err := runtime.NewApplet(ctx, name, []byte(src))
 			if err != nil {
 				return err
 			}

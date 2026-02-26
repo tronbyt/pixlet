@@ -73,7 +73,7 @@ def main():
 
     return [r.Root(child=r.Text("1337"))]
 `
-	app, err := runtime.NewApplet("test.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(source), runtime.WithTests(t))
 	require.NoError(t, err)
 	screens, err := app.Run(t.Context())
 	require.NoError(t, err)

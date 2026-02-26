@@ -24,7 +24,7 @@ def main():
 `
 
 func TestQRCode(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(qrCodeSource), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(qrCodeSource), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

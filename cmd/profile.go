@@ -118,6 +118,7 @@ func ProfileApp(ctx context.Context, path string, config map[string]any, meta ca
 	runtime.InitCache(cache)
 
 	applet, err := runtime.NewAppletFromPath(
+		ctx,
 		path,
 		runtime.WithPrintDisabled(),
 		runtime.WithCanvasMeta(meta),

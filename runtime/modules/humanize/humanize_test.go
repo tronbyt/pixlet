@@ -77,7 +77,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("human.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "human.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
@@ -115,6 +115,7 @@ def main():
 `
 
 	app, err := runtime.NewApplet(
+		t.Context(),
 		"human_locale.star",
 		[]byte(source),
 		runtime.WithTests(t),

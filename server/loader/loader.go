@@ -311,7 +311,7 @@ func (l *Loader) loadApplet() error {
 		runtime.WithLanguage(l.conf.Language),
 	}
 
-	app, err := runtime.NewAppletFromRoot(l.conf.Path, l.root, opts...)
+	app, err := runtime.NewAppletFromRoot(context.Background(), l.conf.Path, l.root, opts...)
 	l.markInitialLoadComplete()
 	if err != nil {
 		return err
@@ -424,7 +424,7 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 		defer cancel()
 	}
 
-	applet, err := runtime.NewAppletFromPath(path, opts...)
+	applet, err := runtime.NewAppletFromPath(ctx, path, opts...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}

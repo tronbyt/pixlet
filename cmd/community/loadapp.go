@@ -21,7 +21,7 @@ func NewLoadAppCmd() *cobra.Command {
 	return cmd
 }
 
-func LoadApp(_ *cobra.Command, args []string) error {
+func LoadApp(cmd *cobra.Command, args []string) error {
 	path := args[0]
 
 	cache := runtime.NewInMemoryCache()
@@ -30,6 +30,7 @@ func LoadApp(_ *cobra.Command, args []string) error {
 	runtime.InitCache(cache)
 
 	app, err := runtime.NewAppletFromPath(
+		cmd.Context(),
 		path,
 		runtime.WithPrintDisabled(),
 		runtime.WithCanvasMeta(flags.NewMeta().Metadata),

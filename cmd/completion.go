@@ -54,12 +54,13 @@ func completeWebPLevel(*cobra.Command, []string, string) ([]string, cobra.ShellC
 	return s, cobra.ShellCompDirectiveNoFileComp
 }
 
-func completeRender(_ *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
+func completeRender(cmd *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
 	if len(args) == 0 {
 		return []string{"star"}, cobra.ShellCompDirectiveFilterFileExt
 	}
 
 	applet, err := runtime.NewAppletFromPath(
+		cmd.Context(),
 		args[0],
 		runtime.WithPrintDisabled(),
 		runtime.WithCanvasMeta(flags.NewMeta().Metadata),

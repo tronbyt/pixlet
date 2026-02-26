@@ -28,7 +28,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("photo_select.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "photo_select.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

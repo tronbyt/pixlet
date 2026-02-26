@@ -28,7 +28,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("date_time.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "date_time.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
