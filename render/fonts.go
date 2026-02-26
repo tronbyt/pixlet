@@ -3,17 +3,37 @@ package render
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/jellydator/ttlcache/v3"
 	"github.com/tronbyt/pixlet/fonts"
 	"github.com/zachomedia/go-bdf"
 	"golang.org/x/image/font"
 )
 
-var fontCache = map[string]font.Face{}
-var fontMutex = &sync.Mutex{}
+const fontCacheTTLEnv = "PIXLET_FONT_CACHE_TTL"
+
+var (
+	FontCacheTTL   = time.Hour
+	fontCache      = ttlcache.New[string, font.Face]()
+	fontCacheMutex = &sync.Mutex{}
+)
+
+func init() { //nolint:gochecknoinits
+	if val := os.Getenv(fontCacheTTLEnv); val != "" {
+		if d, err := time.ParseDuration(val); err == nil {
+			FontCacheTTL = d
+		} else {
+			slog.Warn(fontCacheTTLEnv+" is invalid; using default.", "error", err)
+		}
+	}
+
+	go fontCache.Start()
+}
 
 func GetFontList() ([]string, error) {
 	entries, err := fonts.FS.ReadDir(".")
@@ -30,11 +50,11 @@ func GetFontList() ([]string, error) {
 }
 
 func GetFont(name string) (font.Face, error) {
-	fontMutex.Lock()
-	defer fontMutex.Unlock()
+	fontCacheMutex.Lock()
+	defer fontCacheMutex.Unlock()
 
-	if font, ok := fontCache[name]; ok {
-		return font, nil
+	if item := fontCache.Get(name); item != nil {
+		return item.Value(), nil
 	}
 
 	data, err := fonts.GetBytes(name)
@@ -51,6 +71,6 @@ func GetFont(name string) (font.Face, error) {
 	}
 
 	face := fnt.NewFace()
-	fontCache[name] = face
+	fontCache.Set(name, face, FontCacheTTL)
 	return face, nil
 }
