@@ -115,6 +115,7 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	buf, _, err := loader.RenderApplet(
+		req.Context(),
 		r.Path,
 		r.Config,
 		loader.WithMeta(canvas.Metadata{
