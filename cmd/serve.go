@@ -23,6 +23,7 @@ type serveOptions struct {
 	maxDuration   time.Duration
 	timeout       time.Duration
 	webpLevel     int32
+	noBrowser     bool
 }
 
 func NewServeCmd() *cobra.Command {
@@ -68,6 +69,7 @@ containing multiple Starlark files and resources.`,
 	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
 	cmd.Flags().StringVarP(&opts.path, "path", "", opts.path, "Path to serve the app on")
 	_ = cmd.RegisterFlagCompletionFunc("path", cobra.NoFileCompletions)
+	cmd.Flags().BoolVar(&opts.noBrowser, "no-browser", false, "Don't try to open a browser")
 	cmd.Flags().Int32VarP(
 		&opts.webpLevel,
 		webpLevelFlag,
@@ -105,6 +107,7 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		opts.watch,
 		args[0],
 		opts.configOutFile,
+		!opts.noBrowser,
 		loader.WithMeta(opts.Metadata),
 		loader.WithMaxDuration(opts.maxDuration),
 		loader.WithTimeout(opts.timeout),

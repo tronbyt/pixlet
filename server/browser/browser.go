@@ -11,10 +11,14 @@ import (
 	"html/template"
 	"io/fs"
 	"log/slog"
+	"net"
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/websocket"
+	"github.com/pkg/browser"
 	"github.com/tronbyt/pixlet/frontend"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/fanout"
@@ -25,15 +29,17 @@ import (
 // Browser provides a structure for serving WebP or GIF images over websockets to
 // a web browser.
 type Browser struct {
-	addr       string             // The address to listen on.
-	path       string             // The path to serve the app on.
-	title      string             // The title of the HTML document.
-	updateChan chan loader.Update // A channel of base64 encoded images.
-	watch      bool
-	fo         *fanout.Fanout
-	r          *http.ServeMux
-	loader     *loader.Loader
-	serveGif   bool // True if serving GIF, false if serving WebP
+	host        string
+	port        int
+	path        string             // The path to serve the app on.
+	title       string             // The title of the HTML document.
+	updateChan  chan loader.Update // A channel of base64 encoded images.
+	watch       bool
+	fo          *fanout.Fanout
+	r           *http.ServeMux
+	loader      *loader.Loader
+	serveGif    bool // True if serving GIF, false if serving WebP
+	openBrowser bool
 }
 
 //go:embed favicon.png
@@ -92,7 +98,7 @@ func (b *Browser) applyLocaleTimezone(r *http.Request) error {
 }
 
 // NewBrowser sets up a browser structure. Call Run() to kick off the main loops.
-func NewBrowser(addr string, servePath string, title string, watch bool, updateChan chan loader.Update, l *loader.Loader, serveGif bool) (*Browser, error) {
+func NewBrowser(host string, port int, servePath, title string, watch bool, updateChan chan loader.Update, l *loader.Loader, serveGif, openBrowser bool) (*Browser, error) {
 	if !strings.HasPrefix(servePath, "/") {
 		servePath = "/" + servePath
 	}
@@ -101,14 +107,16 @@ func NewBrowser(addr string, servePath string, title string, watch bool, updateC
 	}
 
 	b := &Browser{
-		updateChan: updateChan,
-		addr:       addr,
-		path:       servePath,
-		fo:         fanout.NewFanout(),
-		title:      title,
-		loader:     l,
-		watch:      watch,
-		serveGif:   serveGif,
+		updateChan:  updateChan,
+		host:        host,
+		port:        port,
+		path:        servePath,
+		fo:          fanout.NewFanout(),
+		title:       title,
+		loader:      l,
+		watch:       watch,
+		serveGif:    serveGif,
+		openBrowser: openBrowser,
 	}
 
 	r := http.NewServeMux()
@@ -157,6 +165,22 @@ func (b *Browser) Run(ctx context.Context) error {
 	g.Go(func() error {
 		return b.serveHTTP(ctx)
 	})
+	if b.openBrowser {
+		go func() {
+			host := b.host
+			if host == "0.0.0.0" {
+				host = "127.0.0.1"
+			}
+			u := url.URL{
+				Scheme: "http",
+				Host:   net.JoinHostPort(host, strconv.Itoa(b.port)),
+				Path:   b.path,
+			}
+			if err := browser.OpenURL(u.String()); err != nil {
+				slog.Error("Failed to open browser", "error", err)
+			}
+		}()
+	}
 
 	return g.Wait()
 }
