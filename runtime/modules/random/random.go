@@ -2,9 +2,8 @@ package random
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 	"sync"
-	"time"
 
 	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
@@ -12,9 +11,8 @@ import (
 )
 
 const (
-	ModuleName       = "random"
-	threadRandKey    = "github.com/tronbyt/pixlet/runtime/random"
-	randomSeedWindow = 15
+	ModuleName    = "random"
+	threadRandKey = "github.com/tronbyt/pixlet/runtime/random"
 )
 
 var (
@@ -23,18 +21,8 @@ var (
 )
 
 func AttachToThread(t *starlark.Thread) {
-	nowSeconds := time.Now().UnixMilli() / 1000
-
-	t.SetLocal(
-		threadRandKey,
-		rand.New(
-			// Seed RNG with a constant for brief time
-			// windows. This allows app to be "random",
-			// while still enabling Tidbyt's backend to
-			// cache the results.
-			rand.NewSource(nowSeconds/randomSeedWindow),
-		),
-	)
+	source := rand.New(rand.NewPCG(rand.Uint64(), rand.Uint64()))
+	t.SetLocal(threadRandKey, source)
 }
 
 func LoadModule() (starlark.StringDict, error) {
@@ -69,12 +57,8 @@ func randomSeed(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		return nil, fmt.Errorf("parsing seed: %w", err)
 	}
 
-	rng, ok := thread.Local(threadRandKey).(*rand.Rand)
-	if !ok || rng == nil {
-		return nil, fmt.Errorf("RNG not set (very bad)")
-	}
-
-	rng.Seed(seed)
+	source := rand.New(rand.NewPCG(uint64(seed), uint64(seed)))
+	thread.SetLocal(threadRandKey, source)
 
 	return starlark.None, nil
 }
@@ -117,5 +101,5 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 		return nil, fmt.Errorf("RNG not set (very bad!)")
 	}
 
-	return starlark.MakeInt64(rng.Int63n(maxVal-minVal+1) + minVal), nil
+	return starlark.MakeInt64(rng.Int64N(maxVal-minVal+1) + minVal), nil
 }

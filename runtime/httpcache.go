@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log/slog"
-	"math/rand"
+	"math/rand/v2"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -33,8 +33,6 @@ const (
 // Status codes that are cacheable as defined here:
 // https://developer.mozilla.org/en-US/docs/Glossary/Cacheable
 var cacheableStatusCodes = []int{200, 201, 202, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501}
-
-var jitterRand *rand.Rand
 
 type cacheClient struct {
 	cache            Cache
@@ -100,7 +98,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 			return nil, fmt.Errorf("failed to serialize response for cache: %v (%s)", err, resp.Status)
 		}
 
-		ttl := DetermineTTL(req, resp)
+		ttl := DetermineTTL(req, resp, nil)
 		_ = c.cache.Set(nil, key, ser, int64(ttl.Seconds()))
 		resp.Header.Set("tidbyt-cache-status", "MISS")
 	}
@@ -136,13 +134,13 @@ func cacheKey(req *http.Request) (string, error) {
 // from starlark to see if the user configured a TTL. Finally, if the response
 // is cachable but the developer didn't configure a TTL, we check the response
 // to get a hint at what the TTL should be.
-func DetermineTTL(req *http.Request, resp *http.Response) time.Duration {
+func DetermineTTL(req *http.Request, resp *http.Response, randSource *rand.Rand) time.Duration {
 	ttl := determineTTL(req, resp)
 
 	// Jitter the TTL by 10% and double check that it's still greater than the
 	// minimum TTL. If it's not, return the minimum TTL. The main thing we want
 	// to avoid is a TTL of 0 given it will be cached forever.
-	ttl = jitterDuration(ttl)
+	ttl = jitterDuration(ttl, randSource)
 	if ttl < MinRequestTTL {
 		return MinRequestTTL
 	}
@@ -196,18 +194,21 @@ func determineTTL(req *http.Request, resp *http.Response) time.Duration {
 	return ttl
 }
 
-func jitterDuration(duration time.Duration) time.Duration {
-	jitter := int64(float64(duration) * 0.1)
-	var r int64
-	if jitterRand == nil {
-		// use global rand
-		r = rand.Int63n(2*jitter + 1)
-	} else {
-		// use supplied rand (used for testing)
-		r = jitterRand.Int63n(2*jitter + 1)
+func jitterDuration(duration time.Duration, source *rand.Rand) time.Duration {
+	if duration <= 0 {
+		return duration
 	}
-	randomJitter := r - jitter
-	return time.Duration(duration + time.Duration(randomJitter))
+
+	offset := duration / 10
+	randMax := 2*offset + 1
+
+	var jitter time.Duration
+	if source == nil {
+		jitter = rand.N(randMax)
+	} else {
+		jitter = time.Duration(source.Uint64N(uint64(randMax)))
+	}
+	return duration + (jitter - offset)
 }
 
 func determineResponseTTL(resp *http.Response) time.Duration {
