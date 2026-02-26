@@ -4,12 +4,15 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 func (b *Browser) serveHTTP(ctx context.Context) error {
 	server := &http.Server{
-		Addr:    b.addr,
+		Addr:    net.JoinHostPort(b.host, strconv.Itoa(b.port)),
 		Handler: b.r,
 	}
 	go func() {
@@ -17,9 +20,16 @@ func (b *Browser) serveHTTP(ctx context.Context) error {
 		_ = server.Close()
 	}()
 
-	slog.Info("Starting HTTP server", "address", b.addr+b.path)
+	u := &url.URL{
+		Scheme: "http",
+		Host:   net.JoinHostPort(b.host, strconv.Itoa(b.port)),
+		Path:   b.path,
+	}
+
+	slog.Info("Starting HTTP server", "address", u.String())
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
+
 	return nil
 }

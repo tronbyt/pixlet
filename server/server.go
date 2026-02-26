@@ -30,6 +30,7 @@ func NewServer(
 	watch bool,
 	path string,
 	configOutFile string,
+	openBrowser bool,
 	options ...loader.Option,
 ) (*Server, error) {
 	fileChanges := make(chan bool, 100)
@@ -63,8 +64,7 @@ func NewServer(
 		return nil, err
 	}
 
-	addr := fmt.Sprintf("%s:%d", host, port)
-	b, err := browser.NewBrowser(addr, servePath, filepath.Base(path), watch, updatesChan, l, false)
+	b, err := browser.NewBrowser(host, port, servePath, filepath.Base(path), watch, updatesChan, l, false, openBrowser)
 	if err != nil {
 		return nil, err
 	}
