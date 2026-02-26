@@ -173,7 +173,7 @@ func WithTests(t testing.TB) AppletOption {
 	}
 }
 
-func NewApplet(id string, src []byte, opts ...AppletOption) (*Applet, error) {
+func NewApplet(ctx context.Context, id string, src []byte, opts ...AppletOption) (*Applet, error) {
 	fn := id
 	if !strings.HasSuffix(fn, ".star") {
 		fn += ".star"
@@ -185,10 +185,10 @@ func NewApplet(id string, src []byte, opts ...AppletOption) (*Applet, error) {
 		},
 	}
 
-	return NewAppletFromFS(id, vfs, opts...)
+	return NewAppletFromFS(ctx, id, vfs, opts...)
 }
 
-func NewAppletFromFS(id string, fsys fs.FS, opts ...AppletOption) (*Applet, error) {
+func NewAppletFromFS(ctx context.Context, id string, fsys fs.FS, opts ...AppletOption) (*Applet, error) {
 	a := &Applet{
 		ID:          id,
 		Globals:     make(map[string]starlark.StringDict),
@@ -201,15 +201,15 @@ func NewAppletFromFS(id string, fsys fs.FS, opts ...AppletOption) (*Applet, erro
 		}
 	}
 
-	if err := a.load(fsys); err != nil {
+	if err := a.load(ctx, fsys); err != nil {
 		return nil, err
 	}
 
 	return a, nil
 }
 
-func NewAppletFromRoot(id string, root *os.Root, opts ...AppletOption) (*Applet, error) {
-	a, err := NewAppletFromFS(id, root.FS(), opts...)
+func NewAppletFromRoot(ctx context.Context, id string, root *os.Root, opts ...AppletOption) (*Applet, error) {
+	a, err := NewAppletFromFS(ctx, id, root.FS(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func NewAppletFromRoot(id string, root *os.Root, opts ...AppletOption) (*Applet,
 
 var ErrStarSuffix = fmt.Errorf("script file must have suffix .star")
 
-func NewAppletFromPath(path string, opts ...AppletOption) (*Applet, error) {
+func NewAppletFromPath(ctx context.Context, path string, opts ...AppletOption) (*Applet, error) {
 	info, err := os.Stat(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to stat %s: %w", path, err)
@@ -240,7 +240,7 @@ func NewAppletFromPath(path string, opts ...AppletOption) (*Applet, error) {
 		return nil, fmt.Errorf("failed to open root for %s: %w", path, err)
 	}
 
-	a, err := NewAppletFromRoot(filepath.Base(path), root, opts...)
+	a, err := NewAppletFromRoot(ctx, filepath.Base(path), root, opts...)
 	if err != nil {
 		_ = root.Close()
 		return nil, err
@@ -386,7 +386,7 @@ func (app *Applet) RunTests(t *testing.T) {
 
 			if fun, ok := global.(*starlark.Function); ok {
 				t.Run(fmt.Sprintf("%s/%s", file, name), func(t *testing.T) {
-					if _, err := app.Call(context.Background(), fun); err != nil {
+					if _, err := app.Call(t.Context(), fun); err != nil {
 						t.Error(err)
 					}
 				})
@@ -438,7 +438,7 @@ func (a *Applet) PathsForBundle() []string {
 	return paths
 }
 
-func (a *Applet) load(fsys fs.FS) (err error) {
+func (a *Applet) load(ctx context.Context, fsys fs.FS) (err error) {
 	// list files in the root directory of fsys
 	rootDir, err := fs.ReadDir(fsys, ".")
 	if err != nil {
@@ -464,7 +464,7 @@ func (a *Applet) load(fsys fs.FS) (err error) {
 				// Skip loading other star files when in single-file mode
 				continue
 			}
-			if err := a.ensureLoaded(fsys, d.Name()); err != nil {
+			if err := a.ensureLoaded(ctx, fsys, d.Name()); err != nil {
 				return err
 			}
 		}
@@ -512,7 +512,7 @@ func (a *Applet) loadManifest(fsys fs.FS, pathToLoad string) (err error) {
 	return nil
 }
 
-func (a *Applet) ensureLoaded(fsys fs.FS, pathToLoad string, currentlyLoading ...string) (err error) {
+func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string, currentlyLoading ...string) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic while executing %s: %v\n%s", a.ID, r, debug.Stack())
@@ -548,7 +548,7 @@ func (a *Applet) ensureLoaded(fsys fs.FS, pathToLoad string, currentlyLoading ..
 		"struct": starlark.NewBuiltin("struct", starlarkstruct.Make),
 	}
 
-	thread := a.newThread(context.Background())
+	thread := a.newThread(ctx)
 	defer starlarkutil.RunOnExitFuncs(thread)
 
 	// override loader to allow loading starlark files
@@ -560,7 +560,7 @@ func (a *Applet) ensureLoaded(fsys fs.FS, pathToLoad string, currentlyLoading ..
 		if _, err := fs.Stat(fsys, modulePath); err == nil {
 			// ensure the module is loaded, and pass the currentlyLoading slice
 			// to detect circular dependencies
-			if err := a.ensureLoaded(fsys, modulePath, currentlyLoading...); err != nil {
+			if err := a.ensureLoaded(ctx, fsys, modulePath, currentlyLoading...); err != nil {
 				return nil, err
 			}
 
@@ -613,7 +613,7 @@ func (a *Applet) ensureLoaded(fsys fs.FS, pathToLoad string, currentlyLoading ..
 			}
 			a.schemaFile = pathToLoad
 
-			schemaVal, err := a.Call(context.Background(), schemaFun)
+			schemaVal, err := a.Call(ctx, schemaFun)
 			if err != nil {
 				return fmt.Errorf("calling schema function for %s: %w", a.ID, err)
 			}

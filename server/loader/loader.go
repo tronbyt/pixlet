@@ -311,7 +311,7 @@ func (l *Loader) loadApplet() error {
 		runtime.WithLanguage(l.conf.Language),
 	}
 
-	app, err := runtime.NewAppletFromRoot(l.conf.Path, l.root, opts...)
+	app, err := runtime.NewAppletFromRoot(context.Background(), l.conf.Path, l.root, opts...)
 	l.markInitialLoadComplete()
 	if err != nil {
 		return err
@@ -381,6 +381,7 @@ func (l *Loader) renderApplet(ctx context.Context, config map[string]any) (strin
 	if err != nil {
 		return "", fmt.Errorf("error rendering: %w", err)
 	}
+
 	return base64.StdEncoding.EncodeToString(img), nil
 }
 
@@ -397,7 +398,7 @@ func (l *Loader) Meta() canvas.Metadata {
 	return l.conf.Meta
 }
 
-func RenderApplet(path string, config map[string]any, options ...Option) ([]byte, []string, error) {
+func RenderApplet(ctx context.Context, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
 	conf := NewRenderConfig(path, config, options...)
 
 	opts := []runtime.AppletOption{
@@ -414,14 +415,16 @@ func RenderApplet(path string, config map[string]any, options ...Option) ([]byte
 		}))
 	}
 
-	ctx := context.Background()
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	if conf.Timeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeoutCause(ctx, conf.Timeout, fmt.Errorf("timeout after %s", conf.Timeout))
 		defer cancel()
 	}
 
-	applet, err := runtime.NewAppletFromPath(path, opts...)
+	applet, err := runtime.NewAppletFromPath(ctx, path, opts...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
 	}

@@ -68,7 +68,7 @@ def main():
     return render.Root(child=w)
 `, snippet)
 
-		app, err := runtime.NewApplet(name, []byte(src))
+		app, err := runtime.NewApplet(context.Background(), name, []byte(src))
 		if err != nil {
 			panic(err)
 		}

@@ -43,7 +43,7 @@ def main():
 `
 
 func TestTypeahead(t *testing.T) {
-	app, err := runtime.NewApplet("typeahead.star", []byte(typeaheadSource), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "typeahead.star", []byte(typeaheadSource), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

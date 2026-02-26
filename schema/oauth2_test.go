@@ -44,7 +44,7 @@ def main():
 
 `
 
-	app, err := runtime.NewApplet("oauth2.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "oauth2.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

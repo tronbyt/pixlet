@@ -48,7 +48,7 @@ def main():
 `
 
 func TestSunrise(t *testing.T) {
-	app, err := runtime.NewApplet("sun.star", []byte(sunSource), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "sun.star", []byte(sunSource), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

@@ -29,7 +29,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("generated.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "generated.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

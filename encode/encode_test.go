@@ -142,7 +142,7 @@ def main():
 `
 
 func TestFile(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(testDotStar), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(testDotStar), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
@@ -154,7 +154,7 @@ func TestFile(t *testing.T) {
 }
 
 func TestHash(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(testDotStar), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(testDotStar), runtime.WithTests(t))
 	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
@@ -175,7 +175,7 @@ func TestHash(t *testing.T) {
 
 	// change the app slightly
 	modifiedSource := strings.Replace(testDotStar, "foo bar", "bar foo", 1)
-	app2, err := runtime.NewApplet("test.star", []byte(modifiedSource), runtime.WithTests(t))
+	app2, err := runtime.NewApplet(t.Context(), "test.star", []byte(modifiedSource), runtime.WithTests(t))
 	require.NoError(t, err)
 
 	roots2, err := app2.Run(t.Context())
@@ -190,7 +190,7 @@ func TestHash(t *testing.T) {
 }
 
 func TestHashEmptyApp(t *testing.T) {
-	app, err := runtime.NewApplet("test.star", []byte(`def main(): return []`), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(`def main(): return []`), runtime.WithTests(t))
 	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
@@ -255,7 +255,7 @@ load("render.star", "render")
 def main():
     return render.Root(show_full_animation=True, child=render.Box())
 `
-	app, err := runtime.NewApplet("test.star", []byte(requestFull), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(requestFull), runtime.WithTests(t))
 	require.NoError(t, err)
 	roots, err := app.Run(t.Context())
 	assert.NoError(t, err)
@@ -266,7 +266,7 @@ load("render.star", "render")
 def main():
     return render.Root(child=render.Box())
 `
-	app, err = runtime.NewApplet("test.star", []byte(dontRequestFull), runtime.WithTests(t))
+	app, err = runtime.NewApplet(t.Context(), "test.star", []byte(dontRequestFull), runtime.WithTests(t))
 	require.NoError(t, err)
 	roots, err = app.Run(t.Context())
 	assert.NoError(t, err)
@@ -293,7 +293,7 @@ def main():
     )
 `)
 
-	app, err := runtime.NewApplet("test.star", src, runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "test.star", src, runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	roots, err := app.Run(t.Context())

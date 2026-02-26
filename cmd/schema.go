@@ -26,7 +26,7 @@ func NewSchemaCmd() *cobra.Command {
 		Short: "Print the configuration schema for a Pixlet app",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return schemaRun(args, opts)
+			return schemaRun(cmd, args, opts)
 		},
 		Long: `Determine the configuration schema for a Pixlet app.
 
@@ -46,11 +46,11 @@ JSON format.
 	return cmd
 }
 
-func schemaRun(args []string, opts *schemaOptions) error {
+func schemaRun(cmd *cobra.Command, args []string, opts *schemaOptions) error {
 	path := args[0]
 
 	applet, err := runtime.NewAppletFromPath(
-		path, runtime.WithCanvasMeta(opts.Metadata),
+		cmd.Context(), path, runtime.WithCanvasMeta(opts.Metadata),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)

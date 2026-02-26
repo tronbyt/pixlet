@@ -233,6 +233,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	}
 
 	buf, _, err := loader.RenderApplet(
+		cmd.Context(),
 		path,
 		config,
 		loader.WithMeta(opts.Metadata),

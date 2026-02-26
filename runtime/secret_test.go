@@ -68,7 +68,7 @@ def main():
 	return render.Root(child=render.Box())
 `, plaintext, encrypted)
 
-	app, err := NewApplet("testid", []byte(src), WithSecretDecryptionKey(decryptionKey), WithTests(t))
+	app, err := NewApplet(t.Context(), "testid", []byte(src), WithSecretDecryptionKey(decryptionKey), WithTests(t))
 	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
@@ -118,7 +118,7 @@ def main():
 	return render.Root(child=render.Box())
 `, plaintext, encrypted)
 
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())

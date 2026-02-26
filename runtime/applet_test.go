@@ -16,13 +16,13 @@ import (
 )
 
 func TestLoadEmptySrc(t *testing.T) {
-	_, err := NewApplet("test.star", []byte{}, WithTests(t))
+	_, err := NewApplet(t.Context(), "test.star", []byte{}, WithTests(t))
 	assert.Error(t, err)
 }
 
 func TestLoadMalformed(t *testing.T) {
 	src := "this is not valid starlark"
-	_, err := NewApplet("test.star", []byte(src), WithTests(t))
+	_, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.Error(t, err)
 }
 
@@ -33,7 +33,7 @@ load("render.star", "render")
 def main():
     return render.Root(child=render.Box())
 `
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
@@ -45,7 +45,7 @@ def main2():
 
 main = main2
 `
-	app, err = NewApplet("test.star", []byte(src), WithTests(t))
+	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
@@ -57,7 +57,7 @@ def main2():
 
 main = lambda: main2()
 `
-	app, err = NewApplet("test.star", []byte(src), WithTests(t))
+	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
@@ -69,7 +69,7 @@ def main2():
 
 main = "main2"
 `
-	_, err = NewApplet("test.star", []byte(src), WithTests(t))
+	_, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.Error(t, err)
 
 	// And not this either, because here main is gone
@@ -78,7 +78,7 @@ load("render.star", "render")
 def main2():
     return render.Root(child=render.Box())
 `
-	_, err = NewApplet("test.star", []byte(src), WithTests(t))
+	_, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.Error(t, err)
 }
 
@@ -89,7 +89,7 @@ load("render.star", "render")
 def main():
     return [render.Box()]
 `
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err := app.Run(t.Context())
@@ -103,7 +103,7 @@ def main():
     return render.Root(child=render.Box())
 `
 
-	app, err = NewApplet("test.star", []byte(src), WithTests(t))
+	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err = app.Run(t.Context())
@@ -116,7 +116,7 @@ load("render.star", "render")
 def main():
     return [render.Root(child=render.Box()), render.Root(child=render.Text("hi"))]
 `
-	app, err = NewApplet("test.star", []byte(src), WithTests(t))
+	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err = app.Run(t.Context())
@@ -138,7 +138,7 @@ load("render.star", "render")
 def main():
     return render.Root(child=render.Box())
 `
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.RunWithConfig(t.Context(), config)
@@ -164,7 +164,7 @@ def main(config):
 
 	return [render.Root(child=render.Box()) for _ in range(int(config["one"]) + int(config["two"]))]
 `
-	app, err = NewApplet("test.star", []byte(src), WithTests(t))
+	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	require.NoError(t, err)
 	require.NotNil(t, app)
 	roots, err = app.RunWithConfig(t.Context(), config)
@@ -183,7 +183,7 @@ def main():
         fail("while loop failed")
     return render.Root(child=render.Box())
 `
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.Run(t.Context())
@@ -210,7 +210,7 @@ def get_schema():
 		"schema_def.star": {Data: []byte(schemaDefSrc)},
 	}
 
-	app, err := NewAppletFromFS("multiple_files", vfs, WithTests(t))
+	app, err := NewAppletFromFS(t.Context(), "multiple_files", vfs, WithTests(t))
 	require.NoError(t, err)
 	require.NotNil(t, app)
 
@@ -225,7 +225,7 @@ def get_schema():
 	vfs["main2.star"] = &fstest.MapFile{
 		Data: []byte(mainSrc),
 	}
-	_, err = NewAppletFromFS("multiple_files_multiple_mains", vfs, WithTests(t))
+	_, err = NewAppletFromFS(t.Context(), "multiple_files_multiple_mains", vfs, WithTests(t))
 	assert.Error(t, err)
 }
 
@@ -262,7 +262,7 @@ def main():
     	fail("bsoup broken")
     return render.Root(child=render.Box())
 `
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.Run(t.Context())
@@ -284,7 +284,7 @@ def main():
         fail("something went wrong")
     return render.Root(child=render.Box())
 `
-	app, err = NewApplet("test.star", []byte(src), WithModuleLoader(loader), WithTests(t))
+	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithModuleLoader(loader), WithTests(t))
 	assert.NoError(t, err)
 	roots, err = app.Run(t.Context())
 	assert.NoError(t, err)
@@ -317,7 +317,7 @@ hello = struct(
 		"hello.star": {Data: []byte(helloSrc)},
 	}
 
-	app, err := NewAppletFromFS("test", vfs, WithTests(t))
+	app, err := NewAppletFromFS(t.Context(), "test", vfs, WithTests(t))
 	assert.NoError(t, err)
 	if assert.NotNil(t, app) {
 		roots, err := app.Run(t.Context())
@@ -339,7 +339,7 @@ def main():
 		"hello.star": {Data: []byte(helloSrc)},
 	}
 
-	_, err = NewAppletFromFS("test", vfs2, WithTests(t))
+	_, err = NewAppletFromFS(t.Context(), "test", vfs2, WithTests(t))
 	assert.ErrorContains(t, err, "not exported")
 }
 
@@ -360,7 +360,7 @@ def b():
 		"a.star": {Data: []byte(srcA)},
 		"b.star": {Data: []byte(srcB)},
 	}
-	_, err := NewAppletFromFS("circular_dependency", vfs, WithTests(t))
+	_, err := NewAppletFromFS(t.Context(), "circular_dependency", vfs, WithTests(t))
 	assert.ErrorContains(t, err, "circular dependency")
 }
 
@@ -374,7 +374,7 @@ def main():
 	return render.Root(child=render.Box())
 `
 
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	_, err = app.Run(t.Context())
@@ -419,7 +419,7 @@ def main(config):
 		printedText = append(printedText, msg)
 	}
 
-	app, err := NewApplet("test.star", []byte(src), WithPrintFunc(printFunc), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithPrintFunc(printFunc), WithTests(t))
 	require.NoError(t, err)
 	require.NotNil(t, app)
 	_, err = app.RunWithConfig(
@@ -457,7 +457,7 @@ def main():
 		"hello.txt": {Data: []byte(helloTxt)},
 	}
 
-	app, err := NewAppletFromFS("test_read_file", vfs, WithTests(t))
+	app, err := NewAppletFromFS(t.Context(), "test_read_file", vfs, WithTests(t))
 	require.NoError(t, err)
 	app.RunTests(t)
 }
@@ -475,7 +475,7 @@ func TestRoot(t *testing.T) {
 	err = os.Symlink(f.Name(), filepath.Join(appDir, name))
 	require.NoError(t, err)
 
-	app, err := NewAppletFromPath(appDir, WithTests(t))
+	app, err := NewAppletFromPath(t.Context(), appDir, WithTests(t))
 	assert.Error(t, err)
 	require.Nil(t, app)
 }

@@ -52,7 +52,7 @@ assert.eq(s2.palette[3], "#323334")
 def main():
     return []
 `
-	app, err := runtime.NewApplet("colors.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "colors.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
@@ -83,7 +83,7 @@ def main(config):
 
     return []
 `
-	app, err := runtime.NewApplet("colors.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "colors.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	// Well formed input -> success

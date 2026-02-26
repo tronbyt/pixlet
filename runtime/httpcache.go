@@ -76,7 +76,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	if req.Method == http.MethodGet || req.Method == http.MethodHead || req.Method == http.MethodPost {
-		b, exists, err := c.cache.Get(nil, key)
+		b, exists, err := c.cache.Get(ctx, key)
 		if exists && err == nil {
 			if res, err := http.ReadResponse(bufio.NewReader(bytes.NewReader(b)), req); err == nil {
 				res.Header.Set("tidbyt-cache-status", "HIT")
@@ -99,7 +99,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 		}
 
 		ttl := DetermineTTL(req, resp, nil)
-		_ = c.cache.Set(nil, key, ser, int64(ttl.Seconds()))
+		_ = c.cache.Set(ctx, key, ser, int64(ttl.Seconds()))
 		resp.Header.Set("tidbyt-cache-status", "MISS")
 	}
 

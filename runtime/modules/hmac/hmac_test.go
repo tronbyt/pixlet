@@ -22,7 +22,7 @@ def main():
 `
 
 func TestHmac(t *testing.T) {
-	app, err := runtime.NewApplet("hmac_test.star", []byte(hmacSource), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "hmac_test.star", []byte(hmacSource), runtime.WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 

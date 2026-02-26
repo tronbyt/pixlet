@@ -22,9 +22,10 @@ func AttachThreadContext(ctx context.Context, thread *starlark.Thread) {
 // by `AttachThreadContext`. If no context is attached to the thread, it
 // returns a new, empty context.
 func ThreadContext(thread *starlark.Thread) context.Context {
-	ctx, ok := thread.Local(ThreadContextKey).(context.Context)
-	if !ok {
-		ctx = context.Background()
+	if thread != nil {
+		if ctx, ok := thread.Local(ThreadContextKey).(context.Context); ok {
+			return ctx
+		}
 	}
-	return ctx
+	return context.Background()
 }

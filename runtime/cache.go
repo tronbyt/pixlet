@@ -17,8 +17,8 @@ import (
 const DefaultExpirationSeconds = 60
 
 type Cache interface {
-	Set(thread *starlark.Thread, key string, value []byte, ttl int64) error
-	Get(thread *starlark.Thread, key string) ([]byte, bool, error)
+	Set(ctx context.Context, key string, value []byte, ttl int64) error
+	Get(ctx context.Context, key string) ([]byte, bool, error)
 	Close()
 }
 
@@ -34,7 +34,7 @@ func NewInMemoryCache() *InMemoryCache {
 	return &InMemoryCache{cache: c}
 }
 
-func (c *InMemoryCache) Get(_ *starlark.Thread, key string) (value []byte, found bool, err error) {
+func (c *InMemoryCache) Get(_ context.Context, key string) (value []byte, found bool, err error) {
 	entry := c.cache.Get(key)
 	if entry == nil {
 		return nil, false, nil
@@ -42,7 +42,7 @@ func (c *InMemoryCache) Get(_ *starlark.Thread, key string) (value []byte, found
 	return entry.Value(), true, nil
 }
 
-func (c *InMemoryCache) Set(_ *starlark.Thread, key string, value []byte, ttl int64) error {
+func (c *InMemoryCache) Set(_ context.Context, key string, value []byte, ttl int64) error {
 	c.cache.Set(key, value, time.Duration(ttl)*time.Second)
 	return nil
 }
@@ -66,8 +66,7 @@ func NewRedisCache(url string) *RedisCache {
 	}
 }
 
-func (c *RedisCache) Get(_ *starlark.Thread, key string) (value []byte, found bool, err error) {
-	ctx := context.Background()
+func (c *RedisCache) Get(ctx context.Context, key string) (value []byte, found bool, err error) {
 	val, err := c.client.Get(ctx, key).Bytes()
 	if err == redis.Nil {
 		return nil, false, nil
@@ -78,8 +77,7 @@ func (c *RedisCache) Get(_ *starlark.Thread, key string) (value []byte, found bo
 	}
 }
 
-func (c *RedisCache) Set(_ *starlark.Thread, key string, value []byte, ttl int64) error {
-	ctx := context.Background()
+func (c *RedisCache) Set(ctx context.Context, key string, value []byte, ttl int64) error {
 	return c.client.Set(ctx, key, value, time.Duration(ttl)*time.Second).Err()
 }
 
@@ -135,7 +133,8 @@ func cacheGet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 		return starlark.None, nil
 	}
 
-	val, found, err := cache.Get(thread, cacheKey)
+	ctx := starlarkutil.ThreadContext(thread)
+	val, found, err := cache.Get(ctx, cacheKey)
 
 	if err != nil {
 		// don't fail just because cache is misbehaving
@@ -187,7 +186,8 @@ func cacheSet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 		return starlark.None, nil
 	}
 
-	if err := cache.Set(thread, cacheKey, []byte(val.GoString()), ttl64); err != nil {
+	ctx := starlarkutil.ThreadContext(thread)
+	if err := cache.Set(ctx, cacheKey, []byte(val.GoString()), ttl64); err != nil {
 		slog.Error("Setting cache entry", "key", cacheKey, "error", err)
 	}
 

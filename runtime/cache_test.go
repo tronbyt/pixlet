@@ -34,7 +34,7 @@ def main():
 	c := NewInMemoryCache()
 	t.Cleanup(c.Close)
 	InitCache(c)
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.Run(t.Context())
@@ -57,7 +57,7 @@ def main():
 	c := NewInMemoryCache()
 	t.Cleanup(c.Close)
 	InitCache(c)
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
@@ -75,7 +75,7 @@ def main():
 
 	// but run the same code using different filename, and cached
 	// data ends up in a different namespace
-	app, err = NewApplet("test2.star", []byte(src), WithTests(t))
+	app, err = NewApplet(t.Context(), "test2.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 
@@ -105,7 +105,7 @@ def main():
     return render.Root(child=render.Box())
 `
 	InitCache(nil)
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err := app.Run(t.Context())
@@ -123,7 +123,7 @@ def main():
     return render.Root(child=render.Box())
 `
 	InitCache(nil)
-	app, err := NewApplet("test.star", []byte(src), WithTests(t))
+	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
 	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err := app.Run(t.Context())

@@ -30,7 +30,7 @@ def main():
 	return []
 `
 
-	app, err := runtime.NewApplet("toggle.star", []byte(source), runtime.WithTests(t))
+	app, err := runtime.NewApplet(t.Context(), "toggle.star", []byte(source), runtime.WithTests(t))
 	assert.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

@@ -21,7 +21,7 @@ func TestBundleWriteAndLoad(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Write bundle to the temp directory.
-	err = ab.WriteBundleToPath(dir)
+	err = ab.WriteBundleToPath(t.Context(), dir)
 	assert.NoError(t, err)
 
 	// Ensure we can load up the bundle just created.
@@ -62,7 +62,7 @@ func TestBundleWriteAndLoadWithoutRuntime(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Write bundle to the temp directory, without tree-shaking.
-	err = ab.WriteBundleToPath(dir, bundle.WithoutRuntime())
+	err = ab.WriteBundleToPath(t.Context(), dir, bundle.WithoutRuntime())
 	assert.NoError(t, err)
 
 	// Ensure we can load up the bundle just created.
