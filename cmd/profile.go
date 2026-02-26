@@ -35,7 +35,7 @@ func NewProfileCmd() *cobra.Command {
 		Short: "Run a Pixlet app and print its execution-time profile",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return profileRun(cmd.Context(), args, opts)
+			return profileRun(cmd, args, opts)
 		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
@@ -82,7 +82,7 @@ func (u *printUI) IsTerminal() bool                             { return false }
 func (u *printUI) WantBrowser() bool                            { return false }
 func (u *printUI) SetAutoComplete(complete func(string) string) {}
 
-func profileRun(ctx context.Context, args []string, opts *profileOptions) error {
+func profileRun(cmd *cobra.Command, args []string, opts *profileOptions) error {
 	path := args[0]
 
 	config := map[string]any{}
@@ -94,7 +94,7 @@ func profileRun(ctx context.Context, args []string, opts *profileOptions) error 
 		config[split[0]] = split[1]
 	}
 
-	profile, err := ProfileApp(ctx, path, config, opts.Metadata)
+	profile, err := ProfileApp(cmd.Context(), path, config, opts.Metadata)
 	if err != nil {
 		return err
 	}

@@ -23,8 +23,8 @@ func NewDevicesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "devices",
 		Short: "List devices in your Tronbyt account",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return devicesRun(cmd.Context(), opts)
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			return devicesRun(cmd, opts)
 		},
 		ValidArgsFunction: cobra.NoFileCompletions,
 	}
@@ -37,13 +37,13 @@ func NewDevicesCmd() *cobra.Command {
 	return cmd
 }
 
-func devicesRun(ctx context.Context, opts *devicesOptions) error {
+func devicesRun(cmd *cobra.Command, opts *devicesOptions) error {
 	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
 	if err != nil {
 		return err
 	}
 
-	for d, err := range getDevices(ctx, creds) {
+	for d, err := range getDevices(cmd.Context(), creds) {
 		if err != nil {
 			return err
 		}
