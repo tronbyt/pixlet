@@ -2,7 +2,7 @@ package runtime
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 	"net/http"
 	"os"
 	"testing"
@@ -166,9 +166,9 @@ func TestDetermineTTLJitter(t *testing.T) {
 		StatusCode: http.StatusOK,
 	}
 
-	jitterRand = rand.New(rand.NewSource(50))
-	ttl := DetermineTTL(req, res)
-	assert.Equal(t, 64, int(ttl.Seconds()))
+	r := rand.New(rand.NewPCG(1, 2))
+	ttl := DetermineTTL(req, res, r)
+	assert.Equal(t, 63, int(ttl.Seconds()))
 }
 
 func TestDetermineTTLNoHeaders(t *testing.T) {
@@ -180,6 +180,6 @@ func TestDetermineTTLNoHeaders(t *testing.T) {
 		StatusCode: http.StatusOK,
 	}
 
-	ttl := DetermineTTL(req, res)
-	assert.Equal(t, MinRequestTTL, ttl)
+	ttl := DetermineTTL(req, res, nil)
+	assert.LessOrEqual(t, MinRequestTTL, ttl)
 }

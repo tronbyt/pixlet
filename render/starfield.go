@@ -5,7 +5,7 @@ import (
 	"image"
 	"image/color"
 	"math"
-	"math/rand"
+	"math/rand/v2"
 
 	"github.com/tronbyt/gg"
 	"go.starlark.net/starlark"
