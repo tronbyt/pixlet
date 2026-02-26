@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -23,7 +24,7 @@ func NewDevicesCmd() *cobra.Command {
 		Use:   "devices",
 		Short: "List devices in your Tronbyt account",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return devicesRun(opts)
+			return devicesRun(cmd.Context(), opts)
 		},
 		ValidArgsFunction: cobra.NoFileCompletions,
 	}
@@ -36,13 +37,13 @@ func NewDevicesCmd() *cobra.Command {
 	return cmd
 }
 
-func devicesRun(opts *devicesOptions) error {
+func devicesRun(ctx context.Context, opts *devicesOptions) error {
 	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
 	if err != nil {
 		return err
 	}
 
-	for d, err := range getDevices(creds) {
+	for d, err := range getDevices(ctx, creds) {
 		if err != nil {
 			return err
 		}
@@ -53,10 +54,10 @@ func devicesRun(opts *devicesOptions) error {
 	return nil
 }
 
-func getDevices(creds apiCredentials) iter.Seq2[*tronbytapi.Device, error] {
+func getDevices(ctx context.Context, creds apiCredentials) iter.Seq2[*tronbytapi.Device, error] {
 	return func(yield func(*tronbytapi.Device, error) bool) {
 		client := &http.Client{}
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/v0/devices", creds.baseURL), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/v0/devices", creds.baseURL), nil)
 		if err != nil {
 			yield(nil, fmt.Errorf("creating request: %w", err))
 			return

@@ -35,7 +35,7 @@ func NewProfileCmd() *cobra.Command {
 		Short: "Run a Pixlet app and print its execution-time profile",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return profileRun(args, opts)
+			return profileRun(cmd.Context(), args, opts)
 		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
@@ -82,7 +82,7 @@ func (u *printUI) IsTerminal() bool                             { return false }
 func (u *printUI) WantBrowser() bool                            { return false }
 func (u *printUI) SetAutoComplete(complete func(string) string) {}
 
-func profileRun(args []string, opts *profileOptions) error {
+func profileRun(ctx context.Context, args []string, opts *profileOptions) error {
 	path := args[0]
 
 	config := map[string]any{}
@@ -94,7 +94,7 @@ func profileRun(args []string, opts *profileOptions) error {
 		config[split[0]] = split[1]
 	}
 
-	profile, err := ProfileApp(path, config, opts.Metadata)
+	profile, err := ProfileApp(ctx, path, config, opts.Metadata)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func profileRun(args []string, opts *profileOptions) error {
 	return nil
 }
 
-func ProfileApp(path string, config map[string]any, meta canvas.Metadata) (*pprof_profile.Profile, error) {
+func ProfileApp(ctx context.Context, path string, config map[string]any, meta canvas.Metadata) (*pprof_profile.Profile, error) {
 	cache := runtime.NewInMemoryCache()
 	defer cache.Close()
 	runtime.InitHTTP(cache)
@@ -132,7 +132,7 @@ func ProfileApp(path string, config map[string]any, meta canvas.Metadata) (*ppro
 		return nil, fmt.Errorf("error starting profiler: %w", err)
 	}
 
-	_, err = applet.RunWithConfig(context.Background(), config)
+	_, err = applet.RunWithConfig(ctx, config)
 	if err != nil {
 		_ = starlark.StopProfile()
 		return nil, fmt.Errorf("error running script: %w", err)

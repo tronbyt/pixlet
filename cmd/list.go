@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -54,7 +55,7 @@ func listRun(cmd *cobra.Command, args []string, opts *listOptions) error {
 		return err
 	}
 
-	for inst, err := range getInstallations(deviceID, creds) {
+	for inst, err := range getInstallations(cmd.Context(), deviceID, creds) {
 		if err != nil {
 			return err
 		}
@@ -65,10 +66,11 @@ func listRun(cmd *cobra.Command, args []string, opts *listOptions) error {
 	return nil
 }
 
-func getInstallations(deviceID string, creds apiCredentials) iter.Seq2[*tronbytapi.Installation, error] {
+func getInstallations(ctx context.Context, deviceID string, creds apiCredentials) iter.Seq2[*tronbytapi.Installation, error] {
 	return func(yield func(*tronbytapi.Installation, error) bool) {
 		client := &http.Client{}
-		req, err := http.NewRequest(
+		req, err := http.NewRequestWithContext(
+			ctx,
 			http.MethodGet,
 			fmt.Sprintf("%s/v0/devices/%s/installations", creds.baseURL, deviceID), nil)
 		if err != nil {

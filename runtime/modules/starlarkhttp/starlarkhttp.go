@@ -138,7 +138,9 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 			return nil, err
 		}
 
-		req, err := http.NewRequest(strings.ToUpper(method), rawurl, nil)
+		ctx := starlarkutil.ThreadContext(thread)
+
+		req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), rawurl, nil)
 		if err != nil {
 			return nil, err
 		}

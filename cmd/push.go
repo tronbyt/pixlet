@@ -53,7 +53,7 @@ func NewPushCmd() *cobra.Command {
 	return cmd
 }
 
-func pushRun(_ *cobra.Command, args []string, opts *pushOptions) error {
+func pushRun(cmd *cobra.Command, args []string, opts *pushOptions) error {
 	deviceID := args[0]
 	image := args[1]
 
@@ -91,7 +91,8 @@ func pushRun(_ *cobra.Command, args []string, opts *pushOptions) error {
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest(
+	req, err := http.NewRequestWithContext(
+		cmd.Context(),
 		http.MethodPost,
 		fmt.Sprintf("%s/v0/devices/%s/push", creds.baseURL, deviceID),
 		bytes.NewReader(payload),

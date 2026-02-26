@@ -77,7 +77,8 @@ func (b *Browser) pushHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest(
+	req, err := http.NewRequestWithContext(
+		r.Context(),
 		http.MethodPost,
 		fmt.Sprintf(TidbytAPIPush, deviceID),
 		bytes.NewReader(payload),

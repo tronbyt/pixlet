@@ -43,7 +43,7 @@ func NewDeleteCmd() *cobra.Command {
 	return cmd
 }
 
-func deleteRun(_ *cobra.Command, args []string, opts *deleteOptions) error {
+func deleteRun(cmd *cobra.Command, args []string, opts *deleteOptions) error {
 	deviceID := args[0]
 	installationID := args[1]
 
@@ -53,7 +53,8 @@ func deleteRun(_ *cobra.Command, args []string, opts *deleteOptions) error {
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest(
+	req, err := http.NewRequestWithContext(
+		cmd.Context(),
 		http.MethodDelete,
 		fmt.Sprintf("%s/v0/devices/%s/installations/%s", creds.baseURL, deviceID, installationID),
 		nil,

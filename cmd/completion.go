@@ -21,7 +21,7 @@ func completeInstallations(cmd *cobra.Command, deviceID string) ([]string, cobra
 	}
 
 	var installations []string
-	for i, err := range getInstallations(deviceID, creds) {
+	for i, err := range getInstallations(cmd.Context(), deviceID, creds) {
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
@@ -37,7 +37,7 @@ func completeDevices(cmd *cobra.Command) ([]string, cobra.ShellCompDirective) {
 	}
 
 	var devices []string
-	for d, err := range getDevices(creds) {
+	for d, err := range getDevices(cmd.Context(), creds) {
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
