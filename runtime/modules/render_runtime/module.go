@@ -27,7 +27,9 @@ func LoadRenderModule() (starlark.StringDict, error) {
 		}
 		fnt := starlark.NewDict(len(fontList))
 		for _, name := range fontList {
-			fnt.SetKey(starlark.String(name), starlark.String(name))
+			if err = fnt.SetKey(starlark.String(name), starlark.String(name)); err != nil {
+				return
+			}
 		}
 		fnt.Freeze()
 
