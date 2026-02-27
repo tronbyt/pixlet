@@ -1,7 +1,9 @@
 package random
 
 import (
+	cryptorand "crypto/rand"
 	"fmt"
+	"math/big"
 	"math/rand/v2"
 	"sync"
 
@@ -67,6 +69,7 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 	var (
 		starMin starlark.Int
 		starMax starlark.Int
+		secure  starlark.Bool
 	)
 
 	if err := starlark.UnpackArgs(
@@ -74,6 +77,7 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 		args, kwargs,
 		"min", &starMin,
 		"max", &starMax,
+		"secure?", &secure,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for random number: %w", err)
 	}
@@ -96,10 +100,24 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 		return nil, fmt.Errorf("max is less than min")
 	}
 
-	rng, ok := thread.Local(threadRandKey).(*rand.Rand)
-	if !ok || rng == nil {
-		return nil, fmt.Errorf("RNG not set (very bad!)")
+	shiftedMax := maxVal - minVal + 1
+
+	var r int64
+	if secure {
+		v, err := cryptorand.Int(cryptorand.Reader, big.NewInt(shiftedMax))
+		if err != nil {
+			return nil, fmt.Errorf("reading random number: %w", err)
+		}
+
+		r = v.Int64()
+	} else {
+		rng, ok := thread.Local(threadRandKey).(*rand.Rand)
+		if !ok || rng == nil {
+			return nil, fmt.Errorf("RNG not set (very bad!)")
+		}
+
+		r = rng.Int64N(shiftedMax)
 	}
 
-	return starlark.MakeInt64(rng.Int64N(maxVal-minVal+1) + minVal), nil
+	return starlark.MakeInt64(r + minVal), nil
 }
