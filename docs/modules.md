@@ -380,7 +380,7 @@ The `random` module provides a pseudorandom number generator for pixlet. The gen
 | Function | Description |
 | --- | --- |
 | `seed(s)` | Seeds the generator.|
-| `number(min, max)` | Returns a random number between the min and max. The min has to be 0 or greater. The min has to be less than the max. |
+| `number(min, max, secure?)` | Returns a random number between the min and max. The min must be 0 or greater, and must be less than the max. If `secure=True`, a cryptographically secure random number generator is used. |
 
 Example:
 ```starlark
@@ -393,6 +393,8 @@ def main(config):
     else:
         print("Better luck next time!")
 ```
+
+Note that setting `secure=True` will use a cryptographically secure random number generator, which bypasses deterministic seeding and may impact the effectiveness of caching.
 
 ## Pixlet module: QRCode
 
