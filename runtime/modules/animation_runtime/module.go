@@ -8,16 +8,16 @@ import (
 	"go.starlark.net/starlarkstruct"
 )
 
-type AnimationModule struct {
+type Module struct {
 	once   sync.Once
 	module starlark.StringDict
 }
 
-var animationModule = AnimationModule{}
+var module = Module{}
 
-func LoadAnimationModule() (starlark.StringDict, error) {
-	animationModule.once.Do(func() {
-		animationModule.module = starlark.StringDict{
+func LoadModule() (starlark.StringDict, error) {
+	module.once.Do(func() {
+		module.module = starlark.StringDict{
 			"animation": &starlarkstruct.Module{
 				Name:    "render",
 				Members: newAnimations(),
@@ -25,7 +25,7 @@ func LoadAnimationModule() (starlark.StringDict, error) {
 		}
 	})
 
-	return animationModule.module, nil
+	return module.module, nil
 }
 
 type transformUnwrapper interface {

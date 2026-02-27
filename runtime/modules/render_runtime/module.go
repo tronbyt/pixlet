@@ -8,17 +8,17 @@ import (
 	"go.starlark.net/starlarkstruct"
 )
 
-type RenderModule struct {
+type Module struct {
 	once   sync.Once
 	module starlark.StringDict
 }
 
-var renderModule = RenderModule{}
+var module = Module{}
 
-func LoadRenderModule() (starlark.StringDict, error) {
+func LoadModule() (starlark.StringDict, error) {
 	var err error
 
-	renderModule.once.Do(func() {
+	module.once.Do(func() {
 		widgets := newWidgets()
 
 		var fontList []string
@@ -35,7 +35,7 @@ func LoadRenderModule() (starlark.StringDict, error) {
 
 		widgets["fonts"] = fnt
 
-		renderModule.module = starlark.StringDict{
+		module.module = starlark.StringDict{
 			"render": &starlarkstruct.Module{
 				Name:    "render",
 				Members: widgets,
@@ -52,7 +52,7 @@ func LoadRenderModule() (starlark.StringDict, error) {
 		}
 	})
 
-	return renderModule.module, err
+	return module.module, err
 }
 
 type Rootable interface {
