@@ -5,85 +5,37 @@ package render_runtime
 import (
 	"fmt"
 	"image"
-	"sync"
 
 	"github.com/mitchellh/hashstructure/v2"
 	"go.starlark.net/starlark"
-	"go.starlark.net/starlarkstruct"
 
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/starlarkutil"
 	"github.com/tronbyt/pixlet/tools/iterutil"
 )
 
-type RenderModule struct {
-	once   sync.Once
-	module starlark.StringDict
-}
-
-var renderModule = RenderModule{}
-
-func LoadRenderModule() (starlark.StringDict, error) {
-	var err error
-
-	renderModule.once.Do(func() {
-		var fontList []string
-		if fontList, err = render.GetFontList(); err != nil {
-			return
-		}
-		fnt := starlark.NewDict(len(fontList))
-		for _, name := range fontList {
-			fnt.SetKey(starlark.String(name), starlark.String(name))
-		}
-		fnt.Freeze()
-
-		renderModule.module = starlark.StringDict{
-			"render": &starlarkstruct.Module{
-				Name: "render",
-				Members: starlark.StringDict{
-					"fonts":       fnt,
-					"Animation":   starlark.NewBuiltin("Animation", newAnimation),
-					"Arc":         starlark.NewBuiltin("Arc", newArc),
-					"Box":         starlark.NewBuiltin("Box", newBox),
-					"Circle":      starlark.NewBuiltin("Circle", newCircle),
-					"Column":      starlark.NewBuiltin("Column", newColumn),
-					"Emoji":       starlark.NewBuiltin("Emoji", newEmoji),
-					"Image":       starlark.NewBuiltin("Image", newImage),
-					"Line":        starlark.NewBuiltin("Line", newLine),
-					"Marquee":     starlark.NewBuiltin("Marquee", newMarquee),
-					"Padding":     starlark.NewBuiltin("Padding", newPadding),
-					"PieChart":    starlark.NewBuiltin("PieChart", newPieChart),
-					"Plot":        starlark.NewBuiltin("Plot", newPlot),
-					"Polygon":     starlark.NewBuiltin("Polygon", newPolygon),
-					"Root":        starlark.NewBuiltin("Root", newRoot),
-					"Row":         starlark.NewBuiltin("Row", newRow),
-					"Sequence":    starlark.NewBuiltin("Sequence", newSequence),
-					"Stack":       starlark.NewBuiltin("Stack", newStack),
-					"Text":        starlark.NewBuiltin("Text", newText),
-					"WrappedText": starlark.NewBuiltin("WrappedText", newWrappedText),
-				},
-			},
-			"canvas": &starlarkstruct.Module{
-				Name: "canvas",
-				Members: starlark.StringDict{
-					"width":  starlark.NewBuiltin("width", dimension(dimensionWidth)),
-					"height": starlark.NewBuiltin("height", dimension(dimensionHeight)),
-					"size":   starlark.NewBuiltin("size", size),
-					"is2x":   starlark.NewBuiltin("is2x", is2x),
-				},
-			},
-		}
-	})
-
-	return renderModule.module, err
-}
-
-type Rootable interface {
-	AsRenderRoot() render.Root
-}
-
-type Widget interface {
-	AsRenderWidget() render.Widget
+func newWidgets() starlark.StringDict {
+	return starlark.StringDict{
+		"Animation":   starlark.NewBuiltin("Animation", newAnimation),
+		"Arc":         starlark.NewBuiltin("Arc", newArc),
+		"Box":         starlark.NewBuiltin("Box", newBox),
+		"Circle":      starlark.NewBuiltin("Circle", newCircle),
+		"Column":      starlark.NewBuiltin("Column", newColumn),
+		"Emoji":       starlark.NewBuiltin("Emoji", newEmoji),
+		"Image":       starlark.NewBuiltin("Image", newImage),
+		"Line":        starlark.NewBuiltin("Line", newLine),
+		"Marquee":     starlark.NewBuiltin("Marquee", newMarquee),
+		"Padding":     starlark.NewBuiltin("Padding", newPadding),
+		"PieChart":    starlark.NewBuiltin("PieChart", newPieChart),
+		"Plot":        starlark.NewBuiltin("Plot", newPlot),
+		"Polygon":     starlark.NewBuiltin("Polygon", newPolygon),
+		"Root":        starlark.NewBuiltin("Root", newRoot),
+		"Row":         starlark.NewBuiltin("Row", newRow),
+		"Sequence":    starlark.NewBuiltin("Sequence", newSequence),
+		"Stack":       starlark.NewBuiltin("Stack", newStack),
+		"Text":        starlark.NewBuiltin("Text", newText),
+		"WrappedText": starlark.NewBuiltin("WrappedText", newWrappedText),
+	}
 }
 
 type Animation struct {
