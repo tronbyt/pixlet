@@ -5,11 +5,9 @@ package animation_runtime
 import (
 	"fmt"
 	"image"
-	"sync"
 
 	"github.com/mitchellh/hashstructure/v2"
 	"go.starlark.net/starlark"
-	"go.starlark.net/starlarkstruct"
 
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/render/animation"
@@ -17,37 +15,17 @@ import (
 	"github.com/tronbyt/pixlet/starlarkutil"
 )
 
-type AnimationModule struct {
-	once   sync.Once
-	module starlark.StringDict
-}
-
-var animationModule = AnimationModule{}
-
-func LoadAnimationModule() (starlark.StringDict, error) {
-	animationModule.once.Do(func() {
-		animationModule.module = starlark.StringDict{
-			"animation": &starlarkstruct.Module{
-				Name: "render",
-				Members: starlark.StringDict{
-					"AnimatedPositioned": starlark.NewBuiltin("AnimatedPositioned", newAnimatedPositioned),
-					"Keyframe":           starlark.NewBuiltin("Keyframe", newKeyframe),
-					"Origin":             starlark.NewBuiltin("Origin", newOrigin),
-					"Rotate":             starlark.NewBuiltin("Rotate", newRotate),
-					"Scale":              starlark.NewBuiltin("Scale", newScale),
-					"Shear":              starlark.NewBuiltin("Shear", newShear),
-					"Transformation":     starlark.NewBuiltin("Transformation", newTransformation),
-					"Translate":          starlark.NewBuiltin("Translate", newTranslate),
-				},
-			},
-		}
-	})
-
-	return animationModule.module, nil
-}
-
-type transformUnwrapper interface {
-	AsAnimationTransform() animation.Transform
+func newAnimations() starlark.StringDict {
+	return starlark.StringDict{
+		"AnimatedPositioned": starlark.NewBuiltin("AnimatedPositioned", newAnimatedPositioned),
+		"Keyframe":           starlark.NewBuiltin("Keyframe", newKeyframe),
+		"Origin":             starlark.NewBuiltin("Origin", newOrigin),
+		"Rotate":             starlark.NewBuiltin("Rotate", newRotate),
+		"Scale":              starlark.NewBuiltin("Scale", newScale),
+		"Shear":              starlark.NewBuiltin("Shear", newShear),
+		"Transformation":     starlark.NewBuiltin("Transformation", newTransformation),
+		"Translate":          starlark.NewBuiltin("Translate", newTranslate),
+	}
 }
 
 type AnimatedPositioned struct {
