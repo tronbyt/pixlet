@@ -725,13 +725,13 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 
 	switch module {
 	case "render.star":
-		return render_runtime.LoadRenderModule()
+		return render_runtime.LoadModule()
 
 	case i18n_runtime.ModuleName:
 		return i18n_runtime.LoadModule()
 
 	case "animation.star":
-		return animation_runtime.LoadAnimationModule()
+		return animation_runtime.LoadModule()
 
 	case "schema.star":
 		return schema.LoadModule()
