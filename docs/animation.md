@@ -135,20 +135,6 @@ If `wait_for_child` is set to `True`, the animation will finish and
 then wait for all child frames to play before restarting. If it is set
 to `False`, it will not wait.
 
-
-
-
-
-
-
-
-
-
-
-
-
-.
-
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
