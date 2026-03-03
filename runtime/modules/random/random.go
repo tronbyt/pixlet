@@ -3,6 +3,7 @@ package random
 import (
 	cryptorand "crypto/rand"
 	"fmt"
+	"math"
 	"math/big"
 	"math/rand/v2"
 	"sync"
@@ -100,7 +101,7 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 		return nil, fmt.Errorf("max is less than min")
 	}
 
-	shiftedMax := maxVal - minVal + 1
+	shiftedMax := min(maxVal-minVal, math.MaxInt64-1) + 1
 
 	var r int64
 	if secure {
