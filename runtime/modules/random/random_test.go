@@ -22,6 +22,16 @@ def test_number():
 		if num > max:
 			fail("random number greater than max")
 
+	# Test overflow protection
+	max_int = 9223372036854775807 # math.MaxInt64
+	num_overflow = random.number(0, max_int)
+	if num_overflow < 0:
+		fail("random number overflowed to negative")
+
+	num_max = random.number(max_int, max_int)
+	if num_max != max_int:
+		fail("random number min/max edge case failed")
+
 def test_seed():
     random.seed(4711)
     sequence = [random.number(0, 1 << 20) for _ in range(500)]
