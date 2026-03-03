@@ -40,7 +40,7 @@ jobs:
           args: --timeout=5m
 
   build-and-test-release:
-    name: Build and Test Release Artifacts
+    name: Build and Test (${{ matrix.release_arch }})
     strategy:
       matrix:
         include:
