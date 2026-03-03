@@ -525,7 +525,7 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 
 	// These match our attribute docs and example blocks
 	docRe := must2(regexp.Compile(`(?m)^DOC\(([^)]+)\): +(.+)$`))
-	exampleRe := must2(regexp.Compile(`(?s)EXAMPLE BEGIN(.*?)EXAMPLE END`))
+	exampleRe := must2(regexp.Compile(`(?s)EXAMPLE BEGIN(.*?)EXAMPLE END\.?`))
 
 	for _, type_ := range types {
 		// Widget doc is full comment sans attribute docs and examples
