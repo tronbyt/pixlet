@@ -101,10 +101,8 @@ func NewLoader(
 	runtime.InitHTTP(l.cache)
 	runtime.InitCache(l.cache)
 
-	if !l.watch {
-		if err := l.loadApplet(); err != nil {
-			return nil, err
-		}
+	if err := l.loadApplet(); err != nil {
+		slog.Error("Loading applet", "error", err)
 	}
 
 	return l, nil
@@ -319,6 +317,10 @@ func (l *Loader) loadApplet() error {
 
 	l.applet = *app
 	return nil
+}
+
+func (l *Loader) GetMainFile() string {
+	return l.applet.MainFile
 }
 
 func (l *Loader) renderApplet(ctx context.Context, config map[string]any) (string, error) {
