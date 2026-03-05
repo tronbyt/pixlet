@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -53,7 +54,6 @@ func NewRenderCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "render [path] [<key>=value>]...",
 		Short: "Run a Pixlet app with provided config parameters",
-		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return renderRun(cmd, args, opts)
 		},
@@ -136,7 +136,16 @@ containing multiple Starlark files and resources.
 }
 
 func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
-	path := args[0]
+	path := "."
+	if len(args) != 0 {
+		if !strings.Contains(args[0], "=") {
+			path = args[0]
+			args = args[1:]
+		} else if _, err := os.Stat(args[0]); err == nil || !errors.Is(err, os.ErrNotExist) {
+			path = args[0]
+			args = args[1:]
+		}
+	}
 
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(path)
@@ -203,7 +212,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		_ = f.Close()
 	}
 
-	for _, param := range args[1:] {
+	for _, param := range args {
 		key, val, ok := strings.Cut(param, "=")
 		if !ok {
 			return fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)

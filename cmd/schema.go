@@ -24,7 +24,7 @@ func NewSchemaCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "schema [path]",
 		Short: "Print the configuration schema for a Pixlet app",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return schemaRun(cmd, args, opts)
 		},
@@ -47,7 +47,10 @@ JSON format.
 }
 
 func schemaRun(cmd *cobra.Command, args []string, opts *schemaOptions) error {
-	path := args[0]
+	path := "."
+	if len(args) != 0 {
+		path = args[0]
+	}
 
 	applet, err := runtime.NewAppletFromPath(
 		cmd.Context(), path, runtime.WithCanvasMeta(opts.Metadata),

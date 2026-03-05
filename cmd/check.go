@@ -30,7 +30,7 @@ func NewCheckCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "check <path>...",
+		Use:     "check [path]...",
 		Example: `pixlet check examples/clock`,
 		Short:   "Check if an app is ready to publish",
 		Long: `Check if an app is ready to publish.
@@ -43,7 +43,6 @@ The check command runs a series of checks to ensure your app is ready
 to publish in the community repo. Every failed check will have a solution
 provided. If your app fails a check, try the provided solution and reach out on
 Discord if you get stuck.`,
-		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return checkRun(cmd, args, opts)
 		},
@@ -59,6 +58,10 @@ Discord if you get stuck.`,
 }
 
 func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
+	if len(args) == 0 {
+		args = append(args, ".")
+	}
+
 	foundIssue := false
 
 	// checkApp is a helper to run checks on a single app.
@@ -194,6 +197,12 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 
 		if issueFound {
 			return true
+		}
+
+		if path == "." {
+			if abs, err := filepath.Abs(path); err == nil {
+				path = filepath.Base(abs)
+			}
 		}
 
 		// If we're here, the app and manifest are good to go!

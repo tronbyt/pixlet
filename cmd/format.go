@@ -21,7 +21,7 @@ func NewFormatCmd() *cobra.Command {
 	opts := newFormatOptions()
 
 	cmd := &cobra.Command{
-		Use:   "format <pathspec>...",
+		Use:   "format [path]...",
 		Short: "Formats Tronbyt apps",
 		Example: `  pixlet format app.star
   pixlet format app.star --dry-run
@@ -29,7 +29,6 @@ func NewFormatCmd() *cobra.Command {
 		Long: `The format command provides a code formatter for Tronbyt apps. By default, it
 will format your starlark source code in line. If you wish you see the output
 before applying, add the --dry-run flag.`,
-		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return formatRun(args, opts)
 		},
@@ -44,6 +43,10 @@ before applying, add the --dry-run flag.`,
 }
 
 func formatRun(args []string, opts *formatOptions) error {
+	if len(args) == 0 {
+		args = append(args, ".")
+	}
+
 	// Lint refers to the lint mode for buildifier, with the options being off,
 	// warn, or fix. For pixlet format, we don't want to lint at all.
 	lint := "off"

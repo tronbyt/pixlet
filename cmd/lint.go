@@ -22,14 +22,13 @@ func NewLintCmd() *cobra.Command {
 	opts := newLintOptions()
 
 	cmd := &cobra.Command{
-		Use: "lint <pathspec>...",
+		Use: "lint [path]...",
 		Example: `  pixlet lint app.star
   pixlet lint --recursive --fix ./`,
 		Short: "Lints Tronbyt apps",
 		Long: `The lint command provides a linter for Tronbyt apps. It's capable of linting a
 file, a list of files, or directory with the recursive option. Additionally, it
 provides an option to automatically fix resolvable linter issues.`,
-		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return lintRun(args, opts)
 		},
@@ -46,6 +45,10 @@ provides an option to automatically fix resolvable linter issues.`,
 }
 
 func lintRun(args []string, opts *lintOptions) error {
+	if len(args) == 0 {
+		args = append(args, ".")
+	}
+
 	// Mode refers to formatting mode for buildifier, with the options being
 	// check, diff, or fix. For the pixlet lint command, we only want to check
 	// formatting.
