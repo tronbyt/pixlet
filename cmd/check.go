@@ -118,15 +118,13 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 		}
 
 		// Check if an app can load.
-		err = community.LoadApp(cmd, []string{path})
-		if err != nil {
+		if err = community.LoadApp(cmd.Context(), path); err != nil {
 			failure(path, fmt.Errorf("app failed to load: %w", err), "try `pixlet community load-app` and resolve any runtime issues")
 			return true
 		}
 
 		// Ensure icons are valid.
-		err = community.ValidateIcons(cmd, []string{path})
-		if err != nil {
+		if err = community.ValidateIcons(cmd.Context(), path); err != nil {
 			failure(path, fmt.Errorf("app has invalid icons: %w", err), "try `pixlet community list-icons` for the full list of valid icons")
 			return true
 		}

@@ -2,6 +2,7 @@ package community
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -16,32 +17,39 @@ func NewValidateManifestCmd() *cobra.Command {
 		Example: `  pixlet community validate-manifest manifest.yaml`,
 		Long: `This command determines if your app manifest is configured properly by
 validating the contents of each field.`,
-		Args:              cobra.MaximumNArgs(1),
-		RunE:              ValidateManifest,
+		Args: cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			path := manifest.ManifestFileName
+			if len(args) != 0 {
+				path = args[0]
+			}
+
+			if filepath.Base(path) != manifest.ManifestFileName {
+				info, err := os.Stat(path)
+				if err != nil {
+					return fmt.Errorf("failed to stat %s: %w", path, err)
+				}
+
+				if !info.IsDir() {
+					return fmt.Errorf("supplied manifest must be named %s", manifest.ManifestFileName)
+				}
+
+				path = filepath.Join(path, manifest.ManifestFileName)
+			}
+
+			if err := ValidateManifest(path); err != nil {
+				return err
+			}
+
+			slog.Info("App manifest is valid", "path", path)
+			return nil
+		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"yaml"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
 	return cmd
 }
 
-func ValidateManifest(_ *cobra.Command, args []string) error {
-	path := manifest.ManifestFileName
-	if len(args) != 0 {
-		path = args[0]
-	}
-
-	if filepath.Base(path) != manifest.ManifestFileName {
-		info, err := os.Stat(path)
-		if err != nil {
-			return fmt.Errorf("failed to stat %s: %w", path, err)
-		}
-
-		if !info.IsDir() {
-			return fmt.Errorf("supplied manifest must be named %s", manifest.ManifestFileName)
-		}
-
-		path = filepath.Join(path, manifest.ManifestFileName)
-	}
-
+func ValidateManifest(path string) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("couldn't open manifest: %w", err)
