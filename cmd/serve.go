@@ -42,7 +42,7 @@ func NewServeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "serve [path]",
 		Short: "Serve a Pixlet app in a web server",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return serveRun(cmd, args, opts)
 		},
@@ -85,6 +85,11 @@ containing multiple Starlark files and resources.`,
 }
 
 func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
+	appletPath := "."
+	if len(args) != 0 {
+		appletPath = args[0]
+	}
+
 	imageFormat := loader.ImageWebP
 	switch opts.format {
 	case "gif":
@@ -105,7 +110,7 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		opts.port,
 		opts.path,
 		opts.watch,
-		args[0],
+		appletPath,
 		opts.configOutFile,
 		!opts.noBrowser,
 		loader.WithMeta(opts.Metadata),

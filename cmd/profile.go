@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -31,9 +32,8 @@ func NewProfileCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "profile <path> [<key>=value>]...",
+		Use:   "profile [path] [<key>=value>]...",
 		Short: "Run a Pixlet app and print its execution-time profile",
-		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return profileRun(cmd, args, opts)
 		},
@@ -83,15 +83,24 @@ func (u *printUI) WantBrowser() bool                            { return false }
 func (u *printUI) SetAutoComplete(complete func(string) string) {}
 
 func profileRun(cmd *cobra.Command, args []string, opts *profileOptions) error {
-	path := args[0]
+	path := "."
+	if len(args) != 0 {
+		if !strings.Contains(args[0], "=") {
+			path = args[0]
+			args = args[1:]
+		} else if _, err := os.Stat(args[0]); err == nil || !errors.Is(err, os.ErrNotExist) {
+			path = args[0]
+			args = args[1:]
+		}
+	}
 
 	config := map[string]any{}
-	for _, param := range args[1:] {
-		split := strings.Split(param, "=")
-		if len(split) != 2 {
-			return fmt.Errorf("parameters must be on form <key>=<value>, found %s", param)
+	for _, param := range args {
+		key, val, ok := strings.Cut(param, "=")
+		if !ok {
+			return fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
 		}
-		config[split[0]] = split[1]
+		config[key] = val
 	}
 
 	profile, err := ProfileApp(cmd.Context(), path, config, opts.Metadata)

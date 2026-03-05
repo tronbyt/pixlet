@@ -12,11 +12,11 @@ import (
 
 func NewCreateManifestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "create-manifest <pathspec>",
+		Use:               "create-manifest [path]",
 		Short:             "Creates an app manifest from a prompt",
 		Example:           `  pixlet community create-manifest manifest.yaml`,
 		Long:              `This command creates an app manifest by asking a series of prompts.`,
-		Args:              cobra.ExactArgs(1),
+		Args:              cobra.MaximumNArgs(1),
 		RunE:              CreateManifest,
 		ValidArgsFunction: cobra.FixedCompletions([]string{"yaml"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
@@ -24,12 +24,25 @@ func NewCreateManifestCmd() *cobra.Command {
 }
 
 func CreateManifest(_ *cobra.Command, args []string) error {
-	fileName := filepath.Base(args[0])
-	if fileName != manifest.ManifestFileName {
-		return fmt.Errorf("supplied manifest must be named %s", manifest.ManifestFileName)
+	path := manifest.ManifestFileName
+	if len(args) != 0 {
+		path = args[0]
 	}
 
-	f, err := os.Create(args[0])
+	if filepath.Base(path) != manifest.ManifestFileName {
+		info, err := os.Stat(path)
+		if err != nil {
+			return fmt.Errorf("failed to stat %s: %w", path, err)
+		}
+
+		if !info.IsDir() {
+			return fmt.Errorf("supplied manifest must be named %s", manifest.ManifestFileName)
+		}
+
+		path = filepath.Join(path, manifest.ManifestFileName)
+	}
+
+	f, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("couldn't open manifest: %w", err)
 	}
