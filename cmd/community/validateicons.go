@@ -1,7 +1,10 @@
 package community
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
@@ -17,27 +20,39 @@ func NewValidateIconsCmd() *cobra.Command {
 		Example: `pixlet community validate-icons examples/schema_hello_world`,
 		Long: `This command determines if the icons selected in your app schema are supported
 by our mobile app.`,
-		Args:              cobra.MaximumNArgs(1),
-		RunE:              ValidateIcons,
+		Args: cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			path := "."
+			if len(args) != 0 {
+				path = args[0]
+			}
+
+			if err := ValidateIcons(cmd.Context(), path); err != nil {
+				return err
+			}
+
+			if path == "." {
+				if abs, err := filepath.Abs(path); err == nil {
+					path = filepath.Base(abs)
+				}
+			}
+
+			slog.Info("App icons are valid", "path", path)
+			return nil
+		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
 	}
 	return cmd
 }
 
-func ValidateIcons(cmd *cobra.Command, args []string) error {
-	path := "."
-	if len(args) != 0 {
-		path = args[0]
-	}
-
+func ValidateIcons(ctx context.Context, path string) error {
 	cache := runtime.NewInMemoryCache()
 	defer cache.Close()
 	runtime.InitHTTP(cache)
 	runtime.InitCache(cache)
 
 	applet, err := runtime.NewAppletFromPath(
-		cmd.Context(),
-		path,
+		ctx, path,
 		runtime.WithPrintDisabled(),
 		runtime.WithCanvasMeta(flags.NewMeta().Metadata),
 	)
