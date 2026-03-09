@@ -80,7 +80,7 @@ func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
 
 		parsed, err := colorutil.Parse(c)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color %d: %w", i, err)
+			return nil, fmt.Errorf("parsing color %d %s: %w", i, c, err)
 		}
 		result = append(result, parsed)
 	}

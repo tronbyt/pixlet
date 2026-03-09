@@ -247,7 +247,7 @@ func newArc(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
@@ -427,7 +427,7 @@ func newBox(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
@@ -560,7 +560,7 @@ func newCircle(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
@@ -1205,7 +1205,7 @@ func newLine(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
@@ -1592,7 +1592,7 @@ func newPadding(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
@@ -1900,7 +1900,7 @@ func newPlot(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
@@ -1909,7 +1909,7 @@ func newPlot(
 	if color_inverted != starlark.None {
 		c, err := colorutil.Parse(color_inverted)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color_inverted: %w", err)
+			return nil, fmt.Errorf("parsing color_inverted %s: %w", color_inverted, err)
 		}
 		w.ColorInverted = c
 	}
@@ -1936,7 +1936,7 @@ func newPlot(
 	if fill_color != starlark.None {
 		c, err := colorutil.Parse(fill_color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing fill_color: %w", err)
+			return nil, fmt.Errorf("parsing fill_color %s: %w", fill_color, err)
 		}
 		w.FillColor = c
 	}
@@ -1945,7 +1945,7 @@ func newPlot(
 	if fill_color_inverted != starlark.None {
 		c, err := colorutil.Parse(fill_color_inverted)
 		if err != nil {
-			return nil, fmt.Errorf("parsing fill_color_inverted: %w", err)
+			return nil, fmt.Errorf("parsing fill_color_inverted %s: %w", fill_color_inverted, err)
 		}
 		w.FillColorInverted = c
 	}
@@ -2106,7 +2106,7 @@ func newPolygon(
 	if fill_color != starlark.None {
 		c, err := colorutil.Parse(fill_color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing fill_color: %w", err)
+			return nil, fmt.Errorf("parsing fill_color %s: %w", fill_color, err)
 		}
 		w.FillColor = c
 	}
@@ -2115,7 +2115,7 @@ func newPolygon(
 	if stroke_color != starlark.None {
 		c, err := colorutil.Parse(stroke_color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing stroke_color: %w", err)
+			return nil, fmt.Errorf("parsing stroke_color %s: %w", stroke_color, err)
 		}
 		w.StrokeColor = c
 	}
@@ -2764,7 +2764,7 @@ func newText(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
@@ -2948,7 +2948,7 @@ func newWrappedText(
 	if color != starlark.None {
 		c, err := colorutil.Parse(color)
 		if err != nil {
-			return nil, fmt.Errorf("parsing color: %w", err)
+			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
 		w.Color = c
 	}
