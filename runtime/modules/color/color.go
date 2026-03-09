@@ -97,6 +97,10 @@ func parseHex(_ *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		return nil, err
 	}
 
+	if len(hex) == 0 {
+		return &colorutil.Color{}, nil
+	}
+
 	c, err := colorutil.ParseHex(string(hex))
 	if err != nil {
 		return nil, fmt.Errorf("invalid hex color: %w", err)

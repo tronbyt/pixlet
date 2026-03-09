@@ -13,6 +13,10 @@ var ErrInvalid = errors.New("input is not a color or a hex string")
 func Parse(v starlark.Value) (color.Color, error) {
 	switch v := v.(type) {
 	case starlark.String:
+		if v == "" {
+			return nil, nil
+		}
+
 		c, err := ParseHex(string(v))
 		if err != nil {
 			return nil, fmt.Errorf("invalid hex string: %w", err)

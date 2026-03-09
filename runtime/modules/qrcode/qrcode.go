@@ -94,7 +94,9 @@ func generateQRCode(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 		if err != nil {
 			return nil, fmt.Errorf("parsing foreground color: %w", err)
 		}
-		code.ForegroundColor = foreground
+		if foreground != nil {
+			code.ForegroundColor = foreground
+		}
 	}
 
 	// Override background if one is provided.
@@ -103,7 +105,9 @@ func generateQRCode(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 		if err != nil {
 			return nil, fmt.Errorf("parsing background color: %w", err)
 		}
-		code.BackgroundColor = background
+		if background != nil {
+			code.BackgroundColor = background
+		}
 	}
 
 	png, err := code.PNG(imgSize)

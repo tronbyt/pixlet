@@ -5,6 +5,8 @@ if {{ .StarlarkName }} != starlark.None {
 	if err != nil {
 		return nil, fmt.Errorf("parsing {{ .StarlarkName }} %s: %w", {{ .StarlarkName }}, err)
 	}
-	w.{{ .GoPath }} = c
+	if c != nil {
+		w.{{ .GoPath }} = c
+	}
 }
 {{- end }}
