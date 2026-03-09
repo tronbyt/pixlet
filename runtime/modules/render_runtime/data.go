@@ -82,6 +82,9 @@ func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %d %s: %w", i, c, err)
 		}
+		if parsed == nil {
+			parsed = color.Transparent
+		}
 		result = append(result, parsed)
 	}
 

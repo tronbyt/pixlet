@@ -249,7 +249,9 @@ func newArc(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	w.starlarkWidth = width
@@ -429,7 +431,9 @@ func newBox(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	w.frame_count = starlark.NewBuiltin("frame_count", boxFrameCount)
@@ -562,7 +566,9 @@ func newCircle(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	diameterInt, err := starlarkutil.AsInt64(diameter)
@@ -1207,7 +1213,9 @@ func newLine(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	w.starlarkWidth = width
@@ -1594,7 +1602,9 @@ func newPadding(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	w.frame_count = starlark.NewBuiltin("frame_count", paddingFrameCount)
@@ -1902,7 +1912,9 @@ func newPlot(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	w.starlarkColorInverted = color_inverted
@@ -1911,7 +1923,9 @@ func newPlot(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color_inverted %s: %w", color_inverted, err)
 		}
-		w.ColorInverted = c
+		if c != nil {
+			w.ColorInverted = c
+		}
 	}
 
 	w.starlarkXLim = x_lim
@@ -1938,7 +1952,9 @@ func newPlot(
 		if err != nil {
 			return nil, fmt.Errorf("parsing fill_color %s: %w", fill_color, err)
 		}
-		w.FillColor = c
+		if c != nil {
+			w.FillColor = c
+		}
 	}
 
 	w.starlarkFillColorInverted = fill_color_inverted
@@ -1947,7 +1963,9 @@ func newPlot(
 		if err != nil {
 			return nil, fmt.Errorf("parsing fill_color_inverted %s: %w", fill_color_inverted, err)
 		}
-		w.FillColorInverted = c
+		if c != nil {
+			w.FillColorInverted = c
+		}
 	}
 
 	w.frame_count = starlark.NewBuiltin("frame_count", plotFrameCount)
@@ -2108,7 +2126,9 @@ func newPolygon(
 		if err != nil {
 			return nil, fmt.Errorf("parsing fill_color %s: %w", fill_color, err)
 		}
-		w.FillColor = c
+		if c != nil {
+			w.FillColor = c
+		}
 	}
 
 	w.starlarkStrokeColor = stroke_color
@@ -2117,7 +2137,9 @@ func newPolygon(
 		if err != nil {
 			return nil, fmt.Errorf("parsing stroke_color %s: %w", stroke_color, err)
 		}
-		w.StrokeColor = c
+		if c != nil {
+			w.StrokeColor = c
+		}
 	}
 
 	w.starlarkStrokeWidth = stroke_width
@@ -2766,7 +2788,9 @@ func newText(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	w.size = starlark.NewBuiltin("size", textSize)
@@ -2950,7 +2974,9 @@ func newWrappedText(
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %s: %w", color, err)
 		}
-		w.Color = c
+		if c != nil {
+			w.Color = c
+		}
 	}
 
 	w.Align = align.GoString()
