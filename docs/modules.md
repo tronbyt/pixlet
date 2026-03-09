@@ -220,9 +220,9 @@ def main(config):
     )
 ```
 
-### Color
+## Pixlet module: Color
 
-The `render.star` module also provides `color`, which contains color manipulation functions and a `Color` object that can be passed to widgets.
+The `color.star` module provides color manipulation functions and a `Color` object that can be passed to widgets.
 
 | Function | Description |
 | --- | --- |
@@ -261,7 +261,7 @@ The following fields are available on a `Color` object and can be both read and 
 Example:
 
 ```starlark
-load("render.star", "color")
+load("color.star", "color")
 
 def main():
     c = color.hex("#f00")
@@ -285,7 +285,7 @@ Parameters:
 Example:
 
 ```starlark
-load("render.star", "color")
+load("color.star", "color")
 
 def main():
     c = color.rgb(255, 0, 0)
@@ -303,7 +303,7 @@ Parameters:
 Example:
 
 ```starlark
-load("render.star", "color")
+load("color.star", "color")
 
 def main():
     c = color.hex("#f00")
@@ -324,7 +324,7 @@ Parameters:
 Example:
 
 ```starlark
-load("render.star", "color")
+load("color.star", "color")
 
 def main():
     c = color.hsv(0, 1, 1)

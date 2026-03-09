@@ -18,15 +18,15 @@ like Text to get the width and height.
 ## Colors
 
 When specifying colors, use a CSS-like hexadecimal color specification
-or a `Color` object from the [`color`](modules.md#pixlet-module-color)
-module.
+or a `Color` object from [`color.star`](modules.md#pixlet-module-color).
 
 Pixlet supports `#rgb`, `#rrggbb`, `#rgba`, and `#rrggbbaa` hex
 color specifications. Color objects are useful for programmatically
 manipulating colors.
 
 ```starlark
-load("render.star", "color", "render")
+load("render.star", "render")
+load("color.star", "color")
 
 def main():
     # Use a hex string
