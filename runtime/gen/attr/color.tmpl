@@ -3,7 +3,7 @@ w.starlark{{ .GoName }} = {{ .StarlarkName }}
 if {{ .StarlarkName }} != starlark.None {
 	c, err := colorutil.Parse({{ .StarlarkName }})
 	if err != nil {
-		return nil, fmt.Errorf("parsing {{ .StarlarkName }}: %w", err)
+		return nil, fmt.Errorf("parsing {{ .StarlarkName }} %s: %w", {{ .StarlarkName }}, err)
 	}
 	w.{{ .GoPath }} = c
 }
