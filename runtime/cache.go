@@ -55,15 +55,15 @@ type RedisCache struct {
 	client *redis.Client
 }
 
-func NewRedisCache(url string) *RedisCache {
+func NewRedisCache(url string) (*RedisCache, error) {
 	opts, err := redis.ParseURL(url)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return &RedisCache{
 		client: redis.NewClient(opts),
-	}
+	}, nil
 }
 
 func (c *RedisCache) Get(ctx context.Context, key string) (value []byte, found bool, err error) {
