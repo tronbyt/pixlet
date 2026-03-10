@@ -55,14 +55,21 @@ type RedisCache struct {
 	client *redis.Client
 }
 
-func NewRedisCache(url string) (*RedisCache, error) {
+func NewRedisCache(ctx context.Context, url string) (*RedisCache, error) {
 	opts, err := redis.ParseURL(url)
 	if err != nil {
 		return nil, err
 	}
 
+	client := redis.NewClient(opts)
+
+	if err := client.Ping(ctx).Err(); err != nil {
+		_ = client.Close()
+		return nil, fmt.Errorf("redis ping failed: %w", err)
+	}
+
 	return &RedisCache{
-		client: redis.NewClient(opts),
+		client: client,
 	}, nil
 }
 
