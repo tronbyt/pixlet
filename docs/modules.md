@@ -381,6 +381,7 @@ The `random` module provides a pseudorandom number generator for pixlet. The gen
 | --- | --- |
 | `seed(s)` | Seeds the generator.|
 | `number(min, max, secure?)` | Returns a random number between the min and max. The min must be 0 or greater, and must be less than the max. If `secure=True`, a cryptographically secure random number generator is used. |
+| `float()` | Returns a random float between 0 and 1. |
 
 Example:
 ```starlark

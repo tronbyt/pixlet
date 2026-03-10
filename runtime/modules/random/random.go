@@ -52,6 +52,7 @@ func LoadModule() (starlark.StringDict, error) {
 				Members: starlark.StringDict{
 					"number": starlark.NewBuiltin("number", randomNumber),
 					"seed":   starlark.NewBuiltin("seed", randomSeed),
+					"float":  starlark.NewBuiltin("float", randomFloat),
 				},
 			},
 		}
@@ -136,4 +137,17 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 	}
 
 	return starlark.MakeInt64(r + minVal), nil
+}
+
+func randomFloat(t *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	if err := starlark.UnpackArgs(fn.Name(), args, kwargs); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for random float: %w", err)
+	}
+
+	source, err := FromThread(t)
+	if err != nil {
+		return nil, err
+	}
+
+	return starlark.Float(source.Float64()), nil
 }
