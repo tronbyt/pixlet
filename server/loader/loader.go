@@ -351,6 +351,10 @@ func (l *Loader) renderApplet(ctx context.Context, config map[string]any) (strin
 
 	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
 
+	if l.conf.ShowFullAnimation != nil {
+		screens.ShowFullAnimation = *l.conf.ShowFullAnimation
+	}
+
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
 	if filters.Magnify > 1 {
@@ -443,6 +447,10 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 	}
 
 	screens := encode.ScreensFromRoots(roots, conf.Meta.ScaledWidth(), conf.Meta.ScaledHeight())
+
+	if conf.ShowFullAnimation != nil {
+		screens.ShowFullAnimation = *conf.ShowFullAnimation
+	}
 
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter

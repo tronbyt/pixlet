@@ -10,16 +10,17 @@ import (
 )
 
 type RenderConfig struct {
-	Path          string
-	Config        map[string]any
-	Meta          canvas.Metadata
-	MaxDuration   time.Duration
-	Timeout       time.Duration
-	ImageFormat   ImageFormat
-	SilenceOutput bool
-	Location      *time.Location
-	Language      language.Tag
-	Filters       encode.RenderFilters
+	Path              string
+	Config            map[string]any
+	Meta              canvas.Metadata
+	MaxDuration       time.Duration
+	ShowFullAnimation *bool
+	Timeout           time.Duration
+	ImageFormat       ImageFormat
+	SilenceOutput     bool
+	Location          *time.Location
+	Language          language.Tag
+	Filters           encode.RenderFilters
 }
 
 func NewRenderConfig(path string, config map[string]any, options ...Option) *RenderConfig {
@@ -101,5 +102,11 @@ func WithMeta(meta canvas.Metadata) Option {
 			meta.Height = render.DefaultFrameHeight
 		}
 		config.Meta = meta
+	}
+}
+
+func WithShowFullAnimation(v *bool) Option {
+	return func(config *RenderConfig) {
+		config.ShowFullAnimation = v
 	}
 }
