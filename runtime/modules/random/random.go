@@ -19,13 +19,29 @@ const (
 )
 
 var (
-	once   sync.Once
-	module starlark.StringDict
+	once           sync.Once
+	module         starlark.StringDict
+	ErrNotAttached = fmt.Errorf("random source not attached to thread")
 )
 
 func AttachToThread(t *starlark.Thread) {
-	source := rand.New(rand.NewPCG(rand.Uint64(), rand.Uint64()))
+	SeedThread(t, rand.Uint64(), rand.Uint64())
+}
+
+func SeedThread(t *starlark.Thread, seed1, seed2 uint64) {
+	source := rand.New(rand.NewPCG(seed1, seed2))
 	t.SetLocal(threadRandKey, source)
+}
+
+func FromThread(t *starlark.Thread) (*rand.Rand, error) {
+	if t == nil {
+		return nil, ErrNotAttached
+	}
+	source, ok := t.Local(threadRandKey).(*rand.Rand)
+	if !ok || source == nil {
+		return nil, ErrNotAttached
+	}
+	return source, nil
 }
 
 func LoadModule() (starlark.StringDict, error) {
@@ -60,8 +76,7 @@ func randomSeed(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		return nil, fmt.Errorf("parsing seed: %w", err)
 	}
 
-	source := rand.New(rand.NewPCG(uint64(seed), uint64(seed)))
-	thread.SetLocal(threadRandKey, source)
+	SeedThread(thread, uint64(seed), uint64(seed))
 
 	return starlark.None, nil
 }
@@ -112,12 +127,12 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 
 		r = v.Int64()
 	} else {
-		rng, ok := thread.Local(threadRandKey).(*rand.Rand)
-		if !ok || rng == nil {
-			return nil, fmt.Errorf("RNG not set (very bad!)")
+		source, err := FromThread(thread)
+		if err != nil {
+			return nil, err
 		}
 
-		r = rng.Int64N(shiftedMax)
+		r = source.Int64N(shiftedMax)
 	}
 
 	return starlark.MakeInt64(r + minVal), nil
