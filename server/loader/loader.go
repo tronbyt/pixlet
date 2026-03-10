@@ -330,62 +330,11 @@ func (l *Loader) renderApplet(ctx context.Context, config map[string]any) (strin
 		}
 	}
 
-	meta := l.conf.Meta
-	filters := l.conf.Filters
+	l.conf.Config = config
 
-	ctx, cancel := context.WithTimeoutCause(
-		ctx, l.conf.Timeout,
-		fmt.Errorf("timeout after %s", l.conf.Timeout),
-	)
-	defer cancel()
-
-	roots, err := l.applet.RunWithConfig(ctx, config)
+	img, err := renderApplet(ctx, &l.applet, l.conf)
 	if err != nil {
-		return "", fmt.Errorf("error running script: %w", err)
-	}
-
-	if meta.Is2x && (l.applet.Manifest == nil || !l.applet.Manifest.Supports2x) {
-		meta.Is2x = false
-		filters.Magnify *= 2
-	}
-
-	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
-
-	if l.conf.ShowFullAnimation != nil {
-		screens.ShowFullAnimation = *l.conf.ShowFullAnimation
-	}
-
-	filter := encode.ImageFilter(nil)
-	var chain []encode.ImageFilter
-	if filters.Magnify > 1 {
-		chain = append(chain, encode.Magnify(filters.Magnify))
-	}
-	if imageFilter, err := filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
-		chain = append(chain, imageFilter)
-	}
-
-	if len(chain) > 0 {
-		filter = encode.Chain(chain...)
-	}
-
-	maxDuration := l.conf.MaxDuration
-	if screens.ShowFullAnimation {
-		maxDuration = 0
-	}
-
-	var img []byte
-	switch l.conf.ImageFormat {
-	default:
-		fallthrough
-	case ImageWebP:
-		img, err = screens.EncodeWebP(maxDuration, filter)
-	case ImageGIF:
-		img, err = screens.EncodeGIF(maxDuration, filter)
-	case ImageAVIF:
-		img, err = screens.EncodeAVIF(maxDuration, filter)
-	}
-	if err != nil {
-		return "", fmt.Errorf("error rendering: %w", err)
+		return "", err
 	}
 
 	return base64.StdEncoding.EncodeToString(img), nil
@@ -421,6 +370,20 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 		}))
 	}
 
+	applet, err := runtime.NewAppletFromPath(ctx, path, opts...)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
+	}
+	defer func() { _ = applet.Close() }()
+
+	img, err := renderApplet(ctx, applet, conf)
+	if err != nil {
+		return nil, output, err
+	}
+	return img, output, nil
+}
+
+func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfig) ([]byte, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -430,23 +393,20 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 		defer cancel()
 	}
 
-	applet, err := runtime.NewAppletFromPath(ctx, path, opts...)
+	meta := conf.Meta
+	filters := conf.Filters
+
+	if meta.Is2x && (applet.Manifest == nil || !applet.Manifest.Supports2x) {
+		meta.Is2x = false
+		filters.Magnify *= 2
+	}
+
+	roots, err := applet.RunWithConfig(ctx, conf.Config)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
-	}
-	defer func() { _ = applet.Close() }()
-
-	if conf.Meta.Is2x && (applet.Manifest == nil || !applet.Manifest.Supports2x) {
-		conf.Meta.Is2x = false
-		conf.Filters.Magnify *= 2
+		return nil, fmt.Errorf("error running script: %w", err)
 	}
 
-	roots, err := applet.RunWithConfig(ctx, config)
-	if err != nil {
-		return nil, output, fmt.Errorf("error running script: %w", err)
-	}
-
-	screens := encode.ScreensFromRoots(roots, conf.Meta.ScaledWidth(), conf.Meta.ScaledHeight())
+	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
 
 	if conf.ShowFullAnimation != nil {
 		screens.ShowFullAnimation = *conf.ShowFullAnimation
@@ -454,10 +414,10 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
-	if conf.Filters.Magnify > 1 {
-		chain = append(chain, encode.Magnify(conf.Filters.Magnify))
+	if filters.Magnify > 1 {
+		chain = append(chain, encode.Magnify(filters.Magnify))
 	}
-	if imageFilter, err := conf.Filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
+	if imageFilter, err := filters.ColorFilter.ImageFilter(); err == nil && imageFilter != nil {
 		chain = append(chain, imageFilter)
 	}
 
@@ -465,25 +425,25 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 		filter = encode.Chain(chain...)
 	}
 
-	var buf []byte
-
+	maxDuration := conf.MaxDuration
 	if screens.ShowFullAnimation {
-		conf.MaxDuration = 0
+		maxDuration = 0
 	}
 
+	var img []byte
 	switch conf.ImageFormat {
 	default:
 		fallthrough
 	case ImageWebP:
-		buf, err = screens.EncodeWebP(conf.MaxDuration, filter)
+		img, err = screens.EncodeWebP(maxDuration, filter)
 	case ImageGIF:
-		buf, err = screens.EncodeGIF(conf.MaxDuration, filter)
+		img, err = screens.EncodeGIF(maxDuration, filter)
 	case ImageAVIF:
-		buf, err = screens.EncodeAVIF(conf.MaxDuration, filter)
+		img, err = screens.EncodeAVIF(maxDuration, filter)
 	}
 	if err != nil {
-		return nil, output, fmt.Errorf("error rendering: %w", err)
+		return nil, fmt.Errorf("error rendering: %w", err)
 	}
 
-	return buf, output, nil
+	return img, nil
 }
