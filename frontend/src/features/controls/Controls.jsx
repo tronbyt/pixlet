@@ -192,7 +192,7 @@ export default function Controls() {
                     </Select>
                 </FormControl>
                 <Autocomplete
-                    fullWidth={fullWidth}
+                    fullWidth
                     size="small"
                     freeSolo
                     options={timezones}
@@ -202,10 +202,10 @@ export default function Controls() {
                     renderInput={(params) => (
                         <TextField {...params} label="Timezone" placeholder="e.g. America/New_York" />
                     )}
-                    sx={{ minWidth: 200 }}
+                    sx={{ width: { xs: "100%", sm: 200 }, flexShrink: 0 }}
                 />
                 <Autocomplete
-                    fullWidth={fullWidth}
+                    fullWidth
                     size="small"
                     freeSolo
                     options={localeOptions}
@@ -215,7 +215,7 @@ export default function Controls() {
                     renderInput={(params) => (
                         <TextField {...params} label="Locale" placeholder="e.g. en-US" />
                     )}
-                    sx={{ minWidth: 160 }}
+                    sx={{ width: { xs: "100%", sm: 160 }, flexShrink: 0 }}
                 />
             </Stack>
         </Stack>
