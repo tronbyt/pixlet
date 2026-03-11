@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/pkg/browser"
@@ -159,25 +160,36 @@ func (b *Browser) Run(ctx context.Context) error {
 	defer b.fo.Quit()
 
 	g, ctx := errgroup.WithContext(ctx)
+
 	g.Go(func() error {
 		return b.updateWatcher(ctx)
 	})
+
 	g.Go(func() error {
 		return b.serveHTTP(ctx)
 	})
+
 	if b.openBrowser {
 		go func() {
-			host := b.host
-			if host == "0.0.0.0" {
-				host = "127.0.0.1"
-			}
-			u := url.URL{
-				Scheme: "http",
-				Host:   net.JoinHostPort(host, strconv.Itoa(b.port)),
-				Path:   b.path,
-			}
-			if err := browser.OpenURL(u.String()); err != nil {
-				slog.Error("Failed to open browser", "error", err)
+			// Delay opening the browser to give the server a moment to start up or
+			// fail. If it fails, the context will be canceled and the browser
+			// will not be opened.
+			const browserOpenDelay = 250 * time.Millisecond
+			select {
+			case <-ctx.Done():
+			case <-time.After(browserOpenDelay):
+				host := b.host
+				if host == "0.0.0.0" {
+					host = "127.0.0.1"
+				}
+				u := url.URL{
+					Scheme: "http",
+					Host:   net.JoinHostPort(host, strconv.Itoa(b.port)),
+					Path:   b.path,
+				}
+				if err := browser.OpenURL(u.String()); err != nil {
+					slog.Error("Failed to open browser", "error", err)
+				}
 			}
 		}()
 	}
