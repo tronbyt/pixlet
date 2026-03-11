@@ -98,27 +98,22 @@ func (s *Screens) render(filters ...ImageFilter) ([]image.Image, error) {
 		s.images = render.PaintRoots(s.width, s.height, true, s.roots...)
 	}
 
-	if len(s.images) == 0 {
-		return nil, nil
+	if len(filters) == 0 {
+		return s.images, nil
 	}
 
-	images := s.images
-
-	if len(filters) > 0 {
-		images = []image.Image{}
-		for _, im := range s.images {
-			for _, f := range filters {
-				if f == nil {
-					continue
-				}
-				imFiltered, err := f(im)
-				if err != nil {
+	images := make([]image.Image, 0, len(s.images))
+	for _, img := range s.images {
+		filtered := img
+		for _, f := range filters {
+			if f != nil {
+				var err error
+				if filtered, err = f(filtered); err != nil {
 					return nil, err
 				}
-				im = imFiltered
 			}
-			images = append(images, im)
 		}
+		images = append(images, filtered)
 	}
 
 	return images, nil
