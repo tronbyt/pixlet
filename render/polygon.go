@@ -20,14 +20,14 @@ type Point struct {
 // DOC(StrokeWidth): The width of the polygon's stroke.
 //
 // EXAMPLE BEGIN
-// render.Polygon(
 //
-//	vertices = [(0, 0), (20, 0), (20, 10), (0, 10)],
-//	fill_color = "#00f",
-//	stroke_color = "#fff",
-//	stroke_width = 1,
+//	render.Polygon(
+//	    vertices = [(0, 0), (20, 0), (20, 10), (0, 10)],
+//	    fill_color = "#00f",
+//	    stroke_color = "#fff",
+//	    stroke_width = 1,
+//	)
 //
-// )
 // EXAMPLE END.
 type Polygon struct {
 	Widget

@@ -19,17 +19,17 @@ import (
 // DOC(Width): The width of the arc.
 //
 // EXAMPLE BEGIN
-// render.Arc(
 //
-//	x = 10,
-//	y = 10,
-//	radius = 10,
-//	start_angle = 0,
-//	end_angle = 3.14 * 1.5,
-//	width = 3,
-//	color = "#0ff",
+//	render.Arc(
+//	    x = 10,
+//	    y = 10,
+//	    radius = 10,
+//	    start_angle = 0,
+//	    end_angle = 3.14 * 1.5,
+//	    width = 3,
+//	    color = "#0ff",
+//	)
 //
-// )
 // EXAMPLE END.
 type Arc struct {
 	Widget

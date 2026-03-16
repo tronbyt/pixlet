@@ -18,16 +18,16 @@ import (
 // DOC(Width): The width of the line.
 //
 // EXAMPLE BEGIN
-// render.Line(
 //
-//	x1 = 0,
-//	y1 = 0,
-//	x2 = 63,
-//	y2 = 31,
-//	width = 1,
-//	color = "#fff",
+//	render.Line(
+//	    x1 = 0,
+//	    y1 = 0,
+//	    x2 = 63,
+//	    y2 = 31,
+//	    width = 1,
+//	    color = "#fff",
+//	)
 //
-// )
 // EXAMPLE END.
 type Line struct {
 	Widget
