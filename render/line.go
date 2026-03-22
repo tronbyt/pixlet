@@ -16,6 +16,7 @@ import (
 // DOC(Y2): The y-coordinate of the ending point.
 // DOC(Color): The color of the line.
 // DOC(Width): The width of the line.
+// DOC(AntiAlias): Enables antialiased stroke rendering.
 //
 // EXAMPLE BEGIN
 //
@@ -32,12 +33,13 @@ import (
 type Line struct {
 	Widget
 
-	X1    float64     `starlark:"x1,required"`
-	Y1    float64     `starlark:"y1,required"`
-	X2    float64     `starlark:"x2,required"`
-	Y2    float64     `starlark:"y2,required"`
-	Color color.Color `starlark:"color,required"`
-	Width float64     `starlark:"width,required"`
+	X1        float64     `starlark:"x1,required"`
+	Y1        float64     `starlark:"y1,required"`
+	X2        float64     `starlark:"x2,required"`
+	Y2        float64     `starlark:"y2,required"`
+	Color     color.Color `starlark:"color,required"`
+	Width     float64     `starlark:"width,required"`
+	AntiAlias bool        `starlark:"antialias"`
 }
 
 func (l Line) getBounds() (float64, float64, float64, float64) {
@@ -68,9 +70,13 @@ func (l Line) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	dc.Push()
 	dc.Translate(-minX, -minY)
 	dc.SetColor(l.Color)
-	dc.SetLineWidth(l.Width)
-	dc.DrawLine(l.X1, l.Y1, l.X2, l.Y2)
-	dc.Stroke()
+	if l.AntiAlias {
+		dc.SetLineWidth(l.Width)
+		dc.DrawLine(l.X1, l.Y1, l.X2, l.Y2)
+		dc.Stroke()
+	} else {
+		drawRasterizedLine(dc, l.X1, l.Y1, l.X2, l.Y2, l.Width)
+	}
 	dc.Pop()
 }
 

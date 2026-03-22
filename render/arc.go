@@ -17,6 +17,7 @@ import (
 // DOC(EndAngle): The ending angle of the arc, in radians.
 // DOC(Color): The color of the arc.
 // DOC(Width): The width of the arc.
+// DOC(AntiAlias): Enables antialiased stroke rendering.
 //
 // EXAMPLE BEGIN
 //
@@ -41,6 +42,7 @@ type Arc struct {
 	EndAngle   float64     `starlark:"end_angle,required"`
 	Color      color.Color `starlark:"color,required"`
 	Width      float64     `starlark:"width,required"`
+	AntiAlias  bool        `starlark:"antialias"`
 }
 
 func (a Arc) getBounds() (float64, float64, float64, float64) {
@@ -146,9 +148,13 @@ func (a Arc) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	dc.Push()
 	dc.Translate(-minX, -minY)
 	dc.SetColor(a.Color)
-	dc.SetLineWidth(a.Width)
-	dc.DrawArc(a.X, a.Y, a.Radius, a.StartAngle, a.EndAngle)
-	dc.Stroke()
+	if a.AntiAlias {
+		dc.SetLineWidth(a.Width)
+		dc.DrawArc(a.X, a.Y, a.Radius, a.StartAngle, a.EndAngle)
+		dc.Stroke()
+	} else {
+		drawRasterizedArc(dc, a.X, a.Y, a.Radius, a.StartAngle, a.EndAngle, a.Width)
+	}
 	dc.Pop()
 }
 

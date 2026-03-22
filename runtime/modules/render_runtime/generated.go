@@ -190,6 +190,7 @@ func newArc(
 		end_angle   starlark.Value
 		color       starlark.Value = starlark.None
 		width       starlark.Value
+		antialias   starlark.Bool
 	)
 
 	if err := starlark.UnpackArgs(
@@ -202,6 +203,7 @@ func newArc(
 		"end_angle", &end_angle,
 		"color", &color,
 		"width", &width,
+		"antialias?", &antialias,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Arc: %s", err)
 	}
@@ -261,6 +263,8 @@ func newArc(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkWidth.String())
 	}
 
+	w.AntiAlias = bool(antialias)
+
 	w.frame_count = starlark.NewBuiltin("frame_count", arcFrameCount)
 
 	return w, nil
@@ -279,6 +283,7 @@ func (w *Arc) AttrNames() []string {
 		"end_angle",
 		"color",
 		"width",
+		"antialias",
 	}
 }
 
@@ -298,6 +303,8 @@ func (w *Arc) Attr(name string) (starlark.Value, error) {
 		return w.starlarkColor, nil
 	case "width":
 		return w.starlarkWidth, nil
+	case "antialias":
+		return starlark.Bool(w.AntiAlias), nil
 	case "frame_count":
 		return w.frame_count.BindReceiver(w), nil
 	default:
@@ -1156,12 +1163,13 @@ func newLine(
 	kwargs []starlark.Tuple,
 ) (starlark.Value, error) {
 	var (
-		x1    starlark.Value
-		y1    starlark.Value
-		x2    starlark.Value
-		y2    starlark.Value
-		color starlark.Value = starlark.None
-		width starlark.Value
+		x1        starlark.Value
+		y1        starlark.Value
+		x2        starlark.Value
+		y2        starlark.Value
+		color     starlark.Value = starlark.None
+		width     starlark.Value
+		antialias starlark.Bool
 	)
 
 	if err := starlark.UnpackArgs(
@@ -1173,6 +1181,7 @@ func newLine(
 		"y2", &y2,
 		"color", &color,
 		"width", &width,
+		"antialias?", &antialias,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Line: %s", err)
 	}
@@ -1225,6 +1234,8 @@ func newLine(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkWidth.String())
 	}
 
+	w.AntiAlias = bool(antialias)
+
 	w.frame_count = starlark.NewBuiltin("frame_count", lineFrameCount)
 
 	return w, nil
@@ -1242,6 +1253,7 @@ func (w *Line) AttrNames() []string {
 		"y2",
 		"color",
 		"width",
+		"antialias",
 	}
 }
 
@@ -1259,6 +1271,8 @@ func (w *Line) Attr(name string) (starlark.Value, error) {
 		return w.starlarkColor, nil
 	case "width":
 		return w.starlarkWidth, nil
+	case "antialias":
+		return starlark.Bool(w.AntiAlias), nil
 	case "frame_count":
 		return w.frame_count.BindReceiver(w), nil
 	default:
@@ -2099,6 +2113,7 @@ func newPolygon(
 		fill_color   starlark.Value = starlark.None
 		stroke_color starlark.Value = starlark.None
 		stroke_width starlark.Value
+		antialias    starlark.Bool
 	)
 
 	if err := starlark.UnpackArgs(
@@ -2108,6 +2123,7 @@ func newPolygon(
 		"fill_color?", &fill_color,
 		"stroke_color?", &stroke_color,
 		"stroke_width?", &stroke_width,
+		"antialias?", &antialias,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Polygon: %s", err)
 	}
@@ -2149,6 +2165,8 @@ func newPolygon(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkStrokeWidth.String())
 	}
 
+	w.AntiAlias = bool(antialias)
+
 	w.frame_count = starlark.NewBuiltin("frame_count", polygonFrameCount)
 
 	return w, nil
@@ -2164,6 +2182,7 @@ func (w *Polygon) AttrNames() []string {
 		"fill_color",
 		"stroke_color",
 		"stroke_width",
+		"antialias",
 	}
 }
 
@@ -2177,6 +2196,8 @@ func (w *Polygon) Attr(name string) (starlark.Value, error) {
 		return w.starlarkStrokeColor, nil
 	case "stroke_width":
 		return w.starlarkStrokeWidth, nil
+	case "antialias":
+		return starlark.Bool(w.AntiAlias), nil
 	case "frame_count":
 		return w.frame_count.BindReceiver(w), nil
 	default:

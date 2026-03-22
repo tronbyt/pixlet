@@ -79,6 +79,7 @@ Arc draws an arc. The arc is centered at (x, y).
 | `end_angle` | `float / int` | The ending angle of the arc, in radians. | **Y** |
 | `color` | `color` | The color of the arc. | **Y** |
 | `width` | `float / int` | The width of the arc. | **Y** |
+| `antialias` | `bool` | Enables antialiased stroke rendering. | N |
 
 #### Example
 ```
@@ -257,6 +258,7 @@ Line draws a line from (x1, y1) to (x2, y2).
 | `y2` | `float / int` | The y-coordinate of the ending point. | **Y** |
 | `color` | `color` | The color of the line. | **Y** |
 | `width` | `float / int` | The width of the line. | **Y** |
+| `antialias` | `bool` | Enables antialiased stroke rendering. | N |
 
 #### Example
 ```
@@ -408,6 +410,7 @@ Polygon draws a polygon.
 | `fill_color` | `color` | The color used to fill the polygon. | N |
 | `stroke_color` | `color` | The color used to draw the polygon's stroke. | N |
 | `stroke_width` | `float / int` | The width of the polygon's stroke. | N |
+| `antialias` | `bool` | Enables antialiased stroke rendering. | N |
 
 #### Example
 ```
