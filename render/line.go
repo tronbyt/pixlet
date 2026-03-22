@@ -10,14 +10,6 @@ import (
 
 // Line draws a line from (x1, y1) to (x2, y2).
 //
-// DOC(X1): The x-coordinate of the starting point.
-// DOC(Y1): The y-coordinate of the starting point.
-// DOC(X2): The x-coordinate of the ending point.
-// DOC(Y2): The y-coordinate of the ending point.
-// DOC(Color): The color of the line.
-// DOC(Width): The width of the line.
-// DOC(AntiAlias): Enables antialiased stroke rendering.
-//
 // EXAMPLE BEGIN
 //
 //	render.Line(
@@ -33,13 +25,20 @@ import (
 type Line struct {
 	Widget
 
-	X1        float64     `starlark:"x1,required"`
-	Y1        float64     `starlark:"y1,required"`
-	X2        float64     `starlark:"x2,required"`
-	Y2        float64     `starlark:"y2,required"`
-	Color     color.Color `starlark:"color,required"`
-	Width     float64     `starlark:"width,required"`
-	AntiAlias bool        `starlark:"antialias"`
+	// The x-coordinate of the starting point.
+	X1 float64 `starlark:"x1,required"`
+	// The y-coordinate of the starting point.
+	Y1 float64 `starlark:"y1,required"`
+	// The x-coordinate of the ending point.
+	X2 float64 `starlark:"x2,required"`
+	// The y-coordinate of the ending point.
+	Y2 float64 `starlark:"y2,required"`
+	// The color of the line.
+	Color color.Color `starlark:"color,required"`
+	// The width of the line.
+	Width float64 `starlark:"width,required"`
+	// Enables antialiased stroke rendering.
+	AntiAlias bool `starlark:"antialias"`
 }
 
 func (l Line) getBounds() (float64, float64, float64, float64) {

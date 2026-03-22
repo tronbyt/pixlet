@@ -30,17 +30,17 @@ import (
 // If the image data encodes an animated GIF, the Image instance will
 // also be animated. Frame delay (in milliseconds) can be read from
 // the `delay` attribute.
-//
-// DOC(Src): Binary image data or SVG text
-// DOC(Width): Scale image to this width
-// DOC(Height): Scale image to this height
-// DOC(Delay): (Read-only) Frame delay in ms, for animated GIFs
-// DOC(HoldFrames): Number of render frames to hold each animation frame, default is 1.
 type Image struct {
-	Src           string `starlark:"src,required"`
-	Width, Height int
-	Delay         int `starlark:"delay,readonly"`
-	HoldFrames    int `starlark:"hold_frames"`
+	// Binary image data or SVG text
+	Src string `starlark:"src,required"`
+	// Scale image to this width
+	Width int
+	// Scale image to this height
+	Height int
+	// (Read-only) Frame delay in ms, for animated GIFs
+	Delay int `starlark:"delay,readonly"`
+	// Number of render frames to hold each animation frame, default is 1.
+	HoldFrames int `starlark:"hold_frames"`
 
 	imgs []image.Image
 }

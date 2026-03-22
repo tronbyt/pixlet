@@ -10,8 +10,6 @@ import (
 
 // FlipVertical flips the child widget vertically.
 //
-// DOC(Widget): The widget to flip.
-//
 // EXAMPLE BEGIN
 //
 //	filter.FlipVertical(
@@ -20,6 +18,7 @@ import (
 //
 // EXAMPLE END.
 type FlipVertical struct {
+	// The widget to flip.
 	render.Widget `starlark:"child,required"`
 }
 

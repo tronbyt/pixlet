@@ -16,8 +16,6 @@ import (
 // If you want to know more about that, go check
 // out the [animation](animation.md) documentation.
 //
-// DOC(Children): List of child widgets
-//
 // EXAMPLE BEGIN
 //
 //	render.Sequence(
@@ -30,6 +28,7 @@ import (
 //
 // EXAMPLE END.
 type Sequence struct {
+	// List of child widgets
 	Children []Widget `starlark:"children,required"`
 }
 

@@ -12,10 +12,6 @@ import (
 // arguments for the data: parallel lists `colors` and `weights` representing
 // the shading and relative sizes of each data entry.
 //
-// DOC(Colors): List of color hex codes
-// DOC(Weights): List of numbers corresponding to the relative size of each color
-// DOC(Diameter): Diameter of the circle
-//
 // EXAMPLE BEGIN
 //
 //	render.PieChart(
@@ -26,9 +22,12 @@ import (
 //
 // EXAMPLE END.
 type PieChart struct {
-	Colors   []color.Color `starlark:"colors, required"`
-	Weights  []float64     `starlark:"weights, required"`
-	Diameter int           `starlark:"diameter,required"`
+	// List of color hex codes
+	Colors []color.Color `starlark:"colors, required"`
+	// List of numbers corresponding to the relative size of each color
+	Weights []float64 `starlark:"weights, required"`
+	// Diameter of the circle
+	Diameter int `starlark:"diameter,required"`
 }
 
 func (c PieChart) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

@@ -5,11 +5,10 @@ import (
 )
 
 // Origin is a relative anchor point to use for scaling and rotation transforms.
-//
-// DOC(X): Horizontal anchor point
-// DOC(Y): Vertical anchor point.
 type Origin struct {
+	// Horizontal anchor point
 	X Percentage `starlark:"x,required"`
+	// Vertical anchor point.
 	Y Percentage `starlark:"y,required"`
 }
 

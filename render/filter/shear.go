@@ -10,10 +10,6 @@ import (
 
 // Shear shears the child widget horizontally and/or vertically.
 //
-// DOC(Widget): The widget to shear.
-// DOC(XAngle): The angle to shear horizontally in degrees.
-// DOC(YAngle): The angle to shear vertically in degrees.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Shear(
@@ -23,9 +19,12 @@ import (
 //
 // EXAMPLE END.
 type Shear struct {
+	// The widget to shear.
 	render.Widget `starlark:"child,required"`
 
+	// The angle to shear horizontally in degrees.
 	XAngle float64 `starlark:"x_angle"`
+	// The angle to shear vertically in degrees.
 	YAngle float64 `starlark:"y_angle"`
 }
 

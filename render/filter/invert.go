@@ -10,8 +10,6 @@ import (
 
 // Invert inverts the colors of the child widget.
 //
-// DOC(Widget): The widget to invert.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Invert(
@@ -20,6 +18,7 @@ import (
 //
 // EXAMPLE END.
 type Invert struct {
+	// The widget to invert.
 	render.Widget `starlark:"child,required"`
 }
 

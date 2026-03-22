@@ -10,6 +10,7 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
+	"go/ast"
 	"go/doc"
 	"go/format"
 	"go/token"
@@ -497,6 +498,110 @@ func renderTemplateToString(tmpl *template.Template, data any) string {
 	return buf.String()
 }
 
+func commentText(field *ast.Field) string {
+	if field.Doc != nil {
+		if text := strings.TrimSpace(field.Doc.Text()); text != "" {
+			return text
+		}
+	}
+	if field.Comment != nil {
+		return strings.TrimSpace(field.Comment.Text())
+	}
+	return ""
+}
+
+func fieldNameFromExpr(expr ast.Expr) string {
+	switch e := expr.(type) {
+	case *ast.Ident:
+		return e.Name
+	case *ast.SelectorExpr:
+		return e.Sel.Name
+	case *ast.StarExpr:
+		return fieldNameFromExpr(e.X)
+	default:
+		return ""
+	}
+}
+
+func collectFieldDocs(files []*ast.File) (map[string]map[string]string, map[string][]string) {
+	fieldDocs := map[string]map[string]string{}
+	embedded := map[string][]string{}
+
+	for _, file := range files {
+		for _, decl := range file.Decls {
+			genDecl, ok := decl.(*ast.GenDecl)
+			if !ok || genDecl.Tok != token.TYPE {
+				continue
+			}
+
+			for _, spec := range genDecl.Specs {
+				typeSpec, ok := spec.(*ast.TypeSpec)
+				if !ok {
+					continue
+				}
+
+				structType, ok := typeSpec.Type.(*ast.StructType)
+				if !ok {
+					continue
+				}
+
+				if _, ok := fieldDocs[typeSpec.Name.Name]; !ok {
+					fieldDocs[typeSpec.Name.Name] = map[string]string{}
+				}
+				if _, ok := embedded[typeSpec.Name.Name]; !ok {
+					embedded[typeSpec.Name.Name] = []string{}
+				}
+
+				for _, field := range structType.Fields.List {
+					text := commentText(field)
+
+					// Normal named fields; one comment applies to all names in this line.
+					if len(field.Names) > 0 {
+						if text == "" {
+							continue
+						}
+						for _, name := range field.Names {
+							fieldDocs[typeSpec.Name.Name][name.Name] = text
+						}
+						continue
+					}
+
+					// Embedded field.
+					if name := fieldNameFromExpr(field.Type); name != "" {
+						embedded[typeSpec.Name.Name] = append(embedded[typeSpec.Name.Name], name)
+						if text != "" {
+							fieldDocs[typeSpec.Name.Name][name] = text
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return fieldDocs, embedded
+}
+
+func resolveFieldDoc(fieldDocs map[string]map[string]string, embedded map[string][]string, typeName, fieldName string, visited map[string]bool) string {
+	if docs, ok := fieldDocs[typeName]; ok {
+		if text := docs[fieldName]; text != "" {
+			return text
+		}
+	}
+
+	if visited[typeName] {
+		return ""
+	}
+	visited[typeName] = true
+
+	for _, embedType := range embedded[typeName] {
+		if text := resolveFieldDoc(fieldDocs, embedded, embedType, fieldName, visited); text != "" {
+			return text
+		}
+	}
+
+	return ""
+}
+
 func attachDocs(pkg Package, types []*GeneratedType) {
 	// Parse all .go files in pixlet/render packages and extract all type doc comments
 	fset := token.NewFileSet()
@@ -526,27 +631,20 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 	for _, type_ := range pkgDoc.Types {
 		docs[type_.Name] = type_.Doc
 	}
+	fieldDocs, embedded := collectFieldDocs(pkgs[0].Syntax)
 
-	// These match our attribute docs and example blocks
-	docRe := must2(regexp.Compile(`(?m)^DOC\(([^)]+)\): +(.+)$`))
+	// This matches our example blocks.
 	exampleRe := must2(regexp.Compile(`(?s)EXAMPLE BEGIN(.*?)EXAMPLE END\.?`))
 
 	for _, type_ := range types {
-		// Widget doc is full comment sans attribute docs and examples
+		// Widget doc is full comment sans examples.
 		type_.Documentation = strings.TrimSpace(string(
-			docRe.ReplaceAllString(
-				exampleRe.ReplaceAllString(docs[type_.GoName], ""),
-				"",
-			),
+			exampleRe.ReplaceAllString(docs[type_.GoName], ""),
 		))
 
-		// Attribute docs
-		attrDocs := map[string]string{}
-		for _, group := range docRe.FindAllStringSubmatch(docs[type_.GoName], -1) {
-			attrDocs[group[1]] = group[2]
-		}
+		// Attribute docs from field comments only.
 		for _, attr := range type_.Attributes {
-			attr.Documentation = attrDocs[attr.GoName]
+			attr.Documentation = resolveFieldDoc(fieldDocs, embedded, type_.GoName, attr.GoName, map[string]bool{})
 		}
 
 		// Examples

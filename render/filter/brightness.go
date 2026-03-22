@@ -10,9 +10,6 @@ import (
 
 // Brightness adjusts the brightness of the child widget.
 //
-// DOC(Widget): The widget to adjust brightness for.
-// DOC(Change): The amount to change brightness by. -1.0 is black, 1.0 is white, 0.0 is no change.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Brightness(
@@ -22,8 +19,10 @@ import (
 //
 // EXAMPLE END.
 type Brightness struct {
+	// The widget to adjust brightness for.
 	render.Widget `starlark:"child,required"`
 
+	// The amount to change brightness by. -1.0 is black, 1.0 is white, 0.0 is no change.
 	Change float64 `starlark:"change,required"`
 }
 

@@ -14,12 +14,6 @@ type Point struct {
 
 // Polygon draws a polygon.
 //
-// DOC(Vertices): A list of (x, y) tuples representing the vertices of the polygon.
-// DOC(FillColor): The color used to fill the polygon.
-// DOC(StrokeColor): The color used to draw the polygon's stroke.
-// DOC(StrokeWidth): The width of the polygon's stroke.
-// DOC(AntiAlias): Enables antialiased stroke rendering.
-//
 // EXAMPLE BEGIN
 //
 //	render.Polygon(
@@ -33,11 +27,16 @@ type Point struct {
 type Polygon struct {
 	Widget
 
-	Vertices    []Point     `starlark:"vertices,required"`
-	FillColor   color.Color `starlark:"fill_color"`
+	// A list of (x, y) tuples representing the vertices of the polygon.
+	Vertices []Point `starlark:"vertices,required"`
+	// The color used to fill the polygon.
+	FillColor color.Color `starlark:"fill_color"`
+	// The color used to draw the polygon's stroke.
 	StrokeColor color.Color `starlark:"stroke_color"`
-	StrokeWidth float64     `starlark:"stroke_width"`
-	AntiAlias   bool        `starlark:"antialias"`
+	// The width of the polygon's stroke.
+	StrokeWidth float64 `starlark:"stroke_width"`
+	// Enables antialiased stroke rendering.
+	AntiAlias bool `starlark:"antialias"`
 }
 
 func (p Polygon) getBounds() (minX, maxX, minY, maxY float64) {

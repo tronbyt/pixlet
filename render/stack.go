@@ -12,8 +12,6 @@ import (
 // pancakes. The Stack will be given a width and height sufficient to
 // fit all its children.
 //
-// DOC(Children): Widgets to stack
-//
 // EXAMPLE BEGIN
 //
 //	render.Stack(
@@ -26,6 +24,7 @@ import (
 //
 // EXAMPLE END.
 type Stack struct {
+	// Widgets to stack
 	Children []Widget `starlark:"children,required"`
 }
 

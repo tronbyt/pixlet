@@ -23,14 +23,14 @@ func TestTransformationTranslate(t *testing.T) {
 				Percentage: Percentage{0.0},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Translate{Vec2f{X: 0.0, Y: 0.0}},
+					Translate{X: 0.0, Y: 0.0},
 				},
 			},
 			{
 				Percentage: Percentage{1.0},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Translate{Vec2f{X: 5.0, Y: 5.0}},
+					Translate{X: 5.0, Y: 5.0},
 				},
 			},
 		},
@@ -112,21 +112,21 @@ func TestTransformationScale(t *testing.T) {
 				Percentage: Percentage{0.0},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Scale{Vec2f{X: 1.0, Y: 1.0}},
+					Scale{X: 1.0, Y: 1.0},
 				},
 			},
 			{
 				Percentage: Percentage{0.5},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Scale{Vec2f{X: 2.0, Y: 2.0}},
+					Scale{X: 2.0, Y: 2.0},
 				},
 			},
 			{
 				Percentage: Percentage{1.0},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Scale{Vec2f{X: 3.0, Y: 3.0}},
+					Scale{X: 3.0, Y: 3.0},
 				},
 			},
 		},
@@ -304,8 +304,8 @@ func TestTransformationAll(t *testing.T) {
 				Percentage: Percentage{0.0},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Translate{Vec2f{X: -3.0, Y: -3.0}},
-					Scale{Vec2f{X: 1.0, Y: 1.0}},
+					Translate{X: -3.0, Y: -3.0},
+					Scale{X: 1.0, Y: 1.0},
 					Rotate{Angle: 0.0},
 				},
 			},
@@ -313,8 +313,8 @@ func TestTransformationAll(t *testing.T) {
 				Percentage: Percentage{0.75},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Translate{Vec2f{X: 0.0, Y: 0.0}},
-					Scale{Vec2f{X: 1.0, Y: 1.0}},
+					Translate{X: 0.0, Y: 0.0},
+					Scale{X: 1.0, Y: 1.0},
 					Rotate{Angle: 270.0},
 				},
 			},
@@ -322,8 +322,8 @@ func TestTransformationAll(t *testing.T) {
 				Percentage: Percentage{1.0},
 				Curve:      LinearCurve{},
 				Transforms: []Transform{
-					Translate{Vec2f{X: 1.0, Y: 1.0}},
-					Scale{Vec2f{X: 2.0, Y: 2.0}},
+					Translate{X: 1.0, Y: 1.0},
+					Scale{X: 2.0, Y: 2.0},
 					Rotate{Angle: 360.0},
 				},
 			},

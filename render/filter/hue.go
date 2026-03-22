@@ -10,9 +10,6 @@ import (
 
 // Hue adjusts the hue of the child widget.
 //
-// DOC(Widget): The widget to adjust hue for.
-// DOC(Change): The amount to change hue by in degrees.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Hue(
@@ -22,8 +19,10 @@ import (
 //
 // EXAMPLE END.
 type Hue struct {
+	// The widget to adjust hue for.
 	render.Widget `starlark:"child,required"`
 
+	// The amount to change hue by in degrees.
 	Change float64 `starlark:"change,required"`
 }
 

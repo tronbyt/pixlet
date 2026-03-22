@@ -15,18 +15,6 @@ var FillDampFactor uint8 = 0x55
 
 // Plot is a widget that draws a data series.
 //
-// DOC(Data): A list of 2-tuples of numbers
-// DOC(Width): Limits Plot width
-// DOC(Height): Limits Plot height
-// DOC(Color): Line color, default is '#fff'
-// DOC(ColorInverted): Line color for Y-values below 0
-// DOC(XLim): Limit X-axis to a range
-// DOC(YLim): Limit Y-axis to a range
-// DOC(Fill): Paint surface between line and X-axis
-// DOC(FillColor): Fill color for Y-values above 0
-// DOC(FillColorInverted): Fill color for Y-values below 0
-// DOC(ChartType): Specifies the type of chart to render, "scatter" or "line", default is "line"
-//
 // EXAMPLE BEGIN
 //
 //	render.Plot(
@@ -53,33 +41,35 @@ var FillDampFactor uint8 = 0x55
 //
 // EXAMPLE END.
 type Plot struct {
-	// Coordinates of points to plot
+	// A list of 2-tuples of numbers
 	Data [][2]float64 `starlark:"data,required"`
 
-	// Overall size of the plot
-	Width  int `starlark:"width,required"`
+	// Limits Plot width
+	Width int `starlark:"width,required"`
+	// Limits Plot height
 	Height int `starlark:"height,required"`
 
-	// Primary line color
+	// Line color, default is '#fff'
 	Color color.Color `starlark:"color"`
 
-	// Optional line color for Y-values below 0
+	// Line color for Y-values below 0
 	ColorInverted color.Color `starlark:"color_inverted"`
 
-	// Optional limit on X and Y axis
+	// Limit X-axis to a range
 	XLim [2]float64 `starlark:"x_lim"`
+	// Limit Y-axis to a range
 	YLim [2]float64 `starlark:"y_lim"`
 
-	// If true, also paint surface between line and X-axis
+	// Paint surface between line and X-axis
 	Fill bool `starlark:"fill"`
 
-	// Optional, default "line". If set to "scatter", the line connecting dots will not be drawn
+	// Specifies the type of chart to render, "scatter" or "line", default is "line"
 	ChartType string `starlark:"chart_type"`
 
-	// Optional fill color for Y-values above 0
+	// Fill color for Y-values above 0
 	FillColor color.Color `starlark:"fill_color"`
 
-	// Optional fill color for Y-values below 0
+	// Fill color for Y-values below 0
 	FillColorInverted color.Color `starlark:"fill_color_inverted"`
 
 	invThreshold int

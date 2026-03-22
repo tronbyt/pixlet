@@ -10,8 +10,6 @@ import (
 
 // Grayscale converts the child widget to grayscale.
 //
-// DOC(Widget): The widget to convert to grayscale.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Grayscale(
@@ -20,6 +18,7 @@ import (
 //
 // EXAMPLE END.
 type Grayscale struct {
+	// The widget to convert to grayscale.
 	render.Widget `starlark:"child,required"`
 }
 

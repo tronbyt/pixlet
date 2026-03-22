@@ -10,8 +10,6 @@ import (
 
 // Sharpen sharpens the child widget.
 //
-// DOC(Widget): The widget to sharpen.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Sharpen(
@@ -20,6 +18,7 @@ import (
 //
 // EXAMPLE END.
 type Sharpen struct {
+	// The widget to sharpen.
 	render.Widget `starlark:"child,required"`
 }
 

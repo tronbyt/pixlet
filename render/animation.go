@@ -12,8 +12,6 @@ import (
 // FIXME: Behaviour when children themselves are animated is a bit
 // weird. Think and fix.
 //
-// DOC(Children): Children to use as frames in the animation
-//
 // EXAMPLE BEGIN
 //
 //	render.Animation(
@@ -28,6 +26,7 @@ import (
 //
 // EXAMPLE END.
 type Animation struct {
+	// Children to use as frames in the animation
 	Children []Widget
 }
 

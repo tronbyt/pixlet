@@ -12,10 +12,6 @@ import (
 // `child` widget is provided, it is drawn in the center of the
 // circle.
 //
-// DOC(Child): Widget to place in the center of the circle
-// DOC(Color): Fill color
-// DOC(Diameter): Diameter of the circle
-//
 // EXAMPLE BEGIN
 //
 //	render.Circle(
@@ -26,9 +22,12 @@ import (
 //
 // EXAMPLE END.
 type Circle struct {
-	Child    Widget
-	Color    color.Color `starlark:"color, required"`
-	Diameter int         `starlark:"diameter,required"`
+	// Widget to place in the center of the circle
+	Child Widget
+	// Fill color
+	Color color.Color `starlark:"color, required"`
+	// Diameter of the circle
+	Diameter int `starlark:"diameter,required"`
 }
 
 func (c Circle) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

@@ -10,8 +10,6 @@ import (
 
 // Emboss applies an emboss filter to the child widget.
 //
-// DOC(Widget): The widget to emboss.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Emboss(
@@ -20,6 +18,7 @@ import (
 //
 // EXAMPLE END.
 type Emboss struct {
+	// The widget to emboss.
 	render.Widget `starlark:"child,required"`
 }
 

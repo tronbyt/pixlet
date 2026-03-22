@@ -10,9 +10,6 @@ import (
 
 // EdgeDetection applies an edge detection filter to the child widget.
 //
-// DOC(Widget): The widget to detect edges on.
-// DOC(Radius): The radius of the edge detection kernel.
-//
 // EXAMPLE BEGIN
 //
 //	filter.EdgeDetection(
@@ -22,8 +19,10 @@ import (
 //
 // EXAMPLE END.
 type EdgeDetection struct {
+	// The widget to detect edges on.
 	render.Widget `starlark:"child,required"`
 
+	// The radius of the edge detection kernel.
 	Radius float64 `starlark:"radius,required"`
 }
 

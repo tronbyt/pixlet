@@ -10,8 +10,6 @@ import (
 
 // Sepia applies a sepia filter to the child widget.
 //
-// DOC(Widget): The widget to apply sepia to.
-//
 // EXAMPLE BEGIN
 //
 //	filter.Sepia(
@@ -20,6 +18,7 @@ import (
 //
 // EXAMPLE END.
 type Sepia struct {
+	// The widget to apply sepia to.
 	render.Widget `starlark:"child,required"`
 }
 

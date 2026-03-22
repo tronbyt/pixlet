@@ -129,18 +129,6 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 // then wait for all child frames to play before restarting. If it is set
 // to `False`, it will not wait.
 //
-// DOC(Child): Widget to animate
-// DOC(Keyframes): List of animation keyframes
-// DOC(Duration): Duration of animation (in frames)
-// DOC(Delay): Duration to wait before animation (in frames)
-// DOC(Width): Width of the animation canvas
-// DOC(Height): Height of the animation canvas
-// DOC(Origin): Origin for transforms, default is '50%, 50%'
-// DOC(Direction): Direction of the animation, default is 'normal'
-// DOC(FillMode): Fill mode of the animation, default is 'forwards'
-// DOC(Rounding): Rounding to use for interpolated translation coordinates (not used for scale and rotate), default is 'round'
-// DOC(WaitForChild): Wait for all child frames to play after finishing
-//
 // EXAMPLE BEGIN
 //
 //	animation.Transformation(
@@ -165,17 +153,28 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 //
 // EXAMPLE END.
 type Transformation struct {
-	Child        render.Widget `starlark:"child,required"`
-	Keyframes    []Keyframe    `starlark:"keyframes,required"`
-	Duration     int           `starlark:"duration,required"`
-	Delay        int           `starlark:"delay"`
-	Width        int           `starlark:"width"`
-	Height       int           `starlark:"height"`
-	Origin       Origin        `starlark:"origin"`
-	Direction    Direction     `starlark:"direction"`
-	FillMode     FillMode      `starlark:"fill_mode"`
-	Rounding     Rounding      `starlark:"rounding"`
-	WaitForChild bool          `starlark:"wait_for_child"`
+	// Widget to animate
+	Child render.Widget `starlark:"child,required"`
+	// List of animation keyframes
+	Keyframes []Keyframe `starlark:"keyframes,required"`
+	// Duration of animation (in frames)
+	Duration int `starlark:"duration,required"`
+	// Duration to wait before animation (in frames)
+	Delay int `starlark:"delay"`
+	// Width of the animation canvas
+	Width int `starlark:"width"`
+	// Height of the animation canvas
+	Height int `starlark:"height"`
+	// Origin for transforms, default is '50%, 50%'
+	Origin Origin `starlark:"origin"`
+	// Direction of the animation, default is 'normal'
+	Direction Direction `starlark:"direction"`
+	// Fill mode of the animation, default is 'forwards'
+	FillMode FillMode `starlark:"fill_mode"`
+	// Rounding to use for interpolated translation coordinates (not used for scale and rotate), default is 'round'
+	Rounding Rounding `starlark:"rounding"`
+	// Wait for all child frames to play after finishing
+	WaitForChild bool `starlark:"wait_for_child"`
 }
 
 func (t *Transformation) Init(thread *starlark.Thread) error {
