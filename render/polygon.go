@@ -18,6 +18,7 @@ type Point struct {
 // DOC(FillColor): The color used to fill the polygon.
 // DOC(StrokeColor): The color used to draw the polygon's stroke.
 // DOC(StrokeWidth): The width of the polygon's stroke.
+// DOC(AntiAlias): Enables antialiased stroke rendering.
 //
 // EXAMPLE BEGIN
 //
@@ -36,6 +37,7 @@ type Polygon struct {
 	FillColor   color.Color `starlark:"fill_color"`
 	StrokeColor color.Color `starlark:"stroke_color"`
 	StrokeWidth float64     `starlark:"stroke_width"`
+	AntiAlias   bool        `starlark:"antialias"`
 }
 
 func (p Polygon) getBounds() (minX, maxX, minY, maxY float64) {
@@ -108,8 +110,13 @@ func (p Polygon) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 
 	if p.StrokeColor != nil && p.StrokeWidth > 0 {
 		dc.SetColor(p.StrokeColor)
-		dc.SetLineWidth(p.StrokeWidth)
-		dc.Stroke()
+		if p.AntiAlias {
+			dc.SetLineWidth(p.StrokeWidth)
+			dc.Stroke()
+		} else {
+			drawRasterizedPolygonStroke(dc, p.Vertices, p.StrokeWidth)
+			dc.ClearPath()
+		}
 	}
 
 	dc.Pop()
