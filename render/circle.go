@@ -12,15 +12,13 @@ import (
 // `child` widget is provided, it is drawn in the center of the
 // circle.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Circle(
 //	    color="#666",
 //	    diameter=30,
 //	    child=render.Circle(color="#0ff", diameter=10),
 //	)
-//
-// EXAMPLE END.
 type Circle struct {
 	// Widget to place in the center of the circle
 	Child Widget

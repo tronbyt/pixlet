@@ -10,14 +10,12 @@ import (
 
 // Saturation adjusts the saturation of the child widget.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Saturation(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    factor = 1,
 //	)
-//
-// EXAMPLE END.
 type Saturation struct {
 	// The widget to adjust saturation for.
 	render.Widget `starlark:"child,required"`

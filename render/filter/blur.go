@@ -11,14 +11,12 @@ import (
 
 // Blur applies a Gaussian blur to the child widget.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Blur(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    radius = 2.0,
 //	)
-//
-// EXAMPLE END.
 type Blur struct {
 	// The widget to apply the blur to.
 	render.Widget `starlark:"child,required"`

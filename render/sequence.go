@@ -16,7 +16,7 @@ import (
 // If you want to know more about that, go check
 // out the [animation](animation.md) documentation.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Sequence(
 //	    children = [
@@ -25,8 +25,6 @@ import (
 //	        render.Box(width=10, height=10, color="#00f"),
 //	    ],
 //	)
-//
-// EXAMPLE END.
 type Sequence struct {
 	// List of child widgets
 	Children []Widget `starlark:"children,required"`

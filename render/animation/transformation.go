@@ -129,7 +129,7 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 // then wait for all child frames to play before restarting. If it is set
 // to `False`, it will not wait.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	animation.Transformation(
 //	    child = render.Box(render.Circle(diameter = 6, color = "#0f0")),
@@ -150,8 +150,6 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 //	        ),
 //	    ],
 //	),
-//
-// EXAMPLE END.
 type Transformation struct {
 	// Widget to animate
 	Child render.Widget `starlark:"child,required"`

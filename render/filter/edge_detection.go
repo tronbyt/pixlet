@@ -10,14 +10,12 @@ import (
 
 // EdgeDetection applies an edge detection filter to the child widget.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.EdgeDetection(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    radius = 2.0,
 //	)
-//
-// EXAMPLE END.
 type EdgeDetection struct {
 	// The widget to detect edges on.
 	render.Widget `starlark:"child,required"`

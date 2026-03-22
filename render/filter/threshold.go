@@ -10,14 +10,12 @@ import (
 
 // Threshold applies a threshold filter to the child widget, making it black and white.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Threshold(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    level = 128.0,
 //	)
-//
-// EXAMPLE END.
 type Threshold struct {
 	// The widget to apply threshold to.
 	render.Widget `starlark:"child,required"`

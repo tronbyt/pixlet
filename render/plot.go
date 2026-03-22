@@ -15,7 +15,7 @@ var FillDampFactor uint8 = 0x55
 
 // Plot is a widget that draws a data series.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Plot(
 //	    data = [
@@ -38,8 +38,6 @@ var FillDampFactor uint8 = 0x55
 //	    y_lim = (-5, 7),
 //	    fill = True,
 //	)
-//
-// EXAMPLE END.
 type Plot struct {
 	// A list of 2-tuples of numbers
 	Data [][2]float64 `starlark:"data,required"`

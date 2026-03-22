@@ -10,14 +10,12 @@ import (
 
 // Contrast adjusts the contrast of the child widget.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Contrast(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    factor = 2.0,
 //	)
-//
-// EXAMPLE END.
 type Contrast struct {
 	// The widget to adjust contrast for.
 	render.Widget `starlark:"child,required"`

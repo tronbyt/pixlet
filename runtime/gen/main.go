@@ -18,7 +18,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"regexp"
 	"sort"
 	"strings"
 	"text/template"
@@ -602,6 +601,34 @@ func resolveFieldDoc(fieldDocs map[string]map[string]string, embedded map[string
 	return ""
 }
 
+func splitDocAndExamples(docText string) (string, []string) {
+	docText = strings.ReplaceAll(docText, "\nExample:", "\n")
+
+	var cleanDoc strings.Builder
+	cleanDoc.Grow(len(docText))
+
+	examples := make([]string, 0, 2)
+
+	for docText != "" {
+		before, after, ok := strings.Cut(docText, "\n\t")
+
+		cleanDoc.WriteString(strings.TrimSpace(before))
+
+		if ok {
+			before, after, _ = strings.Cut(after, "\n\n")
+
+			example := strings.ReplaceAll(strings.TrimSpace(before), "\n\t", "\n")
+			if example != "" {
+				examples = append(examples, example)
+			}
+		}
+
+		docText = after
+	}
+
+	return strings.TrimSpace(cleanDoc.String()), examples
+}
+
 func attachDocs(pkg Package, types []*GeneratedType) {
 	// Parse all .go files in pixlet/render packages and extract all type doc comments
 	fset := token.NewFileSet()
@@ -633,29 +660,13 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 	}
 	fieldDocs, embedded := collectFieldDocs(pkgs[0].Syntax)
 
-	// This matches our example blocks.
-	exampleRe := must2(regexp.Compile(`(?s)EXAMPLE BEGIN(.*?)EXAMPLE END\.?`))
-
 	for _, type_ := range types {
-		// Widget doc is full comment sans examples.
-		type_.Documentation = strings.TrimSpace(string(
-			exampleRe.ReplaceAllString(docs[type_.GoName], ""),
-		))
+		type_.Documentation, type_.Examples = splitDocAndExamples(docs[type_.GoName])
 
 		// Attribute docs from field comments only.
 		for _, attr := range type_.Attributes {
 			attr.Documentation = resolveFieldDoc(fieldDocs, embedded, type_.GoName, attr.GoName, map[string]bool{})
 		}
-
-		// Examples
-		groups := exampleRe.FindAllStringSubmatch(docs[type_.GoName], -1)
-		examples := make([]string, 0, len(groups))
-		for _, group := range groups {
-			example := strings.TrimSpace(group[1])
-			example = strings.ReplaceAll(example, "\n\t", "\n")
-			examples = append(examples, example)
-		}
-		type_.Examples = examples
 	}
 }
 

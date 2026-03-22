@@ -27,11 +27,9 @@ var DefaultFontColor = color.White
 // string. Take a look at the [font documentation](fonts.md) for more
 // information.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Text(content="Tidbyt!", color="#099")
-//
-// EXAMPLE END.
 type Text struct {
 	// The text string to draw
 	Content string `starlark:"content,required"`

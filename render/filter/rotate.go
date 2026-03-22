@@ -10,14 +10,12 @@ import (
 
 // Rotate rotates the child widget by the specified angle.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Rotate(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    angle = 10.0,
 //	)
-//
-// EXAMPLE END.
 type Rotate struct {
 	// The widget to rotate.
 	render.Widget `starlark:"child,required"`

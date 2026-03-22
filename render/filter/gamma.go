@@ -10,14 +10,12 @@ import (
 
 // Gamma applies gamma correction to the child widget.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Gamma(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    gamma = 0.5,
 //	)
-//
-// EXAMPLE END.
 type Gamma struct {
 	// The widget to apply gamma correction to.
 	render.Widget `starlark:"child,required"`

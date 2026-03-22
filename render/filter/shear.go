@@ -10,14 +10,12 @@ import (
 
 // Shear shears the child widget horizontally and/or vertically.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Shear(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    x_angle = 10.0,
 //	)
-//
-// EXAMPLE END.
 type Shear struct {
 	// The widget to shear.
 	render.Widget `starlark:"child,required"`

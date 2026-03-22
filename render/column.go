@@ -28,7 +28,7 @@ import (
 // - `"end"`: place children at the right
 // - `"center"`: place children in the center
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Column(
 //	    children=[
@@ -38,9 +38,7 @@ import (
 //	    ],
 //	)
 //
-// # EXAMPLE END
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Column(
 //	    expanded=True,
@@ -52,8 +50,6 @@ import (
 //	        render.Box(width=16, height=4, color="#00a"),
 //	    ],
 //	)
-//
-// EXAMPLE END.
 type Column struct {
 	// Child widgets to lay out
 	Children []Widget `starlark:"children,required"`

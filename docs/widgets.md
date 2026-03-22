@@ -187,8 +187,6 @@ render.Column(
          render.Box(width=16, height=4, color="#00a"),
     ],
 )
-
-#
 ```
 ![](img/widget_Column_0.gif)
 
@@ -485,7 +483,6 @@ render.Row(
         render.Box(width=14, height=6, color="#0a0"),
         render.Box(width=16, height=4, color="#00a"),
     ],
-
 )
 ```
 ![](img/widget_Row_0.gif)

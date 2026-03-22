@@ -27,7 +27,7 @@ import (
 // - `"end"`: place child at the right/bottom
 // - `"center"`: place child at the center
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Marquee(
 //	    width=64,
@@ -35,8 +35,6 @@ import (
 //	    offset_start=5,
 //	    offset_end=32,
 //	)
-//
-// EXAMPLE END.
 type Marquee struct {
 	// Widget to potentially scroll
 	Child Widget `starlark:"child,required"`

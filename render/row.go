@@ -28,7 +28,7 @@ import (
 // - `"end"`: place children at the bottom
 // - `"center"`: place children at the center
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Row(
 //	    children=[
@@ -36,11 +36,9 @@ import (
 //	        render.Box(width=14, height=6, color="#0a0"),
 //	        render.Box(width=16, height=4, color="#00a"),
 //	    ],
+//	)
 //
-// )
-// EXAMPLE END
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Row(
 //	    expanded=True,
@@ -52,8 +50,6 @@ import (
 //	        render.Box(width=16, height=4, color="#00a"),
 //	    ],
 //	)
-//
-// EXAMPLE END.
 type Row struct {
 	// Child widgets to lay out
 	Children []Widget `starlark:"children,required"`

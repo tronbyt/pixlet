@@ -10,14 +10,12 @@ import (
 
 // Hue adjusts the hue of the child widget.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Hue(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    change = 180.0,
 //	)
-//
-// EXAMPLE END.
 type Hue struct {
 	// The widget to adjust hue for.
 	render.Widget `starlark:"child,required"`

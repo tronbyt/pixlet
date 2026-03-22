@@ -10,7 +10,7 @@ import (
 
 // Line draws a line from (x1, y1) to (x2, y2).
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Line(
 //	    x1 = 0,
@@ -20,8 +20,6 @@ import (
 //	    width = 1,
 //	    color = "#fff",
 //	)
-//
-// EXAMPLE END.
 type Line struct {
 	Widget
 

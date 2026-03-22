@@ -14,7 +14,7 @@ import (
 // provided. Boxes can have a `child`, which will be centered in the
 // box, and the child can be padded (via `padding`).
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Box(
 //	    color="#00f",
@@ -24,8 +24,6 @@ import (
 //	        color="#f00",
 //	    )
 //	)
-//
-// EXAMPLE END.
 type Box struct {
 	// Child to center inside box
 	Child Widget

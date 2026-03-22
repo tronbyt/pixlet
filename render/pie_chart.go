@@ -12,15 +12,13 @@ import (
 // arguments for the data: parallel lists `colors` and `weights` representing
 // the shading and relative sizes of each data entry.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.PieChart(
 //	    colors = [ "#fff", "#0f0", "#00f" ],
 //	    weights  = [ 180, 135, 45 ],
 //	    diameter = 30,
 //	)
-//
-// EXAMPLE END.
 type PieChart struct {
 	// List of color hex codes
 	Colors []color.Color `starlark:"colors, required"`

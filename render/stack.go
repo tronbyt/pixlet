@@ -12,7 +12,7 @@ import (
 // pancakes. The Stack will be given a width and height sufficient to
 // fit all its children.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Stack(
 //	    children=[
@@ -21,8 +21,6 @@ import (
 //	        render.Box(width=4, height=32, color="#119"),
 //	    ],
 //	)
-//
-// EXAMPLE END.
 type Stack struct {
 	// Widgets to stack
 	Children []Widget `starlark:"children,required"`

@@ -10,7 +10,7 @@ import (
 
 // Arc draws an arc. The arc is centered at (x, y).
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Arc(
 //	    x = 10,
@@ -21,8 +21,6 @@ import (
 //	    width = 3,
 //	    color = "#0ff",
 //	)
-//
-// EXAMPLE END.
 type Arc struct {
 	Widget
 

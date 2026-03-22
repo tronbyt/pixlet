@@ -10,14 +10,12 @@ import (
 
 // Brightness adjusts the brightness of the child widget.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Brightness(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    change = -0.5,
 //	)
-//
-// EXAMPLE END.
 type Brightness struct {
 	// The widget to adjust brightness for.
 	render.Widget `starlark:"child,required"`

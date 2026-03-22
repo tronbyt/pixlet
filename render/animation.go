@@ -12,7 +12,7 @@ import (
 // FIXME: Behaviour when children themselves are animated is a bit
 // weird. Think and fix.
 //
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Animation(
 //	     children=[
@@ -23,8 +23,6 @@ import (
 //	          render.Box(width=18, height=18, color="#b00"),
 //	     ],
 //	)
-//
-// EXAMPLE END.
 type Animation struct {
 	// Children to use as frames in the animation
 	Children []Widget
