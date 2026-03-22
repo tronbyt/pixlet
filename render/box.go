@@ -14,13 +14,7 @@ import (
 // provided. Boxes can have a `child`, which will be centered in the
 // box, and the child can be padded (via `padding`).
 //
-// DOC(Child): Child to center inside box
-// DOC(Width): Limits Box width
-// DOC(Height): Limits Box height
-// DOC(Padding): Padding around the child widget
-// DOC(Color): Background color
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Box(
 //	    color="#00f",
@@ -30,13 +24,17 @@ import (
 //	        color="#f00",
 //	    )
 //	)
-//
-// EXAMPLE END.
 type Box struct {
-	Child         Widget
-	Width, Height int
-	Padding       int
-	Color         color.Color
+	// Child to center inside box
+	Child Widget
+	// Limits Box width
+	Width int
+	// Limits Box height
+	Height int
+	// Padding around the child widget
+	Padding int
+	// Background color
+	Color color.Color
 }
 
 func (b Box) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

@@ -15,18 +15,16 @@ import (
 // This allows for rendering emojis much larger than the standard 10x10 pixel size
 // used in text rendering.
 //
-// DOC(Emoji): The Unicode emoji sequence to render
-// DOC(Width): Scale emoji to this width
-// DOC(Height): Scale emoji to this height
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Emoji(emoji="😀", height=32) # Large smiley face
-//
-// EXAMPLE END.
 type Emoji struct {
-	EmojiStr      string `starlark:"emoji,required"`
-	Width, Height int
+	// The Unicode emoji sequence to render
+	EmojiStr string `starlark:"emoji,required"`
+	// Scale emoji to this width
+	Width int
+	// Scale emoji to this height
+	Height int
 
 	img image.Image
 }

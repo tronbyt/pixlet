@@ -27,16 +27,7 @@ import (
 // - `"end"`: place child at the right/bottom
 // - `"center"`: place child at the center
 //
-// DOC(Child): Widget to potentially scroll
-// DOC(Width): Width of the Marquee, required for horizontal
-// DOC(Height): Height of the Marquee, required for vertical
-// DOC(OffsetStart): Position of child at beginning of animation
-// DOC(OffsetEnd): Position of child at end of animation
-// DOC(ScrollDirection): Direction to scroll, 'vertical' or 'horizontal', default is horizontal
-// DOC(Align): Alignment when contents fit on screen, 'start', 'center' or 'end', default is start
-// DOC(Delay): Delay the scroll of the animation by a certain number of frames, default is 0
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Marquee(
 //	    width=64,
@@ -44,17 +35,23 @@ import (
 //	    offset_start=5,
 //	    offset_end=32,
 //	)
-//
-// EXAMPLE END.
 type Marquee struct {
-	Child           Widget `starlark:"child,required"`
-	Width           int    `starlark:"width"`
-	Height          int    `starlark:"height"`
-	OffsetStart     int    `starlark:"offset_start"`
-	OffsetEnd       int    `starlark:"offset_end"`
+	// Widget to potentially scroll
+	Child Widget `starlark:"child,required"`
+	// Width of the Marquee, required for horizontal
+	Width int `starlark:"width"`
+	// Height of the Marquee, required for vertical
+	Height int `starlark:"height"`
+	// Position of child at beginning of animation
+	OffsetStart int `starlark:"offset_start"`
+	// Position of child at end of animation
+	OffsetEnd int `starlark:"offset_end"`
+	// Direction to scroll, 'vertical' or 'horizontal', default is horizontal
 	ScrollDirection string `starlark:"scroll_direction"`
-	Align           string `starlark:"align"`
-	Delay           int    `starlark:"delay"`
+	// Alignment when contents fit on screen, 'start', 'center' or 'end', default is start
+	Align string `starlark:"align"`
+	// Delay the scroll of the animation by a certain number of frames, default is 0
+	Delay int `starlark:"delay"`
 }
 
 func (m Marquee) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

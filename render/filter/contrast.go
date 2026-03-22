@@ -10,20 +10,17 @@ import (
 
 // Contrast adjusts the contrast of the child widget.
 //
-// DOC(Widget): The widget to adjust contrast for.
-// DOC(Factor): The factor to adjust contrast by. -1.0 is gray, 1.0 is no change, > 1.0 increases contrast.
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Contrast(
 //	    child = render.Image(src="...", width=64, height=64),
 //	    factor = 2.0,
 //	)
-//
-// EXAMPLE END.
 type Contrast struct {
+	// The widget to adjust contrast for.
 	render.Widget `starlark:"child,required"`
 
+	// The factor to adjust contrast by. -1.0 is gray, 1.0 is no change, > 1.0 increases contrast.
 	Factor float64 `starlark:"factor,required"`
 }
 

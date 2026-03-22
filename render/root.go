@@ -33,16 +33,15 @@ const (
 // displayed past a certain point in time, pass _MaxAge_ to specify
 // an expiration time in seconds. Display devices use this to avoid
 // displaying stale data in the event of e.g. connectivity issues.
-//
-// DOC(Child): Widget to render
-// DOC(Delay): Frame delay in milliseconds
-// DOC(MaxAge): Expiration time in seconds
-// DOC(ShowFullAnimation): Request animation is shown in full, regardless of app cycle speed.
 type Root struct {
-	Child             Widget `starlark:"child,required"`
-	Delay             int32  `starlark:"delay"`
-	MaxAge            int32  `starlark:"max_age"`
-	ShowFullAnimation bool   `starlark:"show_full_animation"`
+	// Widget to render
+	Child Widget `starlark:"child,required"`
+	// Frame delay in milliseconds
+	Delay int32 `starlark:"delay"`
+	// Expiration time in seconds
+	MaxAge int32 `starlark:"max_age"`
+	// Request animation is shown in full, regardless of app cycle speed.
+	ShowFullAnimation bool `starlark:"show_full_animation"`
 
 	maxParallelFrames int
 	maxFrameCount     int

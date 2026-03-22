@@ -29,32 +29,30 @@ const (
 // - `"center"`: align text in the center
 // - `"right"`: align text to the right
 //
-// DOC(Content): The text string to draw
-// DOC(Font): Desired font face
-// DOC(Height): Limits height of the area on which text may be drawn
-// DOC(Width): Limits width of the area on which text may be drawn
-// DOC(LineSpacing): Controls spacing between lines
-// DOC(Color): Desired font color
-// DOC(Align): Text Alignment
-// DOC(WordBreak): If true, long words that exceed the width will be broken to fit
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.WrappedText(
 //	    content="this is a multi-line text string",
 //	    width=50,
 //	    color="#fa0",
 //	)
-//
-// EXAMPLE END.
 type WrappedText struct {
-	Content     string `starlark:"content,required"`
-	Font        string
-	Height      int
-	Width       int
+	// The text string to draw
+	Content string `starlark:"content,required"`
+	// Desired font face
+	Font string
+	// Limits height of the area on which text may be drawn
+	Height int
+	// Limits width of the area on which text may be drawn
+	Width int
+	// Controls spacing between lines
 	LineSpacing int
-	Color       color.Color
-	Align       string
-	WordBreak   bool
+	// Desired font color
+	Color color.Color
+	// Text alignment
+	Align string
+	// If true, long words that exceed the width will be broken to fit
+	WordBreak bool
 
 	face font.Face
 }

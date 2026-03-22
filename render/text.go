@@ -27,23 +27,20 @@ var DefaultFontColor = color.White
 // string. Take a look at the [font documentation](fonts.md) for more
 // information.
 //
-// DOC(Content): The text string to draw
-// DOC(Font): Desired font face
-// DOC(Height): Limits height of the area on which text is drawn
-// DOC(Offset): Shifts position of text vertically.
-// DOC(Color): Desired font color
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Text(content="Tidbyt!", color="#099")
-//
-// EXAMPLE END.
 type Text struct {
+	// The text string to draw
 	Content string `starlark:"content,required"`
-	Font    string
-	Height  int
-	Offset  int
-	Color   color.Color
+	// Desired font face
+	Font string
+	// Limits height of the area on which text is drawn
+	Height int
+	// Shifts position of text vertically.
+	Offset int
+	// Desired font color
+	Color color.Color
 
 	img image.Image
 }

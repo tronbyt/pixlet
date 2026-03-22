@@ -5,11 +5,10 @@ import (
 )
 
 // Shear transforms by shearing by a given X and Y angle in degrees.
-//
-// DOC(XAngle): The angle to shear horizontally in degrees.
-// DOC(YAngle): The angle to shear vertically in degrees.
 type Shear struct {
+	// The angle to shear horizontally in degrees.
 	XAngle float64 `starlark:"x_angle"`
+	// The angle to shear vertically in degrees.
 	YAngle float64 `starlark:"y_angle"`
 }
 

@@ -10,16 +10,13 @@ import (
 
 // Sharpen sharpens the child widget.
 //
-// DOC(Widget): The widget to sharpen.
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	filter.Sharpen(
 //	    child = render.Image(src="...", width=64, height=64),
 //	)
-//
-// EXAMPLE END.
 type Sharpen struct {
+	// The widget to sharpen.
 	render.Widget `starlark:"child,required"`
 }
 

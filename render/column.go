@@ -28,12 +28,7 @@ import (
 // - `"end"`: place children at the right
 // - `"center"`: place children in the center
 //
-// DOC(Children): Child widgets to lay out
-// DOC(Expanded): Column should expand to fill all available vertical space
-// DOC(MainAlign): Alignment along vertical main axis
-// DOC(CrossAlign): Alignment along horizontal cross axis
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Column(
 //	    children=[
@@ -43,9 +38,7 @@ import (
 //	    ],
 //	)
 //
-// # EXAMPLE END
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Column(
 //	    expanded=True,
@@ -57,13 +50,15 @@ import (
 //	        render.Box(width=16, height=4, color="#00a"),
 //	    ],
 //	)
-//
-// EXAMPLE END.
 type Column struct {
-	Children   []Widget `starlark:"children,required"`
-	MainAlign  string   `starlark:"main_align"`
-	CrossAlign string   `starlark:"cross_align"`
-	Expanded   bool
+	// Child widgets to lay out
+	Children []Widget `starlark:"children,required"`
+	// Alignment along vertical main axis
+	MainAlign string `starlark:"main_align"`
+	// Alignment along horizontal cross axis
+	CrossAlign string `starlark:"cross_align"`
+	// Column should expand to fill all available vertical space
+	Expanded bool
 }
 
 func (c Column) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

@@ -70,7 +70,7 @@ Scale transforms by scaling by a given factor.
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `x` | `float / int` | Horizontal scale factor | **Y** |
-| `y` | `float / int` | Vertical scale factor. | **Y** |
+| `y` | `float / int` | Vertical scale factor | **Y** |
 
 ## Shear
 Shear transforms by shearing by a given X and Y angle in degrees.
@@ -181,4 +181,4 @@ Translate transforms by translating by a given offset.
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | `x` | `float / int` | Horizontal offset | **Y** |
-| `y` | `float / int` | Vertical offset. | **Y** |
+| `y` | `float / int` | Vertical offset | **Y** |

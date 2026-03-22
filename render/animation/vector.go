@@ -1,7 +1,9 @@
 package animation
 
 type Vec2f struct {
+	// Horizontal component
 	X float64 `starlark:"x,required"`
+	// Vertical component
 	Y float64 `starlark:"y,required"`
 }
 

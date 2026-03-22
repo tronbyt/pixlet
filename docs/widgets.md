@@ -187,8 +187,6 @@ render.Column(
          render.Box(width=16, height=4, color="#00a"),
     ],
 )
-
-#
 ```
 ![](img/widget_Column_0.gif)
 
@@ -215,7 +213,7 @@ used in text rendering.
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
-| `emoji` | `str` |  | **Y** |
+| `emoji` | `str` | The Unicode emoji sequence to render | **Y** |
 | `width` | `int` | Scale emoji to this width | N |
 | `height` | `int` | Scale emoji to this height | N |
 
@@ -485,7 +483,6 @@ render.Row(
         render.Box(width=14, height=6, color="#0a0"),
         render.Box(width=16, height=4, color="#00a"),
     ],
-
 )
 ```
 ![](img/widget_Row_0.gif)
@@ -602,7 +599,7 @@ Alignment of the text is controlled by passing one of the following `align` valu
 | `width` | `int` | Limits width of the area on which text may be drawn | N |
 | `linespacing` | `int` | Controls spacing between lines | N |
 | `color` | `color` | Desired font color | N |
-| `align` | `str` | Text Alignment | N |
+| `align` | `str` | Text alignment | N |
 | `wordbreak` | `bool` | If true, long words that exceed the width will be broken to fit | N |
 
 #### Example

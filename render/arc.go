@@ -10,16 +10,7 @@ import (
 
 // Arc draws an arc. The arc is centered at (x, y).
 //
-// DOC(X): The x-coordinate of the center of the arc.
-// DOC(Y): The y-coordinate of the center of the arc.
-// DOC(Radius): The radius of the arc.
-// DOC(StartAngle): The starting angle of the arc, in radians.
-// DOC(EndAngle): The ending angle of the arc, in radians.
-// DOC(Color): The color of the arc.
-// DOC(Width): The width of the arc.
-// DOC(AntiAlias): Enables antialiased stroke rendering.
-//
-// EXAMPLE BEGIN
+// Example:
 //
 //	render.Arc(
 //	    x = 10,
@@ -30,19 +21,25 @@ import (
 //	    width = 3,
 //	    color = "#0ff",
 //	)
-//
-// EXAMPLE END.
 type Arc struct {
 	Widget
 
-	X          float64     `starlark:"x,required"`
-	Y          float64     `starlark:"y,required"`
-	Radius     float64     `starlark:"radius,required"`
-	StartAngle float64     `starlark:"start_angle,required"`
-	EndAngle   float64     `starlark:"end_angle,required"`
-	Color      color.Color `starlark:"color,required"`
-	Width      float64     `starlark:"width,required"`
-	AntiAlias  bool        `starlark:"antialias"`
+	// The x-coordinate of the center of the arc.
+	X float64 `starlark:"x,required"`
+	// The y-coordinate of the center of the arc.
+	Y float64 `starlark:"y,required"`
+	// The radius of the arc.
+	Radius float64 `starlark:"radius,required"`
+	// The starting angle of the arc, in radians.
+	StartAngle float64 `starlark:"start_angle,required"`
+	// The ending angle of the arc, in radians.
+	EndAngle float64 `starlark:"end_angle,required"`
+	// The color of the arc.
+	Color color.Color `starlark:"color,required"`
+	// The width of the arc.
+	Width float64 `starlark:"width,required"`
+	// Enables antialiased stroke rendering.
+	AntiAlias bool `starlark:"antialias"`
 }
 
 func (a Arc) getBounds() (float64, float64, float64, float64) {

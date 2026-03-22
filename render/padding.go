@@ -20,16 +20,15 @@ type Insets struct {
 // will be placed on all sides of the child. If it's a 4-tuple `(left,
 // top, right, bottom)`, then padding will be placed on the sides
 // accordingly.
-//
-// DOC(Child): The Widget to place padding around
-// DOC(Expanded): This is a confusing parameter
-// DOC(Pad): Padding around the child
-// DOC(Color): Background color.
 type Padding struct {
-	Child    Widget `starlark:"child,required"`
-	Pad      Insets
+	// The Widget to place padding around
+	Child Widget `starlark:"child,required"`
+	// Padding around the child
+	Pad Insets
+	// This is a confusing parameter
 	Expanded bool
-	Color    color.Color
+	// Background color.
+	Color color.Color
 }
 
 func (p Padding) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {

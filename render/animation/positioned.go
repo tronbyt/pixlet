@@ -12,26 +12,25 @@ import (
 // AnimatedPositioned animates a widget from start to end coordinates.
 //
 // **DEPRECATED**: Please use `animation.Transformation` instead.
-//
-// DOC(Child): Widget to animate
-// DOC(XStart): Horizontal start coordinate
-// DOC(XEnd): Horizontal end coordinate
-// DOC(YStart): Vertical start coordinate
-// DOC(YEnd): Vertical end coordinate
-// DOC(Duration): Duration of animation in frames
-// DOC(Curve): Easing curve to use, default is 'linear'
-// DOC(Delay): Delay before animation in frames
-// DOC(Hold): Delay after animation in frames.
 type AnimatedPositioned struct {
-	Child    render.Widget `starlark:"child,required"`
-	XStart   int           `starlark:"x_start"`
-	XEnd     int           `starlark:"x_end"`
-	YStart   int           `starlark:"y_start"`
-	YEnd     int           `starlark:"y_end"`
-	Duration int           `starlark:"duration,required"`
-	Curve    Curve         `starlark:"curve,required"`
-	Delay    int           `starlark:"delay"`
-	Hold     int           `starlark:"hold"`
+	// Widget to animate
+	Child render.Widget `starlark:"child,required"`
+	// Horizontal start coordinate
+	XStart int `starlark:"x_start"`
+	// Horizontal end coordinate
+	XEnd int `starlark:"x_end"`
+	// Vertical start coordinate
+	YStart int `starlark:"y_start"`
+	// Vertical end coordinate
+	YEnd int `starlark:"y_end"`
+	// Duration of animation in frames
+	Duration int `starlark:"duration,required"`
+	// Easing curve to use, default is 'linear'
+	Curve Curve `starlark:"curve,required"`
+	// Delay before animation in frames
+	Delay int `starlark:"delay"`
+	// Delay after animation in frames.
+	Hold int `starlark:"hold"`
 }
 
 func (o AnimatedPositioned) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
