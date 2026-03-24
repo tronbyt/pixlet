@@ -1,9 +1,11 @@
 package encode
 
 import (
+	"context"
 	"fmt"
 	"image"
 	"image/draw"
+	"iter"
 	"runtime"
 	"sync"
 	"time"
@@ -29,21 +31,12 @@ const (
 
 // EncodeAVIF renders screens to AVIF. Optionally pass filters for postprocessing
 // each individual frame.
-func (s *Screens) EncodeAVIF(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
+func (s *Screens) EncodeAVIF(ctx context.Context, maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
 	avifOnce.Do(func() {
 		avifErr = initAvif()
 	})
 	if avifErr != nil {
 		return nil, avifErr
-	}
-
-	images, err := s.render(filters...)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(images) == 0 {
-		return []byte{}, nil
 	}
 
 	chroma := avifPixelFormatYuv444
@@ -59,7 +52,16 @@ func (s *Screens) EncodeAVIF(maxDuration time.Duration, filters ...ImageFilter) 
 	encoder.HeaderFormat = AVIF_HEADER_MINI
 	encoder.Timescale = uint64(time.Second / time.Millisecond)
 
-	for _, im := range images {
+	next, stop := iter.Pull(s.render(ctx, filters...))
+	defer stop()
+
+	im, ok := next()
+	if !ok {
+		return []byte{}, nil
+	}
+
+	isFirst := true
+	for {
 		frameDuration := time.Duration(s.delay) * time.Millisecond
 
 		if maxDuration > 0 {
@@ -72,31 +74,43 @@ func (s *Screens) EncodeAVIF(maxDuration time.Duration, filters ...ImageFilter) 
 		i := imageToRGBA(im)
 
 		img := avifImageCreate(i.Bounds().Dx(), i.Bounds().Dy(), 8, chroma)
-		defer avifImageDestroy(img)
 
 		var rgb avifRGBImage
 		avifRGBImageSetDefaults(&rgb, img)
 
 		rgb.MaxThreads = int32(runtime.NumCPU())
 		rgb.AlphaPremultiplied = 1
-		rgb.Pixels = (*uint8)(&i.Pix[0])
+		rgb.Pixels = &i.Pix[0]
 		rgb.RowBytes = uint32(i.Stride)
 
 		if ret := avifImageRGBToYUV(img, &rgb); ret != AVIF_RESULT_OK {
+			avifImageDestroy(img)
 			return nil, fmt.Errorf("error converting RGB to YUV: %s", avifResultToString(ret))
 		}
 
+		nextIm, nextOk := next()
+
 		flags := 0
-		if len(images) == 1 {
+		if isFirst && !nextOk {
 			flags = avifAddImageFlagSingle
 		}
 		if ret := avifEncoderAddImage(encoder, img, uint64(frameDuration), flags); ret != AVIF_RESULT_OK {
+			avifImageDestroy(img)
 			return nil, fmt.Errorf("error adding frame: %s", avifResultToString(ret))
 		}
+		avifImageDestroy(img)
 
 		if maxDuration > 0 && remainingDuration <= 0 {
 			break
 		}
+		if !nextOk {
+			break
+		}
+		im = nextIm
+		isFirst = false
+	}
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
 	}
 
 	var output avifRWData

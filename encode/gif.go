@@ -2,6 +2,7 @@ package encode
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"image"
 	"image/color"
@@ -14,23 +15,14 @@ import (
 
 // EncodeGIF renders a screen to GIF. Optionally pass filters for postprocessing
 // each individual frame.
-func (s *Screens) EncodeGIF(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
-	images, err := s.render(filters...)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(images) == 0 {
-		return []byte{}, nil
-	}
-
-	g := &gif.GIF{}
-
+func (s *Screens) EncodeGIF(ctx context.Context, maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
+	g := new(gif.GIF)
 	remainingDuration := maxDuration
-	for imIdx, im := range images {
+
+	for im := range s.render(ctx, filters...) {
 		imRGBA, ok := im.(*image.RGBA)
 		if !ok {
-			return nil, fmt.Errorf("image %d is %T, require RGBA", imIdx, im)
+			return nil, fmt.Errorf("image is %T, require RGBA", im)
 		}
 
 		palette := quantize.MedianCutQuantizer{}.Quantize(make([]color.Color, 0, 256), im)
@@ -53,9 +45,15 @@ func (s *Screens) EncodeGIF(maxDuration time.Duration, filters ...ImageFilter) (
 		}
 	}
 
-	buf := &bytes.Buffer{}
-	err = gif.EncodeAll(buf, g)
-	if err != nil {
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
+	if len(g.Image) == 0 {
+		return []byte{}, nil
+	}
+
+	buf := new(bytes.Buffer)
+	if err := gif.EncodeAll(buf, g); err != nil {
 		return nil, fmt.Errorf("encoding: %w", err)
 	}
 

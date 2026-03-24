@@ -3,6 +3,7 @@
 package encode
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -41,37 +42,37 @@ func initWebPLevel() {
 
 // EncodeWebP renders a screen to WebP. Optionally pass filters for
 // postprocessing each individual frame.
-func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
-	images, err := s.render(filters...)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(images) == 0 {
-		return []byte{}, nil
-	}
-
+func (s *Screens) EncodeWebP(ctx context.Context, maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
 	initWebPLevel()
-
-	bounds := images[0].Bounds()
-	anim, err := webp.NewAnimationEncoder(
-		bounds.Dx(),
-		bounds.Dy(),
-		WebPKMin,
-		WebPKMax,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", "initializing encoder", err)
-	}
-	defer anim.Close()
-
-	remainingDuration := maxDuration
 	level := int(webpLevel.Load())
+	remainingDuration := maxDuration
+
 	config, err := webp.ConfigLosslessPreset(level)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", "configuring encoder", err)
 	}
-	for _, im := range images {
+
+	var anim *webp.AnimationEncoder
+	defer func() {
+		if anim != nil {
+			anim.Close()
+		}
+	}()
+
+	var frameCount int
+	for im := range s.render(ctx, filters...) {
+		if anim == nil {
+			bounds := im.Bounds()
+			if anim, err = webp.NewAnimationEncoder(
+				bounds.Dx(),
+				bounds.Dy(),
+				WebPKMin,
+				WebPKMax,
+			); err != nil {
+				return nil, fmt.Errorf("%s: %w", "initializing encoder", err)
+			}
+		}
+
 		frameDuration := time.Duration(s.delay) * time.Millisecond
 
 		if maxDuration > 0 {
@@ -84,10 +85,18 @@ func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) 
 		if err := anim.AddFrame(im, frameDuration, config); err != nil {
 			return nil, fmt.Errorf("%s: %w", "adding frame", err)
 		}
+		frameCount++
 
 		if maxDuration > 0 && remainingDuration <= 0 {
 			break
 		}
+	}
+
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
+	if frameCount == 0 {
+		return []byte{}, nil
 	}
 
 	buf, err := anim.Assemble()

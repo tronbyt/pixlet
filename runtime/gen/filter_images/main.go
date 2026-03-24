@@ -151,7 +151,7 @@ def main():
 				return err
 			}
 
-			webp, err := encode.ScreensFromRoots(roots, 64, 74).EncodeWebP(15000, encode.Magnify(3))
+			webp, err := encode.ScreensFromRoots(roots, 64, 74).EncodeWebP(context.Background(), 15000, encode.Magnify(3))
 			if err != nil {
 				return err
 			}
