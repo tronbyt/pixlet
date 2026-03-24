@@ -176,23 +176,21 @@ func (f RenderFilters) String() string {
 
 // Chain applies a sequence of ImageFilters in order.
 func Chain(filters ...ImageFilter) ImageFilter {
-	return func(img image.Image) (image.Image, error) {
-		var err error
-		for _, f := range filters {
-			img, err = f(img)
-			if err != nil {
-				return nil, fmt.Errorf("filter failed: %w", err)
+	return func(img image.Image) image.Image {
+		for _, fn := range filters {
+			if fn != nil {
+				img = fn(img)
 			}
 		}
-		return img, nil
+		return img
 	}
 }
 
 // Magnify enlarges an image by an integer factor.
 func Magnify(factor int) ImageFilter {
-	return func(input image.Image) (image.Image, error) {
+	return func(input image.Image) image.Image {
 		if factor <= 1 {
-			return input, nil
+			return input
 		}
 		in, ok := input.(*image.RGBA)
 		if !ok {
@@ -224,13 +222,13 @@ func Magnify(factor int) ImageFilter {
 				}
 			}
 		}
-		return out, nil
+		return out
 	}
 }
 
 // ColorMatrix applies a 3x3 color transformation matrix to the RGB values of an image.
 func ColorMatrix(matrix [3][3]float32) ImageFilter {
-	return func(img image.Image) (image.Image, error) {
+	return func(img image.Image) image.Image {
 		bounds := img.Bounds()
 		out := image.NewRGBA(bounds)
 
@@ -253,7 +251,7 @@ func ColorMatrix(matrix [3][3]float32) ImageFilter {
 				})
 			}
 		}
-		return out, nil
+		return out
 	}
 }
 

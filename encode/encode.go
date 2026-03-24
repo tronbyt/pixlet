@@ -1,9 +1,11 @@
 package encode
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"image"
+	"iter"
 
 	"github.com/vmihailenco/msgpack/v5"
 
@@ -19,7 +21,6 @@ const (
 
 type Screens struct {
 	roots             []render.Root
-	images            []image.Image
 	delay             int32
 	MaxAge            int32
 	ShowFullAnimation bool
@@ -27,7 +28,7 @@ type Screens struct {
 	height            int
 }
 
-type ImageFilter func(image.Image) (image.Image, error)
+type ImageFilter func(image.Image) image.Image
 
 func ScreensFromRoots(roots []render.Root, width int, height int) *Screens {
 	screens := Screens{
@@ -49,18 +50,9 @@ func ScreensFromRoots(roots []render.Root, width int, height int) *Screens {
 	return &screens
 }
 
-func ScreensFromImages(images ...image.Image) *Screens {
-	screens := Screens{
-		images: images,
-		delay:  DefaultScreenDelayMillis,
-		MaxAge: DefaultMaxAgeSeconds,
-	}
-	return &screens
-}
-
 // Empty returns true if there are no render roots or images in this screen.
 func (s *Screens) Empty() bool {
-	return len(s.roots) == 0 && len(s.images) == 0
+	return len(s.roots) == 0
 }
 
 // Hash returns a hash of the render roots for this screen. This can be used for
@@ -78,12 +70,6 @@ func (s *Screens) Hash() ([]byte, error) {
 		MaxAge: s.MaxAge,
 	}
 
-	if len(s.roots) == 0 {
-		// there are no roots, so this might have been a screen created directly
-		// from images. if so, consider the images in the hash.
-		hashable.Images = s.images
-	}
-
 	j, err := msgpack.Marshal(hashable)
 	if err != nil {
 		return nil, fmt.Errorf("marshaling render tree to JSON: %w", err)
@@ -93,28 +79,20 @@ func (s *Screens) Hash() ([]byte, error) {
 	return h[:], nil
 }
 
-func (s *Screens) render(filters ...ImageFilter) ([]image.Image, error) {
-	if s.images == nil {
-		s.images = render.PaintRoots(s.width, s.height, true, s.roots...)
-	}
+func (s *Screens) render(ctx context.Context, filters ...ImageFilter) iter.Seq[image.Image] {
+	return func(yield func(image.Image) bool) {
+		for i := range s.roots {
+			for img := range s.roots[i].Paint(ctx, s.width, s.height, true) {
+				for _, fn := range filters {
+					if fn != nil {
+						img = fn(img)
+					}
+				}
 
-	if len(filters) == 0 {
-		return s.images, nil
-	}
-
-	images := make([]image.Image, 0, len(s.images))
-	for _, img := range s.images {
-		filtered := img
-		for _, f := range filters {
-			if f != nil {
-				var err error
-				if filtered, err = f(filtered); err != nil {
-					return nil, err
+				if !yield(img) {
+					return
 				}
 			}
 		}
-		images = append(images, filtered)
 	}
-
-	return images, nil
 }

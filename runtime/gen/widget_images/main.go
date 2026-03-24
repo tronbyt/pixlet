@@ -16,7 +16,7 @@ import (
 
 const Magnification = 7
 
-func Magnify(input image.Image) (image.Image, error) {
+func Magnify(input image.Image) image.Image {
 	in, ok := input.(*image.RGBA)
 	if !ok {
 		panic("not RGBA")
@@ -37,7 +37,7 @@ func Magnify(input image.Image) (image.Image, error) {
 		}
 	}
 
-	return out, nil
+	return out
 }
 
 func main() {
@@ -78,7 +78,7 @@ def main():
 			panic(err)
 		}
 
-		gif, err := encode.ScreensFromRoots(roots, 64, 32).EncodeGIF(15000, Magnify)
+		gif, err := encode.ScreensFromRoots(roots, 64, 32).EncodeGIF(context.Background(), 15000, Magnify)
 		if err != nil {
 			panic(err)
 		}

@@ -4,8 +4,10 @@ package encode
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"image"
+	"slices"
 	"time"
 
 	"github.com/HugoSmits86/nativewebp"
@@ -13,10 +15,10 @@ import (
 
 // Renders a screen to WebP. Optionally pass filters for
 // postprocessing each individual frame.
-func (s *Screens) EncodeWebP(maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
-	images, err := s.render(filters...)
-	if err != nil {
-		return nil, err
+func (s *Screens) EncodeWebP(ctx context.Context, maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
+	images := slices.Collect(s.render(ctx, filters...))
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
 	}
 
 	if len(images) == 0 {

@@ -435,11 +435,11 @@ func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfi
 	default:
 		fallthrough
 	case ImageWebP:
-		img, err = screens.EncodeWebP(maxDuration, filter)
+		img, err = screens.EncodeWebP(ctx, maxDuration, filter)
 	case ImageGIF:
-		img, err = screens.EncodeGIF(maxDuration, filter)
+		img, err = screens.EncodeGIF(ctx, maxDuration, filter)
 	case ImageAVIF:
-		img, err = screens.EncodeAVIF(maxDuration, filter)
+		img, err = screens.EncodeAVIF(ctx, maxDuration, filter)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("error rendering: %w", err)

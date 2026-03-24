@@ -1,8 +1,10 @@
 package render
 
 import (
+	"context"
 	"image"
 	"image/color"
+	"iter"
 	"runtime"
 	"sync"
 
@@ -49,6 +51,8 @@ type Root struct {
 
 type RootPaintOption func(*Root)
 
+// WithMaxParallelFrames sets the maximum number of frames rendered concurrently.
+// If <=0, Paint uses runtime.NumCPU().
 func WithMaxParallelFrames(maxFrames int) RootPaintOption {
 	return func(r *Root) {
 		r.maxParallelFrames = maxFrames
@@ -66,56 +70,116 @@ func WithMaxFrameCount(maxFrames int) RootPaintOption {
 
 // Paint renders the child widget onto the frame. It doesn't do
 // any resizing or alignment.
-func (r Root) Paint(width, height int, solidBackground bool, opts ...RootPaintOption) []image.Image {
-	for _, opt := range opts {
-		opt(&r)
-	}
+func (r Root) Paint(ctx context.Context, width, height int, solidBackground bool, opts ...RootPaintOption) iter.Seq[image.Image] {
+	return func(yield func(image.Image) bool) {
+		for _, opt := range opts {
+			opt(&r)
+		}
 
-	if r.maxFrameCount <= 0 {
-		r.maxFrameCount = DefaultMaxFrameCount
-	}
+		if r.maxFrameCount <= 0 {
+			r.maxFrameCount = DefaultMaxFrameCount
+		}
 
-	numFrames := min(r.Child.FrameCount(image.Rect(0, 0, width, height)), r.maxFrameCount)
+		numFrames := min(r.Child.FrameCount(image.Rect(0, 0, width, height)), r.maxFrameCount)
+		if numFrames == 0 {
+			return
+		}
 
-	frames := make([]image.Image, numFrames)
+		parallelism := r.maxParallelFrames
+		if parallelism <= 0 {
+			parallelism = runtime.NumCPU()
+		}
+		parallelism = max(1, min(parallelism, numFrames))
 
-	parallelism := r.maxParallelFrames
-	if parallelism <= 0 {
-		parallelism = runtime.NumCPU()
-	}
+		var wg sync.WaitGroup
+		defer wg.Wait()
 
-	var wg sync.WaitGroup
-	sem := make(chan struct{}, parallelism)
-	for i := range numFrames {
-		sem <- struct{}{}
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		type frameResult struct {
+			index int
+			img   image.Image
+		}
+
+		jobs := make(chan int)
+		results := make(chan frameResult, parallelism)
+		sema := make(chan struct{}, parallelism)
+
+		// Spawn parallel renderers
+		for range parallelism {
+			wg.Go(func() {
+				for frame := range jobs {
+					dc := gg.NewContext(width, height)
+					if solidBackground {
+						dc.SetColor(color.Black)
+						dc.Clear()
+					}
+
+					dc.Push()
+					r.Child.Paint(dc, image.Rect(0, 0, width, height), frame)
+					dc.Pop()
+
+					select {
+					case <-ctx.Done():
+						return
+					case results <- frameResult{index: frame, img: dc.Image()}:
+					}
+				}
+			})
+		}
+
+		// Queue a job for each frame
 		wg.Go(func() {
-			defer func() {
-				<-sem
-			}()
+			defer close(jobs)
+			for i := range numFrames {
+				select {
+				case <-ctx.Done():
+					return
+				case sema <- struct{}{}:
+				}
 
-			dc := gg.NewContext(width, height)
-			if solidBackground {
-				dc.SetColor(color.Black)
-				dc.Clear()
+				select {
+				case <-ctx.Done():
+					return
+				case jobs <- i:
+				}
+			}
+		})
+
+		// Yield rendered images in order
+		pending := make(map[int]image.Image, parallelism)
+		for nextToYield := 0; nextToYield < numFrames; {
+			var res frameResult
+			select {
+			case <-ctx.Done():
+				return
+			case res = <-results:
 			}
 
-			dc.Push()
-			r.Child.Paint(dc, image.Rect(0, 0, width, height), i)
-			dc.Pop()
-			frames[i] = dc.Image()
-		})
+			if res.index == nextToYield {
+				if !yield(res.img) {
+					return
+				}
+				<-sema
+				nextToYield++
+
+				for {
+					img, ok := pending[nextToYield]
+					if !ok {
+						break
+					}
+
+					delete(pending, nextToYield)
+					if !yield(img) {
+						return
+					}
+					<-sema
+					nextToYield++
+				}
+			} else {
+				pending[res.index] = res.img
+			}
+		}
 	}
-
-	wg.Wait()
-	return frames
-}
-
-// PaintRoots draws >=1 Roots which must all have the same dimensions.
-func PaintRoots(width, height int, solidBackground bool, roots ...Root) []image.Image {
-	var images = make([]image.Image, 0, len(roots))
-	for _, r := range roots {
-		images = append(images, r.Paint(width, height, solidBackground)...)
-	}
-
-	return images
 }
