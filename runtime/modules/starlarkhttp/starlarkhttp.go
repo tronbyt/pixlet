@@ -193,8 +193,7 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 }
 
 func setQueryParams(rawurl *string, params *starlark.Dict) error {
-	keys := params.Keys()
-	if len(keys) == 0 {
+	if params.Len() == 0 {
 		return nil
 	}
 
@@ -204,25 +203,22 @@ func setQueryParams(rawurl *string, params *starlark.Dict) error {
 	}
 
 	q := u.Query()
-	for _, key := range keys {
-		keystr, err := AsString(key)
+	for key, val := range params.Entries() {
+		strKey, err := AsString(key)
 		if err != nil {
 			return err
 		}
 
-		val, _, err := params.Get(key)
-		if err != nil {
-			return err
-		}
 		if val.Type() != "string" {
 			return fmt.Errorf("expected param value for key '%s' to be a string. got: '%s'", key, val.Type())
 		}
-		valstr, err := AsString(val)
+
+		strVal, err := AsString(val)
 		if err != nil {
 			return err
 		}
 
-		q.Set(keystr, valstr)
+		q.Set(strKey, strVal)
 	}
 
 	u.RawQuery = q.Encode()
@@ -231,21 +227,25 @@ func setQueryParams(rawurl *string, params *starlark.Dict) error {
 }
 
 func setAuth(req *http.Request, auth starlark.Tuple) error {
-	if len(auth) == 0 {
+	switch len(auth) {
+	case 0:
 		return nil
-	} else if len(auth) == 2 {
+	case 2:
 		username, err := AsString(auth[0])
 		if err != nil {
 			return fmt.Errorf("parsing auth username string: %w", err)
 		}
+
 		password, err := AsString(auth[1])
 		if err != nil {
 			return fmt.Errorf("parsing auth password string: %w", err)
 		}
+
 		req.SetBasicAuth(username, password)
 		return nil
+	default:
+		return fmt.Errorf("expected two values for auth params tuple")
 	}
-	return fmt.Errorf("expected two values for auth params tuple")
 }
 
 func setStandardHeaders(req *http.Request, thread *starlark.Thread, ttl starlark.Int) error {
@@ -269,30 +269,26 @@ func getAppIdentifier(thread *starlark.Thread) string {
 }
 
 func setHeaders(req *http.Request, headers *starlark.Dict) error {
-	keys := headers.Keys()
-	if len(keys) == 0 {
+	if headers.Len() == 0 {
 		return nil
 	}
 
-	for _, key := range keys {
-		keystr, err := AsString(key)
+	for key, val := range headers.Entries() {
+		strKey, err := AsString(key)
 		if err != nil {
 			return err
 		}
 
-		val, _, err := headers.Get(key)
-		if err != nil {
-			return err
-		}
 		if val.Type() != "string" {
 			return fmt.Errorf("expected param value for key '%s' to be a string. got: '%s'", key, val.Type())
 		}
-		valstr, err := AsString(val)
+
+		strVal, err := AsString(val)
 		if err != nil {
 			return err
 		}
 
-		req.Header.Add(keystr, valstr)
+		req.Header.Add(strKey, strVal)
 	}
 
 	return nil
@@ -329,25 +325,22 @@ func SetBody(req *http.Request, body starlark.String, formData *starlark.Dict, f
 
 	if formData != nil && formData.Len() > 0 {
 		form := url.Values{}
-		for _, key := range formData.Keys() {
-			keystr, err := AsString(key)
+		for key, val := range formData.Entries() {
+			strKey, err := AsString(key)
 			if err != nil {
 				return err
 			}
 
-			val, _, err := formData.Get(key)
-			if err != nil {
-				return err
-			}
 			if val.Type() != "string" {
 				return fmt.Errorf("expected param value for key '%s' to be a string. got: '%s'", key, val.Type())
 			}
-			valstr, err := AsString(val)
+
+			strVal, err := AsString(val)
 			if err != nil {
 				return err
 			}
 
-			form.Add(keystr, valstr)
+			form.Add(strKey, strVal)
 		}
 
 		var contentType string
