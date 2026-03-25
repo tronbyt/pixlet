@@ -33,7 +33,6 @@ type AnimatedPositioned struct {
 
 	starlarkChild starlark.Value
 	starlarkCurve starlark.Value
-	frame_count   *starlark.Builtin
 }
 
 func newAnimatedPositioned(
@@ -135,8 +134,6 @@ func newAnimatedPositioned(
 	}
 	w.Hold = int(holdInt)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", animatedpositionedFrameCount)
-
 	return w, nil
 }
 
@@ -179,7 +176,7 @@ func (w *AnimatedPositioned) Attr(name string) (starlark.Value, error) {
 	case "hold":
 		return starlark.MakeInt(int(w.Hold)), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", animatedpositionedFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -634,7 +631,6 @@ type Transformation struct {
 	starlarkDirection starlark.String
 	starlarkFillMode  starlark.String
 	starlarkRounding  starlark.String
-	frame_count       *starlark.Builtin
 }
 
 func newTransformation(
@@ -777,7 +773,6 @@ func newTransformation(
 
 	w.WaitForChild = bool(wait_for_child)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", transformationFrameCount)
 	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
@@ -830,7 +825,7 @@ func (w *Transformation) Attr(name string) (starlark.Value, error) {
 	case "wait_for_child":
 		return starlark.Bool(w.WaitForChild), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", transformationFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}

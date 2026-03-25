@@ -43,7 +43,6 @@ type Animation struct {
 	render.Animation
 
 	starlarkChildren *starlark.List
-	frame_count      *starlark.Builtin
 }
 
 func newAnimation(
@@ -83,8 +82,6 @@ func newAnimation(
 	}
 	w.starlarkChildren = children
 
-	w.frame_count = starlark.NewBuiltin("frame_count", animationFrameCount)
-
 	return w, nil
 }
 
@@ -103,7 +100,7 @@ func (w *Animation) Attr(name string) (starlark.Value, error) {
 	case "children":
 		return w.starlarkChildren, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", animationFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -173,7 +170,6 @@ type Arc struct {
 	starlarkEndAngle   starlark.Value
 	starlarkColor      starlark.Value
 	starlarkWidth      starlark.Value
-	frame_count        *starlark.Builtin
 }
 
 func newArc(
@@ -265,8 +261,6 @@ func newArc(
 
 	w.AntiAlias = bool(antialias)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", arcFrameCount)
-
 	return w, nil
 }
 
@@ -306,7 +300,7 @@ func (w *Arc) Attr(name string) (starlark.Value, error) {
 	case "antialias":
 		return starlark.Bool(w.AntiAlias), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", arcFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -371,7 +365,6 @@ type Box struct {
 
 	starlarkChild starlark.Value
 	starlarkColor starlark.Value
-	frame_count   *starlark.Builtin
 }
 
 func newBox(
@@ -443,8 +436,6 @@ func newBox(
 		}
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", boxFrameCount)
-
 	return w, nil
 }
 
@@ -475,7 +466,7 @@ func (w *Box) Attr(name string) (starlark.Value, error) {
 	case "color":
 		return w.starlarkColor, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", boxFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -540,7 +531,6 @@ type Circle struct {
 
 	starlarkColor starlark.Value
 	starlarkChild starlark.Value
-	frame_count   *starlark.Builtin
 }
 
 func newCircle(
@@ -596,8 +586,6 @@ func newCircle(
 		w.starlarkChild = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", circleFrameCount)
-
 	return w, nil
 }
 
@@ -622,7 +610,7 @@ func (w *Circle) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkChild, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", circleFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -686,7 +674,6 @@ type Column struct {
 	render.Column
 
 	starlarkChildren *starlark.List
-	frame_count      *starlark.Builtin
 }
 
 func newColumn(
@@ -738,8 +725,6 @@ func newColumn(
 
 	w.Expanded = bool(expanded)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", columnFrameCount)
-
 	return w, nil
 }
 
@@ -767,7 +752,7 @@ func (w *Column) Attr(name string) (starlark.Value, error) {
 	case "expanded":
 		return starlark.Bool(w.Expanded), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", columnFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -829,9 +814,6 @@ func columnFrameCount(
 
 type Emoji struct {
 	render.Emoji
-
-	size        *starlark.Builtin
-	frame_count *starlark.Builtin
 }
 
 func newEmoji(
@@ -872,8 +854,6 @@ func newEmoji(
 	}
 	w.Height = int(heightInt)
 
-	w.size = starlark.NewBuiltin("size", emojiSize)
-	w.frame_count = starlark.NewBuiltin("frame_count", emojiFrameCount)
 	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
@@ -902,9 +882,9 @@ func (w *Emoji) Attr(name string) (starlark.Value, error) {
 	case "height":
 		return starlark.MakeInt(int(w.Height)), nil
 	case "size":
-		return w.size.BindReceiver(w), nil
+		return starlark.NewBuiltin("size", emojiSize).BindReceiver(w), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", emojiFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -980,9 +960,6 @@ func emojiFrameCount(
 
 type Image struct {
 	render.Image
-
-	size        *starlark.Builtin
-	frame_count *starlark.Builtin
 }
 
 func newImage(
@@ -1032,8 +1009,6 @@ func newImage(
 	}
 	w.HoldFrames = int(hold_framesInt)
 
-	w.size = starlark.NewBuiltin("size", imageSize)
-	w.frame_count = starlark.NewBuiltin("frame_count", imageFrameCount)
 	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
@@ -1068,9 +1043,9 @@ func (w *Image) Attr(name string) (starlark.Value, error) {
 	case "hold_frames":
 		return starlark.MakeInt(int(w.HoldFrames)), nil
 	case "size":
-		return w.size.BindReceiver(w), nil
+		return starlark.NewBuiltin("size", imageSize).BindReceiver(w), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", imageFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1153,7 +1128,6 @@ type Line struct {
 	starlarkY2    starlark.Value
 	starlarkColor starlark.Value
 	starlarkWidth starlark.Value
-	frame_count   *starlark.Builtin
 }
 
 func newLine(
@@ -1236,8 +1210,6 @@ func newLine(
 
 	w.AntiAlias = bool(antialias)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", lineFrameCount)
-
 	return w, nil
 }
 
@@ -1274,7 +1246,7 @@ func (w *Line) Attr(name string) (starlark.Value, error) {
 	case "antialias":
 		return starlark.Bool(w.AntiAlias), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", lineFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1338,7 +1310,6 @@ type Marquee struct {
 	render.Marquee
 
 	starlarkChild starlark.Value
-	frame_count   *starlark.Builtin
 }
 
 func newMarquee(
@@ -1421,8 +1392,6 @@ func newMarquee(
 	}
 	w.Delay = int(delayInt)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", marqueeFrameCount)
-
 	return w, nil
 }
 
@@ -1462,7 +1431,7 @@ func (w *Marquee) Attr(name string) (starlark.Value, error) {
 	case "delay":
 		return starlark.MakeInt(int(w.Delay)), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", marqueeFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1528,7 +1497,6 @@ type Padding struct {
 	starlarkChild starlark.Value
 	starlarkPad   starlark.Value
 	starlarkColor starlark.Value
-	frame_count   *starlark.Builtin
 }
 
 func newPadding(
@@ -1621,8 +1589,6 @@ func newPadding(
 		}
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", paddingFrameCount)
-
 	return w, nil
 }
 
@@ -1650,7 +1616,7 @@ func (w *Padding) Attr(name string) (starlark.Value, error) {
 	case "color":
 		return w.starlarkColor, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", paddingFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1715,7 +1681,6 @@ type PieChart struct {
 
 	starlarkColors  *starlark.List
 	starlarkWeights *starlark.List
-	frame_count     *starlark.Builtin
 }
 
 func newPieChart(
@@ -1762,8 +1727,6 @@ func newPieChart(
 	}
 	w.Diameter = int(diameterInt)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", piechartFrameCount)
-
 	return w, nil
 }
 
@@ -1788,7 +1751,7 @@ func (w *PieChart) Attr(name string) (starlark.Value, error) {
 	case "diameter":
 		return starlark.MakeInt(int(w.Diameter)), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", piechartFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1858,7 +1821,6 @@ type Plot struct {
 	starlarkYLim              starlark.Tuple
 	starlarkFillColor         starlark.Value
 	starlarkFillColorInverted starlark.Value
-	frame_count               *starlark.Builtin
 }
 
 func newPlot(
@@ -1982,8 +1944,6 @@ func newPlot(
 		}
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", plotFrameCount)
-
 	return w, nil
 }
 
@@ -2032,7 +1992,7 @@ func (w *Plot) Attr(name string) (starlark.Value, error) {
 	case "fill_color_inverted":
 		return w.starlarkFillColorInverted, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", plotFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -2099,7 +2059,6 @@ type Polygon struct {
 	starlarkFillColor   starlark.Value
 	starlarkStrokeColor starlark.Value
 	starlarkStrokeWidth starlark.Value
-	frame_count         *starlark.Builtin
 }
 
 func newPolygon(
@@ -2167,8 +2126,6 @@ func newPolygon(
 
 	w.AntiAlias = bool(antialias)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", polygonFrameCount)
-
 	return w, nil
 }
 
@@ -2199,7 +2156,7 @@ func (w *Polygon) Attr(name string) (starlark.Value, error) {
 	case "antialias":
 		return starlark.Bool(w.AntiAlias), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", polygonFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -2362,7 +2319,6 @@ type Row struct {
 	render.Row
 
 	starlarkChildren *starlark.List
-	frame_count      *starlark.Builtin
 }
 
 func newRow(
@@ -2414,8 +2370,6 @@ func newRow(
 
 	w.Expanded = bool(expanded)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", rowFrameCount)
-
 	return w, nil
 }
 
@@ -2443,7 +2397,7 @@ func (w *Row) Attr(name string) (starlark.Value, error) {
 	case "expanded":
 		return starlark.Bool(w.Expanded), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", rowFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -2507,7 +2461,6 @@ type Sequence struct {
 	render.Sequence
 
 	starlarkChildren *starlark.List
-	frame_count      *starlark.Builtin
 }
 
 func newSequence(
@@ -2547,8 +2500,6 @@ func newSequence(
 	}
 	w.starlarkChildren = children
 
-	w.frame_count = starlark.NewBuiltin("frame_count", sequenceFrameCount)
-
 	return w, nil
 }
 
@@ -2567,7 +2518,7 @@ func (w *Sequence) Attr(name string) (starlark.Value, error) {
 	case "children":
 		return w.starlarkChildren, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", sequenceFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -2631,7 +2582,6 @@ type Stack struct {
 	render.Stack
 
 	starlarkChildren *starlark.List
-	frame_count      *starlark.Builtin
 }
 
 func newStack(
@@ -2671,8 +2621,6 @@ func newStack(
 	}
 	w.starlarkChildren = children
 
-	w.frame_count = starlark.NewBuiltin("frame_count", stackFrameCount)
-
 	return w, nil
 }
 
@@ -2691,7 +2639,7 @@ func (w *Stack) Attr(name string) (starlark.Value, error) {
 	case "children":
 		return w.starlarkChildren, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", stackFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -2755,8 +2703,6 @@ type Text struct {
 	render.Text
 
 	starlarkColor starlark.Value
-	size          *starlark.Builtin
-	frame_count   *starlark.Builtin
 }
 
 func newText(
@@ -2814,8 +2760,6 @@ func newText(
 		}
 	}
 
-	w.size = starlark.NewBuiltin("size", textSize)
-	w.frame_count = starlark.NewBuiltin("frame_count", textFrameCount)
 	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
@@ -2850,9 +2794,9 @@ func (w *Text) Attr(name string) (starlark.Value, error) {
 	case "color":
 		return w.starlarkColor, nil
 	case "size":
-		return w.size.BindReceiver(w), nil
+		return starlark.NewBuiltin("size", textSize).BindReceiver(w), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", textFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -2930,7 +2874,6 @@ type WrappedText struct {
 	render.WrappedText
 
 	starlarkColor starlark.Value
-	frame_count   *starlark.Builtin
 }
 
 func newWrappedText(
@@ -3004,7 +2947,6 @@ func newWrappedText(
 
 	w.WordBreak = bool(wordbreak)
 
-	w.frame_count = starlark.NewBuiltin("frame_count", wrappedtextFrameCount)
 	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
@@ -3048,7 +2990,7 @@ func (w *WrappedText) Attr(name string) (starlark.Value, error) {
 	case "wordbreak":
 		return starlark.Bool(w.WordBreak), nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", wrappedtextFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}

@@ -7,12 +7,6 @@ type {{ .GoName }} struct {
 	starlark{{ .GoName }} {{ .GoType }}
 {{- end }}
 {{- end }}
-{{- if .HasSize }}
-	size *starlark.Builtin
-{{- end }}
-{{- if .GoWidgetName }}
-	frame_count *starlark.Builtin
-{{- end }}
 }
 
 func new{{ .GoName }}(
@@ -43,13 +37,6 @@ func new{{ .GoName }}(
 
 {{- range .Attributes }}
 {{ .Code }}
-{{- end }}
-
-{{- if .HasSize }}
-	w.size = starlark.NewBuiltin("size", {{ .GoName | ToLower }}Size)
-{{- end }}
-{{- if .GoWidgetName }}
-	w.frame_count = starlark.NewBuiltin("frame_count", {{ .GoName | ToLower }}FrameCount)
 {{- end }}
 
 {{- if .HasInit }}
@@ -105,11 +92,11 @@ func (w *{{ .GoName }}) Attr(name string) (starlark.Value, error) {
 {{- end }}
 {{- if .HasSize }}
 	case "size":
-		return w.size.BindReceiver(w), nil
+		return starlark.NewBuiltin("size", {{ .GoName | ToLower }}Size).BindReceiver(w), nil
 {{- end }}
 {{- if .GoWidgetName }}
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", {{ .GoName | ToLower }}FrameCount).BindReceiver(w), nil
 {{- end }}
 	default:
 		return nil, nil
