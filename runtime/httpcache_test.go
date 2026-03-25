@@ -2,14 +2,24 @@ package runtime
 
 import (
 	"fmt"
+	"io"
 	"math/rand/v2"
 	"net/http"
+	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+type roundTripFunc func(req *http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
 
 func TestInitHTTP(t *testing.T) {
 	c := NewInMemoryCache()
@@ -17,14 +27,14 @@ func TestInitHTTP(t *testing.T) {
 	InitHTTP(c)
 
 	b, err := os.ReadFile("testdata/httpcache.star")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	app, err := NewApplet(t.Context(), "httpcache.star", b, WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 
@@ -182,4 +192,124 @@ func TestDetermineTTLNoHeaders(t *testing.T) {
 
 	ttl := DetermineTTL(req, res, nil)
 	assert.LessOrEqual(t, MinRequestTTL, ttl)
+}
+
+func TestCacheKey(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "https://example.com/weather?zip=10001", nil)
+	req.Header.Set("X-Tidbyt-App", "weather")
+	req.Header.Set(TTLHeader, "60")
+
+	key, err := cacheKey(req)
+	require.NoError(t, err)
+	assert.True(t, strings.HasPrefix(key, HTTPCachePrefix+":weather:"))
+	assert.Equal(t, "60", req.Header.Get(TTLHeader))
+
+	reqDifferentTTL := httptest.NewRequest(http.MethodGet, "https://example.com/weather?zip=10001", nil)
+	reqDifferentTTL.Header.Set("X-Tidbyt-App", "weather")
+	reqDifferentTTL.Header.Set(TTLHeader, "120")
+	keyDifferentTTL, err := cacheKey(reqDifferentTTL)
+	require.NoError(t, err)
+	assert.Equal(t, key, keyDifferentTTL)
+}
+
+func TestCacheKeyWithoutAppPrefix(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "https://example.com/noapp", nil)
+
+	key, err := cacheKey(req)
+	require.NoError(t, err)
+	assert.Len(t, key, 64)
+	assert.False(t, strings.Contains(key, HTTPCachePrefix+":"))
+}
+
+func TestParseCacheControl(t *testing.T) {
+	const header = "public, max-age=3600, s-maxage=7200, no-transform, private=token"
+	got := parseCacheControl(header)
+
+	assert.Equal(t, true, got["public"])
+	assert.Equal(t, 3600, got["max-age"])
+	assert.Equal(t, 7200, got["s-maxage"])
+	assert.Equal(t, true, got["no-transform"])
+	assert.Equal(t, "token", got["private"])
+}
+
+func TestDetermineResponseTTL(t *testing.T) {
+	tests := map[string]struct {
+		cacheControl string
+		want         time.Duration
+	}{
+		"uses max-age": {
+			cacheControl: "public, max-age=120",
+			want:         120 * time.Second,
+		},
+		"caps long max-age": {
+			cacheControl: "max-age=999999",
+			want:         MaxResponseTTL,
+		},
+		"returns zero without max-age": {
+			cacheControl: "public, no-cache",
+			want:         0,
+		},
+		"returns zero for invalid max-age": {
+			cacheControl: "max-age=abc",
+			want:         0,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			resp := &http.Response{
+				Header: http.Header{
+					"Cache-Control": {tc.cacheControl},
+				},
+			}
+
+			got := determineResponseTTL(resp)
+			assert.Equal(t, tc.want, got)
+		})
+	}
+}
+
+func TestCacheClientRoundTripCachesResponses(t *testing.T) {
+	cache := NewInMemoryCache()
+	t.Cleanup(cache.Close)
+
+	transportCalls := 0
+	transport := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		transportCalls++
+		return &http.Response{
+			Status:        "200 OK",
+			StatusCode:    http.StatusOK,
+			Proto:         "HTTP/1.1",
+			ProtoMajor:    1,
+			ProtoMinor:    1,
+			Header:        http.Header{},
+			Body:          io.NopCloser(strings.NewReader(`{"ok":true}`)),
+			ContentLength: int64(len(`{"ok":true}`)),
+			Request:       req,
+		}, nil
+	})
+
+	client := &cacheClient{
+		cache:            cache,
+		transport:        transport,
+		MaxResponseBytes: 1024,
+	}
+
+	req1 := httptest.NewRequest(http.MethodGet, "https://example.com/data", nil)
+	req1.Header.Set("X-Tidbyt-App", "weather")
+	req1.Header.Set(TTLHeader, "60")
+
+	resp1, err := client.RoundTrip(req1)
+	require.NoError(t, err)
+	assert.Equal(t, "MISS", resp1.Header.Get("tidbyt-cache-status"))
+	assert.Equal(t, 1, transportCalls)
+
+	req2 := httptest.NewRequest(http.MethodGet, "https://example.com/data", nil)
+	req2.Header.Set("X-Tidbyt-App", "weather")
+	req2.Header.Set(TTLHeader, "60")
+
+	resp2, err := client.RoundTrip(req2)
+	require.NoError(t, err)
+	assert.Equal(t, "HIT", resp2.Header.Get("tidbyt-cache-status"))
+	assert.Equal(t, 1, transportCalls)
 }
