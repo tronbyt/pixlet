@@ -81,8 +81,8 @@ func newColor(
 		return s, nil
 	}
 
-	s.starlarkPalette = starlark.NewList([]starlark.Value{})
-	s.Palette = []string{}
+	s.starlarkPalette = starlark.NewList(make([]starlark.Value, 0, palette.Len()))
+	s.Palette = make([]string, 0, palette.Len())
 
 	for i, paletteVal := range iterutil.Enumerate(palette.Elements()) {
 		if _, isNone := paletteVal.(starlark.NoneType); isNone {

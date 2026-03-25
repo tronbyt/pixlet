@@ -49,6 +49,7 @@ func newDropdown(
 	s.Description = desc.GoString()
 	s.Icon = icon.GoString()
 	s.Default = def.GoString()
+	s.Options = make([]SchemaOption, 0, options.Len())
 
 	for i, optionVal := range iterutil.Enumerate(options.Elements()) {
 		if _, isNone := optionVal.(starlark.NoneType); isNone {

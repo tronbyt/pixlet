@@ -5,6 +5,7 @@ package animation_runtime
 import (
 	"fmt"
 	"image"
+	"slices"
 
 	"github.com/mitchellh/hashstructure/v2"
 	"go.starlark.net/starlark"
@@ -276,6 +277,7 @@ func newKeyframe(
 	}
 
 	w.starlarkTransforms = transforms
+	w.Transforms = slices.Grow(w.Transforms, transforms.Len())
 	for t := range transforms.Elements() {
 		if val, ok := t.(transformUnwrapper); ok {
 			w.Transforms = append(w.Transforms, val.AsAnimationTransform())
@@ -686,6 +688,7 @@ func newTransformation(
 	}
 
 	w.starlarkKeyframes = keyframes
+	w.Keyframes = slices.Grow(w.Keyframes, keyframes.Len())
 	for f := range keyframes.Elements() {
 		if val, ok := f.(*Keyframe); ok {
 			w.Keyframes = append(w.Keyframes, val.Keyframe)

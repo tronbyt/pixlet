@@ -5,6 +5,7 @@ package render_runtime
 import (
 	"fmt"
 	"image"
+	"slices"
 
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/tronbyt/pixlet/internal/colorutil"
@@ -65,6 +66,7 @@ func newAnimation(
 
 	w := &Animation{}
 
+	w.Children = slices.Grow(w.Children, children.Len())
 	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
@@ -702,6 +704,7 @@ func newColumn(
 
 	w := &Column{}
 
+	w.Children = slices.Grow(w.Children, children.Len())
 	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
@@ -2347,6 +2350,7 @@ func newRow(
 
 	w := &Row{}
 
+	w.Children = slices.Grow(w.Children, children.Len())
 	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
@@ -2483,6 +2487,7 @@ func newSequence(
 
 	w := &Sequence{}
 
+	w.Children = slices.Grow(w.Children, children.Len())
 	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
@@ -2604,6 +2609,7 @@ func newStack(
 
 	w := &Stack{}
 
+	w.Children = slices.Grow(w.Children, children.Len())
 	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue

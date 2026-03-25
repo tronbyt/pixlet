@@ -21,8 +21,8 @@ func (p *Image) InitFromWebP(data []byte) error {
 		p.Delay = webpImage.Delay[0]
 	}
 
-	// append all frames at once
-	p.imgs = append(p.imgs, webpImage.Image...)
+	p.imgs = make([]image, len(webpImage.Image))
+	copy(p.imgs, webpImage.Image)
 
 	return nil
 }
