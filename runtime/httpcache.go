@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"iter"
 	"log/slog"
 	"math/rand/v2"
 	"net/http"
@@ -213,23 +214,25 @@ func jitterDuration(duration time.Duration, source *rand.Rand) time.Duration {
 }
 
 func determineResponseTTL(resp *http.Response) time.Duration {
-	resHeader := parseCacheControl(resp.Header.Get("Cache-Control"))
-	value, ok := resHeader["max-age"]
-	if ok {
-		if intValue, ok := value.(int); ok {
-			ttl := time.Duration(intValue) * time.Second
-
-			// If we're using a response TTL, we're making the assumption that
-			// the remote server is providing a reasonable TTL that a developer
-			// didn't configure. In the case of weathermap, the TTL is 1 week,
-			// but the developer is requesting a new map ever hour. So while the
-			// old map _is_ valid for a week, we the app only cares about it for
-			// one hour.
-			if ttl > MaxResponseTTL {
-				return MaxResponseTTL
-			}
-			return ttl
+	for k, v := range parseCacheControl(resp.Header.Get("Cache-Control")) {
+		if k != "max-age" {
+			continue
 		}
+
+		intValue, ok := v.(int)
+		if !ok {
+			continue
+		}
+
+		ttl := time.Duration(intValue) * time.Second
+
+		// If we're using a response TTL, we're making the assumption that
+		// the remote server is providing a reasonable TTL that a developer
+		// didn't configure. In the case of weathermap, the TTL is 1 week,
+		// but the developer is requesting a new map every hour. So while the
+		// old map _is_ valid for a week, the app only cares about it for
+		// one hour.
+		return min(ttl, MaxResponseTTL)
 	}
 
 	return 0
@@ -246,24 +249,23 @@ func determineDeveloperTTL(req *http.Request) time.Duration {
 	return 0
 }
 
-func parseCacheControl(header string) map[string]any {
-	directives := make(map[string]any)
+func parseCacheControl(header string) iter.Seq2[string, any] {
+	return func(yield func(string, any) bool) {
+		for directive := range strings.SplitSeq(header, ",") {
+			value := any(true)
+			directive = strings.TrimSpace(directive)
+			key, strValue, ok := strings.Cut(directive, "=")
+			if ok {
+				if intValue, err := strconv.Atoi(strValue); err == nil {
+					value = intValue
+				} else {
+					value = strValue
+				}
+			}
 
-	for directive := range strings.SplitSeq(header, ",") {
-		parts := strings.SplitN(strings.TrimSpace(directive), "=", 2)
-
-		key := strings.ToLower(parts[0])
-		var value any = true
-
-		if len(parts) > 1 {
-			value = parts[1]
-			if intValue, err := strconv.Atoi(parts[1]); err == nil {
-				value = intValue
+			if !yield(strings.ToLower(key), value) {
+				return
 			}
 		}
-
-		directives[key] = value
 	}
-
-	return directives
 }

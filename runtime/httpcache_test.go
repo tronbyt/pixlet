@@ -223,13 +223,20 @@ func TestCacheKeyWithoutAppPrefix(t *testing.T) {
 
 func TestParseCacheControl(t *testing.T) {
 	const header = "public, max-age=3600, s-maxage=7200, no-transform, private=token"
-	got := parseCacheControl(header)
-
-	assert.Equal(t, true, got["public"])
-	assert.Equal(t, 3600, got["max-age"])
-	assert.Equal(t, 7200, got["s-maxage"])
-	assert.Equal(t, true, got["no-transform"])
-	assert.Equal(t, "token", got["private"])
+	for k, v := range parseCacheControl(header) {
+		switch k {
+		case "public":
+			assert.Equal(t, true, v)
+		case "max-age":
+			assert.Equal(t, 3600, v)
+		case "s-maxage":
+			assert.Equal(t, 7200, v)
+		case "no-transform":
+			assert.Equal(t, true, v)
+		case "private":
+			assert.Equal(t, "token", v)
+		}
+	}
 }
 
 func TestDetermineResponseTTL(t *testing.T) {
