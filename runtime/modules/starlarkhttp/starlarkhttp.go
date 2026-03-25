@@ -264,12 +264,8 @@ func setStandardHeaders(req *http.Request, thread *starlark.Thread, ttl starlark
 }
 
 func getAppIdentifier(thread *starlark.Thread) string {
-	parts := strings.Split(thread.Name, "/")
-	if len(parts) > 0 {
-		return parts[0]
-	}
-
-	return thread.Name
+	name, _, _ := strings.Cut(thread.Name, "/")
+	return name
 }
 
 func setHeaders(req *http.Request, headers *starlark.Dict) error {
