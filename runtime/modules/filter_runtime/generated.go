@@ -41,7 +41,6 @@ type Blur struct {
 
 	starlarkWidget starlark.Value
 	starlarkRadius starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newBlur(
@@ -85,8 +84,6 @@ func newBlur(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkRadius.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", blurFrameCount)
-
 	return w, nil
 }
 
@@ -108,7 +105,7 @@ func (w *Blur) Attr(name string) (starlark.Value, error) {
 	case "radius":
 		return w.starlarkRadius, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", blurFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -173,7 +170,6 @@ type Brightness struct {
 
 	starlarkWidget starlark.Value
 	starlarkChange starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newBrightness(
@@ -217,8 +213,6 @@ func newBrightness(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkChange.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", brightnessFrameCount)
-
 	return w, nil
 }
 
@@ -240,7 +234,7 @@ func (w *Brightness) Attr(name string) (starlark.Value, error) {
 	case "change":
 		return w.starlarkChange, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", brightnessFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -305,7 +299,6 @@ type Contrast struct {
 
 	starlarkWidget starlark.Value
 	starlarkFactor starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newContrast(
@@ -349,8 +342,6 @@ func newContrast(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkFactor.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", contrastFrameCount)
-
 	return w, nil
 }
 
@@ -372,7 +363,7 @@ func (w *Contrast) Attr(name string) (starlark.Value, error) {
 	case "factor":
 		return w.starlarkFactor, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", contrastFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -437,7 +428,6 @@ type EdgeDetection struct {
 
 	starlarkWidget starlark.Value
 	starlarkRadius starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newEdgeDetection(
@@ -481,8 +471,6 @@ func newEdgeDetection(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkRadius.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", edgedetectionFrameCount)
-
 	return w, nil
 }
 
@@ -504,7 +492,7 @@ func (w *EdgeDetection) Attr(name string) (starlark.Value, error) {
 	case "radius":
 		return w.starlarkRadius, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", edgedetectionFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -568,7 +556,6 @@ type Emboss struct {
 	filter.Emboss
 
 	starlarkWidget starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newEmboss(
@@ -603,8 +590,6 @@ func newEmboss(
 		w.starlarkWidget = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", embossFrameCount)
-
 	return w, nil
 }
 
@@ -623,7 +608,7 @@ func (w *Emboss) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", embossFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -687,7 +672,6 @@ type FlipHorizontal struct {
 	filter.FlipHorizontal
 
 	starlarkWidget starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newFlipHorizontal(
@@ -722,8 +706,6 @@ func newFlipHorizontal(
 		w.starlarkWidget = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", fliphorizontalFrameCount)
-
 	return w, nil
 }
 
@@ -742,7 +724,7 @@ func (w *FlipHorizontal) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", fliphorizontalFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -806,7 +788,6 @@ type FlipVertical struct {
 	filter.FlipVertical
 
 	starlarkWidget starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newFlipVertical(
@@ -841,8 +822,6 @@ func newFlipVertical(
 		w.starlarkWidget = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", flipverticalFrameCount)
-
 	return w, nil
 }
 
@@ -861,7 +840,7 @@ func (w *FlipVertical) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", flipverticalFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -926,7 +905,6 @@ type Gamma struct {
 
 	starlarkWidget starlark.Value
 	starlarkGamma  starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newGamma(
@@ -970,8 +948,6 @@ func newGamma(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkGamma.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", gammaFrameCount)
-
 	return w, nil
 }
 
@@ -993,7 +969,7 @@ func (w *Gamma) Attr(name string) (starlark.Value, error) {
 	case "gamma":
 		return w.starlarkGamma, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", gammaFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1057,7 +1033,6 @@ type Grayscale struct {
 	filter.Grayscale
 
 	starlarkWidget starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newGrayscale(
@@ -1092,8 +1067,6 @@ func newGrayscale(
 		w.starlarkWidget = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", grayscaleFrameCount)
-
 	return w, nil
 }
 
@@ -1112,7 +1085,7 @@ func (w *Grayscale) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", grayscaleFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1177,7 +1150,6 @@ type Hue struct {
 
 	starlarkWidget starlark.Value
 	starlarkChange starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newHue(
@@ -1221,8 +1193,6 @@ func newHue(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkChange.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", hueFrameCount)
-
 	return w, nil
 }
 
@@ -1244,7 +1214,7 @@ func (w *Hue) Attr(name string) (starlark.Value, error) {
 	case "change":
 		return w.starlarkChange, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", hueFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1308,7 +1278,6 @@ type Invert struct {
 	filter.Invert
 
 	starlarkWidget starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newInvert(
@@ -1343,8 +1312,6 @@ func newInvert(
 		w.starlarkWidget = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", invertFrameCount)
-
 	return w, nil
 }
 
@@ -1363,7 +1330,7 @@ func (w *Invert) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", invertFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1428,7 +1395,6 @@ type Rotate struct {
 
 	starlarkWidget starlark.Value
 	starlarkAngle  starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newRotate(
@@ -1472,8 +1438,6 @@ func newRotate(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkAngle.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", rotateFrameCount)
-
 	return w, nil
 }
 
@@ -1495,7 +1459,7 @@ func (w *Rotate) Attr(name string) (starlark.Value, error) {
 	case "angle":
 		return w.starlarkAngle, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", rotateFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1560,7 +1524,6 @@ type Saturation struct {
 
 	starlarkWidget starlark.Value
 	starlarkFactor starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newSaturation(
@@ -1604,8 +1567,6 @@ func newSaturation(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkFactor.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", saturationFrameCount)
-
 	return w, nil
 }
 
@@ -1627,7 +1588,7 @@ func (w *Saturation) Attr(name string) (starlark.Value, error) {
 	case "factor":
 		return w.starlarkFactor, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", saturationFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1691,7 +1652,6 @@ type Sepia struct {
 	filter.Sepia
 
 	starlarkWidget starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newSepia(
@@ -1726,8 +1686,6 @@ func newSepia(
 		w.starlarkWidget = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", sepiaFrameCount)
-
 	return w, nil
 }
 
@@ -1746,7 +1704,7 @@ func (w *Sepia) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", sepiaFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1810,7 +1768,6 @@ type Sharpen struct {
 	filter.Sharpen
 
 	starlarkWidget starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newSharpen(
@@ -1845,8 +1802,6 @@ func newSharpen(
 		w.starlarkWidget = child
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", sharpenFrameCount)
-
 	return w, nil
 }
 
@@ -1865,7 +1820,7 @@ func (w *Sharpen) Attr(name string) (starlark.Value, error) {
 	case "child":
 		return w.starlarkWidget, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", sharpenFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -1931,7 +1886,6 @@ type Shear struct {
 	starlarkWidget starlark.Value
 	starlarkXAngle starlark.Value
 	starlarkYAngle starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newShear(
@@ -1984,8 +1938,6 @@ func newShear(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkYAngle.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", shearFrameCount)
-
 	return w, nil
 }
 
@@ -2010,7 +1962,7 @@ func (w *Shear) Attr(name string) (starlark.Value, error) {
 	case "y_angle":
 		return w.starlarkYAngle, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", shearFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
@@ -2075,7 +2027,6 @@ type Threshold struct {
 
 	starlarkWidget starlark.Value
 	starlarkLevel  starlark.Value
-	frame_count    *starlark.Builtin
 }
 
 func newThreshold(
@@ -2119,8 +2070,6 @@ func newThreshold(
 		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkLevel.String())
 	}
 
-	w.frame_count = starlark.NewBuiltin("frame_count", thresholdFrameCount)
-
 	return w, nil
 }
 
@@ -2142,7 +2091,7 @@ func (w *Threshold) Attr(name string) (starlark.Value, error) {
 	case "level":
 		return w.starlarkLevel, nil
 	case "frame_count":
-		return w.frame_count.BindReceiver(w), nil
+		return starlark.NewBuiltin("frame_count", thresholdFrameCount).BindReceiver(w), nil
 	default:
 		return nil, nil
 	}
