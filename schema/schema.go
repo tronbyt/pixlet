@@ -269,15 +269,13 @@ func unmarshalStarlark(object starlark.Value) (any, error) {
 
 	case *starlark.Dict:
 		goMap := make(map[string]any)
-
-		for _, key := range v.Keys() {
+		for key, value := range v.Entries() {
 			strKey, ok := key.(starlark.String)
 			if !ok {
 				return nil, fmt.Errorf("dict keys must be string")
 			}
 			goKey := strKey.GoString()
 
-			value, _, _ := v.Get(key)
 			goVal, err := unmarshalStarlark(value)
 			if err != nil {
 				return nil, err
