@@ -58,6 +58,7 @@ var (
 	// StarlarkHTTPGuard is a global RequestGuard used in LoadModule. override with a custom
 	// implementation before calling LoadModule.
 	StarlarkHTTPGuard RequestGuard
+	MaxResponseBytes  int64 = 20 * 1024 * 1024 // 20MB
 )
 
 // Encodings for form data.
@@ -168,8 +169,25 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 		if err != nil {
 			return nil, err
 		}
+		defer func() {
+			_ = res.Body.Close()
+		}()
 
-		r := &Response{*res}
+		buf := bytes.NewBuffer(make([]byte, 0, 512))
+
+		if res.ContentLength > 0 {
+			grow := min(res.ContentLength, MaxResponseBytes)
+			buf.Grow(int(grow))
+		}
+
+		if _, err := buf.ReadFrom(res.Body); err != nil {
+			return nil, err
+		}
+
+		r := &Response{
+			Response: res,
+			Body:     buf,
+		}
 		return r.Struct(), nil
 	}
 }
@@ -379,7 +397,9 @@ func SetBody(req *http.Request, body starlark.String, formData *starlark.Dict, f
 // Response represents an HTTP response, wrapping a go http.Response with
 // starlark methods.
 type Response struct {
-	http.Response
+	*http.Response
+
+	Body *bytes.Buffer
 }
 
 // Struct turns a response into a *starlark.Struct.
@@ -409,32 +429,17 @@ func (r *Response) HeadersDict() *starlark.Dict {
 
 // Text returns the raw data as a string.
 func (r *Response) Text(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
-	}
-	_ = r.Body.Close()
-	// reset reader to allow multiple calls
-	r.Body = io.NopCloser(bytes.NewReader(data))
-
-	return starlark.String(string(data)), nil
+	return starlark.String(r.Body.String()), nil
 }
 
 // JSON attempts to parse the response body as JSON.
 func (r *Response) JSON(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var data any
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
+	if err := json.Unmarshal(r.Body.Bytes(), &data); err != nil {
 		return nil, err
 	}
 
-	if err := json.Unmarshal(body, &data); err != nil {
-		return nil, err
-	}
-	_ = r.Body.Close()
-	// reset reader to allow multiple calls
-	r.Body = io.NopCloser(bytes.NewReader(body))
 	return util.Marshal(data)
 }
 
