@@ -276,11 +276,11 @@ func newKeyframe(
 	}
 
 	w.starlarkTransforms = transforms
-	for i := range transforms.Len() {
-		if val, ok := transforms.Index(i).(transformUnwrapper); ok {
+	for t := range transforms.Elements() {
+		if val, ok := t.(transformUnwrapper); ok {
 			w.Transforms = append(w.Transforms, val.AsAnimationTransform())
 		} else {
-			return nil, fmt.Errorf("expected transform, but got '%s'", transforms.Index(i).Type())
+			return nil, fmt.Errorf("expected transform, but got '%s'", t.Type())
 		}
 	}
 
@@ -686,8 +686,8 @@ func newTransformation(
 	}
 
 	w.starlarkKeyframes = keyframes
-	for i := range keyframes.Len() {
-		if val, ok := keyframes.Index(i).(*Keyframe); ok {
+	for f := range keyframes.Elements() {
+		if val, ok := f.(*Keyframe); ok {
 			w.Keyframes = append(w.Keyframes, val.Keyframe)
 		} else {
 			return nil, fmt.Errorf("invalid type for keyframes: %s (expected Keyframe)", keyframes.Type())

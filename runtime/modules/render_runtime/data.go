@@ -7,6 +7,7 @@ import (
 
 	"github.com/tronbyt/pixlet/internal/colorutil"
 	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 )
 
@@ -47,8 +48,8 @@ func DataPointFromStarlark(value starlark.Value) ([2]float64, error) {
 func DataSeriesFromStarlark(list *starlark.List) ([][2]float64, error) {
 	result := make([][2]float64, 0)
 
-	for i := range list.Len() {
-		if val, err := DataPointFromStarlark(list.Index(i)); err == nil {
+	for point := range list.Elements() {
+		if val, err := DataPointFromStarlark(point); err == nil {
 			result = append(result, val)
 		} else {
 			return nil, err
@@ -61,8 +62,8 @@ func DataSeriesFromStarlark(list *starlark.List) ([][2]float64, error) {
 func WeightsFromStarlark(list *starlark.List) ([]float64, error) {
 	result := make([]float64, 0)
 
-	for i := range list.Len() {
-		if val, err := DataPointElementFromStarlark(list.Index(i)); err == nil {
+	for point := range list.Elements() {
+		if val, err := DataPointElementFromStarlark(point); err == nil {
 			result = append(result, val)
 		} else {
 			return nil, err
@@ -75,9 +76,7 @@ func WeightsFromStarlark(list *starlark.List) ([]float64, error) {
 func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
 	result := make([]color.Color, 0)
 
-	for i := range list.Len() {
-		c := list.Index(i)
-
+	for i, c := range iterutil.Enumerate(list.Elements()) {
 		parsed, err := colorutil.Parse(c)
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %d %s: %w", i, c, err)
