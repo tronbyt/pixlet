@@ -8,7 +8,6 @@ import (
 	"image/color"
 	"image/draw"
 	"image/gif"
-
 	// register image formats.
 	_ "image/jpeg"
 	_ "image/png"
@@ -74,6 +73,7 @@ func (p *Image) InitFromGIF(data []byte) error {
 	}
 
 	p.Delay = img.Delay[0] * 10
+	p.imgs = make([]image.Image, 0, len(img.Image))
 
 	var prev_src *image.Paletted
 	disposal_length := len(img.Disposal)

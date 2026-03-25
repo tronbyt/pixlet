@@ -1,4 +1,5 @@
 {{ if not .IsReadOnly }}
+w.{{ .GoPath }} = slices.Grow(w.{{ .GoPath }}, {{ .StarlarkName }}.Len())
 for i, {{ .StarlarkName}}Val := range iterutil.Enumerate({{ .StarlarkName }}.Elements()) {
 	if _, isNone := {{ .StarlarkName }}Val.(starlark.NoneType); isNone {
 		continue

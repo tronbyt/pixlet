@@ -1,5 +1,6 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
+w.{{ .GoPath }} = slices.Grow(w.{{ .GoPath }}, {{ .StarlarkName }}.Len())
 for t := range {{ .StarlarkName }}.Elements() {
 	if val, ok := t.(transformUnwrapper); ok {
 		w.{{ .GoPath }} = append(w.{{ .GoPath }}, val.AsAnimationTransform())

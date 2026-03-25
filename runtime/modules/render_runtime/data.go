@@ -46,7 +46,7 @@ func DataPointFromStarlark(value starlark.Value) ([2]float64, error) {
 }
 
 func DataSeriesFromStarlark(list *starlark.List) ([][2]float64, error) {
-	result := make([][2]float64, 0)
+	result := make([][2]float64, 0, list.Len())
 
 	for point := range list.Elements() {
 		if val, err := DataPointFromStarlark(point); err == nil {
@@ -60,7 +60,7 @@ func DataSeriesFromStarlark(list *starlark.List) ([][2]float64, error) {
 }
 
 func WeightsFromStarlark(list *starlark.List) ([]float64, error) {
-	result := make([]float64, 0)
+	result := make([]float64, 0, list.Len())
 
 	for point := range list.Elements() {
 		if val, err := DataPointElementFromStarlark(point); err == nil {
@@ -74,7 +74,7 @@ func WeightsFromStarlark(list *starlark.List) ([]float64, error) {
 }
 
 func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
-	result := make([]color.Color, 0)
+	result := make([]color.Color, 0, list.Len())
 
 	for i, c := range iterutil.Enumerate(list.Elements()) {
 		parsed, err := colorutil.Parse(c)

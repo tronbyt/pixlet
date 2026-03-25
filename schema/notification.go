@@ -50,6 +50,7 @@ func newNotification(
 	s.Description = desc.GoString()
 	s.Icon = icon.GoString()
 	s.Builder = builder
+	s.Sounds = make([]SchemaSound, 0, sounds.Len())
 
 	for i, soundVal := range iterutil.Enumerate(sounds.Elements()) {
 		if _, isNone := soundVal.(starlark.NoneType); isNone {

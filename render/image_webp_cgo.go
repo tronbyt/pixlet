@@ -4,6 +4,7 @@ package render
 
 import (
 	"fmt"
+	"image"
 
 	"github.com/tronbyt/go-libwebp/webp"
 )
@@ -20,6 +21,8 @@ func (p *Image) InitFromWebP(data []byte) error {
 	}
 
 	p.Delay = img.Timestamp[0]
+	p.imgs = make([]image.Image, 0, len(img.Image))
+
 	for _, im := range img.Image {
 		p.imgs = append(p.imgs, im)
 	}
