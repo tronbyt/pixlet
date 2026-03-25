@@ -1,10 +1,10 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
-for i := range {{ .StarlarkName }}.Len() {
-	if val, ok := {{ .StarlarkName }}.Index(i).(transformUnwrapper); ok {
+for t := range {{ .StarlarkName }}.Elements() {
+	if val, ok := t.(transformUnwrapper); ok {
 		w.{{ .GoPath }} = append(w.{{ .GoPath }}, val.AsAnimationTransform())
 	} else {
-		return nil, fmt.Errorf("expected transform, but got '%s'", {{ .StarlarkName }}.Index(i).Type())
+		return nil, fmt.Errorf("expected transform, but got '%s'", t.Type())
 	}
 }
 {{- end }}

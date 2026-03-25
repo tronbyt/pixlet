@@ -1,7 +1,7 @@
 {{ if not .IsReadOnly }}
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
-for i := range {{ .StarlarkName }}.Len() {
-	if val, ok := {{ .StarlarkName }}.Index(i).(*Keyframe); ok {
+for f := range {{ .StarlarkName }}.Elements() {
+	if val, ok := f.(*Keyframe); ok {
 		w.{{ .GoPath }} = append(w.{{ .GoPath }}, val.Keyframe)
 	} else {
 		return nil, fmt.Errorf("invalid type for keyframes: %s (expected Keyframe)", {{ .StarlarkName }}.Type())
