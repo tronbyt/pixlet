@@ -37,7 +37,7 @@ func NewProfileCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return profileRun(cmd, args, opts)
 		},
-		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
+		ValidArgsFunction: completeRender,
 	}
 
 	cmd.Flags().StringVarP(
