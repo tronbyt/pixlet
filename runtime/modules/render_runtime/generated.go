@@ -409,19 +409,19 @@ func newBox(
 		w.starlarkChild = child
 	}
 
-	if val, err := starlarkutil.AsInt64(width); err == nil {
+	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing width: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(padding); err == nil {
+	if val, err := starlarkutil.AsInt[int64](padding); err == nil {
 		w.Padding = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing padding: %w", err)
@@ -570,7 +570,7 @@ func newCircle(
 		}
 	}
 
-	if val, err := starlarkutil.AsInt64(diameter); err == nil {
+	if val, err := starlarkutil.AsInt[int64](diameter); err == nil {
 		w.Diameter = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing diameter: %w", err)
@@ -845,13 +845,13 @@ func newEmoji(
 
 	w.EmojiStr = emoji.GoString()
 
-	if val, err := starlarkutil.AsInt64(width); err == nil {
+	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing width: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
@@ -994,19 +994,19 @@ func newImage(
 
 	w.Src = src.GoString()
 
-	if val, err := starlarkutil.AsInt64(width); err == nil {
+	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing width: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(hold_frames); err == nil {
+	if val, err := starlarkutil.AsInt[int64](hold_frames); err == nil {
 		w.HoldFrames = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing hold_frames: %w", err)
@@ -1361,25 +1361,25 @@ func newMarquee(
 		w.starlarkChild = child
 	}
 
-	if val, err := starlarkutil.AsInt64(width); err == nil {
+	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing width: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(offset_start); err == nil {
+	if val, err := starlarkutil.AsInt[int64](offset_start); err == nil {
 		w.OffsetStart = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing offset_start: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(offset_end); err == nil {
+	if val, err := starlarkutil.AsInt[int64](offset_end); err == nil {
 		w.OffsetEnd = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing offset_end: %w", err)
@@ -1389,7 +1389,7 @@ func newMarquee(
 
 	w.Align = align.GoString()
 
-	if val, err := starlarkutil.AsInt64(delay); err == nil {
+	if val, err := starlarkutil.AsInt[int64](delay); err == nil {
 		w.Delay = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing delay: %w", err)
@@ -1543,7 +1543,7 @@ func newPadding(
 	w.starlarkPad = pad
 	switch padVal := pad.(type) {
 	case starlark.Int:
-		padInt, err := starlarkutil.AsInt64(padVal)
+		padInt, err := starlarkutil.AsInt[int64](padVal)
 		if err != nil {
 			return nil, fmt.Errorf("parsing pad: %w", err)
 		}
@@ -1565,7 +1565,7 @@ func newPadding(
 			if !ok {
 				return nil, fmt.Errorf("pad element %d is not int", i)
 			}
-			padInt, err := starlarkutil.AsInt64(pi)
+			padInt, err := starlarkutil.AsInt[int64](pi)
 			if err != nil {
 				return nil, fmt.Errorf("parsing pad element %d: %w", i, err)
 			}
@@ -1724,7 +1724,7 @@ func newPieChart(
 		return nil, err
 	}
 
-	if val, err := starlarkutil.AsInt64(diameter); err == nil {
+	if val, err := starlarkutil.AsInt[int64](diameter); err == nil {
 		w.Diameter = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing diameter: %w", err)
@@ -1873,13 +1873,13 @@ func newPlot(
 		return nil, err
 	}
 
-	if val, err := starlarkutil.AsInt64(width); err == nil {
+	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing width: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
@@ -2743,13 +2743,13 @@ func newText(
 
 	w.Font = font.GoString()
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(offset); err == nil {
+	if val, err := starlarkutil.AsInt[int64](offset); err == nil {
 		w.Offset = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing offset: %w", err)
@@ -2920,19 +2920,19 @@ func newWrappedText(
 
 	w.Font = font.GoString()
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(width); err == nil {
+	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing width: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(linespacing); err == nil {
+	if val, err := starlarkutil.AsInt[int64](linespacing); err == nil {
 		w.LineSpacing = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing linespacing: %w", err)

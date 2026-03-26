@@ -86,7 +86,7 @@ func Encode(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs
 	enc := yaml.NewEncoder(&buf)
 	defer func() { _ = enc.Close() }()
 
-	indentVal, err := starlarkutil.AsInt64(indent)
+	indentVal, err := starlarkutil.AsInt[int64](indent)
 	if err != nil {
 		return starlark.None, fmt.Errorf("parsing indent: %w", err)
 	}

@@ -34,7 +34,7 @@ func pad(_ *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs [
 		return nil, err
 	}
 
-	desiredLen, err := starlarkutil.AsInt64(lenParam)
+	desiredLen, err := starlarkutil.AsInt[int64](lenParam)
 	if err != nil {
 		return nil, fmt.Errorf("parsing length: %w", err)
 	}

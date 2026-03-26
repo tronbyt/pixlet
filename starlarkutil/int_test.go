@@ -27,7 +27,7 @@ func TestAsInt64(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := AsInt64(tt.args.x)
+			got, err := AsInt[int64](tt.args.x)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})
@@ -51,7 +51,7 @@ func TestAsUint64(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := AsUint64(tt.args.x)
+			got, err := AsInt[uint64](tt.args.x)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})

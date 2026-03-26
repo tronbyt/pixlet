@@ -2,7 +2,7 @@
 w.starlark{{ .GoName }} = {{ .StarlarkName }}
 switch {{ .StarlarkName }}Val := {{ .StarlarkName }}.(type) {
 case starlark.Int:
-	{{ .StarlarkName }}Int, err := starlarkutil.AsInt64({{ .StarlarkName }}Val)
+	{{ .StarlarkName }}Int, err := starlarkutil.AsInt[int64]({{ .StarlarkName }}Val)
 	if err != nil {
 		return nil, fmt.Errorf("parsing {{ .StarlarkName }}: %w", err)
 	}
@@ -24,7 +24,7 @@ case starlark.Tuple:
 		if !ok {
 			return nil, fmt.Errorf("{{ .StarlarkName }} element %d is not int", i)
 		}
-		{{ .StarlarkName }}Int, err := starlarkutil.AsInt64(pi)
+		{{ .StarlarkName }}Int, err := starlarkutil.AsInt[int64](pi)
 		if err != nil {
 			return nil, fmt.Errorf("parsing {{ .StarlarkName }} element %d: %w", i, err)
 		}

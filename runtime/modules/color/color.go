@@ -50,17 +50,17 @@ func parseRGB(_ *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		return nil, err
 	}
 
-	r, err := starlarkutil.AsInt64(rParam)
+	r, err := starlarkutil.AsInt[int64](rParam)
 	if err != nil {
 		return nil, fmt.Errorf("parsing r: %w", err)
 	}
 
-	g, err := starlarkutil.AsInt64(gParam)
+	g, err := starlarkutil.AsInt[int64](gParam)
 	if err != nil {
 		return nil, fmt.Errorf("parsing g: %w", err)
 	}
 
-	b, err := starlarkutil.AsInt64(bParam)
+	b, err := starlarkutil.AsInt[int64](bParam)
 	if err != nil {
 		return nil, fmt.Errorf("parsing b: %w", err)
 	}
@@ -68,7 +68,7 @@ func parseRGB(_ *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var a int64
 	switch aParam := aParam.(type) {
 	case starlark.Int:
-		if a, err = starlarkutil.AsInt64(aParam); err != nil {
+		if a, err = starlarkutil.AsInt[int64](aParam); err != nil {
 			return nil, fmt.Errorf("parsing a: %w", err)
 		}
 	case starlark.NoneType:
@@ -131,7 +131,7 @@ func parseHSV(_ *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	switch aParam := aParam.(type) {
 	case starlark.Int:
 		var err error
-		if a, err = starlarkutil.AsInt64(aParam); err != nil {
+		if a, err = starlarkutil.AsInt[int64](aParam); err != nil {
 			return nil, fmt.Errorf("parsing a: %w", err)
 		}
 		a = max(0, min(a, 255))

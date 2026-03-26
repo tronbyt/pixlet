@@ -72,7 +72,7 @@ func randomSeed(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		return nil, fmt.Errorf("unpacking arguments for seed: %w", err)
 	}
 
-	seed, err := starlarkutil.AsInt64(starSeed)
+	seed, err := starlarkutil.AsInt[int64](starSeed)
 	if err != nil {
 		return nil, fmt.Errorf("parsing seed: %w", err)
 	}
@@ -99,12 +99,12 @@ func randomNumber(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tu
 		return nil, fmt.Errorf("unpacking arguments for random number: %w", err)
 	}
 
-	minVal, err := starlarkutil.AsInt64(starMin)
+	minVal, err := starlarkutil.AsInt[int64](starMin)
 	if err != nil {
 		return nil, fmt.Errorf("parsing min: %w", err)
 	}
 
-	maxVal, err := starlarkutil.AsInt64(starMax)
+	maxVal, err := starlarkutil.AsInt[int64](starMax)
 	if err != nil {
 		return nil, fmt.Errorf("parsing max: %w", err)
 	}

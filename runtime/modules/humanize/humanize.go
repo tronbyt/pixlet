@@ -204,7 +204,7 @@ func bytes(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 		return nil, fmt.Errorf("unpacking arguments for bytes: %s", err)
 	}
 
-	bytes, err := starlarkutil.AsUint64(starBytes)
+	bytes, err := starlarkutil.AsInt[uint64](starBytes)
 	if err != nil {
 		return nil, fmt.Errorf("parsing bytes: %w", err)
 	}
@@ -259,7 +259,7 @@ func comma(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 	switch starNum := starNum.(type) {
 	case starlark.Int:
 		var err error
-		if val, err = starlarkutil.AsInt64(starNum); err != nil {
+		if val, err = starlarkutil.AsInt[int64](starNum); err != nil {
 			return nil, fmt.Errorf("parsing num: %w", err)
 		}
 	case starlark.Float:
@@ -293,7 +293,7 @@ func ordinal(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, 
 		return nil, fmt.Errorf("unpacking arguments for ordinal: %s", err)
 	}
 
-	num, err := starlarkutil.AsInt64(starNum)
+	num, err := starlarkutil.AsInt[int64](starNum)
 	if err != nil {
 		return nil, fmt.Errorf("parsing num: %w", err)
 	}
@@ -325,7 +325,7 @@ func ftoa(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwa
 	switch d := starDigits.(type) {
 	case starlark.Int:
 		var err error
-		if digits, err = starlarkutil.AsInt64(d); err != nil {
+		if digits, err = starlarkutil.AsInt[int64](d); err != nil {
 			return nil, fmt.Errorf("parsing digits: %w", err)
 		}
 	case starlark.Float:
@@ -379,7 +379,7 @@ func formatInt(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 		return nil, fmt.Errorf("unpacking arguments for formatFloat: %s", err)
 	}
 
-	num, err := starlarkutil.AsInt64(starNum)
+	num, err := starlarkutil.AsInt[int64](starNum)
 	if err != nil {
 		return nil, fmt.Errorf("parsing num: %w", err)
 	}
@@ -404,7 +404,7 @@ func plural(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, k
 		return nil, fmt.Errorf("unpacking arguments for plural: %s", err)
 	}
 
-	qty, err := starlarkutil.AsInt64(starQuantity)
+	qty, err := starlarkutil.AsInt[int64](starQuantity)
 	if err != nil {
 		return nil, fmt.Errorf("parsing quantity: %w", err)
 	}
@@ -429,7 +429,7 @@ func pluralWord(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		return nil, fmt.Errorf("unpacking arguments for pluralWord: %s", err)
 	}
 
-	qty, err := starlarkutil.AsInt64(starQuantity)
+	qty, err := starlarkutil.AsInt[int64](starQuantity)
 	if err != nil {
 		return nil, fmt.Errorf("parsing quantity: %w", err)
 	}

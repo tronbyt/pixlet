@@ -252,7 +252,7 @@ func setStandardHeaders(req *http.Request, thread *starlark.Thread, ttl starlark
 	req.Header.Set("X-Tidbyt-App", getAppIdentifier(thread))
 
 	// Set ttl for caching client.
-	ttl64, err := starlarkutil.AsInt64(ttl)
+	ttl64, err := starlarkutil.AsInt[int64](ttl)
 	if err != nil {
 		return fmt.Errorf("parsing ttl_seconds: %w", err)
 	}
@@ -441,7 +441,7 @@ func StatusText(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kw
 		return nil, err
 	}
 
-	code, err := starlarkutil.AsInt64(starCode)
+	code, err := starlarkutil.AsInt[int64](starCode)
 	if err != nil {
 		return nil, fmt.Errorf("parsing code: %w", err)
 	}

@@ -84,7 +84,7 @@ func newAnimatedPositioned(
 		w.starlarkChild = child
 	}
 
-	if val, err := starlarkutil.AsInt64(duration); err == nil {
+	if val, err := starlarkutil.AsInt[int64](duration); err == nil {
 		w.Duration = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing duration: %w", err)
@@ -99,37 +99,37 @@ func newAnimatedPositioned(
 		return nil, err
 	}
 
-	if val, err := starlarkutil.AsInt64(x_start); err == nil {
+	if val, err := starlarkutil.AsInt[int64](x_start); err == nil {
 		w.XStart = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing x_start: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(x_end); err == nil {
+	if val, err := starlarkutil.AsInt[int64](x_end); err == nil {
 		w.XEnd = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing x_end: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(y_start); err == nil {
+	if val, err := starlarkutil.AsInt[int64](y_start); err == nil {
 		w.YStart = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing y_start: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(y_end); err == nil {
+	if val, err := starlarkutil.AsInt[int64](y_end); err == nil {
 		w.YEnd = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing y_end: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(delay); err == nil {
+	if val, err := starlarkutil.AsInt[int64](delay); err == nil {
 		w.Delay = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing delay: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(hold); err == nil {
+	if val, err := starlarkutil.AsInt[int64](hold); err == nil {
 		w.Hold = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing hold: %w", err)
@@ -697,25 +697,25 @@ func newTransformation(
 		}
 	}
 
-	if val, err := starlarkutil.AsInt64(duration); err == nil {
+	if val, err := starlarkutil.AsInt[int64](duration); err == nil {
 		w.Duration = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing duration: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(delay); err == nil {
+	if val, err := starlarkutil.AsInt[int64](delay); err == nil {
 		w.Delay = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing delay: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(width); err == nil {
+	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing width: %w", err)
 	}
 
-	if val, err := starlarkutil.AsInt64(height); err == nil {
+	if val, err := starlarkutil.AsInt[int64](height); err == nil {
 		w.Height = int(val)
 	} else {
 		return nil, fmt.Errorf("parsing height: %w", err)
