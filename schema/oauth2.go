@@ -59,6 +59,8 @@ func newOAuth2(
 	s.starlarkScopes = scopes
 
 	if s.starlarkScopes != nil {
+		s.Scopes = make([]string, 0, scopes.Len())
+
 		for i, scopeVal := range iterutil.Enumerate(s.starlarkScopes.Elements()) {
 			if _, isNone := scopeVal.(starlark.NoneType); isNone {
 				continue

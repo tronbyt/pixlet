@@ -107,6 +107,8 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	}
 
 	if s.starlarkFields != nil {
+		s.Fields = make([]SchemaField, 0, s.starlarkFields.Len())
+
 		for i, fieldVal := range iterutil.Enumerate(s.starlarkFields.Elements()) {
 			if _, isNone := fieldVal.(starlark.NoneType); isNone {
 				continue
@@ -143,6 +145,8 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	}
 
 	if s.starlarkNotifications != nil {
+		s.Notifications = make([]Notification, 0, s.starlarkNotifications.Len())
+
 		for i, notificationVal := range iterutil.Enumerate(s.starlarkNotifications.Elements()) {
 			if _, isNone := notificationVal.(starlark.NoneType); isNone {
 				continue
