@@ -173,10 +173,9 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 			_ = res.Body.Close()
 		}()
 
-		buf := bytes.NewBuffer(make([]byte, 0, 512))
-
+		var buf bytes.Buffer
 		if res.ContentLength > 0 {
-			grow := min(res.ContentLength, MaxResponseBytes)
+			grow := min(res.ContentLength, MaxResponseBytes) + bytes.MinRead
 			buf.Grow(int(grow))
 		}
 
@@ -186,7 +185,7 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 
 		r := &Response{
 			Response: res,
-			Body:     buf,
+			Body:     &buf,
 		}
 		return r.Struct(), nil
 	}
