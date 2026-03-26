@@ -1,5 +1,5 @@
 {{ if not .IsReadOnly }}
-if val, err := starlarkutil.AsInt64({{ .StarlarkName }}); err == nil {
+if val, err := starlarkutil.AsInt[int64]({{ .StarlarkName }}); err == nil {
 	w.{{ .GoPath }} = int(val)
 } else {
 	return nil, fmt.Errorf("parsing {{ .StarlarkName }}: %w", err)

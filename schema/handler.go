@@ -32,7 +32,7 @@ func newHandler(
 		return nil, fmt.Errorf("unpacking arguments for Handler: %s", err)
 	}
 
-	typeInt, err := starlarkutil.AsInt64(type_)
+	typeInt, err := starlarkutil.AsInt[int64](type_)
 	if err != nil {
 		return nil, fmt.Errorf("parsing type: %w", err)
 	}

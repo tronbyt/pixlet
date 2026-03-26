@@ -175,7 +175,7 @@ func cacheSet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 
 	cacheKey := scopedCacheKey(thread, key)
 
-	ttl64, err := starlarkutil.AsInt64(ttl)
+	ttl64, err := starlarkutil.AsInt[int64](ttl)
 	if err != nil {
 		return nil, fmt.Errorf("parsing ttl_seconds: %w", err)
 	}
