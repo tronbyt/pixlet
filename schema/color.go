@@ -25,14 +25,15 @@ func normalizeHexColor(hex string) (string, error) {
 			len(hex),
 		)
 	}
-	if _, err := strconv.ParseInt(hex, 16, 64); err != nil {
+
+	if _, err := strconv.ParseUint(hex, 16, 64); err != nil {
 		return "", fmt.Errorf(
 			"expected hex chars a-f,0-9 but found %s",
 			hex,
 		)
 	}
 
-	return fmt.Sprintf("#%s", hex), nil
+	return "#" + hex, nil
 }
 
 func newColor(
