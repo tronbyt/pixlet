@@ -409,9 +409,10 @@ func (a *Applet) Call(ctx context.Context, callable *starlark.Function, args ...
 	t := a.newThread(ctx)
 	defer starlarkutil.RunOnExitFuncs(t)
 
-	context.AfterFunc(ctx, func() {
+	stop := context.AfterFunc(ctx, func() {
 		t.Cancel(context.Cause(ctx).Error())
 	})
+	defer stop()
 
 	resultVal, err := starlark.Call(t, callable, args, nil)
 	if err != nil {
