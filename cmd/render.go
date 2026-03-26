@@ -194,30 +194,9 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		outPath = opts.output
 	}
 
-	config := map[string]any{}
-
-	if opts.configJSON != "" {
-		// Open the JSON file.
-		f, err := os.Open(opts.configJSON)
-		if err != nil {
-			return fmt.Errorf("file open error %v", err)
-		}
-
-		err = json.NewDecoder(f).Decode(&config)
-		if err != nil {
-			_ = f.Close()
-			return fmt.Errorf("failed to unmarshal JSON %v: %w", opts.configJSON, err)
-		}
-
-		_ = f.Close()
-	}
-
-	for _, param := range args {
-		key, val, ok := strings.Cut(param, "=")
-		if !ok {
-			return fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
-		}
-		config[key] = val
+	config, err := loadConfig(opts.configJSON, args)
+	if err != nil {
+		return err
 	}
 
 	cache := runtime.NewInMemoryCache()
@@ -269,4 +248,31 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 
 	opts.log.Info("Rendered image", "path", outPath)
 	return nil
+}
+
+func loadConfig(path string, args []string) (map[string]any, error) {
+	config := map[string]any{}
+
+	if path != "" {
+		f, err := os.Open(path)
+		if err != nil {
+			return nil, fmt.Errorf("file open error: %w", err)
+		}
+		defer func() { _ = f.Close() }()
+
+		err = json.NewDecoder(f).Decode(&config)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal JSON %v: %w", path, err)
+		}
+	}
+
+	for _, param := range args {
+		key, val, ok := strings.Cut(param, "=")
+		if !ok {
+			return nil, fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
+		}
+		config[key] = val
+	}
+
+	return config, nil
 }
