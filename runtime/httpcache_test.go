@@ -6,13 +6,13 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tronbyt/pixlet/runtime/testdata"
 )
 
 type roundTripFunc func(req *http.Request) (*http.Response, error)
@@ -26,7 +26,7 @@ func TestInitHTTP(t *testing.T) {
 	t.Cleanup(c.Close)
 	InitHTTP(c)
 
-	b, err := os.ReadFile("testdata/httpcache.star")
+	b, err := testdata.FS.ReadFile("httpcache.star")
 	require.NoError(t, err)
 
 	app, err := NewApplet(t.Context(), "httpcache.star", b, WithTests(t))

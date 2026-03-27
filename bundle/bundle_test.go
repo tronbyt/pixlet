@@ -1,17 +1,22 @@
 package bundle_test
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/bundle"
+	"github.com/tronbyt/pixlet/bundle/testdata"
 )
 
 func TestBundleWriteAndLoad(t *testing.T) {
 	// Ensure we can load the bundle from an app.
-	ab, err := bundle.FromDir("testdata/testapp")
+	sub, err := fs.Sub(testdata.FS, "testapp")
+	require.NoError(t, err)
+	ab, err := bundle.FromFS(sub)
 	assert.NoError(t, err)
 	assert.Equal(t, "test-app", ab.Manifest.ID)
 	assert.NotNil(t, ab.Source)
@@ -52,7 +57,9 @@ func TestBundleWriteAndLoad(t *testing.T) {
 }
 
 func TestBundleWriteAndLoadWithoutRuntime(t *testing.T) {
-	ab, err := bundle.FromDir("testdata/testapp")
+	sub, err := fs.Sub(testdata.FS, "testapp")
+	require.NoError(t, err)
+	ab, err := bundle.FromFS(sub)
 	assert.NoError(t, err)
 	assert.Equal(t, "test-app", ab.Manifest.ID)
 	assert.NotNil(t, ab.Source)
@@ -90,7 +97,7 @@ func TestBundleWriteAndLoadWithoutRuntime(t *testing.T) {
 }
 
 func TestLoadBundle(t *testing.T) {
-	f, err := os.Open("testdata/bundle.tar.gz")
+	f, err := testdata.FS.Open("bundle.tar.gz")
 	assert.NoError(t, err)
 	t.Cleanup(func() { _ = f.Close() })
 	ab, err := bundle.LoadBundle(f)
@@ -99,7 +106,7 @@ func TestLoadBundle(t *testing.T) {
 	assert.NotNil(t, ab.Source)
 }
 func TestLoadBundleExcessData(t *testing.T) {
-	f, err := os.Open("testdata/excess-files.tar.gz")
+	f, err := testdata.FS.Open("excess-files.tar.gz")
 	assert.NoError(t, err)
 	t.Cleanup(func() { _ = f.Close() })
 

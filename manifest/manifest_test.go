@@ -4,12 +4,11 @@ import (
 	"bytes"
 	_ "embed"
 	"io"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tronbyt/pixlet/manifest"
+	"github.com/tronbyt/pixlet/manifest/testdata"
 )
 
 //go:embed testdata/source.star
@@ -33,14 +32,13 @@ func TestManifest(t *testing.T) {
 		Source:  source,
 	}
 
-	expected, err := os.ReadFile("testdata/source.star")
+	expected, err := testdata.FS.ReadFile("source.star")
 	assert.NoError(t, err)
 	assert.Equal(t, m.Source, expected)
 }
 
 func TestLoadManifest(t *testing.T) {
-	p := filepath.Join("testdata", "manifest.yaml")
-	f, err := os.Open(p)
+	f, err := testdata.FS.Open("manifest.yaml")
 	assert.NoError(t, err)
 	t.Cleanup(func() { _ = f.Close() })
 
