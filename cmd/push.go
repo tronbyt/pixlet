@@ -26,7 +26,7 @@ func NewPushCmd() *cobra.Command {
 	opts := &pushOptions{}
 
 	cmd := &cobra.Command{
-		Use:     "push [device ID] [webp image]",
+		Use:     "push DEVICE_ID WEBP",
 		GroupID: groups.Tronbyt,
 		Short:   "Push a WebP to a Tronbyt",
 		Args:    cobra.MinimumNArgs(2),

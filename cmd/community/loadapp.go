@@ -13,7 +13,7 @@ import (
 
 func NewLoadAppCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "load-app [path]",
+		Use:     "load-app [PATH]",
 		Short:   "Validates an app can be successfully loaded in our runtime.",
 		Example: `pixlet community load-app examples/clock`,
 		Long:    `This command ensures an app can be loaded into our runtime successfully.`,

@@ -54,7 +54,7 @@ func NewRenderCmd() *cobra.Command {
 	opts := newRenderOptions()
 
 	cmd := &cobra.Command{
-		Use:     "render [path] [<key>=value>]...",
+		Use:     "render [PATH] [KEY=VALUE]...",
 		GroupID: groups.Applet,
 		Short:   "Run a Pixlet app with provided config parameters",
 		RunE: func(cmd *cobra.Command, args []string) error {

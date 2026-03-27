@@ -22,7 +22,7 @@ func NewSchemaCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "schema [path]",
+		Use:     "schema [PATH]",
 		GroupID: groups.Applet,
 		Short:   "Print the configuration schema for a Pixlet app",
 		Args:    cobra.MaximumNArgs(1),

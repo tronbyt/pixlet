@@ -23,7 +23,7 @@ func NewListCmd() *cobra.Command {
 	opts := &listOptions{}
 
 	cmd := &cobra.Command{
-		Use:     "list [device ID]",
+		Use:     "list DEVICE_ID",
 		GroupID: groups.Tronbyt,
 		Short:   "Lists all apps installed on a Tronbyt",
 		Args:    cobra.MinimumNArgs(1),

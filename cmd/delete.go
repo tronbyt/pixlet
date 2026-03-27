@@ -19,7 +19,7 @@ func NewDeleteCmd() *cobra.Command {
 	opts := &deleteOptions{}
 
 	cmd := &cobra.Command{
-		Use:     "delete [device ID] [installation ID]",
+		Use:     "delete DEVICE_ID INSTALLATION_ID",
 		GroupID: groups.Tronbyt,
 		Short:   "Delete a Pixlet script from a Tronbyt",
 		Args:    cobra.MinimumNArgs(2),

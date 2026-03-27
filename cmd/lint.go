@@ -23,7 +23,7 @@ func NewLintCmd() *cobra.Command {
 	opts := newLintOptions()
 
 	cmd := &cobra.Command{
-		Use:     "lint [path]...",
+		Use:     "lint [PATH]...",
 		GroupID: groups.Validate,
 		Example: `  pixlet lint app.star
   pixlet lint --recursive --fix ./`,

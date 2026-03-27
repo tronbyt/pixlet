@@ -31,7 +31,7 @@ func NewCheckCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "check [path]...",
+		Use:     "check [PATH]...",
 		GroupID: groups.Validate,
 		Example: `pixlet check examples/clock`,
 		Short:   "Check if an app is ready to publish",
