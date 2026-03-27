@@ -36,7 +36,7 @@ func NewProfileCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "profile [path] [<key>=value>]...",
+		Use:     "profile [PATH] [KEY=VALUE]...",
 		GroupID: groups.Applet,
 		Short:   "Run a Pixlet app and print its execution-time profile",
 		RunE: func(cmd *cobra.Command, args []string) error {

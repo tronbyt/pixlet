@@ -22,7 +22,7 @@ func NewFormatCmd() *cobra.Command {
 	opts := newFormatOptions()
 
 	cmd := &cobra.Command{
-		Use:     "format [path]...",
+		Use:     "format [PATH]...",
 		GroupID: groups.Validate,
 		Short:   "Formats Tronbyt apps",
 		Example: `  pixlet format app.star

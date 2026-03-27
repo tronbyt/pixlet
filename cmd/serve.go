@@ -42,7 +42,7 @@ func NewServeCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "serve [path]",
+		Use:     "serve [PATH]",
 		GroupID: groups.Applet,
 		Short:   "Serve a Pixlet app in a web server",
 		Args:    cobra.MaximumNArgs(1),

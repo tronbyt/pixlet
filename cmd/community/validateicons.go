@@ -15,7 +15,7 @@ import (
 
 func NewValidateIconsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "validate-icons [path]",
+		Use:     "validate-icons [PATH]",
 		Short:   "Validates the schema icons used are available in our mobile app.",
 		Example: `pixlet community validate-icons examples/schema_hello_world`,
 		Long: `This command determines if the icons selected in your app schema are supported

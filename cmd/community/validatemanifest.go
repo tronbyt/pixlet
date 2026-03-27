@@ -12,7 +12,7 @@ import (
 
 func NewValidateManifestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "validate-manifest [path]",
+		Use:     "validate-manifest [PATH]",
 		Short:   "Validates an app manifest is ready for publishing",
 		Example: `  pixlet community validate-manifest manifest.yaml`,
 		Long: `This command determines if your app manifest is configured properly by

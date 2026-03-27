@@ -12,7 +12,7 @@ import (
 
 func NewCreateManifestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "create-manifest [path]",
+		Use:               "create-manifest [PATH]",
 		Short:             "Creates an app manifest from a prompt",
 		Example:           `  pixlet community create-manifest manifest.yaml`,
 		Long:              `This command creates an app manifest by asking a series of prompts.`,
