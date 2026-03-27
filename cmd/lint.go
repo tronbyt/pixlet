@@ -5,6 +5,7 @@ import (
 
 	"github.com/bazelbuild/buildtools/differ"
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/groups"
 )
 
 type lintOptions struct {
@@ -22,7 +23,8 @@ func NewLintCmd() *cobra.Command {
 	opts := newLintOptions()
 
 	cmd := &cobra.Command{
-		Use: "lint [path]...",
+		Use:     "lint [path]...",
+		GroupID: groups.Validate,
 		Example: `  pixlet lint app.star
   pixlet lint --recursive --fix ./`,
 		Short: "Lints Tronbyt apps",

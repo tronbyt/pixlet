@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
@@ -25,9 +26,10 @@ func NewPushCmd() *cobra.Command {
 	opts := &pushOptions{}
 
 	cmd := &cobra.Command{
-		Use:   "push [device ID] [webp image]",
-		Short: "Push a WebP to a Tronbyt",
-		Args:  cobra.MinimumNArgs(2),
+		Use:     "push [device ID] [webp image]",
+		GroupID: groups.Tronbyt,
+		Short:   "Push a WebP to a Tronbyt",
+		Args:    cobra.MinimumNArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return pushRun(cmd, args, opts)
 		},

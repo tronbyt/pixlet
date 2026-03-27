@@ -10,6 +10,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
@@ -22,9 +23,10 @@ func NewListCmd() *cobra.Command {
 	opts := &listOptions{}
 
 	cmd := &cobra.Command{
-		Use:   "list [device ID]",
-		Short: "Lists all apps installed on a Tronbyt",
-		Args:  cobra.MinimumNArgs(1),
+		Use:     "list [device ID]",
+		GroupID: groups.Tronbyt,
+		Short:   "Lists all apps installed on a Tronbyt",
+		Args:    cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return listRun(cmd, args, opts)
 		},

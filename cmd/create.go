@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/community"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/tools/generator"
 	"github.com/tronbyt/pixlet/tools/repo"
 )
@@ -14,10 +15,11 @@ import (
 // NewCreateCmd prompts the user for info and generates a new app.
 func NewCreateCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create",
-		Short: "Creates a new app",
-		Long:  `This command will prompt for all of the information we need to generate a new Tronbyt app.`,
-		RunE:  createRun,
+		Use:     "create",
+		GroupID: groups.Applet,
+		Short:   "Creates a new app",
+		Long:    `This command will prompt for all of the information we need to generate a new Tronbyt app.`,
+		RunE:    createRun,
 
 		ValidArgsFunction: cobra.NoFileCompletions,
 	}

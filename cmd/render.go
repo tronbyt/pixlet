@@ -12,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/text/language"
@@ -53,8 +54,9 @@ func NewRenderCmd() *cobra.Command {
 	opts := newRenderOptions()
 
 	cmd := &cobra.Command{
-		Use:   "render [path] [<key>=value>]...",
-		Short: "Run a Pixlet app with provided config parameters",
+		Use:     "render [path] [<key>=value>]...",
+		GroupID: groups.Applet,
+		Short:   "Run a Pixlet app with provided config parameters",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return renderRun(cmd, args, opts)
 		},

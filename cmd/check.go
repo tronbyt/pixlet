@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/community"
 	"github.com/tronbyt/pixlet/cmd/flags"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/manifest"
 )
 
@@ -31,6 +32,7 @@ func NewCheckCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "check [path]...",
+		GroupID: groups.Validate,
 		Example: `pixlet check examples/clock`,
 		Short:   "Check if an app is ready to publish",
 		Long: `Check if an app is ready to publish.

@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
@@ -21,8 +22,9 @@ func NewDevicesCmd() *cobra.Command {
 	opts := &devicesOptions{}
 
 	cmd := &cobra.Command{
-		Use:   "devices",
-		Short: "List devices in your Tronbyt account",
+		Use:     "devices",
+		GroupID: groups.Tronbyt,
+		Short:   "List devices in your Tronbyt account",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return devicesRun(cmd, opts)
 		},

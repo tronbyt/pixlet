@@ -8,12 +8,14 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tronbyt/pixlet/cmd/groups"
 )
 
 func NewConfigCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "config",
-		Short: "Manage configuration for Pixlet.",
+		Use:     "config",
+		GroupID: groups.Tronbyt,
+		Short:   "Manage configuration for Pixlet.",
 	}
 
 	cmd.AddCommand(
