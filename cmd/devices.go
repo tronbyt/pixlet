@@ -1,25 +1,22 @@
 package cmd
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"iter"
-	"net/http"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
 type devicesOptions struct {
-	apiToken string
-	baseURL  string
+	creds *flags.APICredentials
 }
 
 func NewDevicesCmd() *cobra.Command {
-	opts := &devicesOptions{}
+	opts := &devicesOptions{
+		creds: flags.NewAPICredentials(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "devices",
@@ -31,21 +28,17 @@ func NewDevicesCmd() *cobra.Command {
 		ValidArgsFunction: cobra.NoFileCompletions,
 	}
 
-	cmd.Flags().StringVarP(&opts.apiToken, "api-token", "t", opts.apiToken, "Tronbyt API token")
-	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.baseURL, "url", "u", opts.baseURL, "base URL of Tronbyt API")
-	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
-
+	opts.creds.Register(cmd)
 	return cmd
 }
 
 func devicesRun(cmd *cobra.Command, opts *devicesOptions) error {
-	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
+	client, err := tronbytapi.NewClient(opts.creds.URL, opts.creds.APIToken)
 	if err != nil {
 		return err
 	}
 
-	for d, err := range getDevices(cmd.Context(), creds) {
+	for d, err := range client.GetDevices(cmd.Context()) {
 		if err != nil {
 			return err
 		}
@@ -54,39 +47,4 @@ func devicesRun(cmd *cobra.Command, opts *devicesOptions) error {
 	}
 
 	return nil
-}
-
-func getDevices(ctx context.Context, creds apiCredentials) iter.Seq2[*tronbytapi.Device, error] {
-	return func(yield func(*tronbytapi.Device, error) bool) {
-		client := &http.Client{}
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/v0/devices", creds.baseURL), nil)
-		if err != nil {
-			yield(nil, fmt.Errorf("creating request: %w", err))
-			return
-		}
-
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", creds.token))
-
-		resp, err := client.Do(req)
-		if err != nil {
-			yield(nil, fmt.Errorf("listing devices: %w", err))
-			return
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			body, _ := io.ReadAll(resp.Body)
-			yield(nil, fmt.Errorf("tronbyt api error %s: %s", resp.Status, body))
-			return
-		}
-
-		var devices tronbytapi.Devices
-		if err := json.NewDecoder(resp.Body).Decode(&devices); err != nil {
-			yield(nil, fmt.Errorf("decoding json: %w", err))
-			return
-		}
-
-		for _, device := range devices.Devices {
-			yield(&device, nil)
-		}
-	}
 }

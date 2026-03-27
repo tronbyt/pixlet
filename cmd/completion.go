@@ -8,36 +8,37 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
+	"github.com/tronbyt/pixlet/internal/tronbytapi"
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/schema"
 )
 
 var formats = []string{"webp", "gif", "avif"}
 
-func completeInstallations(cmd *cobra.Command, deviceID string) ([]string, cobra.ShellCompDirective) {
-	creds, err := resolveCommandAPICredentials(cmd)
+func completeInstallations(cmd *cobra.Command, creds *flags.APICredentials, deviceID string) ([]string, cobra.ShellCompDirective) {
+	client, err := tronbytapi.NewClient(creds.URL, creds.APIToken)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	var installations []string
-	for i, err := range getInstallations(cmd.Context(), deviceID, creds) {
+	for i, err := range client.GetInstallations(cmd.Context(), deviceID) {
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
-		installations = append(installations, i.Id+"\t"+i.AppId)
+		installations = append(installations, i.ID+"\t"+i.AppID)
 	}
 	return installations, cobra.ShellCompDirectiveNoFileComp
 }
 
-func completeDevices(cmd *cobra.Command) ([]string, cobra.ShellCompDirective) {
-	creds, err := resolveCommandAPICredentials(cmd)
+func completeDevices(cmd *cobra.Command, creds *flags.APICredentials) ([]string, cobra.ShellCompDirective) {
+	client, err := tronbytapi.NewClient(creds.URL, creds.APIToken)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	var devices []string
-	for d, err := range getDevices(cmd.Context(), creds) {
+	for d, err := range client.GetDevices(cmd.Context()) {
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}

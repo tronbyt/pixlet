@@ -1,22 +1,20 @@
 package cmd
 
 import (
-	"fmt"
-	"io"
-	"log/slog"
-	"net/http"
-
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/cmd/groups"
+	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
 type deleteOptions struct {
-	apiToken string
-	baseURL  string
+	creds *flags.APICredentials
 }
 
 func NewDeleteCmd() *cobra.Command {
-	opts := &deleteOptions{}
+	opts := &deleteOptions{
+		creds: flags.NewAPICredentials(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "delete DEVICE_ID INSTALLATION_ID",
@@ -29,19 +27,15 @@ func NewDeleteCmd() *cobra.Command {
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 			switch len(args) {
 			case 0:
-				return completeDevices(cmd)
+				return completeDevices(cmd, opts.creds)
 			case 1:
-				return completeInstallations(cmd, args[0])
+				return completeInstallations(cmd, opts.creds, args[0])
 			}
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		},
 	}
 
-	cmd.Flags().StringVarP(&opts.apiToken, "api-token", "t", opts.apiToken, "Tronbyt API token")
-	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.baseURL, "url", "u", opts.baseURL, "base URL of Tronbyt API")
-	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
-
+	opts.creds.Register(cmd)
 	return cmd
 }
 
@@ -49,35 +43,10 @@ func deleteRun(cmd *cobra.Command, args []string, opts *deleteOptions) error {
 	deviceID := args[0]
 	installationID := args[1]
 
-	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
+	client, err := tronbytapi.NewClient(opts.creds.URL, opts.creds.APIToken)
 	if err != nil {
 		return err
 	}
 
-	client := &http.Client{}
-	req, err := http.NewRequestWithContext(
-		cmd.Context(),
-		http.MethodDelete,
-		fmt.Sprintf("%s/v0/devices/%s/installations/%s", creds.baseURL, deviceID, installationID),
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("creating DELETE request: %w", err)
-	}
-
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", creds.token))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return fmt.Errorf("deleting via API: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		slog.Error("Tronbyt API returned an error", "status", resp.Status)
-		body, _ := io.ReadAll(resp.Body)
-		fmt.Println(string(body))
-		return fmt.Errorf("tronbyt API returned status: %s", resp.Status)
-	}
-
-	return nil
+	return client.Delete(cmd.Context(), deviceID, installationID)
 }
