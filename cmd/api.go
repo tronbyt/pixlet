@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/encode"
-	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/text/language"
@@ -148,11 +148,12 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 	w.Write(buf) //nolint:errcheck
 }
 
-func apiRun(_ *cobra.Command, _ []string, opts *apiOptions) error {
-	cache := runtime.NewInMemoryCache()
+func apiRun(cmd *cobra.Command, _ []string, opts *apiOptions) error {
+	cache, err := flags.NewCache().Load(cmd.Context())
+	if err != nil {
+		return err
+	}
 	defer cache.Close()
-	runtime.InitHTTP(cache)
-	runtime.InitCache(cache)
 
 	switch opts.format {
 	case "gif":

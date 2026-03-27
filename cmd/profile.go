@@ -20,7 +20,8 @@ import (
 )
 
 type profileOptions struct {
-	flags.Meta
+	meta  *flags.Meta
+	cache *flags.Cache
 
 	pprofCommand string
 	configJSON   string
@@ -29,7 +30,8 @@ type profileOptions struct {
 func NewProfileCmd() *cobra.Command {
 	opts := &profileOptions{
 		pprofCommand: "top 10",
-		Meta:         flags.NewMeta(),
+		meta:         flags.NewMeta(),
+		cache:        flags.NewCache(),
 	}
 
 	cmd := &cobra.Command{
@@ -49,7 +51,8 @@ func NewProfileCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&opts.configJSON, "config", "c", opts.configJSON, "Config file in json format")
 	_ = cmd.RegisterFlagCompletionFunc("config", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
 
-	opts.Register(cmd)
+	opts.meta.Register(cmd)
+	opts.cache.Register(cmd)
 
 	return cmd
 }
@@ -103,7 +106,13 @@ func profileRun(cmd *cobra.Command, args []string, opts *profileOptions) error {
 		return err
 	}
 
-	profile, err := ProfileApp(cmd.Context(), path, config, opts.Metadata)
+	cache, err := opts.cache.Load(cmd.Context())
+	if err != nil {
+		return err
+	}
+	defer cache.Close()
+
+	profile, err := ProfileApp(cmd.Context(), path, config, opts.meta.Metadata)
 	if err != nil {
 		return err
 	}
@@ -121,11 +130,6 @@ func profileRun(cmd *cobra.Command, args []string, opts *profileOptions) error {
 }
 
 func ProfileApp(ctx context.Context, path string, config map[string]any, meta canvas.Metadata) (*pprof_profile.Profile, error) {
-	cache := runtime.NewInMemoryCache()
-	defer cache.Close()
-	runtime.InitHTTP(cache)
-	runtime.InitCache(cache)
-
 	applet, err := runtime.NewAppletFromPath(
 		ctx,
 		path,

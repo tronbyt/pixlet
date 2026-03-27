@@ -46,10 +46,11 @@ by our mobile app.`,
 }
 
 func ValidateIcons(ctx context.Context, path string) error {
-	cache := runtime.NewInMemoryCache()
+	cache, err := flags.NewCache().Load(ctx)
+	if err != nil {
+		return err
+	}
 	defer cache.Close()
-	runtime.InitHTTP(cache)
-	runtime.InitCache(cache)
 
 	applet, err := runtime.NewAppletFromPath(
 		ctx, path,

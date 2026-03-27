@@ -207,6 +207,10 @@ func NewAppletFromFS(ctx context.Context, id string, fsys fs.FS, opts ...AppletO
 		return nil, err
 	}
 
+	if a.ID == "." {
+		a.ID = a.MainFile
+	}
+
 	return a, nil
 }
 

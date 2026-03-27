@@ -12,13 +12,13 @@ import (
 )
 
 type serveOptions struct {
-	flags.Meta
-
 	host          string
 	port          int
 	path          string
 	watch         bool
 	format        string
+	meta          *flags.Meta
+	cache         *flags.Cache
 	configOutFile string
 	maxDuration   time.Duration
 	timeout       time.Duration
@@ -36,7 +36,8 @@ func NewServeCmd() *cobra.Command {
 		maxDuration: 15 * time.Second,
 		timeout:     30 * time.Second,
 		webpLevel:   encode.WebPLevelDefault,
-		Meta:        flags.NewMeta(),
+		meta:        flags.NewMeta(),
+		cache:       flags.NewCache(),
 	}
 
 	cmd := &cobra.Command{
@@ -79,7 +80,8 @@ containing multiple Starlark files and resources.`,
 	)
 	_ = cmd.RegisterFlagCompletionFunc(webpLevelFlag, completeWebPLevel)
 
-	opts.Register(cmd)
+	opts.meta.Register(cmd)
+	opts.cache.Register(cmd)
 
 	return cmd
 }
@@ -105,6 +107,12 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		}
 	}
 
+	cache, err := opts.cache.Load(cmd.Context())
+	if err != nil {
+		return err
+	}
+	defer cache.Close()
+
 	s, err := server.NewServer(
 		opts.host,
 		opts.port,
@@ -113,7 +121,7 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		appletPath,
 		opts.configOutFile,
 		!opts.noBrowser,
-		loader.WithMeta(opts.Metadata),
+		loader.WithMeta(opts.meta.Metadata),
 		loader.WithMaxDuration(opts.maxDuration),
 		loader.WithTimeout(opts.timeout),
 		loader.WithImageFormat(imageFormat),
