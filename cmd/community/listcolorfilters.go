@@ -12,7 +12,6 @@ func NewListColorFiltersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "list-color-filters",
 		Short:             "List supported color filters.",
-		Example:           `  pixlet community list-color-filters`,
 		Long:              `This command lists all color filters.`,
 		RunE:              listColorFiltersRun,
 		ValidArgsFunction: cobra.NoFileCompletions,

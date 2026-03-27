@@ -26,7 +26,7 @@ func NewLintCmd() *cobra.Command {
 		Use:     "lint [PATH]...",
 		GroupID: groups.Validate,
 		Example: `  pixlet lint app.star
-  pixlet lint --recursive --fix ./`,
+  pixlet lint --recursive --fix`,
 		Short: "Lints Tronbyt apps",
 		Long: `The lint command provides a linter for Tronbyt apps. It's capable of linting a
 file, a list of files, or directory with the recursive option. Additionally, it
