@@ -17,7 +17,7 @@ func TestBundleWriteAndLoad(t *testing.T) {
 	assert.NotNil(t, ab.Source)
 
 	// Create a temp directory.
-	dir, err := os.MkdirTemp("", "")
+	dir := t.TempDir()
 	assert.NoError(t, err)
 
 	// Write bundle to the temp directory.
@@ -58,7 +58,7 @@ func TestBundleWriteAndLoadWithoutRuntime(t *testing.T) {
 	assert.NotNil(t, ab.Source)
 
 	// Create a temp directory.
-	dir, err := os.MkdirTemp("", "")
+	dir := t.TempDir()
 	assert.NoError(t, err)
 
 	// Write bundle to the temp directory, without tree-shaking.
