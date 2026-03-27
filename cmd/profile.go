@@ -23,6 +23,7 @@ type profileOptions struct {
 	flags.Meta
 
 	pprofCommand string
+	configJSON   string
 }
 
 func NewProfileCmd() *cobra.Command {
@@ -44,6 +45,9 @@ func NewProfileCmd() *cobra.Command {
 		&opts.pprofCommand, "pprof", "", opts.pprofCommand, "Command to call pprof with",
 	)
 	_ = cmd.RegisterFlagCompletionFunc("pprof", cobra.NoFileCompletions)
+
+	cmd.Flags().StringVarP(&opts.configJSON, "config", "c", opts.configJSON, "Config file in json format")
+	_ = cmd.RegisterFlagCompletionFunc("config", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
 
 	opts.Register(cmd)
 
@@ -94,13 +98,9 @@ func profileRun(cmd *cobra.Command, args []string, opts *profileOptions) error {
 		}
 	}
 
-	config := map[string]any{}
-	for _, param := range args {
-		key, val, ok := strings.Cut(param, "=")
-		if !ok {
-			return fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
-		}
-		config[key] = val
+	config, err := loadConfig(opts.configJSON, args)
+	if err != nil {
+		return err
 	}
 
 	profile, err := ProfileApp(cmd.Context(), path, config, opts.Metadata)
