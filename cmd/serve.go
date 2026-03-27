@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/server"
 	"github.com/tronbyt/pixlet/server/loader"
@@ -41,9 +42,10 @@ func NewServeCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "serve [path]",
-		Short: "Serve a Pixlet app in a web server",
-		Args:  cobra.MaximumNArgs(1),
+		Use:     "serve [path]",
+		GroupID: groups.Applet,
+		Short:   "Serve a Pixlet app in a web server",
+		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return serveRun(cmd, args, opts)
 		},

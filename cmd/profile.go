@@ -13,6 +13,7 @@ import (
 	pprof_profile "github.com/google/pprof/profile"
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"go.starlark.net/starlark"
 
@@ -35,8 +36,9 @@ func NewProfileCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "profile [path] [<key>=value>]...",
-		Short: "Run a Pixlet app and print its execution-time profile",
+		Use:     "profile [path] [<key>=value>]...",
+		GroupID: groups.Applet,
+		Short:   "Run a Pixlet app and print its execution-time profile",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return profileRun(cmd, args, opts)
 		},

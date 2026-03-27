@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
+	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
@@ -21,9 +22,10 @@ func NewSchemaCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "schema [path]",
-		Short: "Print the configuration schema for a Pixlet app",
-		Args:  cobra.MaximumNArgs(1),
+		Use:     "schema [path]",
+		GroupID: groups.Applet,
+		Short:   "Print the configuration schema for a Pixlet app",
+		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return schemaRun(cmd, args, opts)
 		},

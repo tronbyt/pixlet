@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/groups"
 )
 
 type deleteOptions struct {
@@ -18,9 +19,10 @@ func NewDeleteCmd() *cobra.Command {
 	opts := &deleteOptions{}
 
 	cmd := &cobra.Command{
-		Use:   "delete [device ID] [installation ID]",
-		Short: "Delete a Pixlet script from a Tronbyt",
-		Args:  cobra.MinimumNArgs(2),
+		Use:     "delete [device ID] [installation ID]",
+		GroupID: groups.Tronbyt,
+		Short:   "Delete a Pixlet script from a Tronbyt",
+		Args:    cobra.MinimumNArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return deleteRun(cmd, args, opts)
 		},

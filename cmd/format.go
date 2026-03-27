@@ -5,6 +5,7 @@ import (
 
 	"github.com/bazelbuild/buildtools/differ"
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/groups"
 )
 
 type formatOptions struct {
@@ -21,8 +22,9 @@ func NewFormatCmd() *cobra.Command {
 	opts := newFormatOptions()
 
 	cmd := &cobra.Command{
-		Use:   "format [path]...",
-		Short: "Formats Tronbyt apps",
+		Use:     "format [path]...",
+		GroupID: groups.Validate,
+		Short:   "Formats Tronbyt apps",
 		Example: `  pixlet format app.star
   pixlet format app.star --dry-run
   pixlet format --recursive ./`,
