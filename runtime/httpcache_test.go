@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"math/rand/v2"
@@ -21,6 +22,14 @@ func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req)
 }
 
+func testServer(t *testing.T) string {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	t.Cleanup(server.Close)
+	return server.URL
+}
+
 func TestInitHTTP(t *testing.T) {
 	c := NewInMemoryCache()
 	t.Cleanup(c.Close)
@@ -28,6 +37,9 @@ func TestInitHTTP(t *testing.T) {
 
 	b, err := testdata.FS.ReadFile("httpcache.star")
 	require.NoError(t, err)
+
+	url := testServer(t)
+	b = bytes.ReplaceAll(b, []byte("https://example.com"), []byte(url))
 
 	app, err := NewApplet(t.Context(), "httpcache.star", b, WithTests(t))
 	require.NoError(t, err)
@@ -195,7 +207,9 @@ func TestDetermineTTLNoHeaders(t *testing.T) {
 }
 
 func TestCacheKey(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "https://example.com/weather?zip=10001", nil)
+	url := testServer(t)
+
+	req := httptest.NewRequest(http.MethodGet, url+"/weather?zip=10001", nil)
 	req.Header.Set("X-Tidbyt-App", "weather")
 	req.Header.Set(TTLHeader, "60")
 
@@ -204,7 +218,7 @@ func TestCacheKey(t *testing.T) {
 	assert.True(t, strings.HasPrefix(key, HTTPCachePrefix+":weather:"))
 	assert.Equal(t, "60", req.Header.Get(TTLHeader))
 
-	reqDifferentTTL := httptest.NewRequest(http.MethodGet, "https://example.com/weather?zip=10001", nil)
+	reqDifferentTTL := httptest.NewRequest(http.MethodGet, url+"/weather?zip=10001", nil)
 	reqDifferentTTL.Header.Set("X-Tidbyt-App", "weather")
 	reqDifferentTTL.Header.Set(TTLHeader, "120")
 	keyDifferentTTL, err := cacheKey(reqDifferentTTL)
@@ -213,7 +227,9 @@ func TestCacheKey(t *testing.T) {
 }
 
 func TestCacheKeyWithoutAppPrefix(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "https://example.com/noapp", nil)
+	url := testServer(t)
+
+	req := httptest.NewRequest(http.MethodGet, url+"/noapp", nil)
 
 	key, err := cacheKey(req)
 	require.NoError(t, err)
@@ -302,7 +318,9 @@ func TestCacheClientRoundTripCachesResponses(t *testing.T) {
 		MaxResponseBytes: 1024,
 	}
 
-	req1 := httptest.NewRequest(http.MethodGet, "https://example.com/data", nil)
+	url := testServer(t)
+
+	req1 := httptest.NewRequest(http.MethodGet, url, nil)
 	req1.Header.Set("X-Tidbyt-App", "weather")
 	req1.Header.Set(TTLHeader, "60")
 
@@ -311,7 +329,7 @@ func TestCacheClientRoundTripCachesResponses(t *testing.T) {
 	assert.Equal(t, "MISS", resp1.Header.Get("tidbyt-cache-status"))
 	assert.Equal(t, 1, transportCalls)
 
-	req2 := httptest.NewRequest(http.MethodGet, "https://example.com/data", nil)
+	req2 := httptest.NewRequest(http.MethodGet, url, nil)
 	req2.Header.Set("X-Tidbyt-App", "weather")
 	req2.Header.Set(TTLHeader, "60")
 
