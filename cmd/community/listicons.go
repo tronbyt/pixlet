@@ -12,7 +12,6 @@ func NewListIconsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "list-icons",
 		Short:             "List icons that are available in our mobile app.",
-		Example:           `  pixlet community list-icons`,
 		Long:              `This command lists all in your icons that are supported by our mobile app.`,
 		RunE:              listIconsRun,
 		ValidArgsFunction: cobra.NoFileCompletions,

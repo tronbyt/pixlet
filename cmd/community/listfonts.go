@@ -19,7 +19,6 @@ func NewListFontsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "list-fonts",
 		Short:             "List available fonts.",
-		Example:           `  pixlet community list-fonts`,
 		Long:              `This command lists all fonts supported by this Pixlet version.`,
 		RunE:              listFontsRun,
 		ValidArgsFunction: cobra.NoFileCompletions,
