@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/encode"
-	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/server/loader"
 	"golang.org/x/text/language"
 )
@@ -21,7 +20,8 @@ import (
 const webpLevelFlag = "webp-level"
 
 type renderOptions struct {
-	flags.Meta
+	meta  *flags.Meta
+	cache *flags.Cache
 
 	log               *slog.Logger
 	configJSON        string
@@ -38,13 +38,14 @@ type renderOptions struct {
 
 func newRenderOptions() *renderOptions {
 	return &renderOptions{
+		meta:              flags.NewMeta(),
+		cache:             flags.NewCache(),
 		log:               slog.Default(),
 		magnify:           1,
 		imageOutputFormat: "webp",
 		maxDuration:       15 * time.Second,
 		timeout:           30 * time.Second,
 		webpLevel:         encode.WebPLevelDefault,
-		Meta:              flags.NewMeta(),
 	}
 }
 
@@ -130,7 +131,8 @@ containing multiple Starlark files and resources.
 	cmd.Flags().StringVar(&opts.locale, "locale", opts.locale, "Locale to use for rendering")
 	_ = cmd.RegisterFlagCompletionFunc("locale", cobra.NoFileCompletions)
 
-	opts.Register(cmd)
+	opts.meta.Register(cmd)
+	opts.cache.Register(cmd)
 
 	return cmd
 }
@@ -169,7 +171,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		outPath = strings.TrimSuffix(path, ".star")
 	}
 
-	if opts.Is2x {
+	if opts.meta.Is2x {
 		outPath += "@2x"
 	}
 
@@ -199,10 +201,11 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		return err
 	}
 
-	cache := runtime.NewInMemoryCache()
+	cache, err := opts.cache.Load(cmd.Context())
+	if err != nil {
+		return err
+	}
 	defer cache.Close()
-	runtime.InitHTTP(cache)
-	runtime.InitCache(cache)
 
 	filters := encode.RenderFilters{Magnify: opts.magnify}
 	if opts.colorFilter != "" {
@@ -224,7 +227,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		cmd.Context(),
 		path,
 		config,
-		loader.WithMeta(opts.Metadata),
+		loader.WithMeta(opts.meta.Metadata),
 		loader.WithMaxDuration(opts.maxDuration),
 		loader.WithTimeout(opts.timeout),
 		loader.WithImageFormat(imageFormat),

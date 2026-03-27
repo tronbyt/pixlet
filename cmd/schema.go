@@ -11,14 +11,13 @@ import (
 )
 
 type schemaOptions struct {
-	flags.Meta
-
 	output string
+	meta   *flags.Meta
 }
 
 func NewSchemaCmd() *cobra.Command {
 	opts := &schemaOptions{
-		Meta: flags.NewMeta(),
+		meta: flags.NewMeta(),
 	}
 
 	cmd := &cobra.Command{
@@ -41,7 +40,7 @@ JSON format.
 	cmd.Flags().StringVarP(&opts.output, "output", "o", opts.output, "Path for schema")
 	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
 
-	opts.Register(cmd)
+	opts.meta.Register(cmd)
 
 	return cmd
 }
@@ -53,7 +52,7 @@ func schemaRun(cmd *cobra.Command, args []string, opts *schemaOptions) error {
 	}
 
 	applet, err := runtime.NewAppletFromPath(
-		cmd.Context(), path, runtime.WithCanvasMeta(opts.Metadata),
+		cmd.Context(), path, runtime.WithCanvasMeta(opts.meta.Metadata),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to load applet: %w", err)

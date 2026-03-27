@@ -43,10 +43,11 @@ func NewLoadAppCmd() *cobra.Command {
 }
 
 func LoadApp(ctx context.Context, path string) error {
-	cache := runtime.NewInMemoryCache()
+	cache, err := flags.NewCache().Load(ctx)
+	if err != nil {
+		return err
+	}
 	defer cache.Close()
-	runtime.InitHTTP(cache)
-	runtime.InitCache(cache)
 
 	app, err := runtime.NewAppletFromPath(
 		ctx, path,

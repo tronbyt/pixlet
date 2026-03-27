@@ -10,8 +10,8 @@ type Meta struct {
 	canvas.Metadata
 }
 
-func NewMeta() Meta {
-	return Meta{
+func NewMeta() *Meta {
+	return &Meta{
 		Metadata: canvas.Metadata{
 			Width:  render.DefaultFrameWidth,
 			Height: render.DefaultFrameHeight,
