@@ -14,8 +14,8 @@ type Installations struct {
 }
 
 type Installation struct {
-	Id    string `json:"id"`
-	AppId string `json:"appID"`
+	ID    string `json:"id"`
+	AppID string `json:"appID"`
 }
 
 type PushPayload struct {

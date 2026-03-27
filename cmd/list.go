@@ -1,26 +1,23 @@
 package cmd
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"iter"
-	"net/http"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
 )
 
 type listOptions struct {
-	apiToken string
-	baseURL  string
+	creds *flags.APICredentials
 }
 
 func NewListCmd() *cobra.Command {
-	opts := &listOptions{}
+	opts := &listOptions{
+		creds: flags.NewAPICredentials(),
+	}
 
 	cmd := &cobra.Command{
 		Use:     "list DEVICE_ID",
@@ -32,17 +29,13 @@ func NewListCmd() *cobra.Command {
 		},
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 			if len(args) == 0 {
-				return completeDevices(cmd)
+				return completeDevices(cmd, opts.creds)
 			}
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		},
 	}
 
-	cmd.Flags().StringVarP(&opts.apiToken, "api-token", "t", opts.apiToken, "Tronbyt API token")
-	_ = cmd.RegisterFlagCompletionFunc("api-token", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.baseURL, "url", "u", opts.baseURL, "base URL of Tronbyt API")
-	_ = cmd.RegisterFlagCompletionFunc("url", cobra.NoFileCompletions)
-
+	opts.creds.Register(cmd)
 	return cmd
 }
 
@@ -52,58 +45,18 @@ func listRun(cmd *cobra.Command, args []string, opts *listOptions) error {
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
 	defer func() { _ = w.Flush() }()
 
-	creds, err := resolveAPICredentials(opts.baseURL, opts.apiToken)
+	client, err := tronbytapi.NewClient(opts.creds.URL, opts.creds.APIToken)
 	if err != nil {
 		return err
 	}
 
-	for inst, err := range getInstallations(cmd.Context(), deviceID, creds) {
+	for inst, err := range client.GetInstallations(cmd.Context(), deviceID) {
 		if err != nil {
 			return err
 		}
 
-		_, _ = fmt.Fprintf(w, "%s\t%s\n", inst.Id, inst.AppId)
+		_, _ = fmt.Fprintf(w, "%s\t%s\n", inst.ID, inst.AppID)
 	}
 
 	return nil
-}
-
-func getInstallations(ctx context.Context, deviceID string, creds apiCredentials) iter.Seq2[*tronbytapi.Installation, error] {
-	return func(yield func(*tronbytapi.Installation, error) bool) {
-		client := &http.Client{}
-		req, err := http.NewRequestWithContext(
-			ctx,
-			http.MethodGet,
-			fmt.Sprintf("%s/v0/devices/%s/installations", creds.baseURL, deviceID), nil)
-		if err != nil {
-			yield(nil, fmt.Errorf("creating request: %w", err))
-			return
-		}
-
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", creds.token))
-
-		resp, err := client.Do(req)
-		if err != nil {
-			yield(nil, fmt.Errorf("listing installation: %w", err))
-			return
-		}
-
-		body, _ := io.ReadAll(resp.Body)
-		if resp.StatusCode != http.StatusOK {
-			yield(nil, fmt.Errorf("tronbyt api error %s: %s", resp.Status, body))
-			return
-		}
-
-		var installations tronbytapi.Installations
-		err = json.Unmarshal(body, &installations)
-		if err != nil {
-			yield(nil, fmt.Errorf("decoding json: %s", body))
-		}
-
-		for _, installation := range installations.Installations {
-			if !yield(&installation, nil) {
-				return
-			}
-		}
-	}
 }
