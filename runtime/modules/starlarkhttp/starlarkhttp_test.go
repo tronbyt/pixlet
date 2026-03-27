@@ -30,7 +30,7 @@ import (
 	"testing"
 
 	"github.com/qri-io/starlib/testdata"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 	"go.starlark.net/starlark"
@@ -155,8 +155,8 @@ def main():
 `
 
 	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(source), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
@@ -28,10 +29,10 @@ def main():
 `
 
 	app, err := runtime.NewApplet(t.Context(), "handler.star", []byte(source), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 
@@ -51,7 +52,7 @@ h = schema.Handler(
 def main():
 	return []
 `), runtime.WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Nil(t, app)
 
 	// Type is not valid
@@ -69,6 +70,6 @@ h = schema.Handler(
 def main():
 	return []
 `), runtime.WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Nil(t, app)
 }

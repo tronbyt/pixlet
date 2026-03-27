@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // By default, padding is added to child, regardless of bounds.
@@ -22,7 +22,7 @@ func TestPadding(t *testing.T) {
 
 	// Large bounds
 	im := PaintWidget(pad, image.Rect(0, 0, 20, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".......",
 		".......",
 		".rrr...",
@@ -36,7 +36,7 @@ func TestPadding(t *testing.T) {
 
 	// Small bounds
 	im = PaintWidget(pad, image.Rect(0, 0, 4, 4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".......",
 		".......",
 		".rrr...",
@@ -64,7 +64,7 @@ func TestPaddingExpanded(t *testing.T) {
 	}
 
 	im := PaintWidget(pad, image.Rect(0, 0, 7, 7), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".......",
 		".rrr...",
 		".rrr...",
@@ -76,7 +76,7 @@ func TestPaddingExpanded(t *testing.T) {
 
 	// Child doesn't fit: crop
 	im = PaintWidget(pad, image.Rect(0, 0, 3, 3), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"...",
 		".r.",
 		"...",
@@ -98,7 +98,7 @@ func TestColorPadding(t *testing.T) {
 
 	// Large bounds
 	im := PaintWidget(pad, image.Rect(0, 0, 20, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"ggggggg",
 		"ggggggg",
 		"grrrggg",
@@ -112,7 +112,7 @@ func TestColorPadding(t *testing.T) {
 
 	// Small bounds
 	im = PaintWidget(pad, image.Rect(0, 0, 4, 4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"ggggggg",
 		"ggggggg",
 		"grrrggg",
@@ -141,7 +141,7 @@ func TestColorPaddingExpanded(t *testing.T) {
 	}
 
 	im := PaintWidget(pad, image.Rect(0, 0, 7, 7), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"ggggggg",
 		"grrrggg",
 		"grrrggg",
@@ -153,7 +153,7 @@ func TestColorPaddingExpanded(t *testing.T) {
 
 	// Child doesn't fit: crop
 	im = PaintWidget(pad, image.Rect(0, 0, 3, 3), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"ggg",
 		"grg",
 		"ggg",

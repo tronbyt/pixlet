@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/manifest"
 	"github.com/tronbyt/pixlet/manifest/testdata"
 )
@@ -33,23 +34,23 @@ func TestManifest(t *testing.T) {
 	}
 
 	expected, err := testdata.FS.ReadFile("source.star")
-	assert.NoError(t, err)
-	assert.Equal(t, m.Source, expected)
+	require.NoError(t, err)
+	assert.Equal(t, expected, m.Source)
 }
 
 func TestLoadManifest(t *testing.T) {
 	f, err := testdata.FS.Open("manifest.yaml")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	t.Cleanup(func() { _ = f.Close() })
 
 	m, err := manifest.LoadManifest(f)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
-	assert.Equal(t, m.ID, "fuzzy-clock")
-	assert.Equal(t, m.Name, "Fuzzy Clock")
-	assert.Equal(t, m.Author, "Max Timkovich")
-	assert.Equal(t, m.Summary, "Human readable time")
-	assert.Equal(t, m.Desc, "Display the time in a groovy, human-readable way.")
+	assert.Equal(t, "fuzzy-clock", m.ID)
+	assert.Equal(t, "Fuzzy Clock", m.Name)
+	assert.Equal(t, "Max Timkovich", m.Author)
+	assert.Equal(t, "Human readable time", m.Summary)
+	assert.Equal(t, "Display the time in a groovy, human-readable way.", m.Desc)
 }
 
 func TestWriteManifest(t *testing.T) {
@@ -64,10 +65,10 @@ func TestWriteManifest(t *testing.T) {
 
 	buff := bytes.Buffer{}
 	err := m.WriteManifest(&buff)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	b, err := io.ReadAll(&buff)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, output, string(b))
 }

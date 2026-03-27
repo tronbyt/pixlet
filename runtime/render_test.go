@@ -133,9 +133,9 @@ def main():
 
 func TestBigDotStar(t *testing.T) {
 	app, err := NewApplet(t.Context(), "big.star", []byte(testDotStar), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 
@@ -155,7 +155,7 @@ def main():
 	)
 
 	app, err := NewApplet(t.Context(), filename, []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	b := app.Globals["test_box.star"]["b"]
 	assert.IsType(t, &render_runtime.Box{}, b)
@@ -168,7 +168,7 @@ def main():
 	assert.Equal(t, 1, box.Height)
 
 	assert.IsType(t, &render.Box{}, box.Child)
-	assert.Equal(t, box.Child.(*render.Box).Height, 2)
+	assert.Equal(t, 2, box.Child.(*render.Box).Height)
 
 	assert.Equal(t, image.Rect(0, 0, 2, 1), render.PaintWidget(widget, image.Rect(0, 0, 64, 32), 0).Bounds())
 }
@@ -190,7 +190,7 @@ def main():
 	)
 
 	app, err := NewApplet(t.Context(), filename, []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	txt := app.Globals["test_text.star"]["t"]
 	assert.IsType(t, &render_runtime.Text{}, txt)
@@ -207,7 +207,7 @@ def main():
 	assert.Equal(t, []uint32{eR, eG, eB, eA}, []uint32{r, g, b, a})
 
 	rendered := render.PaintWidget(widget, image.Rect(0, 0, 64, 32), 0)
-	assert.Greater(t, rendered.Bounds().Dx(), 0)
+	assert.Positive(t, rendered.Bounds().Dx())
 	assert.Equal(t, text.Height, rendered.Bounds().Dy())
 }
 
@@ -234,7 +234,7 @@ def main():
 `, base64.StdEncoding.EncodeToString(p.Bytes()))
 
 	app, err := NewApplet(t.Context(), filename, []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	starlarkP := app.Globals["test_png.star"]["img"]
 	require.IsType(t, &render_runtime.Image{}, starlarkP)

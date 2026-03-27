@@ -3,7 +3,7 @@ package manifest_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/manifest"
 )
 
@@ -27,9 +27,9 @@ func TestValidateName(t *testing.T) {
 		err := manifest.ValidateName(tc.input)
 
 		if tc.shouldErr {
-			assert.Error(t, err)
+			require.Error(t, err)
 		} else {
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		}
 	}
 }
@@ -55,9 +55,9 @@ func TestValidateSummary(t *testing.T) {
 		err := manifest.ValidateSummary(tc.input)
 
 		if tc.shouldErr {
-			assert.Error(t, err)
+			require.Error(t, err)
 		} else {
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		}
 	}
 }
@@ -79,9 +79,9 @@ func TestValidateDesc(t *testing.T) {
 		err := manifest.ValidateDesc(tc.input)
 
 		if tc.shouldErr {
-			assert.Error(t, err)
+			require.Error(t, err)
 		} else {
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		}
 	}
 }
@@ -104,9 +104,9 @@ func TestValidateID(t *testing.T) {
 		err := manifest.ValidateID(tc.input)
 
 		if tc.shouldErr {
-			assert.Error(t, err)
+			require.Error(t, err)
 		} else {
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		}
 	}
 }

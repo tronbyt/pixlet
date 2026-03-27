@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Row is just a Vector. See vector_test.go for full coverage.
@@ -26,7 +26,7 @@ func TestRowPaint(t *testing.T) {
 	// On large canvas, height gets truncated to max of children,
 	// while width expands to full size
 	im := PaintWidget(r, image.Rect(0, 0, 14+2, 17), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........rrrrrrrr",
 		"........rrrrrrrr",
 		".gggggg.rrrrrrrr",

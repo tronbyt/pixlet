@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
@@ -25,9 +26,9 @@ def main():
 `
 
 	app, err := runtime.NewApplet(t.Context(), "option.star", []byte(source), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }

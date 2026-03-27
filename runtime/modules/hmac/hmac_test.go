@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
@@ -23,10 +24,10 @@ def main():
 
 func TestHmac(t *testing.T) {
 	app, err := runtime.NewApplet(t.Context(), "hmac_test.star", []byte(hmacSource), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }

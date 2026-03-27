@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/render"
 )
 
@@ -49,7 +50,7 @@ func TestTransformationTranslate(t *testing.T) {
 	assert.Equal(t, 6, o.FrameCount(image.Rect(0, 0, 5, 5)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 5, 5), 0)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rrr..",
 		"ggg..",
 		"bbb..",
@@ -58,7 +59,7 @@ func TestTransformationTranslate(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 5), 1)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....",
 		".rrr.",
 		".ggg.",
@@ -67,7 +68,7 @@ func TestTransformationTranslate(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 5), 2)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....",
 		".....",
 		"..rrr",
@@ -76,7 +77,7 @@ func TestTransformationTranslate(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 5), 3)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....",
 		".....",
 		".....",
@@ -85,7 +86,7 @@ func TestTransformationTranslate(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 5), 4)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....",
 		".....",
 		".....",
@@ -94,7 +95,7 @@ func TestTransformationTranslate(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 5), 5)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....",
 		".....",
 		".....",
@@ -145,7 +146,7 @@ func TestTransformationScale(t *testing.T) {
 	assert.Equal(t, 3, o.FrameCount(image.Rect(0, 0, 9, 9)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 9, 9), 0)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rrr......",
 		"rrr......",
 		"rrr......",
@@ -158,7 +159,7 @@ func TestTransformationScale(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 9, 9), 1)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rrrrrr...",
 		"rrrrrr...",
 		"rrrrrr...",
@@ -171,7 +172,7 @@ func TestTransformationScale(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 9, 9), 2)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rrrrrrrrr",
 		"rrrrrrrrr",
 		"rrrrrrrrr",
@@ -224,35 +225,35 @@ func TestTransformationRotate(t *testing.T) {
 	assert.Equal(t, 5, o.FrameCount(image.Rect(0, 0, 3, 3)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 0)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rrr",
 		"ggg",
 		"bbb",
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 1)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"bgr",
 		"bgr",
 		"bgr",
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 2)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"bbb",
 		"ggg",
 		"rrr",
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 3)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rgb",
 		"rgb",
 		"rgb",
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 4)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rrr",
 		"ggg",
 		"bbb",
@@ -344,7 +345,7 @@ func TestTransformationAll(t *testing.T) {
 	assert.Equal(t, 5, o.FrameCount(image.Rect(0, 0, 9, 9)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 9, 9), 0)
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"█.●......",
 		".........",
 		"●.█......",
@@ -357,7 +358,7 @@ func TestTransformationAll(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 9, 9), 1)
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		".........",
 		".●.█.....",
 		".........",
@@ -370,7 +371,7 @@ func TestTransformationAll(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 2)
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		".........",
 		".........",
 		"..█.●....",
@@ -383,7 +384,7 @@ func TestTransformationAll(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 3)
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		".........",
 		".........",
 		".........",
@@ -397,7 +398,7 @@ func TestTransformationAll(t *testing.T) {
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 3, 3), 4)
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		".........",
 		".........",
 		"..⎕▒░.○◎⁘",

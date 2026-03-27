@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
@@ -53,10 +54,10 @@ def main():
     return []
 `
 	app, err := runtime.NewApplet(t.Context(), "colors.star", []byte(source), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 
@@ -84,46 +85,46 @@ def main(config):
     return []
 `
 	app, err := runtime.NewApplet(t.Context(), "colors.star", []byte(source), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Well formed input -> success
 	screens, err := app.RunWithConfig(t.Context(), map[string]any{"default": "#ffaa77", "palette": "[]"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 
 	// Bad default
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#nothex", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "0", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "01", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#01", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "0123", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#0123", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "01234", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#01234", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "0123456", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#0123456", "palette": "[]"})
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	// Bad palette
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#ffaa77", "palette": `["nothex"]`})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#ffaa77", "palette": `["fff", "ffaabb", "0"]`})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#ffaa77", "palette": `["fff", "ffaabb", "#0f"]`})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#ffaa77", "palette": `["fff", "ffaabb", "0123"]`})
-	assert.Error(t, err)
+	require.Error(t, err)
 	_, err = app.RunWithConfig(t.Context(), map[string]any{"default": "#ffaa77", "palette": `["fff", "ffaabb", "0123456"]`})
-	assert.Error(t, err)
+	require.Error(t, err)
 }

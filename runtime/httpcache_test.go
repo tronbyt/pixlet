@@ -234,7 +234,7 @@ func TestCacheKeyWithoutAppPrefix(t *testing.T) {
 	key, err := cacheKey(req)
 	require.NoError(t, err)
 	assert.Len(t, key, 64)
-	assert.False(t, strings.Contains(key, HTTPCachePrefix+":"))
+	assert.NotContains(t, key, HTTPCachePrefix+":")
 }
 
 func TestParseCacheControl(t *testing.T) {

@@ -51,7 +51,7 @@ func TestSecretDecrypt(t *testing.T) {
 		PublicKeysetJSON: pubJSON.Bytes(),
 	}).Encrypt("testid", plaintext)
 	require.NoError(t, err)
-	assert.NotEqual(t, encrypted, "")
+	assert.NotEmpty(t, encrypted)
 
 	src := fmt.Sprintf(`
 load("render.star", "render")
@@ -72,8 +72,8 @@ def main():
 	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(roots))
+	require.NoError(t, err)
+	assert.Len(t, roots, 1)
 }
 
 func TestSecretDoesntDecryptWithoutKey(t *testing.T) {
@@ -101,7 +101,7 @@ func TestSecretDoesntDecryptWithoutKey(t *testing.T) {
 		PublicKeysetJSON: pubJSON.Bytes(),
 	}).Encrypt("test", plaintext)
 	require.NoError(t, err)
-	assert.NotEqual(t, encrypted, "")
+	assert.NotEmpty(t, encrypted)
 
 	src := fmt.Sprintf(`
 load("render.star", "render")
@@ -122,6 +122,6 @@ def main():
 	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(roots))
+	require.NoError(t, err)
+	assert.Len(t, roots, 1)
 }

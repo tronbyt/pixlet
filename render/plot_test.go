@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var Empty = [2]float64{math.NaN(), math.NaN()}
@@ -182,7 +183,7 @@ func TestPlotFlatLine(t *testing.T) {
 		XLim:   Empty,
 		YLim:   Empty,
 	}
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"..........",
 		"..........",
 		"1111111111",
@@ -192,7 +193,7 @@ func TestPlotFlatLine(t *testing.T) {
 
 	// Extend view to the left
 	p.XLim[0] = -10
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"..........",
 		"..........",
 		".....11111",
@@ -218,7 +219,7 @@ func TestPlotVerticalLine(t *testing.T) {
 		YLim:   Empty,
 	}
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"1.........",
 		"1.........",
 		"1.........",
@@ -254,7 +255,7 @@ func TestPlotJaggedLine(t *testing.T) {
 		YLim: Empty,
 	}
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"....1....1",
 		"...11...1.",
 		"..1..1.1..",
@@ -265,7 +266,7 @@ func TestPlotJaggedLine(t *testing.T) {
 	// Make it bigger
 	p.Width = 20
 	p.Height = 10
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........1..........1",
 		".......11.........1.",
 		"......1..1.......1..",
@@ -284,7 +285,7 @@ func TestPlotJaggedLine(t *testing.T) {
 	p.YLim[0] = 1
 	p.YLim[1] = 5
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"1...................",
 		".1..................",
 		"..1.................",
@@ -314,7 +315,7 @@ func TestPlotEmpty(t *testing.T) {
 		YLim:   Empty,
 	}
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -353,7 +354,7 @@ func TestPlotFewPoints(t *testing.T) {
 		YLim: Empty,
 	}
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"1111111111",
 		"11......11",
 		"1.1....1.1",
@@ -396,7 +397,7 @@ func TestPlotInvertedColor(t *testing.T) {
 		Color:         &color.RGBA{0, 0xff, 0, 0xff},
 		ColorInverted: &color.RGBA{0xff, 0, 0, 0xff},
 	}
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"11....11..",
 		"..1...1.1.",
 		"..11..1.11",
@@ -406,7 +407,7 @@ func TestPlotInvertedColor(t *testing.T) {
 
 	p.Width = 20
 	p.Height = 10
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"111..........111....",
 		"...1.........1..1...",
 		"...1.........1..1...",
@@ -447,7 +448,7 @@ func TestPlotSurfaceFill(t *testing.T) {
 		Color: &color.RGBA{0, 0xff, 0, 0xff},
 		Fill:  true,
 	}
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"111111..............",
 		",,,,,,1.............",
 		",,,,,,1.............",
@@ -462,7 +463,7 @@ func TestPlotSurfaceFill(t *testing.T) {
 
 	// Fil with ColorInverted
 	p.ColorInverted = &color.RGBA{0xff, 0, 0, 0xff}
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"111111..............",
 		",,,,,,1.............",
 		",,,,,,1.............",
@@ -510,7 +511,7 @@ func TestPlotXLim(t *testing.T) {
 	// More space on the right
 	p.XLim[0] = 1
 	p.XLim[1] = 15
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		".....1......1.......",
 		".....1......1.......",
 		"....11.....1........",
@@ -526,7 +527,7 @@ func TestPlotXLim(t *testing.T) {
 	// And on the left
 	p.XLim[0] = -4
 	p.XLim[1] = 15
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		".........1....1.....",
 		".........1....1.....",
 		"........11...1......",
@@ -542,7 +543,7 @@ func TestPlotXLim(t *testing.T) {
 	// And then do the opposite to "zoom in"
 	p.XLim[0] = 3
 	p.XLim[1] = 8
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		".......11...........",
 		".....11.1...........",
 		"...11....1..........",
@@ -573,7 +574,7 @@ func TestPlotScatter(t *testing.T) {
 		YLim:      Empty,
 		ChartType: "scatter",
 	}
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"..........",
 		"..........",
 		"1........1",
@@ -583,7 +584,7 @@ func TestPlotScatter(t *testing.T) {
 
 	// Extend view to the left
 	p.XLim[0] = -10
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"..........",
 		"..........",
 		".....1...1",

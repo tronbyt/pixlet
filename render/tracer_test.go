@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTracerCircularPath(t *testing.T) {
@@ -22,7 +23,7 @@ func TestTracerCircularPath(t *testing.T) {
 	}
 
 	// First quadrant
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........",
 		"........",
 		"........",
@@ -33,7 +34,7 @@ func TestTracerCircularPath(t *testing.T) {
 		"........",
 	}, PaintWidget(tr, image.Rect(0, 0, 100, 100), 0)))
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........",
 		"........",
 		"........",
@@ -44,7 +45,7 @@ func TestTracerCircularPath(t *testing.T) {
 		"........",
 	}, PaintWidget(tr, image.Rect(0, 0, 100, 100), 1)))
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........",
 		"........",
 		"........",
@@ -55,7 +56,7 @@ func TestTracerCircularPath(t *testing.T) {
 		"........",
 	}, PaintWidget(tr, image.Rect(0, 0, 100, 100), 2)))
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........",
 		"........",
 		"........",
@@ -67,7 +68,7 @@ func TestTracerCircularPath(t *testing.T) {
 	}, PaintWidget(tr, image.Rect(0, 0, 100, 100), 3)))
 
 	// Spot check third quadrant
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........",
 		"1.......",
 		"........",
@@ -79,7 +80,7 @@ func TestTracerCircularPath(t *testing.T) {
 	}, PaintWidget(tr, image.Rect(0, 0, 100, 100), 14)))
 
 	// Last pixel and verify it loops
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........",
 		"........",
 		"........",
@@ -90,7 +91,7 @@ func TestTracerCircularPath(t *testing.T) {
 		"........",
 	}, PaintWidget(tr, image.Rect(0, 0, 100, 100), 23)))
 
-	assert.Equal(t, nil, ic.Check([]string{
+	require.NoError(t, ic.Check([]string{
 		"........",
 		"........",
 		"........",

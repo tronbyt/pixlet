@@ -17,13 +17,13 @@ import (
 
 func TestLoadEmptySrc(t *testing.T) {
 	_, err := NewApplet(t.Context(), "test.star", []byte{}, WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestLoadMalformed(t *testing.T) {
 	src := "this is not valid starlark"
 	_, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestLoadMainMustBeFunction(t *testing.T) {
@@ -34,7 +34,7 @@ def main():
     return render.Root(child=render.Box())
 `
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	// As is this
@@ -46,7 +46,7 @@ def main2():
 main = main2
 `
 	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	// And this (a lambda is a function)
@@ -58,7 +58,7 @@ def main2():
 main = lambda: main2()
 `
 	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	// But not this, because a string is not a function
@@ -70,7 +70,7 @@ def main2():
 main = "main2"
 `
 	_, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	// And not this either, because here main is gone
 	src = `
@@ -79,7 +79,7 @@ def main2():
     return render.Root(child=render.Box())
 `
 	_, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestRunMainReturnsFrames(t *testing.T) {
@@ -90,10 +90,10 @@ def main():
     return [render.Box()]
 `
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err := app.Run(t.Context())
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Nil(t, screens)
 
 	// But a single frame is ok
@@ -104,10 +104,10 @@ def main():
 `
 
 	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err = app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 
 	// And a list of frames is ok
@@ -117,10 +117,10 @@ def main():
     return [render.Root(child=render.Box()), render.Root(child=render.Text("hi"))]
 `
 	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err = app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 
@@ -139,11 +139,11 @@ def main():
     return render.Root(child=render.Box())
 `
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.RunWithConfig(t.Context(), config)
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(roots))
+	require.NoError(t, err)
+	assert.Len(t, roots, 1)
 
 	// And it can accept a (the) config dict
 	src = `
@@ -169,7 +169,7 @@ def main(config):
 	require.NotNil(t, app)
 	roots, err = app.RunWithConfig(t.Context(), config)
 	require.NoError(t, err)
-	assert.Equal(t, 3, len(roots))
+	assert.Len(t, roots, 3)
 }
 
 func TestWhileStatement(t *testing.T) {
@@ -184,11 +184,11 @@ def main():
     return render.Root(child=render.Box())
 `
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(roots))
+	require.NoError(t, err)
+	assert.Len(t, roots, 1)
 }
 
 func TestLoadMultipleFiles(t *testing.T) {
@@ -217,16 +217,16 @@ def get_schema():
 	assert.Equal(t, "1", app.Schema.Version)
 
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, roots)
-	assert.Equal(t, 1, len(roots))
+	assert.Len(t, roots, 1)
 
 	// multiple main functions should fail
 	vfs["main2.star"] = &fstest.MapFile{
 		Data: []byte(mainSrc),
 	}
 	_, err = NewAppletFromFS(t.Context(), "multiple_files_multiple_mains", vfs, WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestModuleLoading(t *testing.T) {
@@ -263,11 +263,11 @@ def main():
     return render.Root(child=render.Box())
 `
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(roots))
+	require.NoError(t, err)
+	assert.Len(t, roots, 1)
 
 	// An additional module loader can be added
 	loader := func(thread *starlark.Thread, module string) (starlark.StringDict, error) {
@@ -285,10 +285,10 @@ def main():
     return render.Root(child=render.Box())
 `
 	app, err = NewApplet(t.Context(), "test.star", []byte(src), WithModuleLoader(loader), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	roots, err = app.Run(t.Context())
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(roots))
+	require.NoError(t, err)
+	assert.Len(t, roots, 1)
 }
 
 func TestDependency(t *testing.T) {
@@ -318,11 +318,11 @@ hello = struct(
 	}
 
 	app, err := NewAppletFromFS(t.Context(), "test", vfs, WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.NotNil(t, app) {
 		roots, err := app.Run(t.Context())
-		assert.NoError(t, err)
-		assert.Equal(t, 1, len(roots))
+		require.NoError(t, err)
+		assert.Len(t, roots, 1)
 	}
 
 	// src2.star shouldn't be able to access private function from hello.star
@@ -340,7 +340,7 @@ def main():
 	}
 
 	_, err = NewAppletFromFS(t.Context(), "test", vfs2, WithTests(t))
-	assert.ErrorContains(t, err, "not exported")
+	require.ErrorContains(t, err, "not exported")
 }
 
 func TestCircularDependency(t *testing.T) {
@@ -361,7 +361,7 @@ def b():
 		"b.star": {Data: []byte(srcB)},
 	}
 	_, err := NewAppletFromFS(t.Context(), "circular_dependency", vfs, WithTests(t))
-	assert.ErrorContains(t, err, "circular dependency")
+	require.ErrorContains(t, err, "circular dependency")
 }
 
 func TestTimezoneDatabase(t *testing.T) {
@@ -375,10 +375,10 @@ def main():
 `
 
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	_, err = app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestZIPModule(t *testing.T) {
@@ -395,12 +395,12 @@ func TestZIPModule(t *testing.T) {
 	}
 	for _, file := range files {
 		f, err := w.Create(file.Name)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		_, err = f.Write([]byte(file.Body))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	}
 	err := w.Close()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	src := `
 load("compress/zipfile.star", "zipfile")
@@ -426,7 +426,7 @@ def main(config):
 		t.Context(),
 		map[string]any{"ZIP_BYTES": buf.String()},
 	)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, []string{
 		"[\"readme.txt\", \"gopher.txt\", \"todo.txt\"]",
@@ -476,7 +476,7 @@ func TestRoot(t *testing.T) {
 	require.NoError(t, err)
 
 	app, err := NewAppletFromPath(t.Context(), appDir, WithTests(t))
-	assert.Error(t, err)
+	require.Error(t, err)
 	require.Nil(t, app)
 }
 
