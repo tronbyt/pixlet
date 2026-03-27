@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // A box without a child is just a box.
@@ -13,7 +13,7 @@ func TestBoxNoChild(t *testing.T) {
 	// Transparent by default
 	box := Box{}
 	im := PaintWidget(box, image.Rect(0, 0, 5, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".....",
 		".....",
 		".....",
@@ -24,7 +24,7 @@ func TestBoxNoChild(t *testing.T) {
 	// Color can be set
 	box = Box{Color: color.RGBA{0xff, 0, 0, 0xff}}
 	im = PaintWidget(box, image.Rect(0, 0, 5, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrr",
 		"rrrrr",
 		"rrrrr",
@@ -35,7 +35,7 @@ func TestBoxNoChild(t *testing.T) {
 	// Specify Width and the box fills height bounds
 	box = Box{Color: color.RGBA{0xff, 0, 0, 0xff}, Width: 3}
 	im = PaintWidget(box, image.Rect(0, 0, 5, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr",
 		"rrr",
 		"rrr",
@@ -46,7 +46,7 @@ func TestBoxNoChild(t *testing.T) {
 	// Specify Height and it fills width bounds
 	box = Box{Color: color.RGBA{0xff, 0, 0, 0xff}, Height: 3}
 	im = PaintWidget(box, image.Rect(0, 0, 5, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrr",
 		"rrrrr",
 		"rrrrr",
@@ -55,7 +55,7 @@ func TestBoxNoChild(t *testing.T) {
 	// Specify both and it ignores the bounds entirely
 	box = Box{Color: color.RGBA{0xff, 0, 0, 0xff}, Width: 2, Height: 3}
 	im = PaintWidget(box, image.Rect(0, 0, 5, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rr",
 		"rr",
 		"rr",
@@ -72,7 +72,7 @@ func TestBoxChildCenter(t *testing.T) {
 		},
 	}
 	im := PaintWidget(box, image.Rect(0, 0, 4, 4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"....",
 		".rr.",
 		".rr.",
@@ -82,7 +82,7 @@ func TestBoxChildCenter(t *testing.T) {
 	// If perfect centering can be done, remaining pixels are on
 	// the right and below the child.
 	im = PaintWidget(box, image.Rect(0, 0, 5, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".....",
 		".rr..",
 		".rr..",
@@ -92,14 +92,14 @@ func TestBoxChildCenter(t *testing.T) {
 
 	// Centered horizontally here
 	im = PaintWidget(box, image.Rect(0, 0, 4, 2), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".rr.",
 		".rr.",
 	}, im))
 
 	// Centered vertically here
 	im = PaintWidget(box, image.Rect(0, 0, 2, 4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..",
 		"rr",
 		"rr",
@@ -116,7 +116,7 @@ func TestBoxPadding(t *testing.T) {
 		},
 	}
 	im := PaintWidget(box, image.Rect(0, 0, 4, 4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr",
 		"rrrr",
 		"rrrr",
@@ -131,7 +131,7 @@ func TestBoxPadding(t *testing.T) {
 		Padding: 1,
 	}
 	im = PaintWidget(box, image.Rect(0, 0, 4, 4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"....",
 		".rr.",
 		".rr.",
@@ -146,7 +146,7 @@ func TestBoxPadding(t *testing.T) {
 		Padding: 3,
 	}
 	im = PaintWidget(box, image.Rect(0, 0, 8, 8), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........",
 		"........",
 		"........",

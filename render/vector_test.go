@@ -1,10 +1,11 @@
 package render
 
 import (
-	"github.com/stretchr/testify/assert"
 	"image"
 	"image/color"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestVectorMainAlignStart(t *testing.T) {
@@ -26,7 +27,7 @@ func TestVectorMainAlignStart(t *testing.T) {
 	// On large canvas, height gets truncated to max of children,
 	// while width expands to full size
 	im := PaintWidget(v, image.Rect(0, 0, 25, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrrggggggbb.......",
 		"rrrrrrrrrrggggggbb.......",
 		"rrrrrrrrrrggggggbb.......",
@@ -43,7 +44,7 @@ func TestVectorMainAlignStart(t *testing.T) {
 
 	// Reduce height. Overflowing children are partially drawn.
 	im = PaintWidget(v, image.Rect(0, 0, 25, 10), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrrggggggbb.......",
 		"rrrrrrrrrrggggggbb.......",
 		"rrrrrrrrrrggggggbb.......",
@@ -58,7 +59,7 @@ func TestVectorMainAlignStart(t *testing.T) {
 
 	// Reduce width further.
 	im = PaintWidget(v, image.Rect(0, 0, 17, 10), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrrggggggb",
 		"rrrrrrrrrrggggggb",
 		"rrrrrrrrrrggggggb",
@@ -74,7 +75,7 @@ func TestVectorMainAlignStart(t *testing.T) {
 	// Reduce so a child is completely cut out, and it's no longer
 	// included in height.
 	im = PaintWidget(v, image.Rect(0, 0, 16, 10), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrrgggggg",
 		"rrrrrrrrrrgggggg",
 		"rrrrrrrrrrgggggg",
@@ -87,7 +88,7 @@ func TestVectorMainAlignStart(t *testing.T) {
 
 	// Perfect fit is a perfect fit.
 	im = PaintWidget(v, image.Rect(0, 0, 18, 12), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrrggggggbb",
 		"rrrrrrrrrrggggggbb",
 		"rrrrrrrrrrggggggbb",
@@ -105,7 +106,7 @@ func TestVectorMainAlignStart(t *testing.T) {
 	// Flip it
 	v.Vertical = true
 	im = PaintWidget(v, image.Rect(0, 0, 10, 25), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrr",
 		"rrrrrrrrrr",
 		"rrrrrrrrrr",
@@ -152,7 +153,7 @@ func TestVectorMainAlignStartVertical(t *testing.T) {
 
 	// Width shrinks to fit
 	im := PaintWidget(v, image.Rect(0, 0, 100, 11), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr........",
 		"rrrr........",
 		"rrrr........",
@@ -168,7 +169,7 @@ func TestVectorMainAlignStartVertical(t *testing.T) {
 
 	// Height does not shrink
 	im = PaintWidget(v, image.Rect(0, 0, 100, 13), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr........",
 		"rrrr........",
 		"rrrr........",
@@ -186,7 +187,7 @@ func TestVectorMainAlignStartVertical(t *testing.T) {
 
 	// Children are partially drawn
 	im = PaintWidget(v, image.Rect(0, 0, 10, 13), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr......",
 		"rrrr......",
 		"rrrr......",
@@ -204,7 +205,7 @@ func TestVectorMainAlignStartVertical(t *testing.T) {
 
 	// Along both axes
 	im = PaintWidget(v, image.Rect(0, 0, 10, 10), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr......",
 		"rrrr......",
 		"rrrr......",
@@ -220,7 +221,7 @@ func TestVectorMainAlignStartVertical(t *testing.T) {
 	// And if a child is completely out of sight, it no longer
 	// affects width
 	im = PaintWidget(v, image.Rect(0, 0, 10, 9), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr....",
 		"rrrr....",
 		"rrrr....",
@@ -251,7 +252,7 @@ func TestVectorMainAlignEnd(t *testing.T) {
 	// With MainAlignEnd, children are placed at the end along the
 	// main axis
 	im := PaintWidget(v, image.Rect(0, 0, 100, 13), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........",
 		"........",
 		"rrrr....",
@@ -270,7 +271,7 @@ func TestVectorMainAlignEnd(t *testing.T) {
 	// Flip it!
 	v.Vertical = false
 	im = PaintWidget(v, image.Rect(0, 0, 19, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrrrggggggggbbbbb",
 		"..rrrrggggggggbbbbb",
 		"..rrrrgggggggg.....",
@@ -281,7 +282,7 @@ func TestVectorMainAlignEnd(t *testing.T) {
 
 	// Reducing width/height
 	im = PaintWidget(v, image.Rect(0, 0, 16, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrggggggggbbbb",
 		"rrrrggggggggbbbb",
 		"rrrrgggggggg....",
@@ -290,7 +291,7 @@ func TestVectorMainAlignEnd(t *testing.T) {
 		"rrrr............",
 	}, im))
 	im = PaintWidget(v, image.Rect(0, 0, 16, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrggggggggbbbb",
 		"rrrrggggggggbbbb",
 		"rrrrgggggggg....",
@@ -298,7 +299,7 @@ func TestVectorMainAlignEnd(t *testing.T) {
 		"rrrr............",
 	}, im))
 	im = PaintWidget(v, image.Rect(0, 0, 16, 5), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrggggggggbbbb",
 		"rrrrggggggggbbbb",
 		"rrrrgggggggg....",
@@ -324,7 +325,7 @@ func TestVectorMainAlignSpaceEvenly(t *testing.T) {
 
 	// Canvas leaves 2 pixels spacing before and after each child
 	im := PaintWidget(v, image.Rect(0, 0, 17+2*4, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrrr..gggggggg..bbbbb..",
 		"..rrrr..gggggggg..bbbbb..",
 		"..rrrr..gggggggg.........",
@@ -337,7 +338,7 @@ func TestVectorMainAlignSpaceEvenly(t *testing.T) {
 	// evenly. The residual should be distributed start to end,
 	// one pixel at a time.
 	im = PaintWidget(v, image.Rect(0, 0, 17+2*4+2, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"...rrrr...gggggggg..bbbbb..",
 		"...rrrr...gggggggg..bbbbb..",
 		"...rrrr...gggggggg.........",
@@ -349,7 +350,7 @@ func TestVectorMainAlignSpaceEvenly(t *testing.T) {
 	// If not expanded, this just shrink wraps to smallest size
 	v.Expanded = false
 	im = PaintWidget(v, image.Rect(0, 0, 17+2*4+2, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrggggggggbbbbb",
 		"rrrrggggggggbbbbb",
 		"rrrrgggggggg.....",
@@ -361,7 +362,7 @@ func TestVectorMainAlignSpaceEvenly(t *testing.T) {
 	// Flip it
 	v.Vertical = true
 	im = PaintWidget(v, image.Rect(0, 0, 100, 11+2*4+2), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr....",
 		"rrrr....",
 		"rrrr....",
@@ -378,7 +379,7 @@ func TestVectorMainAlignSpaceEvenly(t *testing.T) {
 	// And unexpand it
 	v.Expanded = true
 	im = PaintWidget(v, image.Rect(0, 0, 100, 11+2*4+2), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........",
 		"........",
 		"........",
@@ -422,7 +423,7 @@ func TestVectorCrossAlignCenter(t *testing.T) {
 	// Everything centered along the cross axis. Space isn't
 	// evenly divisible for the green box.
 	im := PaintWidget(v, image.Rect(0, 0, 17+2*4, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrrr...................",
 		"..rrrr..gggggggg.........",
 		"..rrrr..gggggggg..bbbbb..",
@@ -434,7 +435,7 @@ func TestVectorCrossAlignCenter(t *testing.T) {
 	// Flip it!
 	v.Vertical = true
 	im = PaintWidget(v, image.Rect(0, 0, 10000, 11+2*4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........",
 		"........",
 		"..rrrr..",
@@ -459,7 +460,7 @@ func TestVectorCrossAlignCenter(t *testing.T) {
 	// Unexpand it
 	v.Expanded = false
 	im = PaintWidget(v, image.Rect(0, 0, 10000, 11+2*4), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrrr..",
 		"..rrrr..",
 		"..rrrr..",
@@ -477,7 +478,7 @@ func TestVectorCrossAlignCenter(t *testing.T) {
 	v.Expanded = true
 	v.MainAlign = "start"
 	im = PaintWidget(v, image.Rect(0, 0, 10000, 11+2), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrrr..",
 		"..rrrr..",
 		"..rrrr..",
@@ -494,7 +495,7 @@ func TestVectorCrossAlignCenter(t *testing.T) {
 	}, im))
 	v.MainAlign = "end"
 	im = PaintWidget(v, image.Rect(0, 0, 10000, 11+2), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........",
 		"........",
 		"..rrrr..",
@@ -528,7 +529,7 @@ func TestVectorCrossAlignEnd(t *testing.T) {
 	}
 
 	im := PaintWidget(v, image.Rect(0, 0, 17+2*4+1, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"...rrrr...................",
 		"...rrrr...................",
 		"...rrrr...................",
@@ -539,7 +540,7 @@ func TestVectorCrossAlignEnd(t *testing.T) {
 
 	v.Vertical = true
 	im = PaintWidget(v, image.Rect(0, 0, 10000, 11+2*4+1), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........",
 		"........",
 		"........",
@@ -580,7 +581,7 @@ func TestVectorCrossAlignStart(t *testing.T) {
 	}
 
 	im := PaintWidget(v, image.Rect(0, 0, 17+2*4+1, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".........rrrrggggggggbbbbb",
 		".........rrrrggggggggbbbbb",
 		".........rrrrgggggggg.....",
@@ -591,7 +592,7 @@ func TestVectorCrossAlignStart(t *testing.T) {
 
 	v.Vertical = true
 	im = PaintWidget(v, image.Rect(0, 0, 10000, 11+2*4+1), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"........",
 		"........",
 		"........",
@@ -616,7 +617,7 @@ func TestVectorCrossAlignStart(t *testing.T) {
 
 	v.Expanded = false
 	im = PaintWidget(v, image.Rect(0, 0, 7, 11+2*4+1), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrr...",
 		"rrrr...",
 		"rrrr...",
@@ -655,7 +656,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	// better. These tests illustrate (and verify) the behavior.
 
 	im := PaintWidget(v, image.Rect(0, 0, 9, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrgggggb",
 		"rrrgggggb",
 		"rrr.....b",
@@ -663,7 +664,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 10, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".rrrgggggb",
 		".rrrgggggb",
 		".rrr.....b",
@@ -671,7 +672,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 11, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".rrr.gggggb",
 		".rrr.gggggb",
 		".rrr......b",
@@ -686,7 +687,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	// column of pixels is not painted, which comes out as
 	// padding. So it makes sense, but it also doesn't.
 	im = PaintWidget(v, image.Rect(0, 0, 12, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr.ggggg.b.",
 		"rrr.ggggg.b.",
 		"rrr.......b.",
@@ -694,7 +695,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 13, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".rrr.ggggg.b.",
 		".rrr.ggggg.b.",
 		".rrr.......b.",
@@ -702,7 +703,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 14, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".rrr..ggggg.b.",
 		".rrr..ggggg.b.",
 		".rrr........b.",
@@ -710,7 +711,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 15, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".rrr..ggggg..b.",
 		".rrr..ggggg..b.",
 		".rrr.........b.",
@@ -718,7 +719,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 16, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrr..ggggg..b.",
 		"..rrr..ggggg..b.",
 		"..rrr.........b.",
@@ -726,7 +727,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 20, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrr....ggggg...b..",
 		"..rrr....ggggg...b..",
 		"..rrr............b..",
@@ -737,7 +738,7 @@ func TestVectorMainAlignSpaceAround(t *testing.T) {
 	v.Vertical = true
 	v.CrossAlign = "center"
 	im = PaintWidget(v, image.Rect(0, 0, 20, 20), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".....",
 		".....",
 		".rrr.",
@@ -777,7 +778,7 @@ func TestVectorMainAlignCenter(t *testing.T) {
 	// centered along the main axis.
 
 	im := PaintWidget(v, image.Rect(0, 0, 100, 12), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".....",
 		"rrr..",
 		"rrr..",
@@ -793,7 +794,7 @@ func TestVectorMainAlignCenter(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 100, 11), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".....",
 		"rrr..",
 		"rrr..",
@@ -810,7 +811,7 @@ func TestVectorMainAlignCenter(t *testing.T) {
 	v.Vertical = false
 	v.CrossAlign = "center"
 	im = PaintWidget(v, image.Rect(0, 0, 13, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrr.....b..",
 		"..rrrgggggb..",
 		"..rrrgggggb..",
@@ -835,7 +836,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	// child.
 
 	im := PaintWidget(v, image.Rect(0, 0, 9, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrgggggb",
 		"rrrgggggb",
 		"rrr.....b",
@@ -843,7 +844,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 10, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr.gggggb",
 		"rrr.gggggb",
 		"rrr......b",
@@ -851,7 +852,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 11, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr.ggggg.b",
 		"rrr.ggggg.b",
 		"rrr.......b",
@@ -859,7 +860,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 12, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr..ggggg.b",
 		"rrr..ggggg.b",
 		"rrr........b",
@@ -867,7 +868,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 13, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr..ggggg..b",
 		"rrr..ggggg..b",
 		"rrr.........b",
@@ -875,7 +876,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 14, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr...ggggg..b",
 		"rrr...ggggg..b",
 		"rrr..........b",
@@ -883,7 +884,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}, im))
 
 	im = PaintWidget(v, image.Rect(0, 0, 15, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr...ggggg...b",
 		"rrr...ggggg...b",
 		"rrr...........b",
@@ -904,7 +905,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}
 
 	im = PaintWidget(v, image.Rect(0, 0, 14, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr...........",
 		"rrr......ggggg",
 		"rrr......ggggg",
@@ -922,7 +923,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}
 
 	im = PaintWidget(v, image.Rect(0, 0, 14, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr...........",
 		"rrr...........",
 		"rrr...........",
@@ -946,7 +947,7 @@ func TestVectorMainAlignSpaceBetween(t *testing.T) {
 	}
 
 	im = PaintWidget(v, image.Rect(0, 0, 50, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr...................b.......................bbbb",
 		"rrr...................b..............rrr......bbbb",
 		"rrr.......ggggg.......b..............rrr......bbbb",

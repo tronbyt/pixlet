@@ -10,6 +10,7 @@ linters:
     - prealloc
     - staticcheck
     - unused
+    - testifylint
   disable:
     - cyclop
     - depguard
@@ -26,3 +27,7 @@ linters:
     - nlreturn
     - testpackage
     - wsl
+  settings:
+    testifylint:
+      disable:
+        - float-compare

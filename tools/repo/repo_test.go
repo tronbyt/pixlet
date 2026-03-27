@@ -5,12 +5,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/tools/repo"
 )
 
 func TestIsInRepo(t *testing.T) {
 	root, err := os.Getwd()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		repo string

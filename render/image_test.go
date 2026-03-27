@@ -20,7 +20,7 @@ func TestImage(t *testing.T) {
 
 	// Size of Image is independent of bounds
 	im := PaintWidget(img, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrr",
 		"r........r",
 		"r...rr...r",
@@ -39,7 +39,7 @@ func TestImage(t *testing.T) {
 	assert.Equal(t, 12, h)
 
 	im = PaintWidget(img, image.Rect(0, 0, 100, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrrrrrrr",
 		"r........r",
 		"r...rr...r",
@@ -133,7 +133,7 @@ func TestImageAnimatedGif(t *testing.T) {
 	assert.Equal(t, 4, img.FrameCount(image.Rect(0, 0, 0, 0)))
 
 	// black pixels moving right
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..x..",
 		"x....",
 		".x...",
@@ -142,19 +142,19 @@ func TestImageAnimatedGif(t *testing.T) {
 
 	// since no disposal method is set, subsequent frames should
 	// draw on top of first frame
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..xx.",
 		"xx...",
 		".xx..",
 		"...xx",
 	}, PaintWidget(img, image.Rect(0, 0, 100, 100), 1)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"x.xxx",
 		"xxx..",
 		".xxx.",
 		"...xx",
 	}, PaintWidget(img, image.Rect(0, 0, 100, 100), 2)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"xxxxx",
 		"xxxx.",
 		".xxxx",
@@ -162,13 +162,13 @@ func TestImageAnimatedGif(t *testing.T) {
 	}, PaintWidget(img, image.Rect(0, 0, 100, 100), 3)))
 
 	// loops after the last frame
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..x..",
 		"x....",
 		".x...",
 		"...x.",
 	}, PaintWidget(img, image.Rect(0, 0, 100, 100), 4)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..xx.",
 		"xx...",
 		".xx..",
@@ -208,7 +208,7 @@ func TestImageSVG(t *testing.T) {
 	im := PaintWidget(img, image.Rect(0, 0, 0, 0), 0)
 
 	// Expect left half red, right half transparent
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrrr.....",
 		"rrrrr.....",
 		"rrrrr.....",

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCacheGetAndSet(t *testing.T) {
@@ -35,12 +36,12 @@ def main():
 	t.Cleanup(c.Close)
 	InitCache(c)
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, roots)
-	assert.Equal(t, 1+2+3, len(roots))
+	assert.Len(t, roots, 1+2+3)
 }
 
 func TestCacheSurvivesExecution(t *testing.T) {
@@ -58,35 +59,35 @@ def main():
 	t.Cleanup(c.Close)
 	InitCache(c)
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	// first time, i == 1
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, roots)
-	assert.Equal(t, 1, len(roots))
+	assert.Len(t, roots, 1)
 
 	// i == 2
 	roots, err = app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, roots)
-	assert.Equal(t, 2, len(roots))
+	assert.Len(t, roots, 2)
 
 	// but run the same code using different filename, and cached
 	// data ends up in a different namespace
 	app, err = NewApplet(t.Context(), "test2.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	roots, _ = app.Run(t.Context())
-	assert.Equal(t, 1, len(roots))
+	assert.Len(t, roots, 1)
 
 	roots, _ = app.Run(t.Context())
-	assert.Equal(t, 2, len(roots))
+	assert.Len(t, roots, 2)
 
 	roots, _ = app.Run(t.Context())
-	assert.Equal(t, 3, len(roots))
+	assert.Len(t, roots, 3)
 }
 
 func TestCacheNoInit(t *testing.T) {
@@ -106,10 +107,10 @@ def main():
 `
 	InitCache(nil)
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 
@@ -124,9 +125,9 @@ def main():
 `
 	InitCache(nil)
 	app, err := NewApplet(t.Context(), "test.star", []byte(src), WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 	screens, err := app.Run(t.Context())
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Nil(t, screens)
 }

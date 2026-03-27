@@ -149,7 +149,7 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	var s schema.Schema
 	tmp, err := json.Marshal(app.Schema)
@@ -332,7 +332,7 @@ def main():
 `
 
 	_, err := loadApp(t, code)
-	assert.ErrorContains(t, err, "expected fields")
+	require.ErrorContains(t, err, "expected fields")
 }
 
 func TestSchemaWithFieldsInNotifications(t *testing.T) {
@@ -360,7 +360,7 @@ def main():
 `
 
 	_, err := loadApp(t, code)
-	assert.ErrorContains(t, err, "expected notifications")
+	require.ErrorContains(t, err, "expected notifications")
 }
 
 // test with all available config types and flags.
@@ -487,7 +487,7 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	var s schema.Schema
 	tmp, err := json.Marshal(app.Schema)
@@ -661,15 +661,15 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Handlers are not identified by ID
 	_, err = app.CallSchemaHandler(t.Context(), "generatedid", "foobar", nil)
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	// They're identified by function name
 	jsonSchema, err := app.CallSchemaHandler(t.Context(), "generatedid$generate_schema", "foobar", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	var s schema.Schema
 	_ = json.Unmarshal([]byte(jsonSchema), &s)
@@ -722,13 +722,13 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = app.CallSchemaHandler(t.Context(), "generatedid$generate_schema", "win", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = app.CallSchemaHandler(t.Context(), "generatedid$generate_schema", "fail", nil)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 // Verifies that schema returned by a generated field's handler is
@@ -754,7 +754,7 @@ def main():
 `
 
 	_, err := loadApp(t, code)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestSchemaWithGeneratedIconNotAllowed(t *testing.T) {
@@ -787,7 +787,7 @@ def main():
 `
 
 	_, err := loadApp(t, code)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestSchemaWithLocationBasedHandlerSuccess(t *testing.T) {
@@ -811,11 +811,11 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	stringValue, err := app.CallSchemaHandler(t.Context(), "locationbasedid$handle_location", "fart", nil)
-	assert.NoError(t, err)
-	assert.Equal(t, "[{\"display\":\"\",\"text\":\"Your only option is\",\"value\":\"fart\"}]", stringValue)
+	require.NoError(t, err)
+	assert.JSONEq(t, `[{"display":"","text":"Your only option is","value":"fart"}]`, stringValue)
 }
 
 func TestSchemaWithLocationBasedHandlerMalformed(t *testing.T) {
@@ -839,10 +839,10 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = app.CallSchemaHandler(t.Context(), "handle_location", "fart", nil)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestSchemaWithTypeaheadHandlerSuccess(t *testing.T) {
@@ -866,11 +866,11 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	stringValue, err := app.CallSchemaHandler(t.Context(), "typeaheadid$handle_typeahead", "farts", nil)
-	assert.NoError(t, err)
-	assert.Equal(t, "[{\"display\":\"\",\"text\":\"You searched for\",\"value\":\"farts\"}]", stringValue)
+	require.NoError(t, err)
+	assert.JSONEq(t, `[{"display":"","text":"You searched for","value":"farts"}]`, stringValue)
 }
 
 func TestSchemaWithTypeaheadHandlerMalformed(t *testing.T) {
@@ -894,10 +894,10 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = app.CallSchemaHandler(t.Context(), "handle_typeahead", "fart", nil)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestSchemaWithOAuth2HandlerSuccess(t *testing.T) {
@@ -925,10 +925,10 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	stringValue, err := app.CallSchemaHandler(t.Context(), "oauth2id$oauth2handler", "farts", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "a-refresh-token", stringValue)
 }
 
@@ -957,10 +957,10 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = app.CallSchemaHandler(t.Context(), "oauth2handler", "farts", nil)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestEmptySchemaSerialization(t *testing.T) {
@@ -970,7 +970,7 @@ func TestEmptySchemaSerialization(t *testing.T) {
 
 	ser, err := json.Marshal(s)
 	require.NoError(t, err)
-	assert.Equal(t, `{"version":"1","schema":[]}`, string(ser))
+	assert.JSONEq(t, `{"version":"1","schema":[]}`, string(ser))
 }
 
 func TestSchemaExtraHandlers(t *testing.T) {
@@ -1014,19 +1014,19 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	data, err := app.CallSchemaHandler(t.Context(), "get_somethingelse", "win", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	var options []map[string]string
-	assert.NoError(t, json.Unmarshal([]byte(data), &options))
-	assert.Equal(t, 1, len(options))
+	require.NoError(t, json.Unmarshal([]byte(data), &options))
+	assert.Len(t, options, 1)
 	assert.Equal(t, "hey", options[0]["display"])
 	assert.Equal(t, "ho", options[0]["value"])
 
 	_, err = app.CallSchemaHandler(t.Context(), "get_somethingelse", "fail", nil)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestSchemaGeneratedV2OrWhatever(t *testing.T) {
@@ -1074,20 +1074,20 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	data, err := app.CallSchemaHandler(t.Context(), "generatedid$build_boroughs", "false", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	var schema schema.Schema
-	assert.NoError(t, json.Unmarshal([]byte(data), &schema))
+	require.NoError(t, json.Unmarshal([]byte(data), &schema))
 	assert.Equal(t, "1", schema.Version)
-	assert.Equal(t, 0, len(schema.Fields))
+	assert.Empty(t, schema.Fields)
 
 	data, err = app.CallSchemaHandler(t.Context(), "generatedid$build_boroughs", "true", nil)
-	assert.NoError(t, err)
-	assert.NoError(t, json.Unmarshal([]byte(data), &schema))
-	assert.Equal(t, 1, len(schema.Fields))
+	require.NoError(t, err)
+	require.NoError(t, json.Unmarshal([]byte(data), &schema))
+	assert.Len(t, schema.Fields, 1)
 }
 
 func TestSchemaGeneratedFieldWithHandler(t *testing.T) {
@@ -1145,23 +1145,23 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	data, err := app.CallSchemaHandler(t.Context(), "generatedid$get_station_selector", "true", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	var s schema.Schema
-	assert.NoError(t, json.Unmarshal([]byte(data), &s))
+	require.NoError(t, json.Unmarshal([]byte(data), &s))
 	assert.Equal(t, "1", s.Version)
-	assert.Equal(t, 1, len(s.Fields))
+	assert.Len(t, s.Fields, 1)
 	assert.Equal(t, "locationbased", s.Fields[0].Type)
 	assert.Equal(t, "station$get_stations", s.Fields[0].Handler)
 
 	data, err = app.CallSchemaHandler(t.Context(), "get_stations", "locationdata", nil)
 	var options []schema.SchemaOption
-	assert.NoError(t, err)
-	assert.NoError(t, json.Unmarshal([]byte(data), &options))
-	assert.Equal(t, 2, len(options))
+	require.NoError(t, err)
+	require.NoError(t, json.Unmarshal([]byte(data), &options))
+	assert.Len(t, options, 2)
 	assert.Equal(t, "L08", options[0].Value)
 	assert.Equal(t, "3rd", options[1].Value)
 }
@@ -1214,9 +1214,9 @@ def main():
 
 	data, err := app.CallSchemaHandler(t.Context(), "get_stations", "locationdata", nil)
 	var options []schema.SchemaOption
-	assert.NoError(t, err)
-	assert.NoError(t, json.Unmarshal([]byte(data), &options))
-	assert.Equal(t, 2, len(options))
+	require.NoError(t, err)
+	require.NoError(t, json.Unmarshal([]byte(data), &options))
+	assert.Len(t, options, 2)
 	assert.Equal(t, "L08", options[0].Value)
 	assert.Equal(t, "3rd", options[1].Value)
 }
@@ -1262,7 +1262,7 @@ def main():
 `
 
 	app, err := loadApp(t, code)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	config := map[string]any{
 		"password": "secret",
@@ -1270,5 +1270,5 @@ def main():
 
 	stringValue, err := app.CallSchemaHandler(t.Context(), "test$get_dropdown", "true", config)
 	require.NoError(t, err)
-	assert.Equal(t, `{"version":"1","schema":[{"type":"text","id":"password","name":"Password","description":"Generated input","icon":"userSecret","default":"secret"}]}`, stringValue)
+	assert.JSONEq(t, `{"version":"1","schema":[{"type":"text","id":"password","name":"Password","description":"Generated input","icon":"userSecret","default":"secret"}]}`, stringValue)
 }

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMarqueeNoScrollHorizontal(t *testing.T) {
@@ -37,12 +38,12 @@ func TestMarqueeNoScrollHorizontal(t *testing.T) {
 	assert.Equal(t, 1, mv.FrameCount(image.Rect(0, 0, 100, 100)))
 	im := PaintWidget(m, image.Rect(0, 0, 100, 100), 0)
 	imv := PaintWidget(mv, image.Rect(0, 0, 100, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrggb",
 		"rrrgg.",
 		"rrr...",
 	}, im))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrggb",
 		"rrrgg.",
 		"rrr...",
@@ -80,12 +81,12 @@ func TestMarqueeNoScrollAlignCenter(t *testing.T) {
 	assert.Equal(t, 1, mv.FrameCount(image.Rect(0, 0, 100, 100)))
 	im := PaintWidget(m, image.Rect(0, 0, 100, 100), 0)
 	imv := PaintWidget(mv, image.Rect(0, 0, 100, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".rrrggb.",
 		".rrrgg..",
 		".rrr....",
 	}, im))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......",
 		"rrrggb",
 		"rrrgg.",
@@ -125,12 +126,12 @@ func TestMarqueeNoScrollAlignEnd(t *testing.T) {
 	assert.Equal(t, 1, mv.FrameCount(image.Rect(0, 0, 100, 100)))
 	im := PaintWidget(m, image.Rect(0, 0, 100, 100), 0)
 	imv := PaintWidget(mv, image.Rect(0, 0, 100, 100), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"..rrrggb",
 		"..rrrgg.",
 		"..rrr...",
 	}, im))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......",
 		"......",
 		"rrrggb",
@@ -162,51 +163,51 @@ func TestMarqueeOldBehavior(t *testing.T) {
 	assert.Equal(t, 22, m.FrameCount(image.Rect(0, 0, 100, 100)))
 
 	// Scrolling into view
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......",
 		"......",
 		"......",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 0)))
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"....rr",
 		"....rr",
 		"....rr",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 2)))
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrggg",
 		"rrrggg",
 		"rrr...",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 6)))
 
 	// Scrolling out of view
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rgggbb",
 		"rggg..",
 		"r.....",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 8)))
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"b.....",
 		"......",
 		"......",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 14)))
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......",
 		"......",
 		"......",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 15)))
 
 	// Scrolling back into view
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"...rrr",
 		"...rrr",
 		"...rrr",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 18)))
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrggg",
 		"rrrggg",
 		"rrr...",
@@ -216,19 +217,19 @@ func TestMarqueeOldBehavior(t *testing.T) {
 	// multiple simultaneous marquees look nice when they've
 	// different length.
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrggg",
 		"rrrggg",
 		"rrr...",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 22)))
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrggg",
 		"rrrggg",
 		"rrr...",
 	}, PaintWidget(m, image.Rect(0, 0, 100, 100), 26)))
 
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrrggg",
 		"rrrggg",
 		"rrr...",
@@ -251,36 +252,36 @@ func TestMarqueeOffsetIdentical(t *testing.T) {
 
 	// Check that identical frames are not repeated after
 	// another, if start and end offset are identical.
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 12)))
 	assert.Equal(t, 13, m.FrameCount(im))
 
 	m.OffsetStart = 3
 	m.OffsetEnd = 3
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 11)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 12)))
 	assert.Equal(t, 13, m.FrameCount(im))
 }
 
@@ -300,59 +301,59 @@ func TestMarqueeOffsetStart(t *testing.T) {
 
 	// OffsetStart affects the initial position of the child
 	m.OffsetStart = 2
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 9)))
 
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 11)))
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 13)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 14)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 15)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 14)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 15)))
 	assert.Equal(t, 16, m.FrameCount(im))
 
 	// Negative OffsetStart
 	m.OffsetStart = -2
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 11)))
 	assert.Equal(t, 12, m.FrameCount(im))
 
 	// Overly negative OffsetStart is truncated to child width
 	m.OffsetStart = -1000
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 2)))
 	assert.Equal(t, 7, m.FrameCount(im))
 	m.OffsetStart = -7
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 1)))
 	assert.Equal(t, 7, m.FrameCount(im))
 	m.OffsetStart = -8
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 1)))
 	assert.Equal(t, 7, m.FrameCount(im))
 	m.OffsetStart = -6
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 2)))
 	assert.Equal(t, 8, m.FrameCount(im))
 }
 
@@ -372,62 +373,62 @@ func TestMarqueeOffsetEnd(t *testing.T) {
 
 	// OffsetEnd affects the final position of the child
 	m.OffsetEnd = 2
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
 	assert.Equal(t, 12, m.FrameCount(im))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 13)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 1024)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 1024)))
 
 	// Negative offset places child outside of marquee
 	m.OffsetEnd = -4
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 13)))
-	assert.Equal(t, nil, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 14)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 15)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 16)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 17)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 14)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 15)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 16)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 17)))
 	assert.Equal(t, 18, m.FrameCount(im))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 18)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 19)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 1024)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 18)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 19)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 1024)))
 
 	// Very negative offset is truncated to width of child
 	m.OffsetEnd = -133
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 17)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 18)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 19)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 20)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 17)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 18)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 19)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 20)))
 	assert.Equal(t, 21, m.FrameCount(im))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 21)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 22)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 23)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 21)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 22)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 23)))
 
 	// OffsetEnd >= width means it doesn't scroll back
 	m.OffsetEnd = 6
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
 	assert.Equal(t, 8, m.FrameCount(im))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 1024)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 1024)))
 }
 
 func TestMarqueeDelayScrollOffsetStart(t *testing.T) {
@@ -447,71 +448,71 @@ func TestMarqueeDelayScrollOffsetStart(t *testing.T) {
 
 	// OffsetStart affects the initial position of the child
 	m.OffsetStart = 2
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"ggbbbb"}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 11)))
 
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 13)))
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 14)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 15)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 16)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 17)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 14)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 15)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 16)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 17)))
 	assert.Equal(t, 18, m.FrameCount(im))
 
 	// // Negative OffsetStart
 	m.OffsetStart = -2
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"bbb..."}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"bb...."}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
-	assert.Equal(t, nil, checkImage([]string{".rggbb"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"gbbbb."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"bbbb.."}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"bbb..."}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"bb...."}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{"...rgg"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"..rggb"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{".rggbb"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"rggbbb"}, PaintWidget(m, im, 13)))
 	assert.Equal(t, 14, m.FrameCount(im))
 
 	// // Overly negative OffsetStart is truncated to child width
 	m.OffsetStart = -1000
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"....rg"}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"....rg"}, PaintWidget(m, im, 4)))
 	assert.Equal(t, 9, m.FrameCount(im))
 	m.OffsetStart = -7
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 3)))
 	assert.Equal(t, 9, m.FrameCount(im))
 	m.OffsetStart = -8
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 3)))
 	assert.Equal(t, 9, m.FrameCount(im))
 	m.OffsetStart = -6
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"b....."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"......"}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{".....r"}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"b....."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"......"}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{".....r"}, PaintWidget(m, im, 4)))
 	assert.Equal(t, 10, m.FrameCount(im))
 }
 
@@ -532,7 +533,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 
 	// OffsetEnd affects the final position of the child
 	m.OffsetStart = 2
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".",
 		".",
 		"r",
@@ -540,7 +541,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		"g",
 		"b",
 	}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".",
 		"r",
 		"g",
@@ -548,7 +549,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		"b",
 		"b",
 	}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"r",
 		"g",
 		"g",
@@ -556,7 +557,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		"b",
 		"b",
 	}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"g",
 		"g",
 		"b",
@@ -564,7 +565,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		"b",
 		"b",
 	}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"g",
 		"b",
 		"b",
@@ -572,7 +573,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		"b",
 		".",
 	}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"b",
 		"b",
 		"b",
@@ -580,7 +581,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		".",
 		".",
 	}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"b",
 		"b",
 		"b",
@@ -588,7 +589,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		".",
 		".",
 	}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"b",
 		"b",
 		".",
@@ -596,7 +597,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		".",
 		".",
 	}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"b",
 		".",
 		".",
@@ -604,7 +605,7 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		".",
 		".",
 	}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".",
 		".",
 		".",
@@ -612,95 +613,95 @@ func TestMarqueeVerticalScroll(t *testing.T) {
 		".",
 		".",
 	}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 11)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 13)))
-	assert.Equal(t, nil, checkImage([]string{".", "r", "g", "g", "b", "b"}, PaintWidget(m, im, 14)))
-	assert.Equal(t, nil, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 15)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{".", "r", "g", "g", "b", "b"}, PaintWidget(m, im, 14)))
+	require.NoError(t, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 15)))
 	assert.Equal(t, 16, m.FrameCount(im))
 
 	// Negative OffsetStart
 	m.OffsetStart = -2
-	assert.Equal(t, nil, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", "b", ".", "."}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", ".", ".", ".", "."}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{".", "r", "g", "g", "b", "b"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", "b", ".", "."}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"b", "b", ".", ".", ".", "."}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{".", "r", "g", "g", "b", "b"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 11)))
 	assert.Equal(t, 12, m.FrameCount(im))
 
 	// Overly negative OffsetStart is truncated to child width
 	m.OffsetStart = -1000
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 2)))
 	assert.Equal(t, 7, m.FrameCount(im))
 	m.OffsetStart = -7
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 1)))
 	assert.Equal(t, 7, m.FrameCount(im))
 	m.OffsetStart = -8
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 1)))
 	assert.Equal(t, 7, m.FrameCount(im))
 	m.OffsetStart = -6
-	assert.Equal(t, nil, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 2)))
 	assert.Equal(t, 8, m.FrameCount(im))
 
 	// OffsetEnd affects the final position of the child
 	m.OffsetStart = 0
 	m.OffsetEnd = 2
-	assert.Equal(t, nil, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"g", "g", "b", "b", "b", "b"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", "b", ".", "."}, PaintWidget(m, im, 3)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 4)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", ".", ".", ".", "."}, PaintWidget(m, im, 5)))
-	assert.Equal(t, nil, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 7)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"g", "g", "b", "b", "b", "b"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", "b", ".", "."}, PaintWidget(m, im, 3)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 4)))
+	require.NoError(t, checkImage([]string{"b", "b", ".", ".", ".", "."}, PaintWidget(m, im, 5)))
+	require.NoError(t, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "r"}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", "r", "g"}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 11)))
 	assert.Equal(t, 12, m.FrameCount(im))
-	assert.Equal(t, nil, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 13)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 1024)))
+	require.NoError(t, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 1024)))
 
 	// Negative offset places child outside of marquee
 	m.OffsetEnd = -4
-	assert.Equal(t, nil, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"g", "g", "b", "b", "b", "b"}, PaintWidget(m, im, 1)))
-	assert.Equal(t, nil, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 2)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 10)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 11)))
-	assert.Equal(t, nil, checkImage([]string{".", "r", "g", "g", "b", "b"}, PaintWidget(m, im, 12)))
-	assert.Equal(t, nil, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 13)))
-	assert.Equal(t, nil, checkImage([]string{"g", "g", "b", "b", "b", "b"}, PaintWidget(m, im, 14)))
-	assert.Equal(t, nil, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 15)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", "b", ".", "."}, PaintWidget(m, im, 16)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 17)))
+	require.NoError(t, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"g", "g", "b", "b", "b", "b"}, PaintWidget(m, im, 1)))
+	require.NoError(t, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 2)))
+	require.NoError(t, checkImage([]string{".", ".", ".", "r", "g", "g"}, PaintWidget(m, im, 10)))
+	require.NoError(t, checkImage([]string{".", ".", "r", "g", "g", "b"}, PaintWidget(m, im, 11)))
+	require.NoError(t, checkImage([]string{".", "r", "g", "g", "b", "b"}, PaintWidget(m, im, 12)))
+	require.NoError(t, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 13)))
+	require.NoError(t, checkImage([]string{"g", "g", "b", "b", "b", "b"}, PaintWidget(m, im, 14)))
+	require.NoError(t, checkImage([]string{"g", "b", "b", "b", "b", "."}, PaintWidget(m, im, 15)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", "b", ".", "."}, PaintWidget(m, im, 16)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 17)))
 	assert.Equal(t, 18, m.FrameCount(im))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 18)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 19)))
-	assert.Equal(t, nil, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 1024)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 18)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 19)))
+	require.NoError(t, checkImage([]string{"b", "b", "b", ".", ".", "."}, PaintWidget(m, im, 1024)))
 
 	// OffsetEnd >= width means it doesn't scroll back
 	m.OffsetEnd = 6
-	assert.Equal(t, nil, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 0)))
-	assert.Equal(t, nil, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 6)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 7)))
+	require.NoError(t, checkImage([]string{"r", "g", "g", "b", "b", "b"}, PaintWidget(m, im, 0)))
+	require.NoError(t, checkImage([]string{"b", ".", ".", ".", ".", "."}, PaintWidget(m, im, 6)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 7)))
 	assert.Equal(t, 8, m.FrameCount(im))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 8)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 9)))
-	assert.Equal(t, nil, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 1024)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 8)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 9)))
+	require.NoError(t, checkImage([]string{".", ".", ".", ".", ".", "."}, PaintWidget(m, im, 1024)))
 }

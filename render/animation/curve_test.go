@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLinearCurve(t *testing.T) {
@@ -46,7 +47,7 @@ func ParseAndAssertCurve(
 	ecurve Curve,
 ) {
 	curve, err := ParseCurve(scurve)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, ecurve, curve)
 }
 

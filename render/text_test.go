@@ -6,13 +6,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTextDefault(t *testing.T) {
 	text := &Text{Content: "A"}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 	im := PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		".....",
 		".ww..",
 		"w..w.",
@@ -27,9 +28,9 @@ func TestTextDefault(t *testing.T) {
 	assert.Equal(t, 8, h)
 
 	text = &Text{Content: "j!ÑÖ"}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"...." + ".." + ".w.w." + "w..w.",
 		"..w." + "w." + "w.w.." + ".....",
 		"...." + "w." + "w..w." + ".ww..",
@@ -49,10 +50,10 @@ func TestTextParameters(t *testing.T) {
 		Content: "ᚠӠ",
 		Font:    "6x13",
 	}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 
 	im := PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......" + "......",
 		"......" + "......",
 		".w..w." + "wwwww.",
@@ -79,9 +80,9 @@ func TestTextParameters(t *testing.T) {
 		Offset:  -2,
 		Height:  10,
 	}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......" + "......",
 		".g..g." + "ggggg.",
 		".g.g.." + "....g.",
@@ -94,8 +95,8 @@ func TestTextParameters(t *testing.T) {
 		".g...." + ".ggg..",
 	}, im))
 	w, h = text.Size()
-	assert.Equal(t, w, 12)
-	assert.Equal(t, h, 10)
+	assert.Equal(t, 12, w)
+	assert.Equal(t, 10, h)
 }
 
 // Make sure the fonts render as expected.
@@ -107,10 +108,10 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "6x13",
 	}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 
 	im := PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......" + "......" + "......" + "......",
 		"......" + "......" + ".w.w.." + "......",
 		".www.." + "......" + ".w.w.." + "..w...",
@@ -133,9 +134,9 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "Dina_r400-6",
 	}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"......" + "......" + ".w.w.." + "......",
 		"......" + "......" + "......" + "......",
 		".www.." + "......" + ".www.." + "..w...",
@@ -155,9 +156,9 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "5x8",
 	}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"....." + "....." + "w..w." + ".....",
 		".ww.." + "....." + "....." + "..w..",
 		"w..w." + "....." + ".ww.." + "..w..",
@@ -175,9 +176,9 @@ func TestTextFonts(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "tb-8",
 	}
-	assert.NoError(t, text.Init(nil))
+	require.NoError(t, text.Init(nil))
 	im = PaintWidget(text, image.Rect(0, 0, 0, 0), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"....." + "....." + "w..w." + "..",
 		".ww.." + "....." + "....." + "w.",
 		"w..w." + "....." + ".ww.." + "w.",
@@ -197,5 +198,5 @@ func TestTextMissingFont(t *testing.T) {
 		Content: "QqÖ!",
 		Font:    "missing",
 	}
-	assert.Error(t, text.Init(nil))
+	require.Error(t, text.Init(nil))
 }

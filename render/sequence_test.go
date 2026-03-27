@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSequenceOnlyOneFrameAtATime(t *testing.T) {
@@ -19,7 +20,7 @@ func TestSequenceOnlyOneFrameAtATime(t *testing.T) {
 
 	// Frame 0
 	im := PaintWidget(seq, image.Rect(0, 0, 10, 3), 0)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"rrr",
 		"rrr",
 		"rrr",
@@ -27,7 +28,7 @@ func TestSequenceOnlyOneFrameAtATime(t *testing.T) {
 
 	// Frame 1
 	im = PaintWidget(seq, image.Rect(0, 0, 10, 3), 1)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"gggggg",
 		"gggggg",
 		"gggggg",
@@ -35,7 +36,7 @@ func TestSequenceOnlyOneFrameAtATime(t *testing.T) {
 
 	// Frame 2
 	im = PaintWidget(seq, image.Rect(0, 0, 10, 3), 2)
-	assert.Equal(t, nil, checkImage([]string{
+	require.NoError(t, checkImage([]string{
 		"bbbbbbbbb",
 		"bbbbbbbbb",
 		"bbbbbbbbb",
@@ -161,6 +162,6 @@ func TestSequenceWithAnimatedChildren(t *testing.T) {
 
 	for i := range seq.FrameCount(image.Rect(0, 0, 2, 2)) {
 		im := PaintWidget(seq, image.Rect(0, 0, 2, 2), i)
-		assert.Equal(t, nil, checkImage(expected[i], im))
+		require.NoError(t, checkImage(expected[i], im))
 	}
 }

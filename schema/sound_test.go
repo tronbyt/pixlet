@@ -5,6 +5,7 @@ import (
 	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 )
 
@@ -34,9 +35,9 @@ def main():
 		"sound.star": &fstest.MapFile{Data: []byte(source)},
 	}
 	app, err := runtime.NewAppletFromFS(t.Context(), "sound", vfs, runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }

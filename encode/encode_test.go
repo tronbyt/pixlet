@@ -143,14 +143,14 @@ def main():
 
 func TestFile(t *testing.T) {
 	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(testDotStar), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	webp, err := ScreensFromRoots(roots, 64, 32).EncodeWebP(t.Context(), 15*time.Second)
-	assert.NoError(t, err)
-	assert.True(t, len(webp) > 0)
+	require.NoError(t, err)
+	assert.NotEmpty(t, webp)
 }
 
 func TestHash(t *testing.T) {
@@ -164,12 +164,12 @@ func TestHash(t *testing.T) {
 	// ensure we can calculate a hash
 	hash, err := ScreensFromRoots(roots, 64, 32).Hash()
 	require.NoError(t, err)
-	require.True(t, len(hash) > 0)
+	require.NotEmpty(t, hash)
 
 	// ensure the hash doesn't change
 	for range 20 {
 		h, err := ScreensFromRoots(roots, 64, 32).Hash()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, hash, h)
 	}
 
@@ -200,12 +200,12 @@ func TestHashEmptyApp(t *testing.T) {
 	// ensure we can calculate a hash
 	hash, err := ScreensFromRoots(roots, 64, 32).Hash()
 	require.NoError(t, err)
-	require.True(t, len(hash) > 0)
+	require.NotEmpty(t, hash)
 
 	// ensure the hash doesn't change
 	for range 20 {
 		h, err := ScreensFromRoots(roots, 64, 32).Hash()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, hash, h)
 	}
 }
@@ -214,13 +214,13 @@ func TestHashDelayAndMaxAge(t *testing.T) {
 	r := []render.Root{{Child: &render.Text{Content: "derp"}}}
 
 	h1, err := ScreensFromRoots(r, 64, 32).Hash()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	r[0].MaxAge = 12
 	h2, err := ScreensFromRoots(r, 64, 32).Hash()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	r[0].Delay = 1
 	h3, err := ScreensFromRoots(r, 64, 32).Hash()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.NotEqual(t, h1, h2)
 	assert.NotEqual(t, h2, h3)
@@ -232,7 +232,7 @@ func TestScreensFromRoots(t *testing.T) {
 		{Child: &render.Text{Content: "tree 0"}},
 		{Child: &render.Text{Content: "tree 1"}},
 	}, 64, 32)
-	assert.Equal(t, 2, len(s.roots))
+	assert.Len(t, s.roots, 2)
 	assert.Equal(t, "tree 0", s.roots[0].Child.(*render.Text).Content)
 	assert.Equal(t, "tree 1", s.roots[1].Child.(*render.Text).Content)
 	assert.Equal(t, int32(50), s.delay)
@@ -243,7 +243,7 @@ func TestScreensFromRoots(t *testing.T) {
 		{Child: &render.Text{Content: "tree 0"}, Delay: 4711, MaxAge: 42},
 		{Child: &render.Text{Content: "tree 1"}, Delay: 31415, MaxAge: 926535},
 	}, 64, 32)
-	assert.Equal(t, 2, len(s.roots))
+	assert.Len(t, s.roots, 2)
 	assert.Equal(t, int32(4711), s.delay)
 	assert.Equal(t, int32(42), s.MaxAge)
 }
@@ -257,7 +257,7 @@ def main():
 	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(requestFull), runtime.WithTests(t))
 	require.NoError(t, err)
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, ScreensFromRoots(roots, 64, 32).ShowFullAnimation)
 
 	const dontRequestFull = `
@@ -268,7 +268,7 @@ def main():
 	app, err = runtime.NewApplet(t.Context(), "test.star", []byte(dontRequestFull), runtime.WithTests(t))
 	require.NoError(t, err)
 	roots, err = app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, ScreensFromRoots(roots, 64, 32).ShowFullAnimation)
 }
 
@@ -293,10 +293,10 @@ def main():
 `)
 
 	app, err := runtime.NewApplet(t.Context(), "test.star", src, runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	roots, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Source above will produce a 70 frame animation
 	assert.Equal(t, 70, roots[0].Child.FrameCount(image.Rect(0, 0, 64, 32)))
@@ -305,7 +305,7 @@ def main():
 	// their sum in milliseconds.
 	gifDelays := func(gifData []byte) []int {
 		im, err := gif.DecodeAll(bytes.NewBuffer(gifData))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		delays := make([]int, 0, len(im.Delay))
 		for _, d := range im.Delay {
 			delays = append(delays, d*10)
@@ -319,34 +319,34 @@ def main():
 
 	// 3000 ms -> 6 frames, 500 ms each.
 	gifData, err := ScreensFromRoots(roots, 64, 32).EncodeGIF(t.Context(), 3*time.Second)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	webpData, err := ScreensFromRoots(roots, 64, 32).EncodeWebP(t.Context(), 3*time.Second)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, []int{500, 500, 500, 500, 500, 500}, gifDelays(gifData))
 	assert.Equal(t, []int{500, 500, 500, 500, 500, 500}, webpDelays(t, webpData))
 
 	// 2200 ms -> 5 frames, with last given only 200ms
 	gifData, err = ScreensFromRoots(roots, 64, 32).EncodeGIF(t.Context(), 2*time.Second+200*time.Millisecond)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(t.Context(), 2*time.Second+200*time.Millisecond)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, []int{500, 500, 500, 500, 200}, gifDelays(gifData))
 	assert.Equal(t, []int{500, 500, 500, 500, 200}, webpDelays(t, webpData))
 
 	// 100 ms -> single frame. Its duration will differ between
 	// gif and webp, but is also irrelevant.
 	gifData, err = ScreensFromRoots(roots, 64, 32).EncodeGIF(t.Context(), 100*time.Millisecond)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(t.Context(), 100*time.Millisecond)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, []int{100}, gifDelays(gifData))
 	assert.Equal(t, []int{0}, webpDelays(t, webpData))
 
 	// 60000 ms -> all 100 frames, 500 ms each.
 	gifData, err = ScreensFromRoots(roots, 64, 32).EncodeGIF(t.Context(), time.Minute)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(t.Context(), time.Minute)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, gifDelays(gifData), webpDelays(t, webpData))
 	for _, d := range gifDelays(gifData) {
 		assert.Equal(t, 500, d)
@@ -354,9 +354,9 @@ def main():
 
 	// inf ms -> all 100 frames, 500 ms each.
 	gifData, err = ScreensFromRoots(roots, 64, 32).EncodeGIF(t.Context(), 0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	webpData, err = ScreensFromRoots(roots, 64, 32).EncodeWebP(t.Context(), 0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, gifDelays(gifData), webpDelays(t, webpData))
 	for _, d := range gifDelays(gifData) {
 		assert.Equal(t, 500, d)

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 	"golang.org/x/text/language"
 )
@@ -78,11 +79,11 @@ def main():
 `
 
 	app, err := runtime.NewApplet(t.Context(), "human.star", []byte(source), runtime.WithTests(t))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
 
@@ -121,10 +122,10 @@ def main():
 		runtime.WithTests(t),
 		runtime.WithLanguage(language.German),
 	)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, app)
 
 	screens, err := app.Run(t.Context())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }

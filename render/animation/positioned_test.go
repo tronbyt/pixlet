@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/render"
 )
 
@@ -31,7 +32,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 	assert.Equal(t, 6, o.FrameCount(image.Rect(0, 0, 0, 0)))
 
 	im := render.PaintWidget(o, image.Rect(0, 0, 10, 6), 0)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"rrrr......",
 		"rrrr......",
 		"rrrr......",
@@ -41,7 +42,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 1)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		".rrrr.....",
 		".rrrr.....",
@@ -51,7 +52,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 2)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..rrrr....",
@@ -61,7 +62,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 3)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -72,7 +73,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 
 	// These last two frames, the rectangle moves out of bounds.
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 4)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -82,7 +83,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 5)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -94,7 +95,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 	// For now, the behavior for later frames is to freeze the
 	// final frame, i.e. keep child at the end position.
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 6)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -103,7 +104,7 @@ func TestPositionedLinearCurve(t *testing.T) {
 		".....rrrr.",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 7)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -132,7 +133,7 @@ func TestPositionedEaseIn(t *testing.T) {
 	// first, then decelerating into its end position.
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 10, 4), 0)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -140,7 +141,7 @@ func TestPositionedEaseIn(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 4), 1)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		".gg.......",
 		".gg.......",
@@ -148,7 +149,7 @@ func TestPositionedEaseIn(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 4), 2)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..gg......",
 		"..gg......",
@@ -156,7 +157,7 @@ func TestPositionedEaseIn(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 4), 3)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"...gg.....",
 		"...gg.....",
@@ -164,7 +165,7 @@ func TestPositionedEaseIn(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 4), 4)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"...gg.....",
 		"...gg.....",
@@ -172,7 +173,7 @@ func TestPositionedEaseIn(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 4), 5)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"....gg....",
 		"....gg....",
@@ -180,7 +181,7 @@ func TestPositionedEaseIn(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 4), 9)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"....gg....",
 		"....gg....",
@@ -212,57 +213,57 @@ func TestPositionedDelayAndHold(t *testing.T) {
 
 	// No movement during delay
 	im := render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 0)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"g....",
 		"g....",
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 1)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"g....",
 		"g....",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 2)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"g....",
 		"g....",
 	}, im))
 
 	// After that, linear motion to XEnd=4
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 3)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"g....",
 		"g....",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 4)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".g...",
 		".g...",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 5)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..g..",
 		"..g..",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 6)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"...g.",
 		"...g.",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 7)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"....g",
 		"....g",
 	}, im))
 
 	// Final frame is held
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 8)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"....g",
 		"....g",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 9)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"....g",
 		"....g",
 	}, im))
@@ -270,12 +271,12 @@ func TestPositionedDelayAndHold(t *testing.T) {
 	// Requesting frames beyond FrameCount() returns final frame
 	// as well
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 10)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"....g",
 		"....g",
 	}, im))
 	im = render.PaintWidget(&o, image.Rect(0, 0, 5, 2), 101212)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"....g",
 		"....g",
 	}, im))
@@ -309,7 +310,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 	assert.Equal(t, 8, o.FrameCount(image.Rect(0, 0, 10, 6)))
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 0)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -319,7 +320,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 1)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -329,7 +330,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 2)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -339,7 +340,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 3)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		"..........",
 		"..........",
 		"..........",
@@ -350,7 +351,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 
 	// fast forward to the end
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 6)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....rr...",
 		".....rr...",
 		"..........",
@@ -360,7 +361,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 7)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....g....",
 		"..........",
 		"..........",
@@ -371,7 +372,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 
 	// past final frame, and past hold, animation still runs
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 8)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....rr...",
 		".....rr...",
 		"..........",
@@ -381,7 +382,7 @@ func TestPositionedChildAnimation(t *testing.T) {
 	}, im))
 
 	im = render.PaintWidget(&o, image.Rect(0, 0, 10, 6), 9)
-	assert.Equal(t, nil, render.CheckImage([]string{
+	require.NoError(t, render.CheckImage([]string{
 		".....g....",
 		"..........",
 		"..........",
