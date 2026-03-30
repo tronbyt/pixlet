@@ -43,11 +43,11 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
 	go.starlark.net v0.0.0-20260210143700-b62fd896b91b
-	golang.org/x/image v0.36.0
+	golang.org/x/image v0.38.0
 	golang.org/x/mod v0.33.0
 	golang.org/x/sync v0.20.0
-	golang.org/x/text v0.34.0
-	golang.org/x/tools v0.41.0
+	golang.org/x/text v0.35.0
+	golang.org/x/tools v0.42.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
