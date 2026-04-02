@@ -109,7 +109,7 @@ func (w *{{ .GoName }}) Freeze()              {}
 func (w *{{ .GoName }}) Truth() starlark.Bool { return true }
 
 func (w *{{ .GoName }}) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/mitchellh/hashstructure/v2"
+	"github.com/gohugoio/hashstructure"
 	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
@@ -200,6 +200,6 @@ func (s StarlarkSchema) Freeze()              {}
 func (s StarlarkSchema) Truth() starlark.Bool { return true }
 
 func (s StarlarkSchema) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(s, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(s, nil)
 	return uint32(sum), err
 }

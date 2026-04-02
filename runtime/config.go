@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mitchellh/hashstructure/v2"
+	"github.com/gohugoio/hashstructure"
 	"github.com/tronbyt/pixlet/schema"
 	"go.starlark.net/starlark"
 )
@@ -83,7 +83,7 @@ func (a AppletConfig) Freeze()              {}
 func (a AppletConfig) Truth() starlark.Bool { return true }
 
 func (a AppletConfig) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(a, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(a, nil)
 	return uint32(sum), err
 }
 

@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/mitchellh/hashstructure/v2"
+	"github.com/gohugoio/hashstructure"
 	"github.com/tronbyt/pixlet/tools/iterutil"
 	"go.starlark.net/starlark"
 )
@@ -113,6 +113,6 @@ func (s *Notification) Freeze()              {}
 func (s *Notification) Truth() starlark.Bool { return true }
 
 func (s *Notification) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(s, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(s, nil)
 	return uint32(sum), err
 }

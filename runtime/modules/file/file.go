@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"unsafe"
 
-	"github.com/mitchellh/hashstructure/v2"
+	"github.com/gohugoio/hashstructure"
 	"go.starlark.net/starlark"
 )
 
@@ -67,7 +67,7 @@ func (f *File) Freeze()              {}
 func (f *File) Truth() starlark.Bool { return true }
 
 func (f *File) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(f, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(f, nil)
 	return uint32(sum), err
 }
 
