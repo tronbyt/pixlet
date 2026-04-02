@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mitchellh/hashstructure/v2"
+	"github.com/gohugoio/hashstructure"
 	"go.starlark.net/starlark"
 )
 
@@ -88,6 +88,6 @@ func (s *Toggle) Freeze()              {}
 func (s *Toggle) Truth() starlark.Bool { return true }
 
 func (s *Toggle) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(s, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(s, nil)
 	return uint32(sum), err
 }

@@ -7,7 +7,7 @@ import (
 	"image"
 	"slices"
 
-	"github.com/mitchellh/hashstructure/v2"
+	"github.com/gohugoio/hashstructure"
 	"go.starlark.net/starlark"
 
 	"github.com/tronbyt/pixlet/render"
@@ -189,7 +189,7 @@ func (w *AnimatedPositioned) Freeze()              {}
 func (w *AnimatedPositioned) Truth() starlark.Bool { return true }
 
 func (w *AnimatedPositioned) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 
@@ -325,7 +325,7 @@ func (w *Keyframe) Freeze()              {}
 func (w *Keyframe) Truth() starlark.Bool { return true }
 
 func (w *Keyframe) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 
@@ -399,7 +399,7 @@ func (w *Origin) Freeze()              {}
 func (w *Origin) Truth() starlark.Bool { return true }
 
 func (w *Origin) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 
@@ -464,7 +464,7 @@ func (w *Rotate) Freeze()              {}
 func (w *Rotate) Truth() starlark.Bool { return true }
 
 func (w *Rotate) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 
@@ -542,7 +542,7 @@ func (w *Scale) Freeze()              {}
 func (w *Scale) Truth() starlark.Bool { return true }
 
 func (w *Scale) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 
@@ -620,7 +620,7 @@ func (w *Shear) Freeze()              {}
 func (w *Shear) Truth() starlark.Bool { return true }
 
 func (w *Shear) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 
@@ -840,7 +840,7 @@ func (w *Transformation) Freeze()              {}
 func (w *Transformation) Truth() starlark.Bool { return true }
 
 func (w *Transformation) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
 
@@ -962,6 +962,6 @@ func (w *Translate) Freeze()              {}
 func (w *Translate) Truth() starlark.Bool { return true }
 
 func (w *Translate) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(w, hashstructure.FormatV2, nil)
+	sum, err := hashstructure.Hash(w, nil)
 	return uint32(sum), err
 }
