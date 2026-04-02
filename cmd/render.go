@@ -43,7 +43,7 @@ func newRenderOptions() *renderOptions {
 		cache:             flags.NewCache(),
 		log:               slog.Default(),
 		magnify:           1,
-		imageOutputFormat: "webp",
+		imageOutputFormat: loader.ImageWebP.String(),
 		maxDuration:       15 * time.Second,
 		timeout:           30 * time.Second,
 		webpLevel:         encode.WebPLevelDefault,
@@ -73,10 +73,10 @@ containing multiple Starlark files and resources.
 	_ = cmd.RegisterFlagCompletionFunc("config", cobra.FixedCompletions([]string{"json"}, cobra.ShellCompDirectiveFilterFileExt))
 
 	cmd.Flags().StringVarP(&opts.output, "output", "o", opts.output, "Path for rendered image")
-	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveFilterFileExt))
+	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions(loader.ImageFormatStrings(), cobra.ShellCompDirectiveFilterFileExt))
 
-	cmd.Flags().StringVarP(&opts.imageOutputFormat, "format", "", opts.imageOutputFormat, "Output format. One of webp|gif")
-	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
+	cmd.Flags().StringVarP(&opts.imageOutputFormat, "format", "", opts.imageOutputFormat, "Output format (one of "+strings.Join(loader.ImageFormatStrings(), ", ")+")")
+	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(loader.ImageFormatStrings(), cobra.ShellCompDirectiveNoFileComp))
 
 	cmd.Flags().BoolVarP(&opts.silenceOutput, "silent", "", opts.silenceOutput, "Silence print statements when rendering app")
 	cmd.Flags().IntVarP(
@@ -173,26 +173,25 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		outPath = strings.TrimSuffix(path, ".star")
 	}
 
-	if opts.meta.Is2x {
-		outPath += "@2x"
+	imageFormat, err := loader.ImageFormatString(opts.imageOutputFormat)
+	if err != nil {
+		opts.log.Warn("Invalid image format; defaulting to WebP.", "format", opts.imageOutputFormat)
+		imageFormat = loader.ImageWebP
 	}
 
-	imageFormat := loader.ImageWebP
-	switch opts.imageOutputFormat {
-	case "gif":
-		imageFormat = loader.ImageGIF
-		outPath += ".gif"
-	default:
-		if opts.imageOutputFormat != "webp" {
-			opts.log.Warn("Invalid image format; defaulting to WebP.", "format", opts.imageOutputFormat)
-		}
-		outPath += ".webp"
+	if imageFormat == loader.ImageWebP {
 		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
 			encode.SetWebPLevel(opts.webpLevel)
 		}
 	}
+
 	if opts.output != "" {
 		outPath = opts.output
+	} else {
+		if opts.meta.Is2x {
+			outPath += "@2x"
+		}
+		outPath += "." + imageFormat.String()
 	}
 
 	config, err := loadConfig(opts.configJSON, args)

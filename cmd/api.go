@@ -30,7 +30,7 @@ func NewAPICmd() *cobra.Command {
 	opts := &apiOptions{
 		host:        "127.0.0.1",
 		port:        8080,
-		format:      "webp",
+		format:      loader.ImageWebP.String(),
 		maxDuration: 15 * time.Second,
 		timeout:     30 * time.Second,
 		imageFormat: loader.ImageWebP,
@@ -52,8 +52,8 @@ func NewAPICmd() *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("host", cobra.NoFileCompletions)
 	cmd.Flags().IntVarP(&opts.port, "port", "p", opts.port, "Port for serving rendered images")
 	_ = cmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Output format. One of webp|gif")
-	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
+	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Output format (one of "+strings.Join(loader.ImageFormatStrings(), ", ")+")")
+	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(loader.ImageFormatStrings(), cobra.ShellCompDirectiveNoFileComp))
 	cmd.Flags().BoolVarP(&opts.silenceOutput, "silent", "", opts.silenceOutput, "Silence print statements when rendering app")
 
 	return cmd
@@ -135,14 +135,10 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	switch o.imageFormat {
-	default:
-		fallthrough
-	case loader.ImageWebP:
-		w.Header().Set("Content-Type", "image/webp")
-	case loader.ImageGIF:
-		w.Header().Set("Content-Type", "image/gif")
+	if ct := o.imageFormat.ContentType(); ct != "" {
+		w.Header().Set("Content-Type", ct)
 	}
+
 	w.Write(buf) //nolint:errcheck
 }
 
@@ -153,13 +149,9 @@ func apiRun(cmd *cobra.Command, _ []string, opts *apiOptions) error {
 	}
 	defer cache.Close()
 
-	switch opts.format {
-	case "gif":
-		opts.imageFormat = loader.ImageGIF
-	default:
-		if opts.format != "webp" {
-			slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.format)
-		}
+	if opts.imageFormat, err = loader.ImageFormatString(opts.format); err != nil {
+		slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.format)
+		opts.imageFormat = loader.ImageWebP
 	}
 
 	addr := fmt.Sprintf("%s:%d", opts.host, opts.port)
