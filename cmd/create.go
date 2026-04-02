@@ -38,7 +38,7 @@ func createRun(_ *cobra.Command, _ []string) error {
 	root := cwd
 	inAppsRepo := repo.IsInRepo(cwd, "apps", "community", "tidbyt")
 	if inAppsRepo {
-		if root, err = repo.RepoRoot(cwd); err != nil {
+		if root, err = repo.Root(cwd); err != nil {
 			return fmt.Errorf("app creation failed, something went wrong with your git repo: %w", err)
 		}
 	}

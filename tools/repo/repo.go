@@ -47,7 +47,7 @@ func IsInRepo(dir string, names ...string) bool {
 	return false
 }
 
-func RepoRoot(dir string) (string, error) {
+func Root(dir string) (string, error) {
 	if dir == "" {
 		dir = "."
 	}
