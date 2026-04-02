@@ -34,24 +34,13 @@ func createRun(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("app creation failed, something went wrong with your local filesystem: %w", err)
 	}
 
-	// Determine what type of app this is an what the root should be.
-	var root string
-	var appType generator.AppType
-	if repo.IsInRepo(cwd, "community") {
-		appType = generator.Community
-		root, err = repo.RepoRoot(cwd)
-		if err != nil {
-			return fmt.Errorf("app creation failed, something went wrong with your community repo: %w", err)
+	// Determine what type of app this is and what the root should be.
+	root := cwd
+	inAppsRepo := repo.IsInRepo(cwd, "apps") || repo.IsInRepo(cwd, "community") || repo.IsInRepo(cwd, "tidbyt")
+	if inAppsRepo {
+		if root, err = repo.RepoRoot(cwd); err != nil {
+			return fmt.Errorf("app creation failed, something went wrong with your git repo: %w", err)
 		}
-	} else if repo.IsInRepo(cwd, "tidbyt") {
-		appType = generator.Internal
-		root, err = repo.RepoRoot(cwd)
-		if err != nil {
-			return fmt.Errorf("app creation failed, something went wrong with your tidbyt repo: %w", err)
-		}
-	} else {
-		appType = generator.Local
-		root = cwd
 	}
 
 	// Prompt the user for input.
@@ -61,7 +50,7 @@ func createRun(_ *cobra.Command, _ []string) error {
 	}
 
 	// Generate app.
-	g, err := generator.NewGenerator(appType, root)
+	g, err := generator.NewGenerator(root, inAppsRepo)
 	if err != nil {
 		return fmt.Errorf("app creation failed %w", err)
 	}
