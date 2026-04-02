@@ -75,7 +75,7 @@ containing multiple Starlark files and resources.
 	cmd.Flags().StringVarP(&opts.output, "output", "o", opts.output, "Path for rendered image")
 	_ = cmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveFilterFileExt))
 
-	cmd.Flags().StringVarP(&opts.imageOutputFormat, "format", "", opts.imageOutputFormat, "Output format. One of webp|gif|avif")
+	cmd.Flags().StringVarP(&opts.imageOutputFormat, "format", "", opts.imageOutputFormat, "Output format. One of webp|gif")
 	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
 
 	cmd.Flags().BoolVarP(&opts.silenceOutput, "silent", "", opts.silenceOutput, "Silence print statements when rendering app")
@@ -182,9 +182,6 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	case "gif":
 		imageFormat = loader.ImageGIF
 		outPath += ".gif"
-	case "avif":
-		imageFormat = loader.ImageAVIF
-		outPath += ".avif"
 	default:
 		if opts.imageOutputFormat != "webp" {
 			opts.log.Warn("Invalid image format; defaulting to WebP.", "format", opts.imageOutputFormat)

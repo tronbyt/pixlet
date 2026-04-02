@@ -52,7 +52,7 @@ func NewAPICmd() *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("host", cobra.NoFileCompletions)
 	cmd.Flags().IntVarP(&opts.port, "port", "p", opts.port, "Port for serving rendered images")
 	_ = cmd.RegisterFlagCompletionFunc("port", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Output format. One of webp|gif|avif")
+	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Output format. One of webp|gif")
 	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
 	cmd.Flags().BoolVarP(&opts.silenceOutput, "silent", "", opts.silenceOutput, "Silence print statements when rendering app")
 
@@ -142,8 +142,6 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "image/webp")
 	case loader.ImageGIF:
 		w.Header().Set("Content-Type", "image/gif")
-	case loader.ImageAVIF:
-		w.Header().Set("Content-Type", "image/avif")
 	}
 	w.Write(buf) //nolint:errcheck
 }
@@ -158,8 +156,6 @@ func apiRun(cmd *cobra.Command, _ []string, opts *apiOptions) error {
 	switch opts.format {
 	case "gif":
 		opts.imageFormat = loader.ImageGIF
-	case "avif":
-		opts.imageFormat = loader.ImageAVIF
 	default:
 		if opts.format != "webp" {
 			slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.format)

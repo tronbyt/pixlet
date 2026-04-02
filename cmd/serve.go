@@ -68,7 +68,7 @@ containing multiple Starlark files and resources.`,
 	_ = cmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
 	cmd.Flags().DurationVarP(&opts.timeout, "timeout", "", opts.timeout, "Timeout for execution")
 	_ = cmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Image format. One of webp|gif|avif")
+	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Image format. One of webp|gif")
 	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
 	cmd.Flags().StringVarP(&opts.path, "path", "", opts.path, "Path to serve the app on")
 	_ = cmd.RegisterFlagCompletionFunc("path", cobra.NoFileCompletions)
@@ -98,8 +98,6 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 	switch opts.format {
 	case "gif":
 		imageFormat = loader.ImageGIF
-	case "avif":
-		imageFormat = loader.ImageAVIF
 	default:
 		if opts.format != "webp" {
 			slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.format)
