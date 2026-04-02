@@ -1,11 +1,13 @@
 package repo
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"os/exec"
 	"slices"
 
 	"github.com/gitsight/go-vcsurl"
-	"github.com/go-git/go-git/v5"
 )
 
 // IsInRepo determines if the provided directory is in the provided git
@@ -15,29 +17,30 @@ import (
 // "Am I in the community repo?". To answer that, this function iterates over
 // the remotes and if any of them have the same name as the one requested, it
 // returns true. Any other case returns false.
-func IsInRepo(dir string, name ...string) bool {
-	repo, err := git.PlainOpenWithOptions(dir, &git.PlainOpenOptions{
-		DetectDotGit: true,
-	})
+func IsInRepo(dir string, names ...string) bool {
+	if dir == "" {
+		dir = "."
+	}
+
+	cmd := exec.Command("git", "-C", dir, "remote", "-v")
+	out, err := cmd.Output()
 	if err != nil {
 		return false
 	}
 
-	remotes, err := repo.Remotes()
-	if err != nil {
-		return false
-	}
+	for line := range bytes.Lines(out) {
+		fields := bytes.Fields(bytes.TrimSpace(line))
+		if len(fields) < 2 {
+			continue
+		}
 
-	for _, remote := range remotes {
-		for _, url := range remote.Config().URLs {
-			info, err := vcsurl.Parse(url)
-			if err != nil {
-				return false
-			}
+		u, err := vcsurl.Parse(string(fields[1]))
+		if err != nil {
+			continue
+		}
 
-			if slices.Contains(name, info.Name) {
-				return true
-			}
+		if slices.Contains(names, u.Name) {
+			return true
 		}
 	}
 
@@ -45,17 +48,19 @@ func IsInRepo(dir string, name ...string) bool {
 }
 
 func RepoRoot(dir string) (string, error) {
-	repo, err := git.PlainOpenWithOptions(dir, &git.PlainOpenOptions{
-		DetectDotGit: true,
-	})
-	if err != nil {
-		return "", fmt.Errorf("couldn't instantiate repo: %w", err)
+	if dir == "" {
+		dir = "."
 	}
 
-	worktree, err := repo.Worktree()
+	cmd := exec.Command("git", "-C", dir, "rev-parse", "--show-toplevel")
+	out, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("couldn't get worktree: %w", err)
+		var stderr []byte
+		if err, ok := errors.AsType[*exec.ExitError](err); ok {
+			stderr = err.Stderr
+		}
+		return "", fmt.Errorf("failed to get repo root: %w: %s", err, string(stderr))
 	}
 
-	return worktree.Filesystem.Root(), nil
+	return string(bytes.TrimSpace(out)), nil
 }
