@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"log/slog"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -69,8 +68,6 @@ containing multiple Starlark files and resources.`,
 	_ = cmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
 	cmd.Flags().DurationVarP(&opts.timeout, "timeout", "", opts.timeout, "Timeout for execution")
 	_ = cmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Image format (one of "+strings.Join(loader.ImageFormatStrings(), ", ")+")")
-	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(loader.ImageFormatStrings(), cobra.ShellCompDirectiveNoFileComp))
 	cmd.Flags().StringVarP(&opts.path, "path", "", opts.path, "Path to serve the app on")
 	_ = cmd.RegisterFlagCompletionFunc("path", cobra.NoFileCompletions)
 	cmd.Flags().BoolVar(&opts.noBrowser, "no-browser", false, "Don't try to open a browser")
@@ -124,7 +121,6 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		loader.WithMeta(opts.meta.Metadata),
 		loader.WithMaxDuration(opts.maxDuration),
 		loader.WithTimeout(opts.timeout),
-		loader.WithImageFormat(imageFormat),
 	)
 	if err != nil {
 		return err
