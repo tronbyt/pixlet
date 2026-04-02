@@ -3,7 +3,6 @@ module github.com/tronbyt/pixlet
 go 1.26.1
 
 require (
-	github.com/HugoSmits86/nativewebp v1.2.1
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/bazelbuild/buildtools v0.0.0-20260211083412-859bfffeef82

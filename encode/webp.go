@@ -1,5 +1,3 @@
-//go:build !nativewebp
-
 package encode
 
 import (
