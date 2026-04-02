@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/gitsight/go-vcsurl"
 	"github.com/go-git/go-git/v5"
@@ -14,7 +15,7 @@ import (
 // "Am I in the community repo?". To answer that, this function iterates over
 // the remotes and if any of them have the same name as the one requested, it
 // returns true. Any other case returns false.
-func IsInRepo(dir string, name string) bool {
+func IsInRepo(dir string, name ...string) bool {
 	repo, err := git.PlainOpenWithOptions(dir, &git.PlainOpenOptions{
 		DetectDotGit: true,
 	})
@@ -34,7 +35,7 @@ func IsInRepo(dir string, name string) bool {
 				return false
 			}
 
-			if info.Name == name {
+			if slices.Contains(name, info.Name) {
 				return true
 			}
 		}

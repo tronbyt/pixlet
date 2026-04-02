@@ -36,7 +36,7 @@ func createRun(_ *cobra.Command, _ []string) error {
 
 	// Determine what type of app this is and what the root should be.
 	root := cwd
-	inAppsRepo := repo.IsInRepo(cwd, "apps") || repo.IsInRepo(cwd, "community") || repo.IsInRepo(cwd, "tidbyt")
+	inAppsRepo := repo.IsInRepo(cwd, "apps", "community", "tidbyt")
 	if inAppsRepo {
 		if root, err = repo.RepoRoot(cwd); err != nil {
 			return fmt.Errorf("app creation failed, something went wrong with your git repo: %w", err)
