@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"text/template"
 
 	"github.com/tronbyt/pixlet/manifest"
@@ -62,19 +62,19 @@ func (g *Generator) RemoveApp(app *manifest.Manifest) error {
 }
 
 func (g *Generator) createDir(app *manifest.Manifest) error {
-	p := path.Join(g.root, appsDir, manifest.GenerateDirName(app.Name))
+	p := filepath.Join(g.root, appsDir, manifest.GenerateDirName(app.Name))
 	return os.MkdirAll(p, os.ModePerm)
 }
 
 func (g *Generator) removeDir(app *manifest.Manifest) error {
-	p := path.Join(g.root, appsDir, manifest.GenerateDirName(app.Name))
+	p := filepath.Join(g.root, appsDir, manifest.GenerateDirName(app.Name))
 	return os.RemoveAll(p)
 }
 
 func (g *Generator) writeManifest(app *manifest.Manifest) error {
-	p := path.Join(g.root, manifestName)
+	p := filepath.Join(g.root, manifestName)
 	if g.inAppsRepo {
-		p = path.Join(g.root, appsDir, manifest.GenerateDirName(app.Name), manifestName)
+		p = filepath.Join(g.root, appsDir, manifest.GenerateDirName(app.Name), manifestName)
 	}
 
 	f, err := os.Create(p)
@@ -90,9 +90,9 @@ func (g *Generator) generateStarlark(app *manifest.Manifest) (string, error) {
 	dir := manifest.GenerateDirName(app.Name)
 	fn := manifest.GenerateFileName(app.Name)
 
-	p := path.Join(g.root, fn)
+	p := filepath.Join(g.root, fn)
 	if g.inAppsRepo {
-		p = path.Join(g.root, appsDir, dir, fn)
+		p = filepath.Join(g.root, appsDir, dir, fn)
 	}
 
 	file, err := os.Create(p)
