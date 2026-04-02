@@ -15,51 +15,35 @@ const (
 	manifestName = "manifest.yaml"
 )
 
-// AppType defines the type of app to generate using this package. There are
-// several types of apps that are defined slightly differently. The ideal state
-// is one type of app no matter where the app exists, but that's not the current
-// reality.
-type AppType int64
-
-const (
-	// Community represents an app that will be published in the community repo.
-	Community AppType = iota
-	// Local represents an app that is local and not meant to be published.
-	Local
-	// Internal represents a Tidbyt internal app.
-	Internal
-)
-
 //go:embed templates/source.star.tmpl
 var starSource string
 
 // Generator provides a structure for generating apps.
 type Generator struct {
-	starTmpl *template.Template
-	appType  AppType
-	root     string
+	starTmpl   *template.Template
+	root       string
+	inAppsRepo bool
 }
 
 // NewGenerator creates an instantiated generator with the templates parsed.
-func NewGenerator(appType AppType, root string) (*Generator, error) {
+func NewGenerator(root string, inAppsRepo bool) (*Generator, error) {
 	starTmpl, err := template.New("star").Parse(starSource)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Generator{
-		starTmpl: starTmpl,
-		appType:  appType,
-		root:     root,
+		starTmpl:   starTmpl,
+		root:       root,
+		inAppsRepo: inAppsRepo,
 	}, nil
 }
 
 // GenerateApp creates the base app starlark, go package, and updates the app
 // list.
 func (g *Generator) GenerateApp(app *manifest.Manifest) (string, error) {
-	if g.appType == Community || g.appType == Internal {
-		err := g.createDir(app)
-		if err != nil {
+	if g.inAppsRepo {
+		if err := g.createDir(app); err != nil {
 			return "", err
 		}
 	}
@@ -88,12 +72,9 @@ func (g *Generator) removeDir(app *manifest.Manifest) error {
 }
 
 func (g *Generator) writeManifest(app *manifest.Manifest) error {
-	var p string
-	switch g.appType {
-	case Community, Internal:
+	p := path.Join(g.root, manifestName)
+	if g.inAppsRepo {
 		p = path.Join(g.root, appsDir, manifest.GenerateDirName(app.Name), manifestName)
-	default:
-		p = path.Join(g.root, manifestName)
 	}
 
 	f, err := os.Create(p)
@@ -109,12 +90,9 @@ func (g *Generator) generateStarlark(app *manifest.Manifest) (string, error) {
 	dir := manifest.GenerateDirName(app.Name)
 	fn := manifest.GenerateFileName(app.Name)
 
-	var p string
-	switch g.appType {
-	case Community, Internal:
+	p := path.Join(g.root, fn)
+	if g.inAppsRepo {
 		p = path.Join(g.root, appsDir, dir, fn)
-	default:
-		p = path.Join(g.root, fn)
 	}
 
 	file, err := os.Create(p)
