@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -33,7 +34,7 @@ func NewServeCmd() *cobra.Command {
 		port:        8080,
 		path:        "/",
 		watch:       true,
-		format:      "webp",
+		format:      loader.ImageWebP.String(),
 		maxDuration: 15 * time.Second,
 		timeout:     30 * time.Second,
 		webpLevel:   encode.WebPLevelDefault,
@@ -68,8 +69,8 @@ containing multiple Starlark files and resources.`,
 	_ = cmd.RegisterFlagCompletionFunc("max-duration", cobra.NoFileCompletions)
 	cmd.Flags().DurationVarP(&opts.timeout, "timeout", "", opts.timeout, "Timeout for execution")
 	_ = cmd.RegisterFlagCompletionFunc("timeout", cobra.NoFileCompletions)
-	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Image format. One of webp|gif")
-	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(formats, cobra.ShellCompDirectiveNoFileComp))
+	cmd.Flags().StringVarP(&opts.format, "format", "", opts.format, "Image format (one of "+strings.Join(loader.ImageFormatStrings(), ", ")+")")
+	_ = cmd.RegisterFlagCompletionFunc("format", cobra.FixedCompletions(loader.ImageFormatStrings(), cobra.ShellCompDirectiveNoFileComp))
 	cmd.Flags().StringVarP(&opts.path, "path", "", opts.path, "Path to serve the app on")
 	_ = cmd.RegisterFlagCompletionFunc("path", cobra.NoFileCompletions)
 	cmd.Flags().BoolVar(&opts.noBrowser, "no-browser", false, "Don't try to open a browser")
@@ -94,14 +95,13 @@ func serveRun(cmd *cobra.Command, args []string, opts *serveOptions) error {
 		appletPath = args[0]
 	}
 
-	imageFormat := loader.ImageWebP
-	switch opts.format {
-	case "gif":
-		imageFormat = loader.ImageGIF
-	default:
-		if opts.format != "webp" {
-			slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.format)
-		}
+	imageFormat, err := loader.ImageFormatString(opts.format)
+	if err != nil {
+		slog.Warn("Invalid image format; defaulting to WebP.", "format", opts.format)
+		imageFormat = loader.ImageWebP
+	}
+
+	if imageFormat == loader.ImageWebP {
 		if flag := cmd.Flags().Lookup(webpLevelFlag); flag != nil && flag.Changed {
 			encode.SetWebPLevel(opts.webpLevel)
 		}

@@ -71,7 +71,7 @@ func NewServer(
 		}
 	}
 
-	b, err := browser.NewBrowser(host, port, servePath, title, watch, updatesChan, l, false, openBrowser)
+	b, err := browser.NewBrowser(host, port, servePath, title, watch, updatesChan, l, openBrowser)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/tronbyt/pixlet/cmd/flags"
 	"github.com/tronbyt/pixlet/cmd/groups"
 	"github.com/tronbyt/pixlet/internal/tronbytapi"
+	"github.com/tronbyt/pixlet/server/loader"
 )
 
 type pushOptions struct {
@@ -34,7 +35,7 @@ func NewPushCmd() *cobra.Command {
 			case 0:
 				return completeDevices(cmd, opts.creds)
 			case 1:
-				return []string{"webp"}, cobra.ShellCompDirectiveFilterFileExt
+				return []string{loader.ImageWebP.String()}, cobra.ShellCompDirectiveFilterFileExt
 			}
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		},

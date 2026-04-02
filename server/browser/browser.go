@@ -39,7 +39,6 @@ type Browser struct {
 	fo          *fanout.Fanout
 	r           *http.ServeMux
 	loader      *loader.Loader
-	serveGif    bool // True if serving GIF, false if serving WebP
 	openBrowser bool
 }
 
@@ -99,7 +98,7 @@ func (b *Browser) applyLocaleTimezone(r *http.Request) error {
 }
 
 // NewBrowser sets up a browser structure. Call Run() to kick off the main loops.
-func NewBrowser(host string, port int, servePath, title string, watch bool, updateChan chan loader.Update, l *loader.Loader, serveGif, openBrowser bool) (*Browser, error) {
+func NewBrowser(host string, port int, servePath, title string, watch bool, updateChan chan loader.Update, l *loader.Loader, openBrowser bool) (*Browser, error) {
 	if !strings.HasPrefix(servePath, "/") {
 		servePath = "/" + servePath
 	}
@@ -116,7 +115,6 @@ func NewBrowser(host string, port int, servePath, title string, watch bool, upda
 		title:       title,
 		loader:      l,
 		watch:       watch,
-		serveGif:    serveGif,
 		openBrowser: openBrowser,
 	}
 
@@ -269,11 +267,7 @@ func (b *Browser) imageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	img_type := "image/webp"
-	if b.serveGif {
-		img_type = "image/gif"
-	}
-	w.Header().Set("Content-Type", img_type)
+	w.Header().Set("Content-Type", loader.ImageWebP.ContentType())
 
 	data, err := base64.StdEncoding.DecodeString(img)
 	if err != nil {
@@ -311,13 +305,10 @@ func (b *Browser) previewHandler(w http.ResponseWriter, r *http.Request) {
 
 	img, err := b.loader.LoadApplet(config)
 	meta := b.loader.Meta()
-	img_type := "webp"
-	if b.serveGif {
-		img_type = "gif"
-	}
+
 	data := &previewData{
 		Image:     img,
-		ImageType: img_type,
+		ImageType: loader.ImageWebP.String(),
 		Title:     b.title,
 		Metadata:  meta,
 	}
@@ -355,11 +346,6 @@ func (b *Browser) websocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b *Browser) updateWatcher(ctx context.Context) error {
-	img_type := "webp"
-	if b.serveGif {
-		img_type = "gif"
-	}
-
 	for {
 		select {
 		case <-ctx.Done():
@@ -369,7 +355,7 @@ func (b *Browser) updateWatcher(ctx context.Context) error {
 				fanout.WebsocketEvent{
 					Type:      fanout.EventTypeImage,
 					Message:   up.Image,
-					ImageType: img_type,
+					ImageType: loader.ImageWebP.String(),
 					Metadata:  up.Metadata,
 				},
 			)

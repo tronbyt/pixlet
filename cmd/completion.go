@@ -13,8 +13,6 @@ import (
 	"github.com/tronbyt/pixlet/schema"
 )
 
-var formats = []string{"webp", "gif"}
-
 func completeInstallations(cmd *cobra.Command, creds *flags.APICredentials, deviceID string) ([]string, cobra.ShellCompDirective) {
 	client, err := tronbytapi.NewClient(creds.URL, creds.APIToken)
 	if err != nil {

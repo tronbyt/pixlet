@@ -33,13 +33,6 @@ type metaUpdate struct {
 	resp chan metaState
 }
 
-type ImageFormat int
-
-const (
-	ImageWebP ImageFormat = iota
-	ImageGIF
-)
-
 // Loader is a structure to provide applet loading when a file changes or on
 // demand.
 type Loader struct {
@@ -155,14 +148,7 @@ func (l *Loader) Run(ctx context.Context) error {
 				up.Err = err
 			} else {
 				up.Image = img
-				switch l.conf.ImageFormat {
-				default:
-					fallthrough
-				case ImageWebP:
-					up.ImageType = "webp"
-				case ImageGIF:
-					up.ImageType = "gif"
-				}
+				up.ImageType = l.conf.ImageFormat.String()
 			}
 			up.Metadata = l.conf.Meta
 
@@ -177,14 +163,7 @@ func (l *Loader) Run(ctx context.Context) error {
 				up.Err = err
 			} else {
 				up.Image = img
-				switch l.conf.ImageFormat {
-				default:
-					fallthrough
-				case ImageWebP:
-					up.ImageType = "webp"
-				case ImageGIF:
-					up.ImageType = "gif"
-				}
+				up.ImageType = l.conf.ImageFormat.String()
 				up.Schema = string(l.GetSchema())
 			}
 			up.Metadata = l.conf.Meta
