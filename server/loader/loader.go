@@ -38,7 +38,6 @@ type ImageFormat int
 const (
 	ImageWebP ImageFormat = iota
 	ImageGIF
-	ImageAVIF
 )
 
 // Loader is a structure to provide applet loading when a file changes or on
@@ -163,8 +162,6 @@ func (l *Loader) Run(ctx context.Context) error {
 					up.ImageType = "webp"
 				case ImageGIF:
 					up.ImageType = "gif"
-				case ImageAVIF:
-					up.ImageType = "avif"
 				}
 			}
 			up.Metadata = l.conf.Meta
@@ -187,8 +184,6 @@ func (l *Loader) Run(ctx context.Context) error {
 					up.ImageType = "webp"
 				case ImageGIF:
 					up.ImageType = "gif"
-				case ImageAVIF:
-					up.ImageType = "avif"
 				}
 				up.Schema = string(l.GetSchema())
 			}
@@ -431,8 +426,6 @@ func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfi
 		img, err = screens.EncodeWebP(ctx, maxDuration, filter)
 	case ImageGIF:
 		img, err = screens.EncodeGIF(ctx, maxDuration, filter)
-	case ImageAVIF:
-		img, err = screens.EncodeAVIF(ctx, maxDuration, filter)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("error rendering: %w", err)
