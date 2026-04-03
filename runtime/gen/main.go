@@ -8,13 +8,14 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"embed"
 	"fmt"
 	"go/ast"
 	"go/format"
 	"os"
 	"reflect"
-	"sort"
+	"slices"
 	"strings"
 	"text/template"
 
@@ -219,8 +220,15 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 	}
 
 	// Reorder attributes so that required fields appear first.
-	sort.SliceStable(result.Attributes, func(i, j int) bool {
-		return result.Attributes[i].IsRequired && !result.Attributes[j].IsRequired
+	slices.SortStableFunc(result.Attributes, func(a, b *GeneratedAttr) int {
+		switch {
+		case a.IsRequired == b.IsRequired:
+			return 0
+		case a.IsRequired:
+			return -1
+		default:
+			return 1
+		}
 	})
 
 	return result, nil
@@ -311,8 +319,8 @@ func main() {
 			}
 		}
 
-		sort.SliceStable(types, func(i, j int) bool {
-			return types[i].GoName < types[j].GoName
+		slices.SortFunc(types, func(a, b *GeneratedType) int {
+			return cmp.Compare(a.GoName, b.GoName)
 		})
 
 		attachDocs(pkg, types)
