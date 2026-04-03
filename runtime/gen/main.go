@@ -87,8 +87,8 @@ type GeneratedType struct {
 
 // Given a `reflect.Value`, return all its fields, including fields of anonymous composed types.
 func allFields(val reflect.Value) []reflect.StructField {
-	fields := make([]reflect.StructField, 0)
 	typ := val.Type()
+	fields := make([]reflect.StructField, 0, typ.NumField())
 
 	for i := range typ.NumField() {
 		t := typ.Field(i)
@@ -176,6 +176,7 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 
 	result.GoName = typ.Name()
 	result.GoNameWithPackage = typ.String()
+	result.Attributes = make([]*GeneratedAttr, 0, val.NumField())
 
 	for _, field := range allFields(val) {
 		if field.PkgPath != "" {
@@ -302,7 +303,7 @@ func generateCode(pkg Package, types []*GeneratedType) {
 func main() {
 	// Generate code and documentation for each package.
 	for _, pkg := range Packages {
-		types := []*GeneratedType{}
+		types := make([]*GeneratedType, 0, len(pkg.Types))
 
 		for _, typ := range pkg.Types {
 			if result, err := toGeneratedType(pkg, typ); err == nil {

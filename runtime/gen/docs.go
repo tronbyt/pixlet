@@ -126,7 +126,6 @@ func splitDocAndExamples(docText string) (string, []string) {
 func attachDocs(pkg Package, types []*GeneratedType) {
 	// Parse all .go files in pixlet/render packages and extract all type doc comments
 	fset := token.NewFileSet()
-	docs := map[string]string{}
 
 	abs, err := filepath.Abs(pkg.Directory)
 	if err != nil {
@@ -149,6 +148,7 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 	}
 
 	pkgDoc := must2(doc.NewFromFiles(fset, pkgs[0].Syntax, pkg.ImportPath))
+	docs := make(map[string]string, len(pkgDoc.Types))
 	for _, type_ := range pkgDoc.Types {
 		docs[type_.Name] = type_.Doc
 	}
