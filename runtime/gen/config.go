@@ -104,49 +104,49 @@ var Packages = []Package{
 // TypeMap is a map of Go types to an `Attribute` definition.
 var TypeMap = map[reflect.Type]Type{
 	// Primitive types
-	toDecayedType(new(string)): {
+	reflect.TypeFor[string](): {
 		GoType:       "starlark.String",
 		DocType:      "str",
 		TemplatePath: "attr/string.tmpl",
 	},
-	toDecayedType(new(int)): {
+	reflect.TypeFor[int](): {
 		GoType:       "starlark.Int",
 		DocType:      "int",
 		TemplatePath: "attr/int.tmpl",
 	},
-	toDecayedType(new(int32)): {
+	reflect.TypeFor[int32](): {
 		GoType:       "starlark.Int",
 		DocType:      "int",
 		TemplatePath: "attr/int32.tmpl",
 	},
-	toDecayedType(new(float64)): {
+	reflect.TypeFor[float64](): {
 		GoType:       "starlark.Value",
 		DocType:      "float / int",
 		TemplatePath: "attr/float.tmpl",
 	},
-	toDecayedType(new(bool)): {
+	reflect.TypeFor[bool](): {
 		GoType:       "starlark.Bool",
 		DocType:      "bool",
 		TemplatePath: "attr/bool.tmpl",
 	},
 
 	// Render types
-	toDecayedType(new(render.Insets)): {
+	reflect.TypeFor[render.Insets](): {
 		GoType:       "starlark.Value",
 		DocType:      "int / tuple of 3 ints",
 		TemplatePath: "attr/insets.tmpl",
 	},
-	toDecayedType(new(render.Widget)): {
+	reflect.TypeFor[render.Widget](): {
 		GoType:       "starlark.Value",
 		DocType:      "Widget",
 		TemplatePath: "attr/child.tmpl",
 	},
-	toDecayedType(new([]render.Widget)): {
+	reflect.TypeFor[[]render.Widget](): {
 		GoType:       "*starlark.List",
 		DocType:      "[Widget]",
 		TemplatePath: "attr/children.tmpl",
 	},
-	toDecayedType(new(color.Color)): {
+	reflect.TypeFor[color.Color](): {
 		GoType:        "starlark.Value",
 		DocType:       `color`,
 		TemplatePath:  "attr/color.tmpl",
@@ -155,13 +155,13 @@ var TypeMap = map[reflect.Type]Type{
 	},
 
 	// Render `PieChart types`
-	toDecayedType(new([]color.Color)): {
+	reflect.TypeFor[[]color.Color](): {
 		GoType:        "*starlark.List",
 		DocType:       `[color]`,
 		TemplatePath:  "attr/colors.tmpl",
 		GenerateField: true,
 	},
-	toDecayedType(new([]float64)): {
+	reflect.TypeFor[[]float64](): {
 		GoType:        "*starlark.List",
 		DocType:       `[float]`,
 		TemplatePath:  "attr/weights.tmpl",
@@ -169,62 +169,62 @@ var TypeMap = map[reflect.Type]Type{
 	},
 
 	// Render `Plot` types`
-	toDecayedType(new([2]float64)): {
+	reflect.TypeFor[[2]float64](): {
 		GoType:       "starlark.Tuple",
 		DocType:      "(float, float)",
 		TemplatePath: "attr/datapoint.tmpl",
 	},
-	toDecayedType(new([][2]float64)): {
+	reflect.TypeFor[[][2]float64](): {
 		GoType:       "*starlark.List",
 		DocType:      "[(float, float)]",
 		TemplatePath: "attr/dataseries.tmpl",
 	},
 
 	// Animation types
-	toDecayedType(new(animation.Origin)): {
+	reflect.TypeFor[animation.Origin](): {
 		GoType:       "starlark.Value",
 		DocType:      "Origin",
 		TemplatePath: "attr/origin.tmpl",
 	},
-	toDecayedType(new(animation.Curve)): {
+	reflect.TypeFor[animation.Curve](): {
 		GoType:       "starlark.Value",
 		DocType:      `str / function`,
 		TemplatePath: "attr/curve.tmpl",
 	},
-	toDecayedType(new(animation.Direction)): {
+	reflect.TypeFor[animation.Direction](): {
 		GoType:        "starlark.String",
 		DocType:       `str`,
 		TemplatePath:  "attr/direction.tmpl",
 		GenerateField: true,
 	},
-	toDecayedType(new(animation.FillMode)): {
+	reflect.TypeFor[animation.FillMode](): {
 		GoType:        "starlark.String",
 		DocType:       `str`,
 		TemplatePath:  "attr/fill_mode.tmpl",
 		GenerateField: true,
 	},
-	toDecayedType(new(animation.Rounding)): {
+	reflect.TypeFor[animation.Rounding](): {
 		GoType:        "starlark.String",
 		DocType:       `str`,
 		TemplatePath:  "attr/rounding.tmpl",
 		GenerateField: true,
 	},
-	toDecayedType(new(animation.Percentage)): {
+	reflect.TypeFor[animation.Percentage](): {
 		GoType:       "starlark.Value",
 		DocType:      `float`,
 		TemplatePath: "attr/percentage.tmpl",
 	},
-	toDecayedType(new([]animation.Keyframe)): {
+	reflect.TypeFor[[]animation.Keyframe](): {
 		GoType:       "*starlark.List",
 		DocType:      "[Keyframe]",
 		TemplatePath: "attr/keyframes.tmpl",
 	},
-	toDecayedType(new([]animation.Transform)): {
+	reflect.TypeFor[[]animation.Transform](): {
 		GoType:       "*starlark.List",
 		DocType:      "[Transform]",
 		TemplatePath: "attr/transforms.tmpl",
 	},
-	toDecayedType(new([]render.Point)): {
+	reflect.TypeFor[[]render.Point](): {
 		GoType:        "*starlark.List",
 		DocType:       `[(float, float)]`,
 		TemplatePath:  "attr/vertices.tmpl",

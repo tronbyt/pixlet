@@ -29,20 +29,6 @@ import (
 //go:embed *.tmpl */*.tmpl
 var tmplFS embed.FS
 
-// Given a `reflect.Type` representing a pointer or slice, get the pointed-to or element type.
-func decay(t reflect.Type) reflect.Type {
-	if t.Kind() == reflect.Ptr || t.Kind() == reflect.Slice {
-		return t.Elem()
-	}
-
-	return t
-}
-
-// Given an `interface{}` return a `reflect.Type`, with pointer or slice unwrapped.
-func toDecayedType(v any) reflect.Type {
-	return decay(reflect.TypeOf(v))
-}
-
 type Package struct {
 	Name           string
 	Directory      string
@@ -169,28 +155,19 @@ func toGeneratedAttribute(typ reflect.Type, field reflect.StructField) (*Generat
 }
 
 func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
-	result := &GeneratedType{}
-
 	typ := val.Type()
+	result := &GeneratedType{
+		HasSize:      typ.Implements(reflect.TypeFor[render.WidgetStaticSize]()),
+		HasInit:      typ.Implements(reflect.TypeFor[render.WidgetWithInit]()),
+		HasTransform: typ.Implements(reflect.TypeFor[animation.Transform]()),
+	}
 
-	if decay(typ) == toDecayedType(new(render.Root)) {
+	if typ == reflect.TypeFor[*render.Root]() {
 		result.GoRootName = pkg.GoRootName
 	}
 
-	if typ.ConvertibleTo(toDecayedType(new(render.Widget))) {
+	if typ.Implements(reflect.TypeFor[render.Widget]()) {
 		result.GoWidgetName = pkg.GoWidgetName
-	}
-
-	if typ.ConvertibleTo(toDecayedType(new(render.WidgetStaticSize))) {
-		result.HasSize = true
-	}
-
-	if typ.ConvertibleTo(toDecayedType(new(render.WidgetWithInit))) {
-		result.HasInit = true
-	}
-
-	if typ.Implements(reflect.TypeFor[animation.Transform]()) {
-		result.HasTransform = true
 	}
 
 	// Unwrap any pointer types.
