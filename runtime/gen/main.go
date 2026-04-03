@@ -51,23 +51,40 @@ type Type struct {
 // GeneratedAttr defines a generated "Go to Starlark" attribute.
 // This definition is passed to the templating engine.
 type GeneratedAttr struct {
-	GoName        string
-	GoPath        string
-	GoType        string
-	GoWidgetName  string
+	Package
+	Type
+
+	typ   reflect.Type
+	field reflect.StructField
+
 	StarlarkName  string
-	GenerateField bool
 	IsRequired    bool
 	IsReadOnly    bool
-	DefaultValue  string
-
-	// Template and generated code for handling this attribute.
-	Template *template.Template
-	Code     string
-
-	// Documentation for this attribute.
 	Documentation string
-	DocType       string
+}
+
+func (g GeneratedAttr) GoName() string {
+	return g.field.Name
+}
+
+func (g GeneratedAttr) GoPath() string {
+	if g.field.Name == g.typ.Name() {
+		return g.typ.Name() + "." + g.field.Name
+	}
+	return g.field.Name
+}
+
+func (g GeneratedAttr) Code() (string, error) {
+	tmpl, err := loadTemplate(g.TemplatePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to load template for attribute %s: %w", g.StarlarkName, err)
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, g); err != nil {
+		return "", fmt.Errorf("failed to render template for attribute %s: %w", g.StarlarkName, err)
+	}
+	return buf.String(), nil
 }
 
 // GeneratedType defines a generated "Go to Starlark" binding type.
@@ -105,15 +122,12 @@ func allFields(val reflect.Value) []reflect.StructField {
 }
 
 // Given a `reflect.StructField`, return a `GeneratedAttr` parse its `starlark:` field tag.
-func toGeneratedAttribute(typ reflect.Type, field reflect.StructField) (*GeneratedAttr, error) {
+func newGeneratedAttribute(pkg Package, t Type, typ reflect.Type, field reflect.StructField) (*GeneratedAttr, error) {
 	result := &GeneratedAttr{
-		GoName:       field.Name,
-		GoPath:       field.Name,
-		StarlarkName: strings.ToLower(field.Name),
-	}
-
-	if field.Name == typ.Name() {
-		result.GoPath = typ.Name() + "." + field.Name
+		Package: pkg,
+		Type:    t,
+		typ:     typ,
+		field:   field,
 	}
 
 	// Fields can be tagged `starlark:"<name>[<param>...]"` to control the attribute name in Starlark.
@@ -191,22 +205,17 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 			}
 		}
 
-		if attribute, err := toGeneratedAttribute(typ, field); err == nil {
-			result.Attributes = append(result.Attributes, attribute)
+		t, ok := TypeMap[field.Type]
+		if !ok {
+			return nil, fmt.Errorf("%s.%s has unsupported type", typ.Name(), field.Name)
+		}
 
-			if t, ok := TypeMap[field.Type]; ok {
-				attribute.GoType = t.GoType
-				attribute.GoWidgetName = pkg.GoWidgetName
-				attribute.DocType = t.DocType
-				attribute.Template = loadTemplate(t.TemplatePath)
-				attribute.GenerateField = t.GenerateField
-				attribute.DefaultValue = t.DefaultValue
-			} else {
-				return nil, fmt.Errorf("%s.%s has unsupported type", typ.Name(), field.Name)
-			}
-		} else {
+		attribute, err := newGeneratedAttribute(pkg, t, typ, field)
+		if err != nil {
 			return nil, err
 		}
+
+		result.Attributes = append(result.Attributes, attribute)
 	}
 
 	// Reorder attributes so that required fields appear first.
@@ -217,15 +226,17 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 	return result, nil
 }
 
-func loadTemplate(path string) *template.Template {
+func loadTemplate(path string) (*template.Template, error) {
 	funcMap := template.FuncMap{
 		"ToLower": strings.ToLower,
 	}
 
-	content := must2(tmplFS.ReadFile(path))
+	content, err := tmplFS.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
 
-	tmpl := must2(template.New(path).Funcs(funcMap).Parse(string(content)))
-	return tmpl
+	return template.New(path).Funcs(funcMap).Parse(string(content))
 }
 
 func renderTemplateToFile(tmpl *template.Template, data any, path string) {
@@ -238,12 +249,6 @@ func renderTemplateToFile(tmpl *template.Template, data any, path string) {
 
 func renderTemplateToBuffer(tmpl *template.Template, data any, buf *bytes.Buffer) {
 	must(tmpl.Execute(buf, data))
-}
-
-func renderTemplateToString(tmpl *template.Template, data any) string {
-	var buf bytes.Buffer
-	renderTemplateToBuffer(tmpl, data, &buf)
-	return buf.String()
 }
 
 func commentText(field *ast.Field) string {
@@ -272,16 +277,9 @@ func fieldNameFromExpr(expr ast.Expr) string {
 }
 
 func generateCode(pkg Package, types []*GeneratedType) {
-	// First render templates for each attribute.
-	for _, type_ := range types {
-		for _, attr := range type_.Attributes {
-			attr.Code = renderTemplateToString(attr.Template, attr)
-		}
-	}
-
 	// Then render templates for the header and for each type.
-	headerTmpl := loadTemplate(pkg.HeaderTemplate)
-	typeTmpl := loadTemplate(pkg.TypeTemplate)
+	headerTmpl := must2(loadTemplate(pkg.HeaderTemplate))
+	typeTmpl := must2(loadTemplate(pkg.TypeTemplate))
 
 	outf := must2(os.Create(pkg.CodePath))
 	defer func() {

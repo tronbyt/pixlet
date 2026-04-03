@@ -12,7 +12,7 @@ import (
 )
 
 func generateDocs(pkg Package, types []*GeneratedType) {
-	tmpl := loadTemplate(pkg.DocTemplate)
+	tmpl := must2(loadTemplate(pkg.DocTemplate))
 	renderTemplateToFile(tmpl, types, pkg.DocPath)
 }
 
@@ -159,7 +159,7 @@ func attachDocs(pkg Package, types []*GeneratedType) {
 
 		// Attribute docs from field comments only.
 		for _, attr := range type_.Attributes {
-			attr.Documentation = resolveFieldDoc(fieldDocs, embedded, type_.GoName, attr.GoName, map[string]bool{})
+			attr.Documentation = resolveFieldDoc(fieldDocs, embedded, type_.GoName, attr.GoName(), map[string]bool{})
 		}
 	}
 }
