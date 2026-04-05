@@ -83,7 +83,11 @@ func (a AppletConfig) Freeze()              {}
 func (a AppletConfig) Truth() starlark.Bool { return true }
 
 func (a AppletConfig) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(a, nil)
+	type hashable struct {
+		Config   map[string]any
+		Defaults map[string]string
+	}
+	sum, err := hashstructure.Hash(hashable{a.config, a.defaults}, nil)
 	return uint32(sum), err
 }
 

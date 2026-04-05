@@ -215,6 +215,9 @@ func (x *XPath) Freeze()              {}
 func (x *XPath) Truth() starlark.Bool { return true }
 
 func (x *XPath) Hash() (uint32, error) {
-	sum, err := hashstructure.Hash(x, nil)
+	type hashable struct {
+		Doc *xmlquery.Node
+	}
+	sum, err := hashstructure.Hash(hashable{x.doc}, nil)
 	return uint32(sum), err
 }
