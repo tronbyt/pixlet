@@ -2,7 +2,7 @@ package community
 
 import (
 	"fmt"
-	"sort"
+	"slices"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/icons"
@@ -25,7 +25,7 @@ func listIconsRun(_ *cobra.Command, _ []string) error {
 		iconSet = append(iconSet, icon)
 	}
 
-	sort.Strings(iconSet)
+	slices.Sort(iconSet)
 	for _, icon := range iconSet {
 		fmt.Println(icon)
 	}

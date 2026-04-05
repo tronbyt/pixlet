@@ -8,42 +8,24 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"embed"
 	"fmt"
 	"go/ast"
-	"go/doc"
 	"go/format"
-	"go/token"
-	"image/color"
 	"os"
-	"path/filepath"
+	"path"
 	"reflect"
-	"sort"
+	"slices"
 	"strings"
 	"text/template"
 
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/render/animation"
-	"github.com/tronbyt/pixlet/render/filter"
-	"golang.org/x/tools/go/packages"
 )
 
 //go:embed *.tmpl */*.tmpl
 var tmplFS embed.FS
-
-// Given a `reflect.Type` representing a pointer or slice, get the pointed-to or element type.
-func decay(t reflect.Type) reflect.Type {
-	if t.Kind() == reflect.Ptr || t.Kind() == reflect.Slice {
-		return t.Elem()
-	}
-
-	return t
-}
-
-// Given an `interface{}` return a `reflect.Type`, with pointer or slice unwrapped.
-func toDecayedType(v any) reflect.Type {
-	return decay(reflect.TypeOf(v))
-}
 
 type Package struct {
 	Name           string
@@ -59,98 +41,6 @@ type Package struct {
 	Types          []reflect.Value
 }
 
-// Packages is a list of packages and their types to generate code and documentation for.
-var Packages = []Package{
-	{
-		Name:           "render",
-		Directory:      "render",
-		ImportPath:     "github.com/tronbyt/pixlet/render",
-		HeaderTemplate: "header/render.tmpl",
-		TypeTemplate:   "type.tmpl",
-		CodePath:       "runtime/modules/render_runtime/generated.go",
-		DocTemplate:    "docs/render.tmpl",
-		DocPath:        "docs/widgets.md",
-		GoRootName:     "Root",
-		GoWidgetName:   "Widget",
-		Types: []reflect.Value{
-			reflect.ValueOf(new(render.Animation)),
-			reflect.ValueOf(new(render.Arc)),
-			reflect.ValueOf(new(render.Box)),
-			reflect.ValueOf(new(render.Circle)),
-			reflect.ValueOf(new(render.Column)),
-			reflect.ValueOf(new(render.Emoji)),
-			reflect.ValueOf(new(render.Image)),
-			reflect.ValueOf(new(render.Line)),
-			reflect.ValueOf(new(render.Marquee)),
-			reflect.ValueOf(new(render.Padding)),
-			reflect.ValueOf(new(render.PieChart)),
-			reflect.ValueOf(new(render.Plot)),
-			reflect.ValueOf(new(render.Polygon)),
-			reflect.ValueOf(new(render.Root)),
-			reflect.ValueOf(new(render.Row)),
-			reflect.ValueOf(new(render.Sequence)),
-			reflect.ValueOf(new(render.Stack)),
-			reflect.ValueOf(new(render.Text)),
-			reflect.ValueOf(new(render.WrappedText)),
-		},
-	},
-	{
-		Name:           "animation",
-		Directory:      "render/animation",
-		ImportPath:     "github.com/tronbyt/pixlet/render/animation",
-		HeaderTemplate: "header/animation.tmpl",
-		TypeTemplate:   "type.tmpl",
-		CodePath:       "runtime/modules/animation_runtime/generated.go",
-		DocTemplate:    "docs/animation.tmpl",
-		DocPath:        "docs/animation.md",
-		GoRootName:     "render_runtime.Root",
-		GoWidgetName:   "render_runtime.Widget",
-		Types: []reflect.Value{
-			reflect.ValueOf(new(animation.Keyframe)),
-			reflect.ValueOf(new(animation.Origin)),
-			reflect.ValueOf(new(animation.Rotate)),
-			reflect.ValueOf(new(animation.Scale)),
-			reflect.ValueOf(new(animation.Shear)),
-			reflect.ValueOf(new(animation.Transformation)),
-			reflect.ValueOf(new(animation.Translate)),
-
-			// Legacy
-			reflect.ValueOf(new(animation.AnimatedPositioned)),
-		},
-	},
-	{
-		Name:           "filter",
-		Directory:      "render/filter",
-		ImportPath:     "github.com/tronbyt/pixlet/render/filter",
-		HeaderTemplate: "header/filters.tmpl",
-		TypeTemplate:   "type.tmpl",
-		CodePath:       "runtime/modules/filter_runtime/generated.go",
-		DocTemplate:    "docs/filters.tmpl",
-		DocPath:        "docs/filters.md",
-		GoRootName:     "render_runtime.Root",
-		GoWidgetName:   "render_runtime.Widget",
-		Types: []reflect.Value{
-			reflect.ValueOf(new(filter.Blur)),
-			reflect.ValueOf(new(filter.Brightness)),
-			reflect.ValueOf(new(filter.Contrast)),
-			reflect.ValueOf(new(filter.EdgeDetection)),
-			reflect.ValueOf(new(filter.Emboss)),
-			reflect.ValueOf(new(filter.FlipHorizontal)),
-			reflect.ValueOf(new(filter.FlipVertical)),
-			reflect.ValueOf(new(filter.Gamma)),
-			reflect.ValueOf(new(filter.Grayscale)),
-			reflect.ValueOf(new(filter.Hue)),
-			reflect.ValueOf(new(filter.Invert)),
-			reflect.ValueOf(new(filter.Rotate)),
-			reflect.ValueOf(new(filter.Saturation)),
-			reflect.ValueOf(new(filter.Sepia)),
-			reflect.ValueOf(new(filter.Sharpen)),
-			reflect.ValueOf(new(filter.Shear)),
-			reflect.ValueOf(new(filter.Threshold)),
-		},
-	},
-}
-
 // Type defines how to generate code and documentation for type.
 type Type struct {
 	GoType        string
@@ -160,157 +50,47 @@ type Type struct {
 	DefaultValue  string
 }
 
-// TypeMap is a map of Go types to an `Attribute` definition.
-var TypeMap = map[reflect.Type]Type{
-	// Primitive types
-	toDecayedType(new(string)): {
-		GoType:       "starlark.String",
-		DocType:      "str",
-		TemplatePath: "attr/string.tmpl",
-	},
-	toDecayedType(new(int)): {
-		GoType:       "starlark.Int",
-		DocType:      "int",
-		TemplatePath: "attr/int.tmpl",
-	},
-	toDecayedType(new(int32)): {
-		GoType:       "starlark.Int",
-		DocType:      "int",
-		TemplatePath: "attr/int32.tmpl",
-	},
-	toDecayedType(new(float64)): {
-		GoType:       "starlark.Value",
-		DocType:      "float / int",
-		TemplatePath: "attr/float.tmpl",
-	},
-	toDecayedType(new(bool)): {
-		GoType:       "starlark.Bool",
-		DocType:      "bool",
-		TemplatePath: "attr/bool.tmpl",
-	},
-
-	// Render types
-	toDecayedType(new(render.Insets)): {
-		GoType:       "starlark.Value",
-		DocType:      "int / tuple of 3 ints",
-		TemplatePath: "attr/insets.tmpl",
-	},
-	toDecayedType(new(render.Widget)): {
-		GoType:       "starlark.Value",
-		DocType:      "Widget",
-		TemplatePath: "attr/child.tmpl",
-	},
-	toDecayedType(new([]render.Widget)): {
-		GoType:       "*starlark.List",
-		DocType:      "[Widget]",
-		TemplatePath: "attr/children.tmpl",
-	},
-	toDecayedType(new(color.Color)): {
-		GoType:        "starlark.Value",
-		DocType:       `color`,
-		TemplatePath:  "attr/color.tmpl",
-		GenerateField: true,
-		DefaultValue:  "starlark.None",
-	},
-
-	// Render `PieChart types`
-	toDecayedType(new([]color.Color)): {
-		GoType:        "*starlark.List",
-		DocType:       `[color]`,
-		TemplatePath:  "attr/colors.tmpl",
-		GenerateField: true,
-	},
-	toDecayedType(new([]float64)): {
-		GoType:        "*starlark.List",
-		DocType:       `[float]`,
-		TemplatePath:  "attr/weights.tmpl",
-		GenerateField: true,
-	},
-
-	// Render `Plot` types`
-	toDecayedType(new([2]float64)): {
-		GoType:       "starlark.Tuple",
-		DocType:      "(float, float)",
-		TemplatePath: "attr/datapoint.tmpl",
-	},
-	toDecayedType(new([][2]float64)): {
-		GoType:       "*starlark.List",
-		DocType:      "[(float, float)]",
-		TemplatePath: "attr/dataseries.tmpl",
-	},
-
-	// Animation types
-	toDecayedType(new(animation.Origin)): {
-		GoType:       "starlark.Value",
-		DocType:      "Origin",
-		TemplatePath: "attr/origin.tmpl",
-	},
-	toDecayedType(new(animation.Curve)): {
-		GoType:       "starlark.Value",
-		DocType:      `str / function`,
-		TemplatePath: "attr/curve.tmpl",
-	},
-	toDecayedType(new(animation.Direction)): {
-		GoType:        "starlark.String",
-		DocType:       `str`,
-		TemplatePath:  "attr/direction.tmpl",
-		GenerateField: true,
-	},
-	toDecayedType(new(animation.FillMode)): {
-		GoType:        "starlark.String",
-		DocType:       `str`,
-		TemplatePath:  "attr/fill_mode.tmpl",
-		GenerateField: true,
-	},
-	toDecayedType(new(animation.Rounding)): {
-		GoType:        "starlark.String",
-		DocType:       `str`,
-		TemplatePath:  "attr/rounding.tmpl",
-		GenerateField: true,
-	},
-	toDecayedType(new(animation.Percentage)): {
-		GoType:       "starlark.Value",
-		DocType:      `float`,
-		TemplatePath: "attr/percentage.tmpl",
-	},
-	toDecayedType(new([]animation.Keyframe)): {
-		GoType:       "*starlark.List",
-		DocType:      "[Keyframe]",
-		TemplatePath: "attr/keyframes.tmpl",
-	},
-	toDecayedType(new([]animation.Transform)): {
-		GoType:       "*starlark.List",
-		DocType:      "[Transform]",
-		TemplatePath: "attr/transforms.tmpl",
-	},
-	toDecayedType(new([]render.Point)): {
-		GoType:        "*starlark.List",
-		DocType:       `[(float, float)]`,
-		TemplatePath:  "attr/vertices.tmpl",
-		GenerateField: true,
-	},
-}
-
 // GeneratedAttr defines a generated "Go to Starlark" attribute.
 // This definition is passed to the templating engine.
 type GeneratedAttr struct {
-	GoName        string
-	GoPath        string
-	GoType        string
-	GoWidgetName  string
+	Package
+	Type
+
+	typ   reflect.Type
+	field reflect.StructField
+
 	StarlarkName  string
-	GenerateField bool
 	IsRequired    bool
 	IsReadOnly    bool
-	DefaultValue  string
-
-	// Template and generated code for handling this attribute.
-	Template *template.Template
-	Code     string
-
-	// Documentation for this attribute.
 	Documentation string
-	DocType       string
+}
+
+func (g GeneratedAttr) GoName() string {
+	return g.field.Name
+}
+
+func (g GeneratedAttr) StarlarkGoName() string {
+	return "starlark" + g.GoName()
+}
+
+func (g GeneratedAttr) GoPath() string {
+	if g.field.Name == g.typ.Name() {
+		return g.typ.Name() + "." + g.field.Name
+	}
+	return g.field.Name
+}
+
+func (g GeneratedAttr) Code() (string, error) {
+	tmpl, err := loadTemplate(g.TemplatePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to load template for attribute %s: %w", g.StarlarkName, err)
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, g); err != nil {
+		return "", fmt.Errorf("failed to render template for attribute %s: %w", g.StarlarkName, err)
+	}
+	return buf.String(), nil
 }
 
 // GeneratedType defines a generated "Go to Starlark" binding type.
@@ -330,8 +110,8 @@ type GeneratedType struct {
 
 // Given a `reflect.Value`, return all its fields, including fields of anonymous composed types.
 func allFields(val reflect.Value) []reflect.StructField {
-	fields := make([]reflect.StructField, 0)
 	typ := val.Type()
+	fields := make([]reflect.StructField, 0, typ.NumField())
 
 	for i := range typ.NumField() {
 		t := typ.Field(i)
@@ -348,15 +128,12 @@ func allFields(val reflect.Value) []reflect.StructField {
 }
 
 // Given a `reflect.StructField`, return a `GeneratedAttr` parse its `starlark:` field tag.
-func toGeneratedAttribute(typ reflect.Type, field reflect.StructField) (*GeneratedAttr, error) {
+func newGeneratedAttribute(pkg Package, t Type, typ reflect.Type, field reflect.StructField) (*GeneratedAttr, error) {
 	result := &GeneratedAttr{
-		GoName:       field.Name,
-		GoPath:       field.Name,
-		StarlarkName: strings.ToLower(field.Name),
-	}
-
-	if field.Name == typ.Name() {
-		result.GoPath = typ.Name() + "." + field.Name
+		Package: pkg,
+		Type:    t,
+		typ:     typ,
+		field:   field,
 	}
 
 	// Fields can be tagged `starlark:"<name>[<param>...]"` to control the attribute name in Starlark.
@@ -394,28 +171,19 @@ func toGeneratedAttribute(typ reflect.Type, field reflect.StructField) (*Generat
 }
 
 func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
-	result := &GeneratedType{}
-
 	typ := val.Type()
+	result := &GeneratedType{
+		HasSize:      typ.Implements(reflect.TypeFor[render.WidgetStaticSize]()),
+		HasInit:      typ.Implements(reflect.TypeFor[render.WidgetWithInit]()),
+		HasTransform: typ.Implements(reflect.TypeFor[animation.Transform]()),
+	}
 
-	if decay(typ) == toDecayedType(new(render.Root)) {
+	if typ == reflect.TypeFor[*render.Root]() {
 		result.GoRootName = pkg.GoRootName
 	}
 
-	if typ.ConvertibleTo(toDecayedType(new(render.Widget))) {
+	if typ.Implements(reflect.TypeFor[render.Widget]()) {
 		result.GoWidgetName = pkg.GoWidgetName
-	}
-
-	if typ.ConvertibleTo(toDecayedType(new(render.WidgetStaticSize))) {
-		result.HasSize = true
-	}
-
-	if typ.ConvertibleTo(toDecayedType(new(render.WidgetWithInit))) {
-		result.HasInit = true
-	}
-
-	if typ.Implements(reflect.TypeFor[animation.Transform]()) {
-		result.HasTransform = true
 	}
 
 	// Unwrap any pointer types.
@@ -428,6 +196,7 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 
 	result.GoName = typ.Name()
 	result.GoNameWithPackage = typ.String()
+	result.Attributes = make([]*GeneratedAttr, 0, val.NumField())
 
 	for _, field := range allFields(val) {
 		if field.PkgPath != "" {
@@ -442,41 +211,42 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 			}
 		}
 
-		if attribute, err := toGeneratedAttribute(typ, field); err == nil {
-			result.Attributes = append(result.Attributes, attribute)
+		t, ok := TypeMap[field.Type]
+		if !ok {
+			return nil, fmt.Errorf("%s.%s has unsupported type", typ.Name(), field.Name)
+		}
 
-			if t, ok := TypeMap[field.Type]; ok {
-				attribute.GoType = t.GoType
-				attribute.GoWidgetName = pkg.GoWidgetName
-				attribute.DocType = t.DocType
-				attribute.Template = loadTemplate(t.TemplatePath)
-				attribute.GenerateField = t.GenerateField
-				attribute.DefaultValue = t.DefaultValue
-			} else {
-				return nil, fmt.Errorf("%s.%s has unsupported type", typ.Name(), field.Name)
-			}
-		} else {
+		attribute, err := newGeneratedAttribute(pkg, t, typ, field)
+		if err != nil {
 			return nil, err
 		}
+
+		result.Attributes = append(result.Attributes, attribute)
 	}
 
 	// Reorder attributes so that required fields appear first.
-	sort.SliceStable(result.Attributes, func(i, j int) bool {
-		return result.Attributes[i].IsRequired && !result.Attributes[j].IsRequired
+	slices.SortStableFunc(result.Attributes, func(a, b *GeneratedAttr) int {
+		switch {
+		case a.IsRequired == b.IsRequired:
+			return 0
+		case a.IsRequired:
+			return -1
+		default:
+			return 1
+		}
 	})
 
 	return result, nil
 }
 
-func loadTemplate(path string) *template.Template {
-	funcMap := template.FuncMap{
-		"ToLower": strings.ToLower,
-	}
+var funcMap = template.FuncMap{
+	"ToLower": strings.ToLower,
+}
 
-	content := must2(tmplFS.ReadFile(path))
-
-	tmpl := must2(template.New(path).Funcs(funcMap).Parse(string(content)))
-	return tmpl
+func loadTemplate(p string) (*template.Template, error) {
+	return template.New(path.Base(p)).
+		Funcs(funcMap).
+		ParseFS(tmplFS, p)
 }
 
 func renderTemplateToFile(tmpl *template.Template, data any, path string) {
@@ -489,12 +259,6 @@ func renderTemplateToFile(tmpl *template.Template, data any, path string) {
 
 func renderTemplateToBuffer(tmpl *template.Template, data any, buf *bytes.Buffer) {
 	must(tmpl.Execute(buf, data))
-}
-
-func renderTemplateToString(tmpl *template.Template, data any) string {
-	var buf bytes.Buffer
-	renderTemplateToBuffer(tmpl, data, &buf)
-	return buf.String()
 }
 
 func commentText(field *ast.Field) string {
@@ -522,165 +286,10 @@ func fieldNameFromExpr(expr ast.Expr) string {
 	}
 }
 
-func collectFieldDocs(files []*ast.File) (map[string]map[string]string, map[string][]string) {
-	fieldDocs := map[string]map[string]string{}
-	embedded := map[string][]string{}
-
-	for _, file := range files {
-		for _, decl := range file.Decls {
-			genDecl, ok := decl.(*ast.GenDecl)
-			if !ok || genDecl.Tok != token.TYPE {
-				continue
-			}
-
-			for _, spec := range genDecl.Specs {
-				typeSpec, ok := spec.(*ast.TypeSpec)
-				if !ok {
-					continue
-				}
-
-				structType, ok := typeSpec.Type.(*ast.StructType)
-				if !ok {
-					continue
-				}
-
-				if _, ok := fieldDocs[typeSpec.Name.Name]; !ok {
-					fieldDocs[typeSpec.Name.Name] = map[string]string{}
-				}
-				if _, ok := embedded[typeSpec.Name.Name]; !ok {
-					embedded[typeSpec.Name.Name] = []string{}
-				}
-
-				for _, field := range structType.Fields.List {
-					text := commentText(field)
-
-					// Normal named fields; one comment applies to all names in this line.
-					if len(field.Names) > 0 {
-						if text == "" {
-							continue
-						}
-						for _, name := range field.Names {
-							fieldDocs[typeSpec.Name.Name][name.Name] = text
-						}
-						continue
-					}
-
-					// Embedded field.
-					if name := fieldNameFromExpr(field.Type); name != "" {
-						embedded[typeSpec.Name.Name] = append(embedded[typeSpec.Name.Name], name)
-						if text != "" {
-							fieldDocs[typeSpec.Name.Name][name] = text
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return fieldDocs, embedded
-}
-
-func resolveFieldDoc(fieldDocs map[string]map[string]string, embedded map[string][]string, typeName, fieldName string, visited map[string]bool) string {
-	if docs, ok := fieldDocs[typeName]; ok {
-		if text := docs[fieldName]; text != "" {
-			return text
-		}
-	}
-
-	if visited[typeName] {
-		return ""
-	}
-	visited[typeName] = true
-
-	for _, embedType := range embedded[typeName] {
-		if text := resolveFieldDoc(fieldDocs, embedded, embedType, fieldName, visited); text != "" {
-			return text
-		}
-	}
-
-	return ""
-}
-
-func splitDocAndExamples(docText string) (string, []string) {
-	docText = strings.ReplaceAll(docText, "\nExample:", "\n")
-
-	var cleanDoc strings.Builder
-	cleanDoc.Grow(len(docText))
-
-	examples := make([]string, 0, 2)
-
-	for docText != "" {
-		before, after, ok := strings.Cut(docText, "\n\t")
-
-		cleanDoc.WriteString(strings.TrimSpace(before))
-
-		if ok {
-			before, after, _ = strings.Cut(after, "\n\n")
-
-			example := strings.ReplaceAll(strings.TrimSpace(before), "\n\t", "\n")
-			if example != "" {
-				examples = append(examples, example)
-			}
-		}
-
-		docText = after
-	}
-
-	return strings.TrimSpace(cleanDoc.String()), examples
-}
-
-func attachDocs(pkg Package, types []*GeneratedType) {
-	// Parse all .go files in pixlet/render packages and extract all type doc comments
-	fset := token.NewFileSet()
-	docs := map[string]string{}
-
-	abs, err := filepath.Abs(pkg.Directory)
-	if err != nil {
-		panic(err)
-	}
-
-	cfg := &packages.Config{
-		Mode: packages.LoadFiles | packages.NeedSyntax,
-		Fset: fset,
-	}
-	pkgs, err := packages.Load(cfg, abs)
-	if err != nil {
-		panic(err)
-	}
-	if len(pkgs) != 1 {
-		panic(fmt.Errorf("expected 1 package, got %d", len(pkgs)))
-	}
-	if len(pkgs[0].Errors) > 0 {
-		panic(pkgs[0].Errors[0])
-	}
-
-	pkgDoc := must2(doc.NewFromFiles(fset, pkgs[0].Syntax, pkg.ImportPath))
-	for _, type_ := range pkgDoc.Types {
-		docs[type_.Name] = type_.Doc
-	}
-	fieldDocs, embedded := collectFieldDocs(pkgs[0].Syntax)
-
-	for _, type_ := range types {
-		type_.Documentation, type_.Examples = splitDocAndExamples(docs[type_.GoName])
-
-		// Attribute docs from field comments only.
-		for _, attr := range type_.Attributes {
-			attr.Documentation = resolveFieldDoc(fieldDocs, embedded, type_.GoName, attr.GoName, map[string]bool{})
-		}
-	}
-}
-
 func generateCode(pkg Package, types []*GeneratedType) {
-	// First render templates for each attribute.
-	for _, type_ := range types {
-		for _, attr := range type_.Attributes {
-			attr.Code = renderTemplateToString(attr.Template, attr)
-		}
-	}
-
 	// Then render templates for the header and for each type.
-	headerTmpl := loadTemplate(pkg.HeaderTemplate)
-	typeTmpl := loadTemplate(pkg.TypeTemplate)
+	headerTmpl := must2(loadTemplate(pkg.HeaderTemplate))
+	typeTmpl := must2(loadTemplate(pkg.TypeTemplate))
 
 	outf := must2(os.Create(pkg.CodePath))
 	defer func() {
@@ -699,15 +308,10 @@ func generateCode(pkg Package, types []*GeneratedType) {
 	must2(outf.Write(source))
 }
 
-func generateDocs(pkg Package, types []*GeneratedType) {
-	tmpl := loadTemplate(pkg.DocTemplate)
-	renderTemplateToFile(tmpl, types, pkg.DocPath)
-}
-
 func main() {
 	// Generate code and documentation for each package.
 	for _, pkg := range Packages {
-		types := []*GeneratedType{}
+		types := make([]*GeneratedType, 0, len(pkg.Types))
 
 		for _, typ := range pkg.Types {
 			if result, err := toGeneratedType(pkg, typ); err == nil {
@@ -717,8 +321,8 @@ func main() {
 			}
 		}
 
-		sort.SliceStable(types, func(i, j int) bool {
-			return types[i].GoName < types[j].GoName
+		slices.SortFunc(types, func(a, b *GeneratedType) int {
+			return cmp.Compare(a.GoName, b.GoName)
 		})
 
 		attachDocs(pkg, types)

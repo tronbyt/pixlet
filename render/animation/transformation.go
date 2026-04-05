@@ -1,9 +1,10 @@
 package animation
 
 import (
+	"cmp"
 	"fmt"
 	"image"
-	"sort"
+	"slices"
 
 	"github.com/tronbyt/gg"
 	"go.starlark.net/starlark"
@@ -34,8 +35,8 @@ func processKeyframes(arr []Keyframe) []Keyframe {
 	}
 
 	// Sort keyframes by increasing order in time.
-	sort.SliceStable(arr, func(i, j int) bool {
-		return arr[i].Percentage.Value < arr[j].Percentage.Value
+	slices.SortStableFunc(arr, func(a, b Keyframe) int {
+		return cmp.Compare(a.Percentage.Value, b.Percentage.Value)
 	})
 
 	// Prepend default '0%' keyframe, if not specified.

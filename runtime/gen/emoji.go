@@ -87,7 +87,7 @@ func genEmoji() {
 
 // collect scans rawDir for U+....png names.
 func collect(emojiVariations map[string]struct{}) ([]glyph, int) {
-	out := []glyph{}
+	out := make([]glyph, 0, len(emojiVariations))
 	maxSeq := 1
 	must(fs.WalkDir(emoji.FS, rawDir, func(filepath string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -102,7 +102,7 @@ func collect(emojiVariations map[string]struct{}) ([]glyph, int) {
 		}
 		name := strings.TrimSuffix(base, ".png")
 		parts := strings.Split(name, "_")
-		runes := []rune{}
+		runes := make([]rune, 0, len(parts))
 		for _, p := range parts {
 			if !strings.HasPrefix(p, "U+") { // skip malformed
 				return nil

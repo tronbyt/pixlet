@@ -1,5 +1,5 @@
 {{ if not .IsReadOnly }}
-w.starlark{{ .GoName }} = {{ .StarlarkName }}
+w.{{ .StarlarkGoName }} = {{ .StarlarkName }}
 if val, err := PercentageFromStarlark({{ .StarlarkName }}); err == nil {
 	w.{{ .GoPath }} = val
 } else {

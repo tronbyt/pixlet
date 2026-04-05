@@ -1,5 +1,5 @@
 {{ if not .IsReadOnly }}
-w.starlark{{ .GoName }} = {{ .StarlarkName }}
+w.{{ .StarlarkGoName }} = {{ .StarlarkName }}
 switch {{ .StarlarkName }}Val := {{ .StarlarkName }}.(type) {
 case starlark.Int:
 	{{ .StarlarkName }}Int, err := starlarkutil.AsInt[int64]({{ .StarlarkName }}Val)
