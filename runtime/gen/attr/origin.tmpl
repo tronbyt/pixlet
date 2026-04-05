@@ -1,5 +1,5 @@
 {{ if not .IsReadOnly }}
-w.starlark{{ .GoName }} = {{ .StarlarkName }}
+w.{{ .StarlarkGoName }} = {{ .StarlarkName }}
 if {{ .StarlarkName }} == nil {
 	w.{{ .GoPath }} = animation.DefaultOrigin
 } else if val, ok := {{ .StarlarkName }}.(*Origin); ok {

@@ -4,7 +4,7 @@ type {{ .GoName }} struct {
 
 {{ range .Attributes }}
 {{- if or .GenerateField (eq .GoType "starlark.Value") (eq .GoType "starlark.Tuple") (eq .GoType "*starlark.List") }}
-	starlark{{ .GoName }} {{ .GoType }}
+	{{ .StarlarkGoName }} {{ .GoType }}
 {{- end }}
 {{- end }}
 }
@@ -79,7 +79,7 @@ func (w *{{ .GoName }}) Attr(name string) (starlark.Value, error) {
 {{- range .Attributes }}
 	case "{{ .StarlarkName }}":
 {{- if .GenerateField }}
-		return w.starlark{{ .GoName }}, nil
+		return w.{{ .StarlarkGoName }}, nil
 {{- else if eq .GoType "starlark.String" }}
 		return starlark.String(w.{{ .GoName }}), nil
 {{- else if eq .GoType "starlark.Int" }}
@@ -87,7 +87,7 @@ func (w *{{ .GoName }}) Attr(name string) (starlark.Value, error) {
 {{- else if eq .GoType "starlark.Bool" }}
 		return starlark.Bool(w.{{ .GoName }}), nil
 {{- else }}
-		return w.starlark{{ .GoName }}, nil
+		return w.{{ .StarlarkGoName }}, nil
 {{- end }}
 {{- end }}
 {{- if .HasSize }}

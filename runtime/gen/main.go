@@ -68,6 +68,10 @@ func (g GeneratedAttr) GoName() string {
 	return g.field.Name
 }
 
+func (g GeneratedAttr) StarlarkGoName() string {
+	return "starlark" + g.GoName()
+}
+
 func (g GeneratedAttr) GoPath() string {
 	if g.field.Name == g.typ.Name() {
 		return g.typ.Name() + "." + g.field.Name

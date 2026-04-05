@@ -1,8 +1,8 @@
 {{ if not .IsReadOnly }}
-w.starlark{{ .GoName }} = {{ .StarlarkName }}
-if val, ok := starlark.AsFloat(w.starlark{{ .GoName }}); ok {
+w.{{ .StarlarkGoName }} = {{ .StarlarkName }}
+if val, ok := starlark.AsFloat(w.{{ .StarlarkGoName }}); ok {
 	w.{{ .GoPath }} = val
-} else if w.starlark{{ .GoName }} != nil {
-	return nil, fmt.Errorf("expected number, but got: %s", w.starlark{{ .GoName }}.String())
+} else if w.{{ .StarlarkGoName }} != nil {
+	return nil, fmt.Errorf("expected number, but got: %s", w.{{ .StarlarkGoName }}.String())
 }
 {{- end }}
