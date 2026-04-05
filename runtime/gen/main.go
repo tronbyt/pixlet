@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/format"
+	"iter"
 	"os"
 	"path"
 	"reflect"
@@ -109,22 +110,24 @@ type GeneratedType struct {
 }
 
 // Given a `reflect.Value`, return all its fields, including fields of anonymous composed types.
-func allFields(val reflect.Value) []reflect.StructField {
-	typ := val.Type()
-	fields := make([]reflect.StructField, 0, typ.NumField())
+func allFields(val reflect.Value) iter.Seq[reflect.StructField] {
+	return func(yield func(reflect.StructField) bool) {
+		typ := val.Type()
+		for i := range typ.NumField() {
+			t := typ.Field(i)
+			v := val.Field(i)
 
-	for i := range typ.NumField() {
-		t := typ.Field(i)
-		v := val.Field(i)
-
-		if t.Anonymous && t.Type.Kind() == reflect.Struct {
-			fields = append(fields, allFields(v)...)
-		} else {
-			fields = append(fields, t)
+			if t.Anonymous && t.Type.Kind() == reflect.Struct {
+				allFields(v)(func(field reflect.StructField) bool {
+					return yield(field)
+				})
+			} else {
+				if !yield(t) {
+					return
+				}
+			}
 		}
 	}
-
-	return fields
 }
 
 // Given a `reflect.StructField`, return a `GeneratedAttr` parse its `starlark:` field tag.
@@ -198,7 +201,7 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 	result.GoNameWithPackage = typ.String()
 	result.Attributes = make([]*GeneratedAttr, 0, val.NumField())
 
-	for _, field := range allFields(val) {
+	for field := range allFields(val) {
 		if field.PkgPath != "" {
 			// Field is not exported.
 			continue
