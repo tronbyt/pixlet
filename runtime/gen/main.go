@@ -14,6 +14,7 @@ import (
 	"go/ast"
 	"go/format"
 	"os"
+	"path"
 	"reflect"
 	"slices"
 	"strings"
@@ -238,17 +239,14 @@ func toGeneratedType(pkg Package, val reflect.Value) (*GeneratedType, error) {
 	return result, nil
 }
 
-func loadTemplate(path string) (*template.Template, error) {
-	funcMap := template.FuncMap{
-		"ToLower": strings.ToLower,
-	}
+var funcMap = template.FuncMap{
+	"ToLower": strings.ToLower,
+}
 
-	content, err := tmplFS.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	return template.New(path).Funcs(funcMap).Parse(string(content))
+func loadTemplate(p string) (*template.Template, error) {
+	return template.New(path.Base(p)).
+		Funcs(funcMap).
+		ParseFS(tmplFS, p)
 }
 
 func renderTemplateToFile(tmpl *template.Template, data any, path string) {
