@@ -192,6 +192,7 @@ func NewApplet(ctx context.Context, id string, src []byte, opts ...AppletOption)
 }
 
 func NewAppletFromFS(ctx context.Context, fsys fs.FS, id string, opts ...AppletOption) (*Applet, error) {
+	id = path.Clean(id)
 	if info, err := fs.Stat(fsys, id); err == nil && info.IsDir() {
 		if fsys, err = fs.Sub(fsys, id); err != nil {
 			return nil, fmt.Errorf("failed to load applet: %w", err)

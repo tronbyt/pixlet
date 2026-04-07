@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -19,6 +20,7 @@ import (
 type apiOptions struct {
 	host          string
 	port          int
+	root          *os.Root
 	format        string
 	silenceOutput bool
 	maxDuration   time.Duration
@@ -114,8 +116,9 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	buf, _, err := loader.RenderApplet(
+	buf, _, err := loader.RenderAppletFS(
 		req.Context(),
+		o.root.FS(),
 		r.Path,
 		r.Config,
 		loader.WithMeta(canvas.Metadata{
@@ -144,6 +147,12 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func apiRun(cmd *cobra.Command, _ []string, opts *apiOptions) error {
+	var err error
+	if opts.root, err = os.OpenRoot("."); err != nil {
+		return err
+	}
+	defer func() { _ = opts.root.Close() }()
+
 	cache, err := flags.NewCache().Load(cmd.Context())
 	if err != nil {
 		return err
