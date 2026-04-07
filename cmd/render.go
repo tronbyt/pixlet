@@ -140,15 +140,9 @@ containing multiple Starlark files and resources.
 }
 
 func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
-	path := "."
-	if len(args) != 0 {
-		if !strings.Contains(args[0], "=") {
-			path = args[0]
-			args = args[1:]
-		} else if _, err := os.Stat(args[0]); err == nil || !errors.Is(err, os.ErrNotExist) {
-			path = args[0]
-			args = args[1:]
-		}
+	path, config, _, err := loadConfig(opts.configJSON, args)
+	if err != nil {
+		return err
 	}
 
 	// check if path exists, and whether it is a directory or a file
@@ -192,11 +186,6 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 			outPath += "@2x"
 		}
 		outPath += "." + imageFormat.String()
-	}
-
-	config, err := loadConfig(opts.configJSON, args)
-	if err != nil {
-		return err
 	}
 
 	cache, err := opts.cache.Load(cmd.Context())
@@ -251,29 +240,40 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	return nil
 }
 
-func loadConfig(path string, args []string) (map[string]any, error) {
+func loadConfig(configPath string, args []string) (string, map[string]any, []string, error) {
+	starPath := "."
+	if len(args) != 0 {
+		if !strings.Contains(args[0], "=") {
+			starPath = args[0]
+			args = args[1:]
+		} else if _, err := os.Stat(args[0]); err == nil || !errors.Is(err, os.ErrNotExist) {
+			starPath = args[0]
+			args = args[1:]
+		}
+	}
+
 	config := map[string]any{}
 
-	if path != "" {
-		f, err := os.Open(path)
+	if configPath != "" {
+		f, err := os.Open(configPath)
 		if err != nil {
-			return nil, fmt.Errorf("file open error: %w", err)
+			return "", nil, args, fmt.Errorf("file open error: %w", err)
 		}
 		defer func() { _ = f.Close() }()
 
 		err = json.NewDecoder(f).Decode(&config)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal JSON %v: %w", path, err)
+			return "", nil, args, fmt.Errorf("failed to unmarshal JSON %v: %w", configPath, err)
 		}
 	}
 
 	for _, param := range args {
 		key, val, ok := strings.Cut(param, "=")
 		if !ok {
-			return nil, fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
+			return "", nil, args, fmt.Errorf("parameters must be in form <key>=<value>, found %s", param)
 		}
 		config[key] = val
 	}
 
-	return config, nil
+	return starPath, config, args, nil
 }
