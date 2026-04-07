@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path"
@@ -78,11 +79,11 @@ type Applet struct {
 	Manifest *manifest.Manifest
 	Globals  map[string]starlark.StringDict
 	MainFile string
-	Root     *os.Root
 
 	loader       ModuleLoader
 	initializers []ThreadInitializer
 	loadedPaths  map[string]bool
+	closers      []io.Closer
 
 	mainFun    *starlark.Function
 	schemaFile string
@@ -187,10 +188,22 @@ func NewApplet(ctx context.Context, id string, src []byte, opts ...AppletOption)
 		},
 	}
 
-	return NewAppletFromFS(ctx, id, vfs, opts...)
+	return NewAppletFromFS(ctx, vfs, id, opts...)
 }
 
-func NewAppletFromFS(ctx context.Context, id string, fsys fs.FS, opts ...AppletOption) (*Applet, error) {
+func NewAppletFromFS(ctx context.Context, fsys fs.FS, id string, opts ...AppletOption) (*Applet, error) {
+	if info, err := fs.Stat(fsys, id); err == nil && info.IsDir() {
+		if fsys, err = fs.Sub(fsys, id); err != nil {
+			return nil, fmt.Errorf("failed to load applet: %w", err)
+		}
+		id = "."
+	} else {
+		if fsys, err = fs.Sub(fsys, path.Dir(id)); err != nil {
+			return nil, fmt.Errorf("failed to load applet: %w", err)
+		}
+		id = path.Base(id)
+	}
+
 	a := &Applet{
 		ID:          id,
 		Globals:     make(map[string]starlark.StringDict),
@@ -211,16 +224,6 @@ func NewAppletFromFS(ctx context.Context, id string, fsys fs.FS, opts ...AppletO
 		a.ID = a.MainFile
 	}
 
-	return a, nil
-}
-
-func NewAppletFromRoot(ctx context.Context, id string, root *os.Root, opts ...AppletOption) (*Applet, error) {
-	a, err := NewAppletFromFS(ctx, id, root.FS(), opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	a.Root = root
 	return a, nil
 }
 
@@ -246,20 +249,25 @@ func NewAppletFromPath(ctx context.Context, path string, opts ...AppletOption) (
 		return nil, fmt.Errorf("failed to open root for %s: %w", path, err)
 	}
 
-	a, err := NewAppletFromRoot(ctx, filepath.Base(path), root, opts...)
+	a, err := NewAppletFromFS(ctx, root.FS(), filepath.Base(path), opts...)
 	if err != nil {
 		_ = root.Close()
 		return nil, err
 	}
 
+	a.closers = append(a.closers, root)
+
 	return a, nil
 }
 
 func (a *Applet) Close() error {
-	if a.Root == nil {
-		return nil
+	var errs []error
+	for _, closer := range a.closers {
+		if err := closer.Close(); err != nil {
+			errs = append(errs, err)
+		}
 	}
-	return a.Root.Close()
+	return errors.Join(errs...)
 }
 
 // Run executes the applet's main function. It returns the render roots that are

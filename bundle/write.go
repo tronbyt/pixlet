@@ -69,7 +69,7 @@ func (ab *AppBundle) WriteBundle(ctx context.Context, out io.Writer, opts ...Wri
 		// since it could contain a lot of extraneous files. instead, run the
 		// applet and interrogate it for the files it needs to include in the
 		// bundle.
-		app, err := runtime.NewAppletFromFS(ctx, ab.Manifest.ID, ab.Source, runtime.WithPrintDisabled())
+		app, err := runtime.NewAppletFromFS(ctx, ab.Source, ab.Manifest.ID ,runtime.WithPrintDisabled())
 		if err != nil {
 			return fmt.Errorf("loading applet for bundling: %w", err)
 		}

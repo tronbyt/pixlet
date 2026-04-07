@@ -51,7 +51,7 @@ def main():
 		"sound.mp3":         &fstest.MapFile{Data: []byte("sound data")},
 		"notification.star": &fstest.MapFile{Data: []byte(source)},
 	}
-	app, err := runtime.NewAppletFromFS(t.Context(), "sound", vfs, runtime.WithTests(t))
+	app, err := runtime.NewAppletFromFS(t.Context(), vfs, "sound" ,runtime.WithTests(t))
 	require.NoError(t, err)
 
 	screens, err := app.Run(t.Context())

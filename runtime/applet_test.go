@@ -210,7 +210,7 @@ def get_schema():
 		"schema_def.star": {Data: []byte(schemaDefSrc)},
 	}
 
-	app, err := NewAppletFromFS(t.Context(), "multiple_files", vfs, WithTests(t))
+	app, err := NewAppletFromFS(t.Context(), vfs, "multiple_files", WithTests(t))
 	require.NoError(t, err)
 	require.NotNil(t, app)
 
@@ -225,7 +225,7 @@ def get_schema():
 	vfs["main2.star"] = &fstest.MapFile{
 		Data: []byte(mainSrc),
 	}
-	_, err = NewAppletFromFS(t.Context(), "multiple_files_multiple_mains", vfs, WithTests(t))
+	_, err = NewAppletFromFS(t.Context(), vfs, "multiple_files_multiple_mains", WithTests(t))
 	require.Error(t, err)
 }
 
@@ -317,7 +317,7 @@ hello = struct(
 		"hello.star": {Data: []byte(helloSrc)},
 	}
 
-	app, err := NewAppletFromFS(t.Context(), "test", vfs, WithTests(t))
+	app, err := NewAppletFromFS(t.Context(), vfs, "test", WithTests(t))
 	require.NoError(t, err)
 	if assert.NotNil(t, app) {
 		roots, err := app.Run(t.Context())
@@ -339,7 +339,7 @@ def main():
 		"hello.star": {Data: []byte(helloSrc)},
 	}
 
-	_, err = NewAppletFromFS(t.Context(), "test", vfs2, WithTests(t))
+	_, err = NewAppletFromFS(t.Context(), vfs2, "test", WithTests(t))
 	require.ErrorContains(t, err, "not exported")
 }
 
@@ -360,7 +360,7 @@ def b():
 		"a.star": {Data: []byte(srcA)},
 		"b.star": {Data: []byte(srcB)},
 	}
-	_, err := NewAppletFromFS(t.Context(), "circular_dependency", vfs, WithTests(t))
+	_, err := NewAppletFromFS(t.Context(), vfs, "circular_dependency", WithTests(t))
 	require.ErrorContains(t, err, "circular dependency")
 }
 
@@ -457,7 +457,7 @@ def main():
 		"hello.txt": {Data: []byte(helloTxt)},
 	}
 
-	app, err := NewAppletFromFS(t.Context(), "test_read_file", vfs, WithTests(t))
+	app, err := NewAppletFromFS(t.Context(), vfs, "test_read_file", WithTests(t))
 	require.NoError(t, err)
 	app.RunTests(t)
 }
