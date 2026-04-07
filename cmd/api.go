@@ -131,7 +131,8 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		loader.WithFilters(filters),
 	)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("error rendering: %v", err), http.StatusInternalServerError)
+		slog.Error("Render failed", "path", r.Path, "error", err)
+		http.Error(w, "render error", http.StatusInternalServerError)
 		return
 	}
 
