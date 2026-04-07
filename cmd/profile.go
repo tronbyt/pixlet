@@ -3,10 +3,8 @@ package cmd
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	pprof_driver "github.com/google/pprof/driver"
@@ -92,18 +90,7 @@ func (u *printUI) WantBrowser() bool                            { return false }
 func (u *printUI) SetAutoComplete(complete func(string) string) {}
 
 func profileRun(cmd *cobra.Command, args []string, opts *profileOptions) error {
-	path := "."
-	if len(args) != 0 {
-		if !strings.Contains(args[0], "=") {
-			path = args[0]
-			args = args[1:]
-		} else if _, err := os.Stat(args[0]); err == nil || !errors.Is(err, os.ErrNotExist) {
-			path = args[0]
-			args = args[1:]
-		}
-	}
-
-	config, err := loadConfig(opts.configJSON, args)
+	path, config, _, err := loadConfig(opts.configJSON, args)
 	if err != nil {
 		return err
 	}
