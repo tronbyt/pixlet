@@ -66,7 +66,7 @@ The path argument should be the path to the Pixlet app to run. The
 app can be a single file with the .star extension, or a directory
 containing multiple Starlark files and resources.
 	`,
-		ValidArgsFunction: completeRender,
+		ValidArgsFunction: completeRender(opts.meta),
 	}
 
 	cmd.Flags().StringVarP(&opts.configJSON, "config", "c", opts.configJSON, "Config file in json format")

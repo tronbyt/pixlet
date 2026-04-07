@@ -40,7 +40,7 @@ func NewProfileCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return profileRun(cmd, args, opts)
 		},
-		ValidArgsFunction: completeRender,
+		ValidArgsFunction: completeRender(opts.meta),
 	}
 
 	cmd.Flags().StringVarP(
