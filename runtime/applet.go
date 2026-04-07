@@ -78,6 +78,7 @@ type Applet struct {
 	ID       string
 	Manifest *manifest.Manifest
 	Globals  map[string]starlark.StringDict
+	FS       fs.FS
 	MainFile string
 
 	loader       ModuleLoader
