@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -27,6 +28,7 @@ import (
 	starlibzip "github.com/qri-io/starlib/zipfile"
 	"github.com/tronbyt/pixlet/manifest"
 	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/runtime/appletcache"
 	"github.com/tronbyt/pixlet/runtime/modules/animation_runtime"
 	modulecolor "github.com/tronbyt/pixlet/runtime/modules/color"
 	"github.com/tronbyt/pixlet/runtime/modules/encoding/yaml"
@@ -81,10 +83,11 @@ type Applet struct {
 	FS       fs.FS
 	MainFile string
 
-	loader       ModuleLoader
-	initializers []ThreadInitializer
-	loadedPaths  map[string]bool
-	closers      []io.Closer
+	compiledCache *appletcache.Cache
+	loader        ModuleLoader
+	initializers  []ThreadInitializer
+	loadedPaths   map[string]bool
+	closers       []io.Closer
 
 	mainFun    *starlark.Function
 	schemaFile string
@@ -177,6 +180,14 @@ func WithTests(t testing.TB) AppletOption {
 	}
 }
 
+func WithCompiledCache(cache *appletcache.Cache) AppletOption {
+	return func(a *Applet) error {
+		a.compiledCache = cache
+		a.closers = append(a.closers, cache)
+		return nil
+	}
+}
+
 func NewApplet(ctx context.Context, id string, src []byte, opts ...AppletOption) (*Applet, error) {
 	fn := id
 	if !strings.HasSuffix(fn, ".star") {
@@ -229,6 +240,21 @@ func NewAppletFromFS(ctx context.Context, fsys fs.FS, id string, opts ...AppletO
 	return a, nil
 }
 
+func NewAppletFromRoot(ctx context.Context, root *os.Root, id string, opts ...AppletOption) (*Applet, error) {
+	if compiledCache, err := appletcache.New(root); err == nil {
+		opts = append(opts, WithCompiledCache(compiledCache))
+	} else if !errors.Is(err, appletcache.ErrDisabled) {
+		slog.Warn("Failed to set up compiled cache", "error", err)
+	}
+
+	a, err := NewAppletFromFS(ctx, root.FS(), id, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return a, nil
+}
+
 var ErrStarSuffix = fmt.Errorf("script file must have suffix .star")
 
 func NewAppletFromPath(ctx context.Context, path string, opts ...AppletOption) (*Applet, error) {
@@ -251,7 +277,7 @@ func NewAppletFromPath(ctx context.Context, path string, opts ...AppletOption) (
 		return nil, fmt.Errorf("failed to open root for %s: %w", path, err)
 	}
 
-	a, err := NewAppletFromFS(ctx, root.FS(), filepath.Base(path), opts...)
+	a, err := NewAppletFromRoot(ctx, root, filepath.Base(path), opts...)
 	if err != nil {
 		_ = root.Close()
 		return nil, err
@@ -556,11 +582,6 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 		a.loadedPaths[pathToLoad] = true
 	}
 
-	src, err := fs.ReadFile(fsys, pathToLoad)
-	if err != nil {
-		return fmt.Errorf("reading %s: %v", pathToLoad, err)
-	}
-
 	predeclared := starlark.StringDict{
 		"struct": starlark.NewBuiltin("struct", starlarkstruct.Make),
 	}
@@ -594,21 +615,66 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 
 	switch path.Ext(pathToLoad) {
 	case ".star":
-		globals, err := starlark.ExecFileOptions(
-			&syntax.FileOptions{
-				Set:             true,
-				Recursion:       true,
-				While:           true,
-				TopLevelControl: true,
-			},
-			thread,
-			path.Join(a.ID, pathToLoad),
-			src,
-			predeclared,
-		)
+		var mod *starlark.Program
+
+		src, err := fsys.Open(pathToLoad)
 		if err != nil {
-			return fmt.Errorf("starlark.ExecFile: %v", err)
+			return fmt.Errorf("reading %s: %v", pathToLoad, err)
 		}
+		defer func() { _ = src.Close() }()
+
+		if a.compiledCache != nil {
+			if r, ok, err := a.compiledCache.NewReader(ctx, a.ID, pathToLoad, src); err == nil {
+				if ok {
+					if mod, err = starlark.CompiledProgram(r); err != nil {
+						slog.Warn("Failed to load compiled program", "error", err)
+					}
+					_ = r.Close()
+				}
+			} else {
+				slog.Warn("Failed to load compiled program from cache", "error", err)
+			}
+		}
+
+		if mod == nil {
+			srcBytes, err := fs.ReadFile(fsys, pathToLoad)
+			if err != nil {
+				return fmt.Errorf("reading %s: %v", pathToLoad, err)
+			}
+
+			_, mod, err = starlark.SourceProgramOptions(
+				&syntax.FileOptions{
+					Set:             true,
+					Recursion:       true,
+					While:           true,
+					TopLevelControl: true,
+				},
+				path.Join(a.ID, pathToLoad),
+				srcBytes,
+				predeclared.Has,
+			)
+			if err != nil {
+				return fmt.Errorf("starlark.SourceProgram: %v", err)
+			}
+
+			if a.compiledCache != nil {
+				if w, err := a.compiledCache.NewWriter(ctx, a.ID, pathToLoad, src); err == nil {
+					if err := mod.Write(w); err != nil {
+						slog.Warn("Failed to write compiled program cache", "error", err)
+					}
+					_ = w.Close()
+				} else {
+					slog.Warn("Failed to create compiled program cache", "error", err)
+				}
+			}
+		}
+
+		globals, err := mod.Init(thread, predeclared)
+		if err != nil {
+			return fmt.Errorf("initializing module: %v", err)
+		}
+
+		globals.Freeze()
 		a.Globals[pathToLoad] = globals
 
 		// if the file is in the root directory, check for the main function

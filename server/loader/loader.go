@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -278,12 +277,13 @@ func (l *Loader) loadApplet() error {
 		runtime.WithLanguage(l.conf.Language),
 	}
 
-	app, err := runtime.NewAppletFromFS(context.Background(), l.root.FS(), l.conf.Path, opts...)
+	app, err := runtime.NewAppletFromRoot(context.Background(), l.root, l.conf.Path, opts...)
 	l.markInitialLoadComplete()
 	if err != nil {
 		return err
 	}
 
+	_ = l.applet.Close()
 	l.applet = *app
 	return nil
 }
@@ -323,16 +323,26 @@ func (l *Loader) Meta() canvas.Metadata {
 }
 
 func RenderApplet(ctx context.Context, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
-	root, err := os.OpenRoot(filepath.Dir(path))
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to stat file: %w", err)
+	}
+
+	dir := path
+	if !info.IsDir() {
+		dir = filepath.Dir(path)
+	}
+
+	root, err := os.OpenRoot(dir)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to open root: %w", err)
 	}
 	defer func() { _ = root.Close() }()
 
-	return RenderAppletFS(ctx, root.FS(), filepath.Base(path), config, options...)
+	return RenderAppletRoot(ctx, root, filepath.Base(path), config, options...)
 }
 
-func RenderAppletFS(ctx context.Context, fsys fs.FS, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
+func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
 	conf := NewRenderConfig(path, config, options...)
 
 	opts := []runtime.AppletOption{
@@ -349,7 +359,7 @@ func RenderAppletFS(ctx context.Context, fsys fs.FS, path string, config map[str
 		}))
 	}
 
-	applet, err := runtime.NewAppletFromFS(ctx, fsys, path, opts...)
+	applet, err := runtime.NewAppletFromRoot(ctx, root, path, opts...)
 	if err != nil {
 		return nil, nil, err
 	}
