@@ -17,7 +17,7 @@ func loadApp(tb testing.TB, code string) (*runtime.Applet, error) {
 		"test.star": &fstest.MapFile{Data: []byte(code)},
 		"ding.mp3":  &fstest.MapFile{Data: []byte("ding data")},
 	}
-	return runtime.NewAppletFromFS(tb.Context(), "test", vfs, runtime.WithTests(tb))
+	return runtime.NewAppletFromFS(tb.Context(), vfs, "test", runtime.WithTests(tb))
 }
 
 func TestSchemaAllTypesSuccess(t *testing.T) {
@@ -1209,7 +1209,7 @@ def main():
 		"handler.star": &fstest.MapFile{Data: []byte(handlerFile)},
 		"test.star":    &fstest.MapFile{Data: []byte(mainFile)},
 	}
-	app, err := runtime.NewAppletFromFS(t.Context(), "test", vfs, runtime.WithTests(t))
+	app, err := runtime.NewAppletFromFS(t.Context(), vfs, "test", runtime.WithTests(t))
 	require.NoError(t, err)
 
 	data, err := app.CallSchemaHandler(t.Context(), "get_stations", "locationdata", nil)

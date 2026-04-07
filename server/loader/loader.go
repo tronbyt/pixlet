@@ -7,8 +7,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/tronbyt/pixlet/encode"
@@ -276,7 +278,7 @@ func (l *Loader) loadApplet() error {
 		runtime.WithLanguage(l.conf.Language),
 	}
 
-	app, err := runtime.NewAppletFromRoot(context.Background(), l.conf.Path, l.root, opts...)
+	app, err := runtime.NewAppletFromFS(context.Background(), l.root.FS(), l.conf.Path, opts...)
 	l.markInitialLoadComplete()
 	if err != nil {
 		return err
@@ -321,6 +323,16 @@ func (l *Loader) Meta() canvas.Metadata {
 }
 
 func RenderApplet(ctx context.Context, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
+	root, err := os.OpenRoot(filepath.Dir(path))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open root: %w", err)
+	}
+	defer func() { _ = root.Close() }()
+
+	return RenderAppletFS(ctx, root.FS(), filepath.Base(path), config, options...)
+}
+
+func RenderAppletFS(ctx context.Context, fsys fs.FS, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
 	conf := NewRenderConfig(path, config, options...)
 
 	opts := []runtime.AppletOption{
@@ -337,9 +349,9 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 		}))
 	}
 
-	applet, err := runtime.NewAppletFromPath(ctx, path, opts...)
+	applet, err := runtime.NewAppletFromFS(ctx, fsys, path, opts...)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to load applet: %w", err)
+		return nil, nil, err
 	}
 	defer func() { _ = applet.Close() }()
 
