@@ -227,13 +227,19 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	}
 
 	if outPath == "-" {
-		_, err = os.Stdout.Write(buf)
+		if _, err := os.Stdout.Write(buf); err != nil {
+			return fmt.Errorf("writing to stdout: %w", err)
+		}
 	} else {
-		err = os.WriteFile(outPath, buf, 0644)
-	}
+		if err := os.WriteFile(outPath, buf, 0644); err != nil {
+			return fmt.Errorf("writing to file: %w", err)
+		}
 
-	if err != nil {
-		return fmt.Errorf("writing %s: %s", outPath, err)
+		if wd, err := os.Getwd(); err == nil {
+			if rel, err := filepath.Rel(wd, outPath); err == nil {
+				outPath = rel
+			}
+		}
 	}
 
 	opts.log.Info("Rendered image", "path", outPath)
@@ -250,6 +256,11 @@ func loadConfig(configPath string, args []string) (string, map[string]any, []str
 			starPath = args[0]
 			args = args[1:]
 		}
+	}
+
+	starPath, err := filepath.Abs(starPath)
+	if err != nil {
+		return "", nil, args, fmt.Errorf("failed to get absolute path for %s: %w", starPath, err)
 	}
 
 	config := map[string]any{}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
@@ -27,17 +26,13 @@ by our mobile app.`,
 				path = args[0]
 			}
 
-			if err := ValidateIcons(cmd.Context(), path); err != nil {
+			app, err := ValidateIcons(cmd.Context(), path)
+			if err != nil {
 				return err
 			}
+			_ = app.Close()
 
-			if path == "." {
-				if abs, err := filepath.Abs(path); err == nil {
-					path = filepath.Base(abs)
-				}
-			}
-
-			slog.Info("App icons are valid", "path", path)
+			slog.Info("App icons are valid", "path", app.MainFile)
 			return nil
 		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
@@ -45,10 +40,10 @@ by our mobile app.`,
 	return cmd
 }
 
-func ValidateIcons(ctx context.Context, path string) error {
+func ValidateIcons(ctx context.Context, path string) (*runtime.Applet, error) {
 	cache, err := flags.NewCache().Load(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer cache.Close()
 
@@ -58,9 +53,8 @@ func ValidateIcons(ctx context.Context, path string) error {
 		runtime.WithCanvasMeta(flags.NewMeta().Metadata),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to load applet: %w", err)
+		return nil, fmt.Errorf("failed to load applet: %w", err)
 	}
-	defer func() { _ = applet.Close() }()
 
 	if applet.Schema != nil {
 		for _, field := range applet.Schema.Fields {
@@ -69,10 +63,11 @@ func ValidateIcons(ctx context.Context, path string) error {
 			}
 
 			if _, ok := icons.IconsMap[field.Icon]; !ok {
-				return fmt.Errorf("app '%s' contains unknown icon: '%s'", applet.ID, field.Icon)
+				_ = applet.Close()
+				return nil, fmt.Errorf("app '%s' contains unknown icon: '%s'", applet.ID, field.Icon)
 			}
 		}
 	}
 
-	return nil
+	return applet, nil
 }
