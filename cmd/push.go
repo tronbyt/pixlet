@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -65,13 +66,20 @@ func pushRun(cmd *cobra.Command, args []string, opts *pushOptions) error {
 		return err
 	}
 
-	f, err := os.Open(image)
-	if err != nil {
-		return fmt.Errorf("failed to read file %s: %w", image, err)
-	}
-	defer func() { _ = f.Close() }()
+	var r io.Reader
+	if image == "-" {
+		r = os.Stdin
+	} else {
+		f, err := os.Open(image)
+		if err != nil {
+			return fmt.Errorf("failed to read file %s: %w", image, err)
+		}
+		defer func() { _ = f.Close() }()
 
-	return client.Push(cmd.Context(), deviceID, f, &tronbytapi.PushOptions{
+		r = f
+	}
+
+	return client.Push(cmd.Context(), deviceID, r, &tronbytapi.PushOptions{
 		InstallationID: opts.installationID,
 		Background:     opts.background,
 	})
