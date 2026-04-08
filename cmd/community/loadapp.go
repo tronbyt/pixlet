@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/tronbyt/pixlet/cmd/flags"
@@ -24,17 +23,13 @@ func NewLoadAppCmd() *cobra.Command {
 				path = args[0]
 			}
 
-			if err := LoadApp(cmd.Context(), path); err != nil {
+			app, err := LoadApp(cmd.Context(), path)
+			if err != nil {
 				return err
 			}
+			_ = app.Close()
 
-			if path == "." {
-				if abs, err := filepath.Abs(path); err == nil {
-					path = filepath.Base(abs)
-				}
-			}
-
-			slog.Info("App loaded successfully", "path", path)
+			slog.Info("App loaded successfully", "path", app.MainFile)
 			return nil
 		},
 		ValidArgsFunction: cobra.FixedCompletions([]string{"star"}, cobra.ShellCompDirectiveFilterFileExt),
@@ -42,10 +37,10 @@ func NewLoadAppCmd() *cobra.Command {
 	return cmd
 }
 
-func LoadApp(ctx context.Context, path string) error {
+func LoadApp(ctx context.Context, path string) (*runtime.Applet, error) {
 	cache, err := flags.NewCache().Load(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer cache.Close()
 
@@ -55,9 +50,8 @@ func LoadApp(ctx context.Context, path string) error {
 		runtime.WithCanvasMeta(flags.NewMeta().Metadata),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to load applet: %w", err)
+		return nil, fmt.Errorf("failed to load applet: %w", err)
 	}
-	defer func() { _ = app.Close() }()
 
-	return nil
+	return app, nil
 }

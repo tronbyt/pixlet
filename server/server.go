@@ -64,12 +64,7 @@ func NewServer(
 		return nil, err
 	}
 
-	title := filepath.Base(path)
-	if title == "." {
-		if mainFile := l.GetMainFile(); mainFile != "" {
-			title = mainFile
-		}
-	}
+	title := l.GetMainFile()
 
 	b, err := browser.NewBrowser(host, port, servePath, title, watch, updatesChan, l, openBrowser)
 	if err != nil {

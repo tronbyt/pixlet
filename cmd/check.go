@@ -120,16 +120,20 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 		}
 
 		// Check if an app can load.
-		if err = community.LoadApp(cmd.Context(), path); err != nil {
+		app, err := community.LoadApp(cmd.Context(), path)
+		if err != nil {
 			failure(path, fmt.Errorf("app failed to load: %w", err), "try `pixlet community load-app` and resolve any runtime issues")
 			return true
 		}
+		_ = app.Close()
 
 		// Ensure icons are valid.
-		if err = community.ValidateIcons(cmd.Context(), path); err != nil {
+		app, err = community.ValidateIcons(cmd.Context(), path)
+		if err != nil {
 			failure(path, fmt.Errorf("app has invalid icons: %w", err), "try `pixlet community list-icons` for the full list of valid icons")
 			return true
 		}
+		_ = app.Close()
 
 		// Check if app renders.
 		renderOpts := newRenderOptions()
@@ -199,14 +203,8 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 			return true
 		}
 
-		if path == "." {
-			if abs, err := filepath.Abs(path); err == nil {
-				path = filepath.Base(abs)
-			}
-		}
-
 		// If we're here, the app and manifest are good to go!
-		success(path)
+		success(app.MainFile)
 		return false
 	}
 
