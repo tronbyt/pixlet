@@ -1,6 +1,6 @@
 module github.com/tronbyt/pixlet
 
-go 1.26.1
+go 1.26.2
 
 require (
 	github.com/antchfx/xmlquery v1.5.0
@@ -13,6 +13,7 @@ require (
 	github.com/gen2brain/webp v0.5.5
 	github.com/gitsight/go-vcsurl v1.0.1
 	github.com/go-playground/validator/v10 v10.30.1
+	github.com/gohugoio/hashstructure v0.6.0
 	github.com/google/pprof v0.0.0-20260302011040-a15ffb7f9dcc
 	github.com/google/tink/go v1.7.0
 	github.com/gorilla/websocket v1.5.3
@@ -39,6 +40,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/zachomedia/go-bdf v0.0.0-20220611021443-a3af701111be
 	go.starlark.net v0.0.0-20260210143700-b62fd896b91b
+	go.uber.org/atomic v1.11.0
 	golang.org/x/image v0.38.0
 	golang.org/x/mod v0.33.0
 	golang.org/x/sync v0.20.0
@@ -62,7 +64,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
-	github.com/gohugoio/hashstructure v0.6.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -83,7 +84,6 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tetratelabs/wazero v1.11.0 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	go.uber.org/atomic v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
