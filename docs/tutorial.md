@@ -148,8 +148,8 @@ too shabby!
 
 ### Tip: loading assets from files
 
-Instead of embedding the icon as base64, we can place
-`tutorial_bitcoin.png` next to our script and load it directly:
+Instead of embedding the icon as base64, we can load it directly from
+our app's directory:
 
 ```starlark
 # Load Bitcoin icon from file
