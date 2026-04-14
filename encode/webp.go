@@ -6,42 +6,33 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
-	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/tronbyt/go-libwebp/webp"
+	"go.uber.org/atomic"
 )
 
 const (
-	WebPLevelDefault = int32(6)
 	webpLevelEnv     = "PIXLET_WEBP_LEVEL"
+	WebPLevelDefault = 6
 )
 
-var (
-	webpLevel     atomic.Int32
-	webpLevelOnce sync.Once
-)
+var webpLevel = atomic.NewInt32(WebPLevelDefault)
 
-func initWebPLevel() {
-	webpLevelOnce.Do(func() {
-		if raw := os.Getenv(webpLevelEnv); raw != "" {
-			parsed, err := strconv.ParseInt(raw, 10, 32)
-			if err == nil {
-				SetWebPLevel(int32(parsed))
-				return
-			}
-			slog.Warn(webpLevelEnv+" is invalid; using default.", "error", err)
+func init() { //nolint:gochecknoinits
+	if raw := os.Getenv(webpLevelEnv); raw != "" {
+		parsed, err := strconv.ParseInt(raw, 10, 32)
+		if err == nil {
+			SetWebPLevel(int32(parsed))
+			return
 		}
-
-		webpLevel.Store(WebPLevelDefault)
-	})
+		slog.Warn(webpLevelEnv+" is invalid; using default.", "error", err)
+	}
 }
 
 // EncodeWebP renders a screen to WebP. Optionally pass filters for
 // postprocessing each individual frame.
 func (s *Screens) EncodeWebP(ctx context.Context, maxDuration time.Duration, filters ...ImageFilter) ([]byte, error) {
-	initWebPLevel()
 	level := int(webpLevel.Load())
 	remainingDuration := maxDuration
 
