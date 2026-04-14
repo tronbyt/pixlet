@@ -51,7 +51,7 @@ func InitHTTP(cache Cache) {
 	if rawVal := os.Getenv(MaxResponseEnv); rawVal != "" {
 		if parsedVal, err := strconv.ParseInt(rawVal, 10, 64); err == nil {
 			cc.MaxResponseBytes = parsedVal << 20
-			starlarkhttp.MaxResponseBytes = cc.MaxResponseBytes
+			starlarkhttp.MaxResponseBytes.Store(cc.MaxResponseBytes)
 		} else {
 			slog.Warn(MaxResponseEnv+" is invalid; using default", "error", err)
 		}

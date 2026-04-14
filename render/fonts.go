@@ -12,13 +12,14 @@ import (
 	"github.com/jellydator/ttlcache/v3"
 	"github.com/tronbyt/pixlet/fonts"
 	"github.com/zachomedia/go-bdf"
+	"go.uber.org/atomic"
 	"golang.org/x/image/font"
 )
 
 const fontCacheTTLEnv = "PIXLET_FONT_CACHE_TTL"
 
 var (
-	FontCacheTTL   = time.Hour
+	FontCacheTTL   = atomic.NewDuration(time.Hour)
 	fontCache      = ttlcache.New[string, font.Face]()
 	fontCacheMutex = &sync.Mutex{}
 )
@@ -26,7 +27,7 @@ var (
 func init() { //nolint:gochecknoinits
 	if val := os.Getenv(fontCacheTTLEnv); val != "" {
 		if d, err := time.ParseDuration(val); err == nil {
-			FontCacheTTL = d
+			FontCacheTTL.Store(d)
 		} else {
 			slog.Warn(fontCacheTTLEnv+" is invalid; using default.", "error", err)
 		}
@@ -71,6 +72,6 @@ func GetFont(name string) (font.Face, error) {
 	}
 
 	face := fnt.NewFace()
-	fontCache.Set(name, face, FontCacheTTL)
+	fontCache.Set(name, face, FontCacheTTL.Load())
 	return face, nil
 }
