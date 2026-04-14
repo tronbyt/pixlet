@@ -40,6 +40,7 @@ import (
 	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
+	"go.uber.org/atomic"
 )
 
 // AsString unquotes a starlark string value.
@@ -58,7 +59,7 @@ var (
 	// StarlarkHTTPGuard is a global RequestGuard used in LoadModule. override with a custom
 	// implementation before calling LoadModule.
 	StarlarkHTTPGuard RequestGuard
-	MaxResponseBytes  int64 = 20 * 1024 * 1024 // 20MB
+	MaxResponseBytes  = atomic.NewInt64(20 * 1024 * 1024) // 20MB
 )
 
 // Encodings for form data.
@@ -175,7 +176,7 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 
 		var buf bytes.Buffer
 		if res.ContentLength > 0 {
-			grow := min(res.ContentLength, MaxResponseBytes) + bytes.MinRead
+			grow := min(res.ContentLength, MaxResponseBytes.Load()) + bytes.MinRead
 			buf.Grow(int(grow))
 		}
 
