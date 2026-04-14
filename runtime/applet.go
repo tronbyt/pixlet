@@ -555,6 +555,8 @@ func (a *Applet) loadManifest(fsys fs.FS, pathToLoad string) (err error) {
 	return nil
 }
 
+var ErrInvalidModule = errors.New("invalid module")
+
 func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string, currentlyLoading ...string) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -591,10 +593,13 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 
 	// override loader to allow loading starlark files
 	thread.Load = func(thread *starlark.Thread, module string) (starlark.StringDict, error) {
-		// normalize module path
-		modulePath := path.Clean(module)
+		if mod, err := a.loadModule(thread, module); err == nil {
+			return mod, nil
+		} else if !errors.Is(err, ErrInvalidModule) {
+			return nil, err
+		}
 
-		// if the module exists on the filesystem, load it
+		modulePath := path.Clean(module)
 		if _, err := fs.Stat(fsys, modulePath); err == nil {
 			// ensure the module is loaded, and pass the currentlyLoading slice
 			// to detect circular dependencies
@@ -609,8 +614,7 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 			}
 		}
 
-		// fallback to default loader
-		return a.loadModule(thread, module)
+		return nil, fmt.Errorf("%w: %s", ErrInvalidModule, module)
 	}
 
 	switch path.Ext(pathToLoad) {
@@ -911,6 +915,6 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 		return modulecolor.LoadModule()
 
 	default:
-		return nil, fmt.Errorf("invalid module: %s", module)
+		return nil, fmt.Errorf("%w: %s", ErrInvalidModule, module)
 	}
 }
