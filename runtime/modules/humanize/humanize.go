@@ -12,7 +12,6 @@ import (
 	godfe "github.com/newm4n/go-dfe"
 	"github.com/tronbyt/pixlet/runtime/modules/i18n_runtime"
 	"github.com/tronbyt/pixlet/starlarkutil"
-	"github.com/tronbyt/pixlet/tools/iterutil"
 	startime "go.starlark.net/lib/time"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
@@ -440,7 +439,7 @@ func pluralWord(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 func getWordList(words *starlark.List) ([]string, error) {
 	goList := make([]string, 0, words.Len())
 
-	for i, listVal := range iterutil.Enumerate(words.Elements()) {
+	for i, listVal := range starlarkutil.Enumerate(words) {
 		word, ok := listVal.(starlark.String)
 		if !ok {
 			return nil, fmt.Errorf(
