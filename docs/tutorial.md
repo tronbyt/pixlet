@@ -146,6 +146,21 @@ This clearly leaves something to be desired as far as layout is
 concerned, but the individual elements (the icon and the price) aren't
 too shabby!
 
+### Tip: loading assets from files
+
+Instead of embedding the icon as base64, we can load it directly from
+our app's directory:
+
+```starlark
+# Load Bitcoin icon from file
+load("img/tutorial_bitcoin.png", btc_icon_file = "file")
+
+BTC_ICON = btc_icon_file.readall("rb")
+```
+
+The rest of this tutorial sticks with the base64 approach for
+simplicity.
+
 ## Beautification
 
 By default, `Row` will pack its children as closely together as it

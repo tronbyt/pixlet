@@ -79,6 +79,49 @@ def get_counter():
 ...
 ```
 
+## Pixlet module: File
+
+The file module lets you load files from your app's directory as
+assets. Unlike other modules, you don't load a `.star` file. Instead,
+you `load` the asset path directly and alias the `"file"` identifier
+to a variable of your choosing:
+
+```starlark
+load("my_image.png", img = "file")
+```
+
+This gives you a `File` object bound to `img`. Note that the alias
+(`img = "file"`) is required since Starlark's `load` statement only
+imports named identifiers - there's no default export to grab.
+
+### File object
+
+| Attribute / Method | Description |
+| --- | --- |
+| `path` | The path of the file as a string. |
+| `readall(mode?)` | Reads the entire file. `mode` can be `"r"` or `"rt"` for text (default), or `"rb"` for binary data. |
+
+Example:
+
+```starlark
+load("render.star", "render")
+load("icon.png", icon_file = "file")
+load("message.txt", message_file = "file")
+
+ICON = icon_file.readall("rb")
+MESSAGE = message_file.readall()
+
+def main():
+    return render.Root(
+        child = render.Row(
+            children = [
+                render.Image(src=ICON),
+                render.Text(MESSAGE),
+            ],
+        ),
+    )
+```
+
 ## Pixlet module: HMAC
 
 This module implements the HMAC algorithm as described by [RFC 2104](https://datatracker.ietf.org/doc/html/rfc2104.html).
