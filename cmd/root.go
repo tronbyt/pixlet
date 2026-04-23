@@ -24,6 +24,7 @@ func New() *cobra.Command {
 		NewFormatCmd(),
 		NewLintCmd(),
 		NewListCmd(),
+		NewLoginCmd(),
 		NewProfileCmd(),
 		NewPushCmd(),
 		NewRenderCmd(),
