@@ -155,7 +155,7 @@ our app's directory:
 # Load Bitcoin icon from file
 load("img/tutorial_bitcoin.png", btc_icon_file = "file")
 
-BTC_ICON = btc_icon_file.readall("r")
+BTC_ICON = btc_icon_file.readall()
 ```
 
 The rest of this tutorial sticks with the base64 approach for

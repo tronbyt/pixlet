@@ -108,7 +108,7 @@ load("render.star", "render")
 load("icon.png", icon_file = "file")
 load("message.txt", message_file = "file")
 
-ICON = icon_file.readall("r")
+ICON = icon_file.readall()
 MESSAGE = message_file.readall()
 
 def main():
