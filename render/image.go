@@ -12,6 +12,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/nfnt/resize"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
@@ -155,21 +156,20 @@ func (p *Image) InitFromSVG(data []byte) error {
 	return nil
 }
 
-func (p *Image) parse() error {
-	if err := p.InitFromWebP(p.Src); err == nil {
-		return nil
-	}
-	if err := p.InitFromGIF(p.Src); err == nil {
-		return nil
-	}
-	if err := p.InitFromSVG(p.Src); err == nil {
-		return nil
-	}
-	return p.InitFromImage(p.Src)
-}
-
 func (p *Image) Init(*starlark.Thread) error {
-	if err := p.parse(); err != nil {
+	mime := mimetype.Detect(p.Src)
+	var err error
+	switch {
+	case mime.Is("image/webp"):
+		err = p.InitFromWebP(p.Src)
+	case mime.Is("image/gif"):
+		err = p.InitFromGIF(p.Src)
+	case mime.Is("image/svg+xml"):
+		err = p.InitFromSVG(p.Src)
+	default:
+		err = p.InitFromImage(p.Src)
+	}
+	if err != nil {
 		return err
 	}
 
