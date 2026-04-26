@@ -1,0 +1,11 @@
+{{ if not .IsReadOnly }}
+w.{{ .StarlarkGoName }} = {{ .StarlarkName }}
+switch {{ .StarlarkName }} := {{ .StarlarkName }}.(type) {
+case starlark.String:
+    w.{{ .GoPath }} = []byte({{ .StarlarkName }})
+case starlark.Bytes:
+    w.{{ .GoPath }} = []byte({{ .StarlarkName }})
+default:
+    return nil, fmt.Errorf("got %s, want string or bytes", {{ .StarlarkName }}.Type())
+}
+{{- end }}

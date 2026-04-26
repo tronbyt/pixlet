@@ -31,7 +31,7 @@ import (
 // the `delay` attribute.
 type Image struct {
 	// Binary image data or SVG text
-	Src string `starlark:"src,required"`
+	Src []byte `starlark:"src,required"`
 	// Scale image to this width
 	Width int
 	// Scale image to this height
@@ -156,19 +156,15 @@ func (p *Image) InitFromSVG(data []byte) error {
 }
 
 func (p *Image) Init(*starlark.Thread) error {
-	err := p.InitFromWebP([]byte(p.Src))
-	if err != nil {
-		err = p.InitFromGIF([]byte(p.Src))
-		if err != nil {
-			err = p.InitFromSVG([]byte(p.Src))
-			if err != nil {
-				err = p.InitFromImage([]byte(p.Src))
+	var err error
+	if err = p.InitFromWebP(p.Src); err != nil {
+		if err = p.InitFromGIF(p.Src); err != nil {
+			if err = p.InitFromSVG(p.Src); err != nil {
+				if err = p.InitFromImage(p.Src); err != nil {
+					return err
+				}
 			}
 		}
-	}
-
-	if err != nil {
-		return err
 	}
 
 	w := p.imgs[0].Bounds().Dx()

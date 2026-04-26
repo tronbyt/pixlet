@@ -15,7 +15,7 @@ const testPNG = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAMCAYAAABbayygAAAAOUlEQVQoU2P8z8D
 
 func TestImage(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
-	img := &Image{Src: string(raw)}
+	img := &Image{Src: raw}
 	require.NoError(t, img.Init(nil))
 
 	// Size of Image is independent of bounds
@@ -62,7 +62,7 @@ func TestImage(t *testing.T) {
 // individual pixels.
 func TestImageScale(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
-	img := &Image{Src: string(raw), Width: 5, Height: 6}
+	img := &Image{Src: raw, Width: 5, Height: 6}
 	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
@@ -78,7 +78,7 @@ func TestImageScale(t *testing.T) {
 // but don't bother checking individual pixels.
 func TestImageScaleAspectRatioWidth(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
-	img := &Image{Src: string(raw), Width: 5}
+	img := &Image{Src: raw, Width: 5}
 	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
@@ -94,7 +94,7 @@ func TestImageScaleAspectRatioWidth(t *testing.T) {
 // but don't bother checking individual pixels.
 func TestImageScaleAspectRatioHeight(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testPNG)
-	img := &Image{Src: string(raw), Height: 6}
+	img := &Image{Src: raw, Height: 6}
 	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
@@ -121,7 +121,7 @@ func TestImageAnimatedGif(t *testing.T) {
 	// GIF has no disposal method set, and a delay of 1230 ms
 
 	raw, _ := base64.StdEncoding.DecodeString(testGIF)
-	img := &Image{Src: string(raw)}
+	img := &Image{Src: raw}
 	require.NoError(t, img.Init(nil))
 
 	w, h := img.Size()
@@ -178,7 +178,7 @@ func TestImageAnimatedGif(t *testing.T) {
 
 func TestImageAnimatedGifWithHoldFrames(t *testing.T) {
 	raw, _ := base64.StdEncoding.DecodeString(testGIF)
-	img := &Image{Src: string(raw), HoldFrames: 2}
+	img := &Image{Src: raw, HoldFrames: 2}
 	require.NoError(t, img.Init(nil))
 
 	assert.Equal(t, 8, img.FrameCount(image.Rect(0, 0, 0, 0)))
@@ -192,11 +192,11 @@ func TestImageAnimatedGifWithHoldFrames(t *testing.T) {
 
 func TestImageSVG(t *testing.T) {
 	// Simple SVG: 10x10, left half red, right half transparent (default)
-	svg := `
+	svg := []byte(`
 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
   <rect x="0" y="0" width="5" height="10" fill="#FF0000"/>
 </svg>
-`
+`)
 	img := &Image{Src: svg}
 	err := img.Init(nil)
 	require.NoError(t, err)

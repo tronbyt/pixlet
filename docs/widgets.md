@@ -238,7 +238,7 @@ the `delay` attribute.
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
-| `src` | `str` | Binary image data or SVG text | **Y** |
+| `src` | `str / bytes` | Binary image data or SVG text | **Y** |
 | `width` | `int` | Scale image to this width | N |
 | `height` | `int` | Scale image to this height | N |
 | `delay` | `int` | (Read-only) Frame delay in ms, for animated GIFs | N |
