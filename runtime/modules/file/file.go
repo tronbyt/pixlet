@@ -35,12 +35,13 @@ func (f *File) readall(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tu
 		return nil, err
 	}
 
+	str := unsafe.String(unsafe.SliceData(bs), len(bs))
+
 	switch mode {
 	case ModeReadText:
-		str := unsafe.String(unsafe.SliceData(bs), len(bs))
 		return starlark.String(str), nil
 	case ModeReadBinary:
-		return starlark.Bytes(bs), nil
+		return starlark.Bytes(str), nil
 	default:
 		return nil, ErrUnsupportedMode
 	}
