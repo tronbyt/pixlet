@@ -963,6 +963,8 @@ func emojiFrameCount(
 
 type Image struct {
 	render.Image
+
+	starlarkSrc starlark.Value
 }
 
 func newImage(
@@ -972,7 +974,7 @@ func newImage(
 	kwargs []starlark.Tuple,
 ) (starlark.Value, error) {
 	var (
-		src    starlark.String
+		src    starlark.Value
 		width  starlark.Int
 		height starlark.Int
 
@@ -992,7 +994,15 @@ func newImage(
 
 	w := &Image{}
 
-	w.Src = src.GoString()
+	w.starlarkSrc = src
+	switch src := src.(type) {
+	case starlark.String:
+		w.Src = []byte(src)
+	case starlark.Bytes:
+		w.Src = []byte(src)
+	default:
+		return nil, fmt.Errorf("got %s, want string or bytes", src.Type())
+	}
 
 	if val, err := starlarkutil.AsInt[int64](width); err == nil {
 		w.Width = int(val)
@@ -1036,7 +1046,7 @@ func (w *Image) AttrNames() []string {
 func (w *Image) Attr(name string) (starlark.Value, error) {
 	switch name {
 	case "src":
-		return starlark.String(w.Src), nil
+		return w.starlarkSrc, nil
 	case "width":
 		return starlark.MakeInt(int(w.Width)), nil
 	case "height":

@@ -109,6 +109,12 @@ var TypeMap = map[reflect.Type]Type{
 		DocType:      "str",
 		TemplatePath: "attr/string.tmpl",
 	},
+	reflect.TypeFor[[]byte](): {
+		GoType:        "starlark.Value",
+		DocType:       "str / bytes",
+		TemplatePath:  "attr/bytes.tmpl",
+		GenerateField: true,
+	},
 	reflect.TypeFor[int](): {
 		GoType:       "starlark.Int",
 		DocType:      "int",
