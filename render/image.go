@@ -155,16 +155,22 @@ func (p *Image) InitFromSVG(data []byte) error {
 	return nil
 }
 
+func (p *Image) parse() error {
+	if err := p.InitFromWebP(p.Src); err == nil {
+		return nil
+	}
+	if err := p.InitFromGIF(p.Src); err == nil {
+		return nil
+	}
+	if err := p.InitFromSVG(p.Src); err == nil {
+		return nil
+	}
+	return p.InitFromImage(p.Src)
+}
+
 func (p *Image) Init(*starlark.Thread) error {
-	var err error
-	if err = p.InitFromWebP(p.Src); err != nil {
-		if err = p.InitFromGIF(p.Src); err != nil {
-			if err = p.InitFromSVG(p.Src); err != nil {
-				if err = p.InitFromImage(p.Src); err != nil {
-					return err
-				}
-			}
-		}
+	if err := p.parse(); err != nil {
+		return err
 	}
 
 	w := p.imgs[0].Bounds().Dx()
