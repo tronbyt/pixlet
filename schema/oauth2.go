@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gohugoio/hashstructure"
-	"github.com/tronbyt/pixlet/tools/iterutil"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 )
 
@@ -61,7 +61,7 @@ func newOAuth2(
 	if s.starlarkScopes != nil {
 		s.Scopes = make([]string, 0, scopes.Len())
 
-		for i, scopeVal := range iterutil.Enumerate(s.starlarkScopes.Elements()) {
+		for i, scopeVal := range starlarkutil.Enumerate(s.starlarkScopes) {
 			if _, isNone := scopeVal.(starlark.NoneType); isNone {
 				continue
 			}

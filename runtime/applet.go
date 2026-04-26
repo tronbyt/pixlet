@@ -48,7 +48,6 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/xpath"
 	"github.com/tronbyt/pixlet/schema"
 	"github.com/tronbyt/pixlet/starlarkutil"
-	"github.com/tronbyt/pixlet/tools/iterutil"
 	starlibjson "go.starlark.net/lib/json"
 	starlibmath "go.starlark.net/lib/math"
 	"go.starlark.net/starlark"
@@ -318,7 +317,7 @@ func ExtractRoots(val starlark.Value) ([]render.Root, error) {
 	} else if returnList, ok := val.(*starlark.List); ok {
 		roots = make([]render.Root, returnList.Len())
 
-		for i, listVal := range iterutil.Enumerate(returnList.Elements()) {
+		for i, listVal := range starlarkutil.Enumerate(returnList) {
 			if listValRoot, ok := listVal.(render_runtime.Rootable); ok {
 				roots[i] = listValRoot.AsRenderRoot()
 			} else {

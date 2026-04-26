@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gohugoio/hashstructure"
-	"github.com/tronbyt/pixlet/tools/iterutil"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 )
 
@@ -85,7 +85,7 @@ func newColor(
 	s.starlarkPalette = starlark.NewList(make([]starlark.Value, 0, palette.Len()))
 	s.Palette = make([]string, 0, palette.Len())
 
-	for i, paletteVal := range iterutil.Enumerate(palette.Elements()) {
+	for i, paletteVal := range starlarkutil.Enumerate(palette) {
 		if _, isNone := paletteVal.(starlark.NoneType); isNone {
 			continue
 		}

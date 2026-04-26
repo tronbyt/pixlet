@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gohugoio/hashstructure"
-	"github.com/tronbyt/pixlet/tools/iterutil"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 )
 
@@ -52,7 +52,7 @@ func newNotification(
 	s.Builder = builder
 	s.Sounds = make([]SchemaSound, 0, sounds.Len())
 
-	for i, soundVal := range iterutil.Enumerate(sounds.Elements()) {
+	for i, soundVal := range starlarkutil.Enumerate(sounds) {
 		if _, isNone := soundVal.(starlark.NoneType); isNone {
 			continue
 		}

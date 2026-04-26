@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gohugoio/hashstructure"
-	"github.com/tronbyt/pixlet/tools/iterutil"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 )
 
@@ -51,7 +51,7 @@ func newDropdown(
 	s.Default = def.GoString()
 	s.Options = make([]SchemaOption, 0, options.Len())
 
-	for i, optionVal := range iterutil.Enumerate(options.Elements()) {
+	for i, optionVal := range starlarkutil.Enumerate(options) {
 		if _, isNone := optionVal.(starlark.NoneType); isNone {
 			continue
 		}

@@ -7,7 +7,7 @@ import (
 
 	"github.com/tronbyt/pixlet/internal/colorutil"
 	"github.com/tronbyt/pixlet/render"
-	"github.com/tronbyt/pixlet/tools/iterutil"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 )
 
@@ -76,7 +76,7 @@ func WeightsFromStarlark(list *starlark.List) ([]float64, error) {
 func ColorSeriesFromStarlark(list *starlark.List) ([]color.Color, error) {
 	result := make([]color.Color, 0, list.Len())
 
-	for i, c := range iterutil.Enumerate(list.Elements()) {
+	for i, c := range starlarkutil.Enumerate(list) {
 		parsed, err := colorutil.Parse(c)
 		if err != nil {
 			return nil, fmt.Errorf("parsing color %d %s: %w", i, c, err)

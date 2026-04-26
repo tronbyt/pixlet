@@ -13,7 +13,6 @@ import (
 
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/starlarkutil"
-	"github.com/tronbyt/pixlet/tools/iterutil"
 )
 
 func newWidgets() starlark.StringDict {
@@ -67,7 +66,7 @@ func newAnimation(
 	w := &Animation{}
 
 	w.Children = slices.Grow(w.Children, children.Len())
-	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
+	for i, childrenVal := range starlarkutil.Enumerate(children) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -705,7 +704,7 @@ func newColumn(
 	w := &Column{}
 
 	w.Children = slices.Grow(w.Children, children.Len())
-	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
+	for i, childrenVal := range starlarkutil.Enumerate(children) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -2361,7 +2360,7 @@ func newRow(
 	w := &Row{}
 
 	w.Children = slices.Grow(w.Children, children.Len())
-	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
+	for i, childrenVal := range starlarkutil.Enumerate(children) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -2498,7 +2497,7 @@ func newSequence(
 	w := &Sequence{}
 
 	w.Children = slices.Grow(w.Children, children.Len())
-	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
+	for i, childrenVal := range starlarkutil.Enumerate(children) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}
@@ -2620,7 +2619,7 @@ func newStack(
 	w := &Stack{}
 
 	w.Children = slices.Grow(w.Children, children.Len())
-	for i, childrenVal := range iterutil.Enumerate(children.Elements()) {
+	for i, childrenVal := range starlarkutil.Enumerate(children) {
 		if _, isNone := childrenVal.(starlark.NoneType); isNone {
 			continue
 		}

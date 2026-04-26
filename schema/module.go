@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/gohugoio/hashstructure"
-	"github.com/tronbyt/pixlet/tools/iterutil"
+	"github.com/tronbyt/pixlet/starlarkutil"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -109,7 +109,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	if s.starlarkFields != nil {
 		s.Fields = make([]SchemaField, 0, s.starlarkFields.Len())
 
-		for i, fieldVal := range iterutil.Enumerate(s.starlarkFields.Elements()) {
+		for i, fieldVal := range starlarkutil.Enumerate(s.starlarkFields) {
 			if _, isNone := fieldVal.(starlark.NoneType); isNone {
 				continue
 			}
@@ -132,7 +132,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	}
 
 	if s.starlarkHandlers != nil {
-		for i, handlerVal := range iterutil.Enumerate(s.starlarkHandlers.Elements()) {
+		for i, handlerVal := range starlarkutil.Enumerate(s.starlarkHandlers) {
 			handler, ok := handlerVal.(*Handler)
 			if !ok {
 				return nil, fmt.Errorf(
@@ -147,7 +147,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	if s.starlarkNotifications != nil {
 		s.Notifications = make([]Notification, 0, s.starlarkNotifications.Len())
 
-		for i, notificationVal := range iterutil.Enumerate(s.starlarkNotifications.Elements()) {
+		for i, notificationVal := range starlarkutil.Enumerate(s.starlarkNotifications) {
 			if _, isNone := notificationVal.(starlark.NoneType); isNone {
 				continue
 			}
