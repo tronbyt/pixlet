@@ -27,7 +27,9 @@ package starlarkhttp
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -35,6 +37,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/qri-io/starlib/util"
 	"github.com/tronbyt/pixlet/starlarkutil"
@@ -48,9 +51,13 @@ func AsString(x starlark.Value) (string, error) {
 	return strconv.Unquote(x.String())
 }
 
-// ModuleName defines the expected name for this Module when used
-// in starlark's load() function, eg: load('http.star', 'http').
-const ModuleName = "http.star"
+const (
+	// ModuleName defines the expected name for this Module when used
+	// in starlark's load() function, eg: load('http.star', 'http').
+	ModuleName = "http.star"
+
+	HTTPTimeout = 5 * time.Second
+)
 
 var (
 	// StarlarkHTTPClient is the http client used to create the http module. override with
@@ -113,6 +120,8 @@ func (m *Module) StringDict() starlark.StringDict {
 	}
 }
 
+var ErrTimeout = errors.New("HTTP timeout")
+
 // reqMethod is a factory function for generating starlark builtin functions for different http request methods.
 func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	return func(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -141,6 +150,9 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 		}
 
 		ctx := starlarkutil.ThreadContext(thread)
+
+		ctx, cancel := context.WithTimeoutCause(ctx, HTTPTimeout, fmt.Errorf("%w after %s", ErrTimeout, HTTPTimeout))
+		defer cancel()
 
 		req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), rawurl, nil)
 		if err != nil {
@@ -181,7 +193,7 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 		}
 
 		if _, err := buf.ReadFrom(res.Body); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%s %q: reading response body: %w", req.Method, req.URL, err)
 		}
 
 		r := &Response{
