@@ -70,7 +70,7 @@ func (p *Image) InitFromGIF(data []byte) error {
 	// Consider using WebP instead.
 	img, err := gif.DecodeAll(bytes.NewReader(data))
 	if err != nil {
-		return fmt.Errorf("decoding image data: %v", err)
+		return fmt.Errorf("decoding image data: %w", err)
 	}
 
 	p.Delay = img.Delay[0] * 10
@@ -130,7 +130,7 @@ func (p *Image) InitFromGIF(data []byte) error {
 func (p *Image) InitFromImage(data []byte) error {
 	im, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
-		return fmt.Errorf("decoding image data: %v", err)
+		return fmt.Errorf("decoding image data: %w", err)
 	}
 
 	p.imgs = []image.Image{im}

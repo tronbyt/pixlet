@@ -12,12 +12,12 @@ import (
 func (p *Image) InitFromWebP(data []byte) error {
 	decoder, err := webp.NewAnimationDecoder(data)
 	if err != nil {
-		return fmt.Errorf("creating animation decoder: %v", err)
+		return fmt.Errorf("creating animation decoder: %w", err)
 	}
 
 	img, err := decoder.Decode()
 	if err != nil {
-		return fmt.Errorf("decoding image data: %v", err)
+		return fmt.Errorf("decoding image data: %w", err)
 	}
 
 	p.Delay = img.Timestamp[0]

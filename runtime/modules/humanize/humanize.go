@@ -96,7 +96,7 @@ func urlDecode(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	unescapedUrl, decodeErr := url.QueryUnescape(starUrl.GoString())
 
 	if decodeErr != nil {
-		return nil, fmt.Errorf("decoding url %s: %s", starUrl.GoString(), decodeErr)
+		return nil, fmt.Errorf("decoding url %s: %w", starUrl.GoString(), decodeErr)
 	}
 
 	return starlark.String(unescapedUrl), nil
@@ -234,7 +234,7 @@ func parseBytes(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 	formatted, err := gohumanize.ParseBytes(starSize.GoString())
 
 	if err != nil {
-		return nil, fmt.Errorf("parsing bytes: %s: %s", starSize.GoString(), err)
+		return nil, fmt.Errorf("parsing bytes: %s: %w", starSize.GoString(), err)
 	}
 
 	return starlark.MakeUint64(formatted), nil
@@ -470,7 +470,7 @@ func wordSeries(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 	words, err := getWordList(starWords)
 
 	if err != nil {
-		return nil, fmt.Errorf("getting word list: %s", err)
+		return nil, fmt.Errorf("getting word list: %w", err)
 	}
 
 	val := gohumanizeEnglish.WordSeries(words, starConjunction.GoString())
@@ -495,7 +495,7 @@ func oxfordWordSeries(thread *starlark.Thread, _ *starlark.Builtin, args starlar
 	words, err := getWordList(starWords)
 
 	if err != nil {
-		return nil, fmt.Errorf("getting word list: %s", err)
+		return nil, fmt.Errorf("getting word list: %w", err)
 	}
 
 	val := gohumanizeEnglish.OxfordWordSeries(words, starConjunction.GoString())

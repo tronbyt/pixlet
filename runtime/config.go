@@ -99,7 +99,7 @@ func (a AppletConfig) getString(_ *starlark.Thread, _ *starlark.Builtin, args st
 		"str", args, kwargs, 1,
 		&key, &def,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for config.str: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for config.str: %w", err)
 	}
 
 	if val, isDefault, ok := a.get(key.GoString()); ok && (!isDefault || len(args) == 1) {
@@ -119,7 +119,7 @@ func (a AppletConfig) getBoolean(_ *starlark.Thread, _ *starlark.Builtin, args s
 		"bool", args, kwargs, 1,
 		&key, &def,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for config.bool: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for config.bool: %w", err)
 	}
 
 	if val, isDefault, ok := a.get(key.GoString()); ok && (!isDefault || len(args) == 1) {

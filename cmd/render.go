@@ -206,7 +206,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		var err error
 		lang, err = language.Parse(opts.locale)
 		if err != nil {
-			return fmt.Errorf("invalid locale: %v", err)
+			return fmt.Errorf("invalid locale: %w", err)
 		}
 	}
 
@@ -274,7 +274,7 @@ func loadConfig(configPath string, args []string) (string, map[string]any, []str
 
 		err = json.NewDecoder(f).Decode(&config)
 		if err != nil {
-			return "", nil, args, fmt.Errorf("unmarshaling JSON %v: %w", configPath, err)
+			return "", nil, args, fmt.Errorf("unmarshaling JSON %s: %w", configPath, err)
 		}
 	}
 
