@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -372,13 +373,15 @@ func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config ma
 	return img, output, nil
 }
 
+var ErrTimeout = errors.New("render timeout")
+
 func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfig) ([]byte, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
 	if conf.Timeout > 0 {
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeoutCause(ctx, conf.Timeout, fmt.Errorf("timeout after %s", conf.Timeout))
+		ctx, cancel = context.WithTimeoutCause(ctx, conf.Timeout, fmt.Errorf("%w after %s", ErrTimeout, conf.Timeout))
 		defer cancel()
 	}
 

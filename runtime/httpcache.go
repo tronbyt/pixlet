@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"iter"
 	"log/slog"
@@ -64,12 +65,14 @@ func InitHTTP(cache Cache) {
 	starlarkhttp.StarlarkHTTPClient = httpClient
 }
 
+var ErrTimeout = errors.New("HTTP timeout")
+
 // RoundTrip is an approximation of what our internal HTTP proxy does. It should
 // behave the same way, and any discrepancy should be considered a bug.
 func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 	ctx := req.Context()
 
-	ctx, cancel := context.WithTimeout(ctx, HTTPTimeout)
+	ctx, cancel := context.WithTimeoutCause(ctx, HTTPTimeout, fmt.Errorf("%w after %s", ErrTimeout, HTTPTimeout))
 	defer cancel() // need to do this to not leak a goroutine
 
 	key, err := cacheKey(req)
@@ -97,7 +100,10 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 		if err != nil {
 			// if httputil.DumpResponse fails, it leaves the response body in an
 			// undefined state, so we cannot continue
-			return nil, fmt.Errorf("failed to serialize response for cache: %v (%s)", err, resp.Status)
+			if cause := context.Cause(ctx); cause != nil {
+				err = cause
+			}
+			return nil, fmt.Errorf("reading response body: %w", err)
 		}
 
 		ttl := DetermineTTL(req, resp, nil)
