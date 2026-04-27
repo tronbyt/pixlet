@@ -22,12 +22,11 @@ import (
 )
 
 const (
-	MinRequestTTL      = 5 * time.Second
-	MaxResponseTTL     = 1 * time.Hour
-	MaxResponseDefault = 20 * 1024 * 1024 // 20MB
-	MaxResponseEnv     = "PIXLET_HTTP_MAX_RESPONSE_MB"
-	HTTPCachePrefix    = "httpcache"
-	TTLHeader          = "X-Tidbyt-Cache-Seconds"
+	MinRequestTTL   = 5 * time.Second
+	MaxResponseTTL  = 1 * time.Hour
+	MaxResponseEnv  = "PIXLET_HTTP_MAX_RESPONSE_MB"
+	HTTPCachePrefix = "httpcache"
+	TTLHeader       = "X-Tidbyt-Cache-Seconds"
 )
 
 // Status codes that are cacheable as defined here:
@@ -35,22 +34,19 @@ const (
 var cacheableStatusCodes = []int{200, 201, 202, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501}
 
 type cacheClient struct {
-	cache            Cache
-	transport        http.RoundTripper
-	MaxResponseBytes int64
+	cache     Cache
+	transport http.RoundTripper
 }
 
 func InitHTTP(cache Cache) {
 	cc := &cacheClient{
-		cache:            cache,
-		transport:        http.DefaultTransport,
-		MaxResponseBytes: MaxResponseDefault,
+		cache:     cache,
+		transport: http.DefaultTransport,
 	}
 
 	if rawVal := os.Getenv(MaxResponseEnv); rawVal != "" {
 		if parsedVal, err := strconv.ParseInt(rawVal, 10, 64); err == nil {
-			cc.MaxResponseBytes = parsedVal << 20
-			starlarkhttp.MaxResponseBytes.Store(cc.MaxResponseBytes)
+			starlarkhttp.MaxResponseBytes.Store(parsedVal * 1024 * 1024)
 		} else {
 			slog.Warn(MaxResponseEnv+" is invalid; using default", "error", err)
 		}
@@ -84,8 +80,10 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	resp, err := c.transport.RoundTrip(req.WithContext(ctx))
-	if err == nil && c.MaxResponseBytes > 0 {
-		resp.Body = http.MaxBytesReader(nil, resp.Body, c.MaxResponseBytes)
+	if err == nil {
+		if v := starlarkhttp.MaxResponseBytes.Load(); v > 0 {
+			resp.Body = http.MaxBytesReader(nil, resp.Body, v)
+		}
 	}
 
 	if err == nil && (req.Method == http.MethodGet || req.Method == http.MethodHead || req.Method == http.MethodPost) {

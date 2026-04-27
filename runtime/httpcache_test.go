@@ -313,9 +313,8 @@ func TestCacheClientRoundTripCachesResponses(t *testing.T) {
 	})
 
 	client := &cacheClient{
-		cache:            cache,
-		transport:        transport,
-		MaxResponseBytes: 1024,
+		cache:     cache,
+		transport: transport,
 	}
 
 	url := testServer(t)
