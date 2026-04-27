@@ -51,13 +51,9 @@ func AsString(x starlark.Value) (string, error) {
 	return strconv.Unquote(x.String())
 }
 
-const (
-	// ModuleName defines the expected name for this Module when used
-	// in starlark's load() function, eg: load('http.star', 'http').
-	ModuleName = "http.star"
-
-	HTTPTimeout = 5 * time.Second
-)
+// ModuleName defines the expected name for this Module when used
+// in starlark's load() function, eg: load('http.star', 'http').
+const ModuleName = "http.star"
 
 var (
 	// StarlarkHTTPClient is the http client used to create the http module. override with
@@ -67,6 +63,7 @@ var (
 	// implementation before calling LoadModule.
 	StarlarkHTTPGuard RequestGuard
 	MaxResponseBytes  = atomic.NewInt64(20 * 1024 * 1024) // 20MB
+	Timeout           = atomic.NewDuration(5 * time.Second)
 )
 
 // Encodings for form data.
@@ -151,7 +148,9 @@ func (m *Module) reqMethod(method string) func(thread *starlark.Thread, _ *starl
 
 		ctx := starlarkutil.ThreadContext(thread)
 
-		ctx, cancel := context.WithTimeoutCause(ctx, HTTPTimeout, fmt.Errorf("%w after %s", ErrTimeout, HTTPTimeout))
+		timeout := Timeout.Load()
+
+		ctx, cancel := context.WithTimeoutCause(ctx, timeout, fmt.Errorf("%w after %s", ErrTimeout, timeout))
 		defer cancel()
 
 		req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), rawurl, nil)
