@@ -6,7 +6,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"iter"
 	"log/slog"
@@ -25,7 +24,6 @@ import (
 const (
 	MinRequestTTL      = 5 * time.Second
 	MaxResponseTTL     = 1 * time.Hour
-	HTTPTimeout        = 5 * time.Second
 	MaxResponseDefault = 20 * 1024 * 1024 // 20MB
 	MaxResponseEnv     = "PIXLET_HTTP_MAX_RESPONSE_MB"
 	HTTPCachePrefix    = "httpcache"
@@ -60,20 +58,15 @@ func InitHTTP(cache Cache) {
 
 	httpClient := &http.Client{
 		Transport: cc,
-		Timeout:   HTTPTimeout * 2,
+		Timeout:   starlarkhttp.HTTPTimeout * 2,
 	}
 	starlarkhttp.StarlarkHTTPClient = httpClient
 }
-
-var ErrTimeout = errors.New("HTTP timeout")
 
 // RoundTrip is an approximation of what our internal HTTP proxy does. It should
 // behave the same way, and any discrepancy should be considered a bug.
 func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 	ctx := req.Context()
-
-	ctx, cancel := context.WithTimeoutCause(ctx, HTTPTimeout, fmt.Errorf("%w after %s", ErrTimeout, HTTPTimeout))
-	defer cancel() // need to do this to not leak a goroutine
 
 	key, err := cacheKey(req)
 	if err != nil {
