@@ -24,6 +24,7 @@ import (
 const (
 	MinRequestTTL   = 5 * time.Second
 	MaxResponseTTL  = 1 * time.Hour
+	HTTPTimeoutEnv  = "PIXLET_HTTP_TIMEOUT"
 	MaxResponseEnv  = "PIXLET_HTTP_MAX_RESPONSE_MB"
 	HTTPCachePrefix = "httpcache"
 	TTLHeader       = "X-Tidbyt-Cache-Seconds"
@@ -52,9 +53,17 @@ func InitHTTP(cache Cache) {
 		}
 	}
 
+	if rawVal := os.Getenv(HTTPTimeoutEnv); rawVal != "" {
+		if parsedVal, err := time.ParseDuration(rawVal); err == nil {
+			starlarkhttp.Timeout.Store(parsedVal)
+		} else {
+			slog.Warn(HTTPTimeoutEnv+" is invalid; using default", "error", err)
+		}
+	}
+
 	httpClient := &http.Client{
 		Transport: cc,
-		Timeout:   starlarkhttp.HTTPTimeout * 2,
+		Timeout:   starlarkhttp.Timeout.Load() * 2,
 	}
 	starlarkhttp.StarlarkHTTPClient = httpClient
 }
