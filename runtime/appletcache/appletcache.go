@@ -53,26 +53,26 @@ func New(root *os.Root) (*Cache, error) {
 		cache.nest = true
 
 		if err := os.Mkdir(dir, 0755); err != nil && !errors.Is(err, fs.ErrExist) {
-			return nil, fmt.Errorf("failed to create starcache dir: %w", err)
+			return nil, fmt.Errorf("creating starcache dir: %w", err)
 		}
 
 		var err error
 		if cache.root, err = os.OpenRoot(dir); err != nil {
-			return nil, fmt.Errorf("failed to open cache root: %w", err)
+			return nil, fmt.Errorf("opening starcache root: %w", err)
 		}
 	} else {
 		if err := root.Mkdir(starCacheDir, 0755); err != nil && !errors.Is(err, fs.ErrExist) {
-			return nil, fmt.Errorf("failed to create starcache dir: %w", err)
+			return nil, fmt.Errorf("creating starcache dir: %w", err)
 		}
 
 		var err error
 		if cache.root, err = root.OpenRoot(starCacheDir); err != nil {
-			return nil, fmt.Errorf("failed to open starcache root: %w", err)
+			return nil, fmt.Errorf("opening starcache root: %w", err)
 		}
 
 		if err := cache.root.WriteFile(".gitignore", []byte("*\n"), 0644); err != nil && !errors.Is(err, fs.ErrExist) {
 			_ = cache.root.Close()
-			return nil, fmt.Errorf("failed to write starcache .gitignore: %w", err)
+			return nil, fmt.Errorf("writing starcache .gitignore: %w", err)
 		}
 	}
 
@@ -99,7 +99,7 @@ func (c Cache) NewWriter(_ context.Context, id, key string, sourceFile fs.File) 
 
 	if dir := path.Dir(cachePath); dir != "." {
 		if err := c.root.Mkdir(id, 0755); err != nil && !errors.Is(err, fs.ErrExist) {
-			return nil, fmt.Errorf("failed to create cache dir: %w", err)
+			return nil, fmt.Errorf("creating cache dir: %w", err)
 		}
 	}
 

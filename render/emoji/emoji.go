@@ -60,7 +60,7 @@ func Get(s string, tryVariation bool) (*image.NRGBA, bool, error) {
 	// Get the emoji sprite sheet
 	sheet, err := Sheet()
 	if err != nil {
-		return nil, exists, fmt.Errorf("failed to load emoji sheet: %w", err)
+		return nil, exists, fmt.Errorf("loading emoji sheet: %w", err)
 	}
 
 	// Create source image for this emoji with padding applied horizontally.

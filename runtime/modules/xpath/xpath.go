@@ -47,7 +47,7 @@ func xPathLoads(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		args, kwargs,
 		"xml", &xml,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for cache.get: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for loads: %v", err)
 	}
 
 	doc, err := xmlquery.Parse(strings.NewReader(xml.GoString()))

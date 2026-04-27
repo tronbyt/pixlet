@@ -57,25 +57,25 @@ func schemaRun(cmd *cobra.Command, args []string, opts *schemaOptions) error {
 		cmd.Context(), path, runtime.WithCanvasMeta(opts.meta.Metadata),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to load applet: %w", err)
+		return fmt.Errorf("loading applet: %w", err)
 	}
 	defer func() { _ = applet.Close() }()
 
 	if opts.output == "" || opts.output == "-" {
 		buf, err := json.MarshalIndent(applet.Schema, "", "  ")
 		if err != nil {
-			return fmt.Errorf("failed to marshal JSON: %w", err)
+			return fmt.Errorf("marshaling JSON: %w", err)
 		}
 		fmt.Println(string(buf))
 	} else {
 		b, err := json.Marshal(applet.Schema)
 		if err != nil {
-			return fmt.Errorf("failed to marshal JSON: %w", err)
+			return fmt.Errorf("marshaling JSON: %w", err)
 		}
 
 		err = os.WriteFile(opts.output, b, 0644)
 		if err != nil {
-			return fmt.Errorf("failed to write schema to file: %w", err)
+			return fmt.Errorf("writing schema: %w", err)
 		}
 	}
 

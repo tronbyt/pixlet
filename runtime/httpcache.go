@@ -77,7 +77,7 @@ func (c *cacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	key, err := cacheKey(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate cache key: %w", err)
+		return nil, fmt.Errorf("generating cache key: %w", err)
 	}
 
 	if req.Method == http.MethodGet || req.Method == http.MethodHead || req.Method == http.MethodPost {
@@ -119,7 +119,7 @@ func cacheKey(req *http.Request) (string, error) {
 	req.Header.Del(TTLHeader)
 	r, err := httputil.DumpRequest(req, true)
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", "failed to serialize request", err)
+		return "", fmt.Errorf("serializing request: %w", err)
 	}
 	if ttl != "" {
 		req.Header.Set(TTLHeader, ttl)

@@ -148,14 +148,14 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 	// check if path exists, and whether it is a directory or a file
 	info, err := os.Stat(path)
 	if err != nil {
-		return fmt.Errorf("failed to stat %s: %w", path, err)
+		return fmt.Errorf("stat %s: %w", path, err)
 	}
 
 	var outPath string
 	if info.IsDir() {
 		abs, err := filepath.Abs(path)
 		if err != nil {
-			return fmt.Errorf("failed to get absolute path for %s: %w", path, err)
+			return fmt.Errorf("absolute path for %s: %w", path, err)
 		}
 
 		outPath = filepath.Join(path, filepath.Base(abs))
@@ -223,7 +223,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		loader.WithFilters(filters),
 	)
 	if err != nil {
-		return fmt.Errorf("error rendering: %w", err)
+		return err
 	}
 
 	if outPath == "-" {
@@ -260,7 +260,7 @@ func loadConfig(configPath string, args []string) (string, map[string]any, []str
 
 	starPath, err := filepath.Abs(starPath)
 	if err != nil {
-		return "", nil, args, fmt.Errorf("failed to get absolute path for %s: %w", starPath, err)
+		return "", nil, args, fmt.Errorf("absolute path for %s: %w", starPath, err)
 	}
 
 	config := map[string]any{}
@@ -274,7 +274,7 @@ func loadConfig(configPath string, args []string) (string, map[string]any, []str
 
 		err = json.NewDecoder(f).Decode(&config)
 		if err != nil {
-			return "", nil, args, fmt.Errorf("failed to unmarshal JSON %v: %w", configPath, err)
+			return "", nil, args, fmt.Errorf("unmarshaling JSON %v: %w", configPath, err)
 		}
 	}
 
