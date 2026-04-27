@@ -60,7 +60,7 @@ func (e *Emoji) Init(*starlark.Thread) error {
 
 	srcImg, _, err := emoji.Get(e.EmojiStr, true)
 	if err != nil {
-		return fmt.Errorf("failed to get emoji: %w", err)
+		return fmt.Errorf("getting emoji: %w", err)
 	}
 
 	w, h := srcImg.Bounds().Dx(), srcImg.Bounds().Dy()

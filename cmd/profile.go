@@ -126,23 +126,23 @@ func ProfileApp(ctx context.Context, path string, config map[string]any, meta ca
 		runtime.WithCanvasMeta(meta),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load applet: %w", err)
+		return nil, fmt.Errorf("loading applet: %w", err)
 	}
 	defer func() { _ = applet.Close() }()
 
 	buf := new(bytes.Buffer)
 	if err = starlark.StartProfile(buf); err != nil {
-		return nil, fmt.Errorf("error starting profiler: %w", err)
+		return nil, fmt.Errorf("starting profiler: %w", err)
 	}
 
 	_, err = applet.RunWithConfig(ctx, config)
 	if err != nil {
 		_ = starlark.StopProfile()
-		return nil, fmt.Errorf("error running script: %w", err)
+		return nil, fmt.Errorf("running script: %w", err)
 	}
 
 	if err = starlark.StopProfile(); err != nil {
-		return nil, fmt.Errorf("error stopping profiler: %w", err)
+		return nil, fmt.Errorf("stopping profiler: %w", err)
 	}
 
 	profile, err := pprof_profile.ParseData(buf.Bytes())

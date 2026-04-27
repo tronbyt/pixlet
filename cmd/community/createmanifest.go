@@ -32,7 +32,7 @@ func CreateManifest(_ *cobra.Command, args []string) error {
 	if filepath.Base(path) != manifest.ManifestFileName {
 		info, err := os.Stat(path)
 		if err != nil {
-			return fmt.Errorf("failed to stat %s: %w", path, err)
+			return fmt.Errorf("stat %s: %w", path, err)
 		}
 
 		if !info.IsDir() {
@@ -50,7 +50,7 @@ func CreateManifest(_ *cobra.Command, args []string) error {
 
 	m, err := ManifestPrompt()
 	if err != nil {
-		return fmt.Errorf("failed prompt: %w", err)
+		return fmt.Errorf("prompting: %w", err)
 	}
 
 	err = m.WriteManifest(f)

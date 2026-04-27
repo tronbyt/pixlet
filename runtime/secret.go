@@ -41,18 +41,18 @@ func (sek *SecretEncryptionKey) Encrypt(appID, plaintext string) (string, error)
 	r := bytes.NewReader(sek.PublicKeysetJSON)
 	kh, err := keyset.ReadWithNoSecrets(keyset.NewJSONReader(r))
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", "reading keyset JSON", err)
+		return "", fmt.Errorf("reading keyset JSON: %w", err)
 	}
 
 	enc, err := hybrid.NewHybridEncrypt(kh)
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", "NewHybridEncrypt", err)
+		return "", fmt.Errorf("NewHybridEncrypt: %w", err)
 	}
 
 	context := []byte(appID)
 	ciphertext, err := enc.Encrypt([]byte(plaintext), context)
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", "encrypting secret", err)
+		return "", fmt.Errorf("encrypting secret: %w", err)
 	}
 
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
@@ -84,12 +84,12 @@ func (sdk *SecretDecryptionKey) decrypterForApp(a *Applet) (decrypter, error) {
 	r := bytes.NewReader(sdk.EncryptedKeysetJSON)
 	kh, err := keyset.Read(keyset.NewJSONReader(r), sdk.KeyEncryptionKey)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", "reading keyset JSON", err)
+		return nil, fmt.Errorf("reading keyset JSON: %w", err)
 	}
 
 	dec, err := hybrid.NewHybridDecrypt(kh)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", "NewHybridDecrypt", err)
+		return nil, fmt.Errorf("NewHybridDecrypt: %w", err)
 	}
 
 	context := []byte(a.ID)
@@ -98,7 +98,7 @@ func (sdk *SecretDecryptionKey) decrypterForApp(a *Applet) (decrypter, error) {
 		v := regexp.MustCompile(`\s`).ReplaceAllString(s.GoString(), "")
 		ciphertext, err := base64.StdEncoding.DecodeString(v)
 		if err != nil {
-			return "", fmt.Errorf("base64 decoding of secret: %s: %w", s, err)
+			return "", fmt.Errorf("base64 decoding secret: %s: %w", s, err)
 		}
 
 		cleartext, err := dec.Decrypt(ciphertext, context)
@@ -131,7 +131,7 @@ func secretDecrypt(thread *starlark.Thread, _ *starlark.Builtin, args starlark.T
 		args, kwargs,
 		0, &encryptedVal,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for secret.decrypt: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for secret.decrypt: %w", err)
 	}
 
 	dec := decrypterForThread(thread)

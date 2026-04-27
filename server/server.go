@@ -52,7 +52,7 @@ func NewServer(
 
 	root, err := os.OpenRoot(dir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open root for %s: %w", path, err)
+		return nil, fmt.Errorf("opening root for %s: %w", path, err)
 	}
 
 	w := NewWatcher(dir, fileChanges)

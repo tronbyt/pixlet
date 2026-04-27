@@ -74,7 +74,7 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 	}
 
 	return defaultKeyframeFrom, defaultKeyframeTo,
-		fmt.Errorf("failed to find adjacent keyframes for percentage: %f (this should be unreachable!?)", p)
+		fmt.Errorf("finding adjacent keyframes for percentage: %f (this should be unreachable)", p)
 }
 
 // Transformation makes it possible to animate a child widget by

@@ -84,12 +84,12 @@ func (g GeneratedAttr) GoPath() string {
 func (g GeneratedAttr) Code() (string, error) {
 	tmpl, err := loadTemplate(g.TemplatePath)
 	if err != nil {
-		return "", fmt.Errorf("failed to load template for attribute %s: %w", g.StarlarkName, err)
+		return "", fmt.Errorf("loading template for attribute %s: %w", g.StarlarkName, err)
 	}
 
 	var buf strings.Builder
 	if err := tmpl.Execute(&buf, g); err != nil {
-		return "", fmt.Errorf("failed to render template for attribute %s: %w", g.StarlarkName, err)
+		return "", fmt.Errorf("rendering template for attribute %s: %w", g.StarlarkName, err)
 	}
 	return buf.String(), nil
 }

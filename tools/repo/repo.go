@@ -59,7 +59,7 @@ func Root(dir string) (string, error) {
 		if err, ok := errors.AsType[*exec.ExitError](err); ok {
 			stderr = err.Stderr
 		}
-		return "", fmt.Errorf("failed to get repo root: %w: %s", err, string(stderr))
+		return "", fmt.Errorf("getting repo root: %w: %s", err, string(stderr))
 	}
 
 	return string(bytes.TrimSpace(out)), nil

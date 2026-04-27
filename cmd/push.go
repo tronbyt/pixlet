@@ -72,7 +72,7 @@ func pushRun(cmd *cobra.Command, args []string, opts *pushOptions) error {
 	} else {
 		f, err := os.Open(image)
 		if err != nil {
-			return fmt.Errorf("failed to read file %s: %w", image, err)
+			return fmt.Errorf("opening %s: %w", image, err)
 		}
 		defer func() { _ = f.Close() }()
 

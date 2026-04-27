@@ -206,12 +206,12 @@ func NewAppletFromFS(ctx context.Context, fsys fs.FS, id string, opts ...AppletO
 	id = path.Clean(id)
 	if info, err := fs.Stat(fsys, id); err == nil && info.IsDir() {
 		if fsys, err = fs.Sub(fsys, id); err != nil {
-			return nil, fmt.Errorf("failed to load applet: %w", err)
+			return nil, fmt.Errorf("loading applet: %w", err)
 		}
 		id = "."
 	} else {
 		if fsys, err = fs.Sub(fsys, path.Dir(id)); err != nil {
-			return nil, fmt.Errorf("failed to load applet: %w", err)
+			return nil, fmt.Errorf("loading applet: %w", err)
 		}
 		id = path.Base(id)
 	}
@@ -259,7 +259,7 @@ var ErrStarSuffix = fmt.Errorf("script file must have suffix .star")
 func NewAppletFromPath(ctx context.Context, path string, opts ...AppletOption) (*Applet, error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to stat %s: %w", path, err)
+		return nil, fmt.Errorf("stat %s: %w", path, err)
 	}
 
 	dir := path
@@ -273,7 +273,7 @@ func NewAppletFromPath(ctx context.Context, path string, opts ...AppletOption) (
 
 	root, err := os.OpenRoot(dir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open root for %s: %w", path, err)
+		return nil, fmt.Errorf("opening root for %s: %w", path, err)
 	}
 
 	a, err := NewAppletFromRoot(ctx, root, filepath.Base(path), opts...)

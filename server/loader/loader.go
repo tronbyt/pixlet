@@ -326,7 +326,7 @@ func (l *Loader) Meta() canvas.Metadata {
 func RenderApplet(ctx context.Context, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to stat file: %w", err)
+		return nil, nil, fmt.Errorf("stat %s: %w", path, err)
 	}
 
 	dir := path
@@ -336,7 +336,7 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 
 	root, err := os.OpenRoot(dir)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to open root: %w", err)
+		return nil, nil, fmt.Errorf("opening root: %w", err)
 	}
 	defer func() { _ = root.Close() }()
 
@@ -395,7 +395,7 @@ func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfi
 
 	roots, err := applet.RunWithConfig(ctx, conf.Config)
 	if err != nil {
-		return nil, fmt.Errorf("error running script: %w", err)
+		return nil, fmt.Errorf("running script: %w", err)
 	}
 
 	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
@@ -432,7 +432,7 @@ func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfi
 		img, err = screens.EncodeGIF(ctx, maxDuration, filter)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("error rendering: %w", err)
+		return nil, fmt.Errorf("rendering: %w", err)
 	}
 
 	return img, nil

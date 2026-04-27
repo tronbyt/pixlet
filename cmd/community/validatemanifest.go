@@ -27,7 +27,7 @@ validating the contents of each field.`,
 			if filepath.Base(path) != manifest.ManifestFileName {
 				info, err := os.Stat(path)
 				if err != nil {
-					return fmt.Errorf("failed to stat %s: %w", path, err)
+					return fmt.Errorf("stat %s: %w", path, err)
 				}
 
 				if !info.IsDir() {

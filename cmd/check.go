@@ -211,7 +211,7 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 	for _, path := range args {
 		info, err := os.Stat(path)
 		if err != nil {
-			return fmt.Errorf("failed to stat %s: %w", path, err)
+			return fmt.Errorf("stat %s: %w", path, err)
 		}
 
 		if opts.recursive && info.IsDir() {
@@ -236,7 +236,7 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 				return nil
 			})
 			if err != nil {
-				return fmt.Errorf("failed to walk %s: %w", path, err)
+				return fmt.Errorf("walking %s: %w", path, err)
 			}
 		} else {
 			if checkApp(path) {

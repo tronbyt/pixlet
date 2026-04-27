@@ -50,7 +50,7 @@ func LoadApp(ctx context.Context, path string) (*runtime.Applet, error) {
 		runtime.WithCanvasMeta(flags.NewMeta().Metadata),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load applet: %w", err)
+		return nil, fmt.Errorf("loading applet: %w", err)
 	}
 
 	return app, nil
