@@ -374,7 +374,7 @@ func (app *Applet) CallSchemaHandler(ctx context.Context, handlerName, parameter
 
 	resultVal, err := app.Call(ctx, handler.Function, args...)
 	if err != nil {
-		return "", fmt.Errorf("calling schema handler %s: %v", handlerName, err)
+		return "", fmt.Errorf("calling schema handler %s: %w", handlerName, err)
 	}
 
 	switch handler.ReturnType {
@@ -484,7 +484,7 @@ func (a *Applet) load(ctx context.Context, fsys fs.FS) (err error) {
 	// list files in the root directory of fsys
 	rootDir, err := fs.ReadDir(fsys, ".")
 	if err != nil {
-		return fmt.Errorf("reading root directory: %v", err)
+		return fmt.Errorf("reading root directory: %w", err)
 	}
 
 	if err := a.loadManifest(fsys, ManifestPath); err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -622,7 +622,7 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 
 		src, err := fsys.Open(pathToLoad)
 		if err != nil {
-			return fmt.Errorf("reading %s: %v", pathToLoad, err)
+			return fmt.Errorf("reading %s: %w", pathToLoad, err)
 		}
 		defer func() { _ = src.Close() }()
 
@@ -642,7 +642,7 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 		if mod == nil {
 			srcBytes, err := fs.ReadFile(fsys, pathToLoad)
 			if err != nil {
-				return fmt.Errorf("reading %s: %v", pathToLoad, err)
+				return fmt.Errorf("reading %s: %w", pathToLoad, err)
 			}
 
 			_, mod, err = starlark.SourceProgramOptions(
@@ -657,7 +657,7 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 				predeclared.Has,
 			)
 			if err != nil {
-				return fmt.Errorf("starlark.SourceProgram: %v", err)
+				return fmt.Errorf("starlark.SourceProgram: %w", err)
 			}
 
 			if a.compiledCache != nil {
@@ -674,7 +674,7 @@ func (a *Applet) ensureLoaded(ctx context.Context, fsys fs.FS, pathToLoad string
 
 		globals, err := mod.Init(thread, predeclared)
 		if err != nil {
-			return fmt.Errorf("initializing module: %v", err)
+			return fmt.Errorf("initializing module: %w", err)
 		}
 
 		globals.Freeze()

@@ -130,7 +130,7 @@ func cacheGet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 		args, kwargs,
 		"key", &key,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for cache.get: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for cache.get: %w", err)
 	}
 
 	cacheKey := scopedCacheKey(thread, key)
@@ -170,7 +170,7 @@ func cacheSet(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple,
 		"value", &val,
 		"ttl_seconds?", &ttl,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for cache.set: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for cache.set: %w", err)
 	}
 
 	cacheKey := scopedCacheKey(thread, key)

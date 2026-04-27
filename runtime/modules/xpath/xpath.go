@@ -47,12 +47,12 @@ func xPathLoads(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tupl
 		args, kwargs,
 		"xml", &xml,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for loads: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for loads: %w", err)
 	}
 
 	doc, err := xmlquery.Parse(strings.NewReader(xml.GoString()))
 	if err != nil {
-		return nil, fmt.Errorf("parsing XML: %v", err)
+		return nil, fmt.Errorf("parsing XML: %w", err)
 	}
 
 	x := &XPath{
@@ -74,14 +74,14 @@ func xPathQueryNode(thread *starlark.Thread, b *starlark.Builtin, args starlark.
 		args, kwargs,
 		"path", &path,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for query: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for query: %w", err)
 	}
 
 	x := b.Receiver().(*XPath)
 
 	node, err := xmlquery.Query(x.doc, path.GoString())
 	if err != nil {
-		return nil, fmt.Errorf("querying: %v", err)
+		return nil, fmt.Errorf("querying: %w", err)
 	}
 
 	if node == nil {
@@ -106,14 +106,14 @@ func xPathQuery(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 		args, kwargs,
 		"path", &path,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for query: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for query: %w", err)
 	}
 
 	x := b.Receiver().(*XPath)
 
 	node, err := xmlquery.Query(x.doc, path.GoString())
 	if err != nil {
-		return nil, fmt.Errorf("querying: %v", err)
+		return nil, fmt.Errorf("querying: %w", err)
 	}
 
 	if node == nil {
@@ -130,14 +130,14 @@ func xPathQueryAllNodes(thread *starlark.Thread, b *starlark.Builtin, args starl
 		args, kwargs,
 		"path", &path,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for query_all: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for query_all: %w", err)
 	}
 
 	x := b.Receiver().(*XPath)
 
 	nodes, err := xmlquery.QueryAll(x.doc, path.GoString())
 	if err != nil {
-		return nil, fmt.Errorf("querying all: %v", err)
+		return nil, fmt.Errorf("querying all: %w", err)
 	}
 
 	results := make([]starlark.Value, 0, len(nodes))
@@ -163,14 +163,14 @@ func xPathQueryAll(thread *starlark.Thread, b *starlark.Builtin, args starlark.T
 		args, kwargs,
 		"path", &path,
 	); err != nil {
-		return nil, fmt.Errorf("unpacking arguments for query_all: %v", err)
+		return nil, fmt.Errorf("unpacking arguments for query_all: %w", err)
 	}
 
 	x := b.Receiver().(*XPath)
 
 	nodes, err := xmlquery.QueryAll(x.doc, path.GoString())
 	if err != nil {
-		return nil, fmt.Errorf("querying all: %v", err)
+		return nil, fmt.Errorf("querying all: %w", err)
 	}
 
 	nodeTexts := make([]starlark.Value, 0, len(nodes))
