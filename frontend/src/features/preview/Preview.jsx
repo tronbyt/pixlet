@@ -20,12 +20,19 @@ export default function Preview() {
 
     let dotsUrl = new URL('./api/v1/dots.svg', document.location);
     const scale = preview.value.is2x ? 2 : 1;
+    const gridWidth = (preview.value.width || 64) * scale;
+    const gridHeight = (preview.value.height || 32) * scale;
     if (preview.value.width) {
-        dotsUrl.searchParams.set('w', String(preview.value.width * scale));
+        dotsUrl.searchParams.set('w', String(gridWidth));
     }
     if (preview.value.height) {
-        dotsUrl.searchParams.set('h', String(preview.value.height * scale));
+        dotsUrl.searchParams.set('h', String(gridHeight));
     }
+
+    const gridStyle = {
+        '--grid-cell-width': `${100 / gridWidth}%`,
+        '--grid-cell-height': `${100 / gridHeight}%`,
+    };
 
     return (
         <Paper sx={{ backgroundColor: "black", backgroundImage: 'none' }} className={styles.container}>
@@ -43,6 +50,7 @@ export default function Preview() {
                     style={{ maskImage: `url("${dotsUrl}")`, WebkitMaskImage: `url("${dotsUrl}")` }}
                 />
             )}
+            {preview.value.show_grid && <div className={styles.grid} style={gridStyle} aria-hidden="true" />}
         </Paper>
     );
 }
