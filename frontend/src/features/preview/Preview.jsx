@@ -20,8 +20,10 @@ export default function Preview() {
 
     let dotsUrl = new URL('./api/v1/dots.svg', document.location);
     const scale = preview.value.is2x ? 2 : 1;
-    const gridWidth = (preview.value.width || 64) * scale;
-    const gridHeight = (preview.value.height || 32) * scale;
+    const logicalWidth = preview.value.width || 64;
+    const logicalHeight = preview.value.height || 32;
+    const gridWidth = logicalWidth * scale;
+    const gridHeight = logicalHeight * scale;
     if (preview.value.width) {
         dotsUrl.searchParams.set('w', String(gridWidth));
     }
@@ -30,8 +32,8 @@ export default function Preview() {
     }
 
     const gridStyle = {
-        '--grid-cell-width': `${100 / gridWidth}%`,
-        '--grid-cell-height': `${100 / gridHeight}%`,
+        '--grid-cell-width': (100 / logicalWidth) + '%',
+        '--grid-cell-height': (100 / logicalHeight) + '%',
     };
 
     return (
