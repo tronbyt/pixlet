@@ -14,9 +14,10 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DownloadIcon from '@mui/icons-material/Download';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ImageIcon from '@mui/icons-material/Image';
+import GridOnIcon from '@mui/icons-material/GridOn';
 import { resetConfig, setConfig } from '../config/actions';
 import { set } from '../config/configSlice';
-import { setScale, setTimezone, setLocale } from '../preview/previewSlice';
+import { setScale, setTimezone, setLocale, toggleGrid } from '../preview/previewSlice';
 
 export default function Controls() {
     const preview = useSelector(state => state.preview);
@@ -175,6 +176,7 @@ export default function Controls() {
                 <Button fullWidth={fullWidth} variant="outlined" startIcon={<UploadFileIcon />} onClick={() => selectConfig()}>Import Config</Button>
                 <Button fullWidth={fullWidth} variant="outlined" startIcon={<DownloadIcon />} onClick={() => downloadConfig()}>Export Config</Button>
                 <Button fullWidth={fullWidth} variant="outlined" startIcon={<RestartAltIcon />} onClick={() => resetSchema()}>Reset</Button>
+                <Button fullWidth={fullWidth} variant={preview.value.show_grid ? "contained" : "outlined"} startIcon={<GridOnIcon />} aria-pressed={preview.value.show_grid} onClick={() => dispatch(toggleGrid())}>Show Grid</Button>
                 <Button fullWidth={fullWidth} variant="contained" startIcon={<ImageIcon />} onClick={() => downloadPreview()}>Export Image</Button>
             </Stack>
             <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }} alignItems="flex-start" flexWrap="wrap">

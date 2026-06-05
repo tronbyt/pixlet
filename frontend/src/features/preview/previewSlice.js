@@ -13,6 +13,7 @@ export const previewSlice = createSlice({
             is2x: null,
             timezone: '',
             locale: '',
+            show_grid: false,
         }
     },
     reducers: {
@@ -83,8 +84,17 @@ export const previewSlice = createSlice({
                 }
             }
         },
+        toggleGrid: (state = initialState) => {
+            return {
+                ...state,
+                value: {
+                    ...state.value,
+                    show_grid: !state.value.show_grid,
+                }
+            }
+        },
     },
 });
 
-export const { update, loading, setScale, setTimezone, setLocale } = previewSlice.actions;
+export const { update, loading, setScale, setTimezone, setLocale, toggleGrid } = previewSlice.actions;
 export default previewSlice.reducer;

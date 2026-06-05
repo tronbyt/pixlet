@@ -338,6 +338,7 @@ func buildOptions(options any) ([]SchemaOption, error) {
 	return schemaOptions, nil
 }
 
+//nolint:govet // false positive: reflect constants grouping
 func isFieldSet(fl validator.FieldLevel) (bool, bool) {
 	switch fl.Field().Kind() {
 	case reflect.Map, reflect.Ptr, reflect.Interface:
