@@ -6,6 +6,36 @@ import (
 	"github.com/tronbyt/gg"
 )
 
+// MarqueeMaxContentScale bounds how much larger than the Marquee's own width
+// (horizontal) or height (vertical) the scrolled child may be. It caps the
+// drawing context handed to the child so a runaway app can't allocate an
+// enormous canvas, while still letting long content (e.g. a WrappedText)
+// scroll fully.
+//
+// Raised from 10 to 20 (2026) now that target devices tolerate larger WebP
+// payloads. This DOUBLES the maximum scrollable length — but only the *spatial*
+// ceiling. Two further limits decide whether that extra content is actually
+// reached on screen, and you must raise them too to benefit:
+//
+//   - Temporal (the usual blocker): the WebP/GIF encoder stops adding frames
+//     once cumulative frame time reaches maxDuration (default 15s). A Marquee
+//     scrolls 1px/frame, so a child longer than
+//     dwell_seconds * 1000 / root_delay_ms pixels is truncated mid-scroll
+//     regardless of this cap — the rest is never encoded into the file, so the
+//     device just loops the partial scroll. Raise maxDuration via the
+//     `--max-duration` / `-d` flag on `pixlet render` / `pixlet serve`, or via
+//     loader.WithMaxDuration(...) when embedding pixlet as a library. In
+//     tronbyt-server this value is the per-app DisplayTime (falling back to the
+//     device DefaultInterval), set in the App Config screen — no code change
+//     needed there.
+//   - Frame count: render.DefaultMaxFrameCount (2000) is a hard upper bound on
+//     total frames; not normally reached at these sizes.
+//
+// Bottom line: to use the larger ceiling, pair it with a longer dwell time
+// (more seconds of scroll baked into the file) and/or a smaller Root delay
+// (more pixels scrolled per second).
+const MarqueeMaxContentScale = 20
+
 // Marquee scrolls its child horizontally or vertically.
 //
 // The `scroll_direction` will be 'horizontal' and will scroll from right
@@ -58,9 +88,9 @@ func (m Marquee) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectang
 	var cb image.Rectangle
 
 	if m.isVertical() {
-		cb = m.Child.PaintBounds(image.Rect(0, 0, bounds.Dx(), m.Height*10), 0)
+		cb = m.Child.PaintBounds(image.Rect(0, 0, bounds.Dx(), m.Height*MarqueeMaxContentScale), 0)
 	} else {
-		cb = m.Child.PaintBounds(image.Rect(0, 0, m.Width*10, bounds.Dy()), 0)
+		cb = m.Child.PaintBounds(image.Rect(0, 0, m.Width*MarqueeMaxContentScale, bounds.Dy()), 0)
 	}
 
 	if m.isVertical() {
@@ -75,11 +105,11 @@ func (m Marquee) FrameCount(bounds image.Rectangle) int {
 	var cw int
 	var size int
 	if m.isVertical() {
-		cb = m.Child.PaintBounds(image.Rect(0, 0, bounds.Dx(), m.Height*10), 0)
+		cb = m.Child.PaintBounds(image.Rect(0, 0, bounds.Dx(), m.Height*MarqueeMaxContentScale), 0)
 		cw = cb.Dy()
 		size = m.Height
 	} else {
-		cb = m.Child.PaintBounds(image.Rect(0, 0, m.Width*10, bounds.Dy()), 0)
+		cb = m.Child.PaintBounds(image.Rect(0, 0, m.Width*MarqueeMaxContentScale, bounds.Dy()), 0)
 		cw = cb.Dx()
 		size = m.Width
 	}
@@ -109,11 +139,11 @@ func (m Marquee) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 	if m.isVertical() {
 		// We'll only scroll frame 0 of the child. Scrolling an
 		// animation would be madness.
-		cb = m.Child.PaintBounds(image.Rect(0, 0, bounds.Dx(), m.Height*10), 0)
+		cb = m.Child.PaintBounds(image.Rect(0, 0, bounds.Dx(), m.Height*MarqueeMaxContentScale), 0)
 		cw = cb.Dy()
 		size = m.Height
 	} else {
-		cb = m.Child.PaintBounds(image.Rect(0, 0, m.Width*10, bounds.Dy()), 0)
+		cb = m.Child.PaintBounds(image.Rect(0, 0, m.Width*MarqueeMaxContentScale, bounds.Dy()), 0)
 		cw = cb.Dx()
 		size = m.Width
 	}
@@ -164,7 +194,7 @@ func (m Marquee) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 		dc.DrawRectangle(0, 0, float64(pb.Dx()), float64(pb.Dy()))
 		dc.Clip()
 		dc.Translate(0, float64(offset))
-		m.Child.Paint(dc, image.Rect(0, 0, bounds.Dx(), m.Height*10), 0)
+		m.Child.Paint(dc, image.Rect(0, 0, bounds.Dx(), m.Height*MarqueeMaxContentScale), 0)
 		dc.Pop()
 	} else {
 		offset -= int(align * float64(cb.Dx()))
@@ -172,7 +202,7 @@ func (m Marquee) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx int) {
 		dc.DrawRectangle(0, 0, float64(pb.Dx()), float64(pb.Dy()))
 		dc.Clip()
 		dc.Translate(float64(offset), 0)
-		m.Child.Paint(dc, image.Rect(0, 0, m.Width*10, bounds.Dy()), 0)
+		m.Child.Paint(dc, image.Rect(0, 0, m.Width*MarqueeMaxContentScale, bounds.Dy()), 0)
 		dc.Pop()
 	}
 }
