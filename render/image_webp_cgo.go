@@ -14,6 +14,7 @@ func (p *Image) InitFromWebP(data []byte) error {
 	if err != nil {
 		return fmt.Errorf("creating animation decoder: %w", err)
 	}
+	defer decoder.Close()
 
 	img, err := decoder.Decode()
 	if err != nil {
