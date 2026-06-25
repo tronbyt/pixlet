@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tronbyt/go-libwebp/webp"
 	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
 )
@@ -270,6 +271,21 @@ def main():
 	roots, err = app.Run(t.Context())
 	require.NoError(t, err)
 	assert.False(t, ScreensFromRoots(roots, 64, 32).ShowFullAnimation)
+}
+
+func webpDelays(t *testing.T, webpData []byte) []int {
+	decoder, err := webp.NewAnimationDecoder(webpData)
+	require.NoError(t, err)
+	img, err := decoder.Decode()
+	require.NoError(t, err)
+	delays := make([]int, 0, len(img.Timestamp))
+	last := 0
+	for _, ts := range img.Timestamp {
+		d := ts - last
+		last = ts
+		delays = append(delays, d)
+	}
+	return delays
 }
 
 func TestMaxDuration(t *testing.T) {
