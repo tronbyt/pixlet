@@ -276,6 +276,7 @@ def main():
 func webpDelays(t *testing.T, webpData []byte) []int {
 	decoder, err := webp.NewAnimationDecoder(webpData)
 	require.NoError(t, err)
+	t.Cleanup(decoder.Close)
 	img, err := decoder.Decode()
 	require.NoError(t, err)
 	delays := make([]int, 0, len(img.Timestamp))
