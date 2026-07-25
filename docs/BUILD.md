@@ -14,7 +14,7 @@ Steps
 -----
 - Clone the repository:
 	```console
-	git clone https://github.com/tidbyt/pixlet
+	git clone https://github.com/tronbyt/pixlet.git
 	```
 - Cd into the repository:
 	```console
@@ -29,7 +29,7 @@ Steps
 	```console
 	make build
 	```
-- After that you will have the binary `/pixlet`, which you should copy to your path.
+- After that you will have the binary `pixlet`, which you should copy to your path.
 
 [go installed]: https://golang.org/dl/
 [node installed]: https://nodejs.org/en/download/
