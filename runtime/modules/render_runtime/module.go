@@ -43,10 +43,11 @@ func LoadModule() (starlark.StringDict, error) {
 			"canvas": &starlarkstruct.Module{
 				Name: "canvas",
 				Members: starlark.StringDict{
-					"width":  starlark.NewBuiltin("width", dimension(dimensionWidth)),
-					"height": starlark.NewBuiltin("height", dimension(dimensionHeight)),
-					"size":   starlark.NewBuiltin("size", size),
-					"is2x":   starlark.NewBuiltin("is2x", is2x),
+					"width":     starlark.NewBuiltin("width", dimension(dimensionWidth)),
+					"height":    starlark.NewBuiltin("height", dimension(dimensionHeight)),
+					"size":      starlark.NewBuiltin("size", size),
+					"is2x":      starlark.NewBuiltin("is2x", is2x),
+					"is_square": starlark.NewBuiltin("is_square", isSquare),
 				},
 			},
 		}
