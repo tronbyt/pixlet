@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tronbyt/gg"
 	"github.com/tronbyt/pixlet/render"
 )
 
@@ -494,4 +495,32 @@ func TestTransformationSmallScaleStillPaints(t *testing.T) {
 
 	im := render.PaintWidget(&o, image.Rect(0, 0, 4, 4), 0)
 	assert.Equal(t, color.RGBA{0xff, 0, 0, 0xff}, im.At(2, 2), "half-scaled child should still be painted")
+}
+
+func TestIsDegenerate(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		sx, sy   float64
+		rotate   float64
+		expected bool
+	}{
+		{"identity", 1, 1, 0, false},
+		{"half x", 0.5, 1, 0, false},
+		{"uniform just above threshold", 1.1e-4, 1.1e-4, 0, false},
+		{"x just above threshold", 1.1e-4, 1, 0, false},
+		{"rotated x just above threshold", 1.1e-4, 1, 0.7, false},
+		{"x just below threshold", 0.9e-4, 1, 0, true},
+		{"uniform just below threshold", 0.9e-4, 0.9e-4, 0, true},
+		{"x zero", 0, 1, 0, true},
+		{"y zero", 1, 0, 0, true},
+		{"both zero", 0, 0, 0, true},
+		{"nan", math.NaN(), 1, 0, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dc := gg.NewContext(64, 32)
+			dc.Rotate(tc.rotate)
+			dc.ScaleAbout(tc.sx, tc.sy, 32, 16)
+			assert.Equal(t, tc.expected, isDegenerate(dc))
+		})
+	}
 }

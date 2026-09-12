@@ -266,14 +266,18 @@ func isDegenerate(dc *gg.Context) bool {
 	a, c := ax-ox, ay-oy
 	b, d := bx-ox, by-oy
 
-	det := math.Abs(a*d - b*c)
-	norm := math.Sqrt(a*a + b*b + c*c + d*d)
-	if norm == 0 {
+	// The smallest singular value is the factor by which the shortest axis is
+	// scaled. For a 2x2 matrix it is |det| / sigmaMax, where sigmaMax is
+	// computed from the squared Frobenius norm. This formulation stays
+	// numerically stable when det is tiny.
+	det := a*d - b*c
+	frob2 := a*a + b*b + c*c + d*d
+	sigmaMax := math.Sqrt((frob2 + math.Sqrt(math.Max(frob2*frob2-4*det*det, 0))) / 2)
+	if sigmaMax == 0 {
 		return true
 	}
+	sigmaMin := math.Abs(det) / sigmaMax
 
-	// |det| / ||M|| is a lower bound of the smallest singular value, which is
-	// the factor the shortest axis is scaled by. The comparison is written so
-	// that NaN (from an invalid transform) is also treated as degenerate.
-	return !(det/norm >= degenerateScaleThreshold)
+	// Written so that NaN (from an invalid transform) is also degenerate.
+	return !(sigmaMin >= degenerateScaleThreshold)
 }
