@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"fmt"
 	"image"
+	"math"
 	"slices"
 
 	"github.com/tronbyt/gg"
@@ -238,7 +239,45 @@ func (t *Transformation) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx 
 		}
 	}
 
-	t.Child.Paint(dc, bounds, frameIdx)
+	// A degenerate transform (e.g. `animation.Scale(0.0, 1.0)`) collapses the
+	// child onto a line or point, so there is nothing to draw. Painting through
+	// such a matrix must be avoided: x/image/draw inverts it, which divides by a
+	// zero determinant and ends in a `makeslice: len out of range` panic.
+	if !isDegenerate(dc) {
+		t.Child.Paint(dc, bounds, frameIdx)
+	}
 
 	dc.Pop()
+}
+
+// degenerateScaleThreshold is the smallest scale factor along any axis that is
+// still painted. Below this the child is invisible anyway, and x/image/draw
+// would allocate resampling kernels proportional to the inverse scale.
+const degenerateScaleThreshold = 1e-4
+
+// isDegenerate reports whether the context's current transformation matrix is
+// (nearly) singular, i.e. whether it collapses at least one axis to zero.
+func isDegenerate(dc *gg.Context) bool {
+	ox, oy := dc.TransformPoint(0, 0)
+	ax, ay := dc.TransformPoint(1, 0)
+	bx, by := dc.TransformPoint(0, 1)
+
+	// Linear part of the affine matrix.
+	a, c := ax-ox, ay-oy
+	b, d := bx-ox, by-oy
+
+	// The smallest singular value is the factor by which the shortest axis is
+	// scaled. For a 2x2 matrix it is |det| / sigmaMax, where sigmaMax is
+	// computed from the squared Frobenius norm. This formulation stays
+	// numerically stable when det is tiny.
+	det := a*d - b*c
+	frob2 := a*a + b*b + c*c + d*d
+	sigmaMax := math.Sqrt((frob2 + math.Sqrt(math.Max(frob2*frob2-4*det*det, 0))) / 2)
+	if sigmaMax == 0 {
+		return true
+	}
+	sigmaMin := math.Abs(det) / sigmaMax
+
+	// Written so that NaN (from an invalid transform) is also degenerate.
+	return !(sigmaMin >= degenerateScaleThreshold)
 }
