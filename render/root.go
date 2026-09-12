@@ -2,10 +2,12 @@ package render
 
 import (
 	"context"
+	"fmt"
 	"image"
 	"image/color"
 	"iter"
 	"runtime"
+	"runtime/debug"
 	"sync"
 
 	"github.com/tronbyt/gg"
@@ -51,6 +53,20 @@ type Root struct {
 
 type RootPaintOption func(*Root)
 
+// PanicError is the value Root.Paint panics with when a widget panics while
+// painting a frame. Frames are painted in worker goroutines, where a panic
+// would otherwise be unrecoverable by the caller and terminate the process.
+// Root.Paint recovers such panics and re-raises them on the calling goroutine,
+// preserving the original value and stack trace.
+type PanicError struct {
+	Value any
+	Stack []byte
+}
+
+func (e *PanicError) Error() string {
+	return fmt.Sprintf("panic while painting frame: %v\n%s", e.Value, e.Stack)
+}
+
 // WithMaxParallelFrames sets the maximum number of frames rendered concurrently.
 // If <=0, Paint uses runtime.NumCPU().
 func WithMaxParallelFrames(maxFrames int) RootPaintOption {
@@ -91,11 +107,23 @@ func (r Root) Paint(ctx context.Context, width, height int, solidBackground bool
 		}
 		parallelism = max(1, min(parallelism, numFrames))
 
-		var wg sync.WaitGroup
-		defer wg.Wait()
-
 		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
+
+		// A panic inside a worker goroutine cannot be recovered by the caller.
+		// Record the first one, abort the render and re-raise it on this
+		// goroutine once all workers have exited.
+		var (
+			wg          sync.WaitGroup
+			panicMu     sync.Mutex
+			panicResult *PanicError
+		)
+		defer func() {
+			cancel()
+			wg.Wait()
+			if panicResult != nil {
+				panic(panicResult)
+			}
+		}()
 
 		type frameResult struct {
 			index int
@@ -109,6 +137,17 @@ func (r Root) Paint(ctx context.Context, width, height int, solidBackground bool
 		// Spawn parallel renderers
 		for range parallelism {
 			wg.Go(func() {
+				defer func() {
+					if r := recover(); r != nil {
+						panicMu.Lock()
+						if panicResult == nil {
+							panicResult = &PanicError{Value: r, Stack: debug.Stack()}
+						}
+						panicMu.Unlock()
+						cancel()
+					}
+				}()
+
 				for frame := range jobs {
 					dc := gg.NewContext(width, height)
 					if solidBackground {

@@ -11,9 +11,11 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"time"
 
 	"github.com/tronbyt/pixlet/encode"
+	"github.com/tronbyt/pixlet/render"
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/i18n_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
@@ -343,7 +345,17 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 	return RenderAppletRoot(ctx, root, filepath.Base(path), config, options...)
 }
 
-func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
+func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config map[string]any, options ...Option) (img []byte, output []string, err error) {
+	// Starlark execution is already guarded by the runtime, but widgets may
+	// still panic while painting or encoding. Turn that into an error so a
+	// broken app cannot take down the calling process.
+	defer func() {
+		if r := recover(); r != nil {
+			img = nil
+			err = fmt.Errorf("rendering %s: %w", path, asPanicError(r))
+		}
+	}()
+
 	conf := NewRenderConfig(path, config, options...)
 
 	opts := []runtime.AppletOption{
@@ -352,7 +364,6 @@ func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config ma
 		runtime.WithLanguage(conf.Language),
 	}
 
-	var output []string
 	if conf.SilenceOutput {
 		// Replace the print function from the starlark thread if the silent flag is passed.
 		opts = append(opts, runtime.WithPrintFunc(func(thread *starlark.Thread, msg string) {
@@ -366,14 +377,23 @@ func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config ma
 	}
 	defer func() { _ = applet.Close() }()
 
-	img, err := renderApplet(ctx, applet, conf)
-	if err != nil {
+	if img, err = renderApplet(ctx, applet, conf); err != nil {
 		return nil, output, err
 	}
+
 	return img, output, nil
 }
 
 var ErrTimeout = errors.New("render timeout")
+
+// asPanicError converts a recovered panic value into an error, preserving a
+// render.PanicError (which already carries the original stack) as-is.
+func asPanicError(r any) error {
+	if err, ok := r.(*render.PanicError); ok {
+		return err
+	}
+	return &render.PanicError{Value: r, Stack: debug.Stack()}
+}
 
 func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfig) ([]byte, error) {
 	if ctx == nil {
