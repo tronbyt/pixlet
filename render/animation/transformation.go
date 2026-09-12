@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"fmt"
 	"image"
+	"math"
 	"slices"
 
 	"github.com/tronbyt/gg"
@@ -238,7 +239,41 @@ func (t *Transformation) Paint(dc *gg.Context, bounds image.Rectangle, frameIdx 
 		}
 	}
 
-	t.Child.Paint(dc, bounds, frameIdx)
+	// A degenerate transform (e.g. `animation.Scale(0.0, 1.0)`) collapses the
+	// child onto a line or point, so there is nothing to draw. Painting through
+	// such a matrix must be avoided: x/image/draw inverts it, which divides by a
+	// zero determinant and ends in a `makeslice: len out of range` panic.
+	if !isDegenerate(dc) {
+		t.Child.Paint(dc, bounds, frameIdx)
+	}
 
 	dc.Pop()
+}
+
+// degenerateScaleThreshold is the smallest scale factor along any axis that is
+// still painted. Below this the child is invisible anyway, and x/image/draw
+// would allocate resampling kernels proportional to the inverse scale.
+const degenerateScaleThreshold = 1e-4
+
+// isDegenerate reports whether the context's current transformation matrix is
+// (nearly) singular, i.e. whether it collapses at least one axis to zero.
+func isDegenerate(dc *gg.Context) bool {
+	ox, oy := dc.TransformPoint(0, 0)
+	ax, ay := dc.TransformPoint(1, 0)
+	bx, by := dc.TransformPoint(0, 1)
+
+	// Linear part of the affine matrix.
+	a, c := ax-ox, ay-oy
+	b, d := bx-ox, by-oy
+
+	det := math.Abs(a*d - b*c)
+	norm := math.Sqrt(a*a + b*b + c*c + d*d)
+	if norm == 0 {
+		return true
+	}
+
+	// |det| / ||M|| is a lower bound of the smallest singular value, which is
+	// the factor the shortest axis is scaled by. The comparison is written so
+	// that NaN (from an invalid transform) is also treated as degenerate.
+	return !(det/norm >= degenerateScaleThreshold)
 }

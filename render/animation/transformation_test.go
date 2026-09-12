@@ -1,8 +1,11 @@
 package animation
 
 import (
+	"bytes"
 	"image"
 	"image/color"
+	"image/png"
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -409,4 +412,86 @@ func TestTransformationAll(t *testing.T) {
 		"..◎●◉.▓█▒",
 		"..⁘◎○.░▒⎕",
 	}, im))
+}
+
+// Regression test: a zero scale factor produced a singular transformation
+// matrix, which made x/image/draw panic with "makeslice: len out of range"
+// when the child painted an image or text through it.
+func TestTransformationDegenerateScale(t *testing.T) {
+	img := image.NewRGBA(image.Rect(0, 0, 24, 32))
+	for i := range img.Pix {
+		img.Pix[i] = 0xff
+	}
+	var buf bytes.Buffer
+	require.NoError(t, png.Encode(&buf, img))
+
+	for _, tc := range []struct {
+		name  string
+		scale Scale
+	}{
+		{"x zero", Scale{X: 0.0, Y: 1.0}},
+		{"y zero", Scale{X: 1.0, Y: 0.0}},
+		{"both zero", Scale{X: 0.0, Y: 0.0}},
+		{"x tiny", Scale{X: 1e-12, Y: 1.0}},
+		{"nan", Scale{X: math.NaN(), Y: 1.0}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			child := &render.Image{Src: buf.Bytes()}
+			require.NoError(t, child.Init(nil))
+
+			o := Transformation{
+				Child: child,
+				Keyframes: []Keyframe{
+					{
+						Percentage: Percentage{0.0},
+						Curve:      LinearCurve{},
+						Transforms: []Transform{Translate{X: 0.0, Y: -32.0}, tc.scale},
+					},
+					{
+						Percentage: Percentage{1.0},
+						Curve:      LinearCurve{},
+						Transforms: []Transform{Translate{X: 0.0, Y: -32.0}, tc.scale},
+					},
+				},
+				Duration:  2,
+				Width:     64,
+				Height:    32,
+				Origin:    Origin{X: Percentage{0.5}, Y: Percentage{0.5}},
+				Direction: DefaultDirection,
+				FillMode:  DefaultFillMode,
+				Rounding:  DefaultRounding,
+			}
+			require.NoError(t, o.Init(nil))
+
+			require.NotPanics(t, func() {
+				render.PaintWidget(&o, image.Rect(0, 0, 64, 32), 0)
+			})
+		})
+	}
+}
+
+func TestTransformationSmallScaleStillPaints(t *testing.T) {
+	child := render.Box{Width: 4, Height: 4, Color: color.RGBA{0xff, 0, 0, 0xff}}
+
+	o := Transformation{
+		Child: child,
+		Keyframes: []Keyframe{
+			{
+				Percentage: Percentage{0.0},
+				Curve:      LinearCurve{},
+				Transforms: []Transform{Scale{X: 0.5, Y: 1.0}},
+			},
+		},
+		Duration:  1,
+		Width:     4,
+		Height:    4,
+		Origin:    Origin{X: Percentage{0.5}, Y: Percentage{0.5}},
+		Direction: DefaultDirection,
+		FillMode:  DefaultFillMode,
+		Rounding:  DefaultRounding,
+	}
+	require.NoError(t, o.Init(nil))
+
+	im := render.PaintWidget(&o, image.Rect(0, 0, 4, 4), 0)
+	assert.Equal(t, color.RGBA{0xff, 0, 0, 0xff}, im.At(2, 2), "half-scaled child should still be painted")
 }
