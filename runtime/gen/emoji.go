@@ -79,7 +79,8 @@ func genEmoji() {
 	sheet, index, fallbackRect, sheetW, sheetH, maxHeight, maxWidth := buildSheet(glyphs)
 
 	var pngBuf bytes.Buffer
-	must(png.Encode(&pngBuf, sheet))
+	enc := png.Encoder{CompressionLevel: png.BestCompression}
+	must(enc.Encode(&pngBuf, sheet))
 	must(os.WriteFile(pngFile, pngBuf.Bytes(), 0o644))
 
 	writeOutput(filepath.Base(pngFile), index, fallbackRect, maxSeq, sheetW, sheetH, maxHeight, maxWidth)
