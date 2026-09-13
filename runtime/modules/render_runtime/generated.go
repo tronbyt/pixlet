@@ -1056,6 +1056,8 @@ func (w *Image) Attr(name string) (starlark.Value, error) {
 		return starlark.MakeInt(int(w.HoldFrames)), nil
 	case "size":
 		return starlark.NewBuiltin("size", imageSize).BindReceiver(w), nil
+	case "opaque_pixel_percentage":
+		return starlark.NewBuiltin("opaque_pixel_percentage", imageOpaquePixelPercentage).BindReceiver(w), nil
 	case "frame_count":
 		return starlark.NewBuiltin("frame_count", imageFrameCount).BindReceiver(w), nil
 	default:
@@ -1085,6 +1087,49 @@ func imageSize(
 		starlark.MakeInt(width),
 		starlark.MakeInt(height),
 	}), nil
+}
+
+func imageOpaquePixelPercentage(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+	var bounds starlark.Tuple
+	if err := starlark.UnpackArgs(
+		"opaque_pixel_percentage",
+		args, kwargs,
+		"bounds?", &bounds,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for opaque_pixel_percentage: %s", err)
+	}
+
+	w := b.Receiver().(*Image)
+	width, height := w.Size()
+	r := image.Rect(0, 0, width, height)
+	if bounds != nil {
+		if bounds.Len() != 4 {
+			return nil, fmt.Errorf("bounds must contain four integers")
+		}
+		x0, err := starlark.AsInt32(bounds.Index(0))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[0] is not a number: %s", err)
+		}
+		y0, err := starlark.AsInt32(bounds.Index(1))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[1] is not a number: %s", err)
+		}
+		x1, err := starlark.AsInt32(bounds.Index(2))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[2] is not a number: %s", err)
+		}
+		y1, err := starlark.AsInt32(bounds.Index(3))
+		if err != nil {
+			return nil, fmt.Errorf("bounds[3] is not a number: %s", err)
+		}
+		r = image.Rect(x0, y0, x1, y1)
+	}
+
+	return starlark.Float(w.OpaquePixelPercentage(r)), nil
 }
 
 func imageFrameCount(

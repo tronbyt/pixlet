@@ -62,6 +62,27 @@ func (p *Image) Size() (int, int) {
 	return p.imgs[0].Bounds().Dx(), p.imgs[0].Bounds().Dy()
 }
 
+// OpaquePixelPercentage returns the percentage of pixels in bounds whose
+// alpha channel is non-zero. Bounds are intersected with the image bounds.
+func (p *Image) OpaquePixelPercentage(bounds image.Rectangle) float64 {
+	bounds = bounds.Intersect(p.imgs[0].Bounds())
+	if bounds.Empty() {
+		return 0
+	}
+
+	opaque := 0
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			_, _, _, alpha := p.imgs[0].At(x, y).RGBA()
+			if alpha != 0 {
+				opaque++
+			}
+		}
+	}
+
+	return 100 * float64(opaque) / float64(bounds.Dx()*bounds.Dy())
+}
+
 func (p *Image) FrameCount(bounds image.Rectangle) int {
 	return len(p.imgs) * p.HoldFrames
 }

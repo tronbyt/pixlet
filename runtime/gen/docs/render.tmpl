@@ -15,6 +15,10 @@ to work out how many frames are required to display the whole
 animation. You can also call `size()` on dynamically-sized widgets
 like Text to get the width and height.
 
+Image widgets also expose `opaque_pixel_percentage(bounds?)`, which returns
+the percentage of pixels with non-zero alpha. The optional bounds tuple is
+`(x0, y0, x1, y1)` and is clipped to the image.
+
 ## Colors
 
 When specifying colors, use a CSS-like hexadecimal color specification
