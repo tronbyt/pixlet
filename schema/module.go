@@ -97,9 +97,7 @@ func newSchema(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple
 	}
 
 	s := &StarlarkSchema{
-		Schema: Schema{
-			Version: version.GoString(),
-		},
+		Version:               version.GoString(),
 		Handlers:              map[string]SchemaHandler{},
 		starlarkFields:        fields,
 		starlarkHandlers:      handlers,
