@@ -58,7 +58,10 @@ func compress(root *os.Root, path string) error {
 	}
 	defer out.Close()
 
-	gzw := gzip.NewWriter(out)
+	gzw, err := gzip.NewWriterLevel(out, gzip.BestCompression)
+	if err != nil {
+		return err
+	}
 	gzw.Header.ModTime = time.Time{}
 	gzw.Header.Name = path
 
