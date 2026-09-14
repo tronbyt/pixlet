@@ -19,6 +19,7 @@ import (
 func newAnimations() starlark.StringDict {
 	return starlark.StringDict{
 		"AnimatedPositioned": starlark.NewBuiltin("AnimatedPositioned", newAnimatedPositioned),
+		"Fade":               starlark.NewBuiltin("Fade", newFade),
 		"Keyframe":           starlark.NewBuiltin("Keyframe", newKeyframe),
 		"Origin":             starlark.NewBuiltin("Origin", newOrigin),
 		"Rotate":             starlark.NewBuiltin("Rotate", newRotate),
@@ -235,6 +236,71 @@ func animatedpositionedFrameCount(
 	count := w.FrameCount(r)
 
 	return starlark.MakeInt(count), nil
+}
+
+type Fade struct {
+	animation.Fade
+
+	starlarkValue starlark.Value
+}
+
+func newFade(
+	thread *starlark.Thread,
+	_ *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple,
+) (starlark.Value, error) {
+	var (
+		value starlark.Value
+	)
+
+	if err := starlark.UnpackArgs(
+		"Fade",
+		args, kwargs,
+		"value", &value,
+	); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for Fade: %s", err)
+	}
+
+	w := &Fade{}
+
+	w.starlarkValue = value
+	if val, ok := starlark.AsFloat(w.starlarkValue); ok {
+		w.Value = val
+	} else if w.starlarkValue != nil {
+		return nil, fmt.Errorf("expected number, but got: %s", w.starlarkValue.String())
+	}
+
+	return w, nil
+}
+
+func (w *Fade) AsAnimationTransform() animation.Transform {
+	return w.Fade
+}
+
+func (w *Fade) AttrNames() []string {
+	return []string{
+		"value",
+	}
+}
+
+func (w *Fade) Attr(name string) (starlark.Value, error) {
+	switch name {
+	case "value":
+		return w.starlarkValue, nil
+	default:
+		return nil, nil
+	}
+}
+
+func (w *Fade) String() string       { return "Fade(...)" }
+func (w *Fade) Type() string         { return "Fade" }
+func (w *Fade) Freeze()              {}
+func (w *Fade) Truth() starlark.Bool { return true }
+
+func (w *Fade) Hash() (uint32, error) {
+	sum, err := hashstructure.Hash(w, nil)
+	return uint32(sum), err
 }
 
 type Keyframe struct {

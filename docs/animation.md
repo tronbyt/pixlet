@@ -34,6 +34,22 @@ AnimatedPositioned animates a widget from start to end coordinates.
 | `delay` | `int` | Delay before animation in frames | N |
 | `hold` | `int` | Delay after animation in frames. | N |
 
+## Fade
+Fade transforms by adjusting the opacity of the child.
+
+A value of `0` renders the child fully transparent, `1` renders it fully
+opaque, and values in between blend it proportionally.
+
+Note: nesting a `Fade` inside another `Fade` doesn't combine them the way
+you might expect. Only the innermost value takes effect, rather than the
+two fade amounts multiplying together (e.g. two 50% fades won't add up to
+25% visible). Keep fades at the same level rather than nesting them.
+
+#### Attributes
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| `value` | `float / int` | Opacity to fade to, from 0.0 (fully transparent) to 1.0 (fully opaque). | **Y** |
+
 ## Keyframe
 Keyframe defines a specific point in time in the animation.
 
