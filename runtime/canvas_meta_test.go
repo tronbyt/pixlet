@@ -41,3 +41,32 @@ def main():
 		})
 	}
 }
+
+// The API takes no arguments, and it is new enough to be strict about that:
+// accepting them silently now would make rejecting them later a breaking change.
+func TestCanvasMaxDurationMillisRejectsArguments(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		call string
+	}{
+		{"positional argument", "canvas.max_duration_ms(1)"},
+		{"keyword argument", "canvas.max_duration_ms(nonsense = 7)"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			src := `
+load("render.star", "render", "canvas")
+
+def main():
+    ` + tc.call + `
+    return render.Root(child = render.Box())
+`
+			app, err := NewApplet(t.Context(), "max_duration_args.star", []byte(src),
+				WithTests(t), WithCanvasMeta(canvas.Metadata{Width: 64, Height: 32, MaxDuration: time.Second}))
+			require.NoError(t, err)
+
+			_, err = app.Run(t.Context())
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "max_duration_ms")
+		})
+	}
+}

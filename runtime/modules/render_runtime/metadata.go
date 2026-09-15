@@ -101,10 +101,17 @@ func isSquare(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ 
 	return starlark.Bool(m.ScaledWidth() == m.ScaledHeight()), nil
 }
 
-func maxDurationMillis(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+// maxDurationMillis implements canvas.max_duration_ms(), reporting the ceiling
+// the encoder puts on the finished animation. Zero means unbounded.
+func maxDurationMillis(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	m, err := canvas.FromThread(thread)
 	if err != nil {
 		return nil, err
+	}
+
+	// Takes no arguments; say so rather than silently ignoring a typo.
+	if err := starlark.UnpackArgs("max_duration_ms", args, kwargs); err != nil {
+		return nil, fmt.Errorf("unpacking arguments for max_duration_ms: %w", err)
 	}
 
 	return starlark.MakeInt(m.MaxDurationMillis()), nil
