@@ -22,7 +22,14 @@ type Fade struct {
 }
 
 func (f Fade) Apply(ctx *gg.Context, origin Vec2f, rounding Rounding) {
-	alpha := uint8(math.Round(math.Max(0.0, math.Min(1.0, f.Value)) * 255))
+	value := f.Value
+	if math.IsNaN(value) {
+		// Converting NaN to uint8 is implementation-specific; fall back to
+		// fully opaque, consistent with FadeDefault.
+		value = FadeDefault.Value
+	}
+
+	alpha := uint8(math.Round(math.Max(0.0, math.Min(1.0, value)) * 255))
 
 	mask := image.NewAlpha(ctx.Image().Bounds())
 	for i := range mask.Pix {
