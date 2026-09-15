@@ -56,6 +56,7 @@ var Packages = []Package{
 		GoRootName:     "render_runtime.Root",
 		GoWidgetName:   "render_runtime.Widget",
 		Types: []reflect.Value{
+			reflect.ValueOf(new(animation.Fade)),
 			reflect.ValueOf(new(animation.Keyframe)),
 			reflect.ValueOf(new(animation.Origin)),
 			reflect.ValueOf(new(animation.Rotate)),

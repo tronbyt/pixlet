@@ -81,7 +81,8 @@ func findKeyframes(arr []Keyframe, p float64) (Keyframe, Keyframe, error) {
 // Transformation makes it possible to animate a child widget by
 // transitioning between transforms which are applied to the child wiget.
 //
-// It supports animating translation, scale and rotation of its child.
+// It supports animating translation, scale, rotation, shear and opacity
+// (fade) of its child.
 //
 // If you have used CSS transforms and animations before, some of the
 // following concepts will be familiar to you.
