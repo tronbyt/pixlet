@@ -101,6 +101,15 @@ func isSquare(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ 
 	return starlark.Bool(m.ScaledWidth() == m.ScaledHeight()), nil
 }
 
+func maxDurationMillis(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	m, err := canvas.FromThread(thread)
+	if err != nil {
+		return nil, err
+	}
+
+	return starlark.MakeInt(m.MaxDurationMillis()), nil
+}
+
 func is2x(thread *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	m, err := canvas.FromThread(thread)
 	if err != nil {
