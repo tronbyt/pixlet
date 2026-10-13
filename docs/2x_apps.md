@@ -22,6 +22,7 @@ name: My App
 summary: An example app
 desc: This is a longer description.
 author: Your Name
+category: utilities
 supports2x: true
 ```
 

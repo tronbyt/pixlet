@@ -2,6 +2,8 @@ package manifest
 
 import (
 	"fmt"
+	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"unicode"
@@ -21,6 +23,32 @@ const (
 
 	dash = '-'
 )
+
+// Categories is the list of allowed app categories. Keep it in sync with
+// categories.yaml in tronbyt/apps.
+var Categories = []string{
+	"art",
+	"clocks",
+	"education",
+	"entertainment",
+	"finance",
+	"food",
+	"gaming",
+	"hardware",
+	"health",
+	"lifestyle",
+	"news",
+	"reference",
+	"science",
+	"smart-home",
+	"social",
+	"sports",
+	"technology",
+	"transit",
+	"travel",
+	"utilities",
+	"weather",
+}
 
 var punctuation []string = []string{
 	".",
@@ -123,6 +151,67 @@ func ValidateAuthor(author string) error {
 	// have to eyeball it in pull requests until we get a sense of what doesn't
 	// work.
 	return nil
+}
+
+// ValidateCategory ensures the category is one of the allowed categories. It
+// is not part of Manifest.Validate because only apps destined for tronbyt/apps
+// need one.
+func ValidateCategory(category string) error {
+	if category == "" {
+		return fmt.Errorf("category cannot be empty, choose one of: %s", strings.Join(Categories, ", "))
+	}
+
+	if !slices.Contains(Categories, category) {
+		return fmt.Errorf("unknown category '%s', choose one of: %s", category, strings.Join(Categories, ", "))
+	}
+
+	return nil
+}
+
+// ResolveCategory turns a category choice into a category name. The choice may
+// be the 1-based number shown by CategoryGrid or the category name itself.
+func ResolveCategory(input string) (string, error) {
+	input = strings.TrimSpace(input)
+
+	if n, err := strconv.Atoi(input); err == nil {
+		if n < 1 || n > len(Categories) {
+			return "", fmt.Errorf("enter a number between 1 and %d, or a category name", len(Categories))
+		}
+		return Categories[n-1], nil
+	}
+
+	if err := ValidateCategory(input); err != nil {
+		return "", fmt.Errorf("enter a number between 1 and %d, or a category name", len(Categories))
+	}
+	return input, nil
+}
+
+// CategoryGrid renders the categories as numbered columns, filled top to
+// bottom, so they can all be shown at once.
+func CategoryGrid(columns int) string {
+	rows := (len(Categories) + columns - 1) / columns
+
+	widths := make([]int, columns)
+	for i, c := range Categories {
+		widths[i/rows] = max(widths[i/rows], len(c))
+	}
+
+	var b strings.Builder
+	for r := range rows {
+		for col := range columns {
+			i := col*rows + r
+			if i >= len(Categories) {
+				continue
+			}
+			cell := fmt.Sprintf("%2d) %s", i+1, Categories[i])
+			if col < columns-1 {
+				cell = fmt.Sprintf("%-*s", widths[col]+4, cell)
+			}
+			b.WriteString("  " + cell)
+		}
+		b.WriteString("\n")
+	}
+	return b.String()
 }
 
 // ValidateID ensures the id will parse when we go to add it to our database

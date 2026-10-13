@@ -34,6 +34,10 @@ type Manifest struct {
 	// "Max Timkovich"
 	Author string `json:"author" yaml:"author"`
 
+	// Category is the app's category. It must be one of Categories to be
+	// accepted by tronbyt/apps.
+	Category string `json:"category,omitempty" yaml:"category,omitempty"`
+
 	// Source is the starlark source code for this applet using the go `embed`
 	// module.
 	Source []byte `json:"-" yaml:"-"`
