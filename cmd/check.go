@@ -22,6 +22,7 @@ import (
 type checkOptions struct {
 	recursive     bool
 	skipBroken    bool
+	skipCategory  bool
 	maxRenderTime time.Duration
 }
 
@@ -44,7 +45,10 @@ containing multiple Starlark files and resources.
 The check command runs a series of checks to ensure your app is ready
 to publish in the community repo. Every failed check will have a solution
 provided. If your app fails a check, try the provided solution and reach out on
-Discord if you get stuck.`,
+Discord if you get stuck.
+
+The manifest must set a valid category, matching tronbyt/apps. Use
+--skip-category to skip this requirement for private apps.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return checkRun(cmd, args, opts)
 		},
@@ -53,6 +57,7 @@ Discord if you get stuck.`,
 
 	cmd.Flags().BoolVarP(&opts.recursive, "recursive", "r", opts.recursive, "find apps recursively")
 	cmd.Flags().BoolVarP(&opts.skipBroken, "skip-broken", "s", opts.skipBroken, "skip apps marked as broken in their manifest")
+	cmd.Flags().BoolVarP(&opts.skipCategory, "skip-category", "", opts.skipCategory, "don't require a valid category in the manifest (for private apps)")
 	cmd.Flags().DurationVarP(&opts.maxRenderTime, "max-render-time", "", opts.maxRenderTime, "override the default max render time")
 	_ = cmd.RegisterFlagCompletionFunc("max-render-time", cobra.NoFileCompletions)
 
@@ -112,6 +117,13 @@ func checkRun(cmd *cobra.Command, args []string, opts *checkOptions) error {
 		if err := m.Validate(); err != nil {
 			failure(path, fmt.Errorf("manifest didn't validate: %w", err), "try correcting the validation issue by updating your manifest")
 			return true
+		}
+
+		if !opts.skipCategory {
+			if err := manifest.ValidateCategory(m.Category); err != nil {
+				failure(path, fmt.Errorf("manifest didn't validate: %w", err), "set `category` in your manifest, or pass --skip-category for private apps")
+				return true
+			}
 		}
 
 		if opts.skipBroken && m.Broken {
