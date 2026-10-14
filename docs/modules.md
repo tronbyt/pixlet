@@ -249,6 +249,7 @@ fetch information about the current output configuration.
 | `height(raw?)` | Returns the canvas height in px. Pass `raw` to get the unscaled value.                        |
 | `size(raw?)`   | Returns a tuple with the canvas width and height in px. Pass `raw` to get the unscaled value. |
 | `is2x()`       | Returns true if the device renders at 2x resolution.                                          |
+| `max_duration_ms()` | Returns the encoder's animation ceiling in milliseconds, or `0` for no ceiling.           |
 
 ```starlark
 load("render.star", "render", "canvas")
@@ -262,6 +263,36 @@ def main(config):
         ),
     )
 ```
+
+#### Fitting an animation to the available time
+
+The encoder stops emitting frames once their cumulative duration reaches the
+maximum allowed animation duration (`--max-duration`, 15s by default; hosts such
+as tronbyt-server pass the dwell time configured for the app). Frames past that
+point are not shortened — they are never written to the file, so the device only
+ever loops the part that fit.
+
+An app that builds its own timeline can ask for that ceiling and size the
+timeline to fit, instead of having the tail silently dropped:
+
+```starlark
+load("render.star", "render", "canvas")
+
+DELAY_MS = 90
+MAX_DWELL = 28  # frames each card would like to hold the screen
+
+def dwell_frames(cards):
+    budget = canvas.max_duration_ms()
+    if budget <= 0:  # no ceiling -- show every card in full
+        return MAX_DWELL
+    return min(MAX_DWELL, budget // (cards * DELAY_MS))
+```
+
+`0` means unbounded, which is what `render.Root(show_full_animation = True)`
+asks for — so treat it as "take all the time you want", not "no time at all".
+Note that a ceiling removed by the app's *own* `show_full_animation` cannot be
+reflected here, since the script has to run before that value is known; only a
+ceiling removed by the host is.
 
 ## Pixlet module: Color
 

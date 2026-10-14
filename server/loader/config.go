@@ -41,6 +41,21 @@ func NewRenderConfig(path string, config map[string]any, options ...Option) *Ren
 	for _, option := range options {
 		option(conf)
 	}
+
+	// Surface the encoder's ceiling to the app itself, through the same canvas
+	// metadata that already carries width/height/is2x. Done here rather than in
+	// WithMaxDuration because WithMeta replaces Meta wholesale, so either option
+	// could otherwise clobber the other depending on the order they were passed.
+	//
+	// ShowFullAnimation removes the ceiling (see RenderAppletRoot), so report
+	// none when the caller has forced it on. An app that asks for it via its own
+	// render.Root cannot be accounted for here -- the script has to run before
+	// that is known -- but such an app already knows it opted out.
+	conf.Meta.MaxDuration = conf.MaxDuration
+	if conf.ShowFullAnimation != nil && *conf.ShowFullAnimation {
+		conf.Meta.MaxDuration = 0
+	}
+
 	return conf
 }
 
