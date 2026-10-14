@@ -1,7 +1,10 @@
 package community
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -61,6 +64,33 @@ func CreateManifest(_ *cobra.Command, args []string) error {
 	return nil
 }
 
+// promptCategory shows every category in columns and reads a choice, asking
+// again until it is valid. It deliberately avoids promptui: promptui erases
+// lines above its prompt when redrawing after a validation error, which eats
+// into the category list.
+func promptCategory(in io.Reader, out io.Writer) (string, error) {
+	_, _ = fmt.Fprintf(out, "Categories:\n%s", manifest.CategoryGrid(3))
+
+	reader := bufio.NewReader(in)
+	for {
+		_, _ = fmt.Fprint(out, "Category (enter a number or name): ")
+
+		line, err := reader.ReadString('\n')
+		if err != nil && line == "" {
+			if errors.Is(err, io.EOF) {
+				return "", fmt.Errorf("no category entered")
+			}
+			return "", err
+		}
+
+		category, resolveErr := manifest.ResolveCategory(line)
+		if resolveErr == nil {
+			return category, nil
+		}
+		_, _ = fmt.Fprintf(out, "  %v\n", resolveErr)
+	}
+}
+
 func ManifestPrompt() (*manifest.Manifest, error) {
 	// Get the name of the app.
 	namePrompt := promptui.Prompt{
@@ -102,11 +132,18 @@ func ManifestPrompt() (*manifest.Manifest, error) {
 		return nil, fmt.Errorf("app creation failed %w", err)
 	}
 
+	// Get the category of the app.
+	category, err := promptCategory(os.Stdin, os.Stdout)
+	if err != nil {
+		return nil, fmt.Errorf("app creation failed %w", err)
+	}
+
 	return &manifest.Manifest{
-		ID:      manifest.GenerateID(name),
-		Name:    name,
-		Summary: summary,
-		Desc:    desc,
-		Author:  author,
+		ID:       manifest.GenerateID(name),
+		Name:     name,
+		Summary:  summary,
+		Desc:     desc,
+		Author:   author,
+		Category: category,
 	}, nil
 }
