@@ -243,3 +243,37 @@ def main():
 	assert.Equal(t, bounds, actualIm.Bounds())
 	assert.Equal(t, blue, actualIm.At(12, 12))
 }
+
+func TestImageColorCoverage(t *testing.T) {
+	im := image.NewNRGBA(image.Rect(0, 0, 4, 4))
+	im.SetNRGBA(0, 1, color.NRGBA{R: 136, G: 221, B: 238, A: 255})
+	var pngBytes bytes.Buffer
+	require.NoError(t, png.Encode(&pngBytes, im))
+	prefix := fmt.Sprintf(`
+load("render.star", "render")
+load("encoding/base64.star", "base64")
+img = render.Image(src=base64.decode("%s"), width=1, height=1, retain_original=True)
+def main():
+    return render.Root(child=img)
+`, base64.StdEncoding.EncodeToString(pngBytes.Bytes()))
+	for _, tc := range []struct{ name, expression, wantError string }{
+		{"source_crop", `result = img.color_pixel_percentage(["#88ddeeff", "#88ddeeff"], bounds=(-1,1,4,3), original=True)
+if result != 12.5:
+    fail("wrong coverage: %s" % result)`, ""},
+		{"default_bounds", `result = img.color_pixel_percentage(["#88ddee"], original=True)
+if result != 6.25:
+    fail("wrong coverage: %s" % result)`, ""},
+		{"invalid_color", `img.color_pixel_percentage(["not-a-color"])`, "colors[0]"},
+		{"invalid_bounds", `img.color_pixel_percentage([], bounds=(0,1,2))`, "four integers"},
+		{"fractional_bounds", `img.color_pixel_percentage([], bounds=(0,0,1.5,2))`, "bounds[2]"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := NewApplet(t.Context(), "coverage.star", []byte(prefix+tc.expression), WithTests(t))
+			if tc.wantError != "" {
+				require.ErrorContains(t, err, tc.wantError)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}

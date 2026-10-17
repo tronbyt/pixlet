@@ -68,6 +68,9 @@ func (w *{{ .GoName }}) AsAnimationTransform() animation.Transform {
 
 func (w *{{ .GoName }}) AttrNames() []string {
 	return []string{
+{{- if eq .GoName "Image" }}
+		"color_pixel_percentage",
+{{- end }}
 {{- range .Attributes }}
 		"{{ .StarlarkName }}",
 {{- end }}
@@ -97,6 +100,8 @@ func (w *{{ .GoName }}) Attr(name string) (starlark.Value, error) {
 {{- if eq .GoName "Image" }}
 	case "opaque_pixel_percentage":
 		return starlark.NewBuiltin("opaque_pixel_percentage", imageOpaquePixelPercentage).BindReceiver(w), nil
+	case "color_pixel_percentage":
+		return starlark.NewBuiltin("color_pixel_percentage", imageColorPixelPercentage).BindReceiver(w), nil
 {{- end }}
 {{- if .GoWidgetName }}
 	case "frame_count":
@@ -134,6 +139,51 @@ func {{ .GoName | ToLower }}Size(
 {{- end }}
 
 {{ if eq .GoName "Image" -}}
+func imageColorPixelPercentage(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+	var colors *starlark.List
+	var bounds starlark.Tuple
+	var original bool
+	if err := starlark.UnpackArgs("color_pixel_percentage", args, kwargs,
+		"colors", &colors, "bounds?", &bounds, "original?", &original); err != nil {
+		return nil, err
+	}
+	palette := make([]color.Color, colors.Len())
+	for i := 0; i < colors.Len(); i++ {
+		c, err := colorutil.Parse(colors.Index(i))
+		if err != nil || c == nil {
+			return nil, fmt.Errorf("colors[%d] must be a valid color", i)
+		}
+		palette[i] = c
+	}
+	w := b.Receiver().(*Image)
+	r, err := w.PixelBounds(original)
+	if err != nil {
+		return nil, err
+	}
+	if bounds != nil {
+		if bounds.Len() != 4 {
+			return nil, fmt.Errorf("bounds must contain four integers")
+		}
+		var coordinates [4]int
+		for i := range coordinates {
+			coordinates[i], err = starlark.AsInt32(bounds.Index(i))
+			if err != nil {
+				return nil, fmt.Errorf("bounds[%d] must be an integer", i)
+			}
+		}
+		r = image.Rect(coordinates[0], coordinates[1], coordinates[2], coordinates[3])
+	}
+	percentage, err := w.ColorPixelPercentage(palette, r, original)
+	if err != nil {
+		return nil, err
+	}
+	return starlark.Float(percentage), nil
+}
+
 func imageOpaquePixelPercentage(
 	thread *starlark.Thread,
 	b *starlark.Builtin,

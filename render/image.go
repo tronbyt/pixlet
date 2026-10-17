@@ -17,6 +17,7 @@ import (
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
 	"github.com/tronbyt/gg"
+	"github.com/tronbyt/pixlet/internal/colorutil"
 	"go.starlark.net/starlark"
 )
 
@@ -41,8 +42,11 @@ type Image struct {
 	Delay int `starlark:"delay,readonly"`
 	// Number of render frames to hold each animation frame, default is 1.
 	HoldFrames int `starlark:"hold_frames"`
+	// Keep the first decoded frame for pixel measurements before resizing.
+	RetainOriginal bool `starlark:"retain_original"`
 
-	imgs []image.Image
+	imgs     []image.Image
+	original image.Image
 }
 
 func (p *Image) PaintBounds(bounds image.Rectangle, frameIdx int) image.Rectangle {
@@ -85,6 +89,52 @@ func (p *Image) OpaquePixelPercentage(bounds image.Rectangle) float64 {
 
 func (p *Image) FrameCount(bounds image.Rectangle) int {
 	return len(p.imgs) * p.HoldFrames
+}
+
+// PixelBounds returns the first frame's bounds in rendered or original coordinates.
+// Original coordinates require retain_original=True when constructing the image.
+func (p *Image) PixelBounds(original bool) (image.Rectangle, error) {
+	if original {
+		if p.original == nil {
+			return image.Rectangle{}, errors.New("original pixels require retain_original=True")
+		}
+		return p.original.Bounds(), nil
+	}
+	return p.imgs[0].Bounds(), nil
+}
+
+// ColorPixelPercentage measures exact, non-premultiplied RGBA matches in the
+// first frame. Bounds are clipped; duplicate colors count only once.
+func (p *Image) ColorPixelPercentage(colors []color.Color, bounds image.Rectangle, original bool) (float64, error) {
+	imageBounds, err := p.PixelBounds(original)
+	if err != nil {
+		return 0, err
+	}
+	bounds = bounds.Intersect(imageBounds)
+	if bounds.Empty() {
+		return 0, nil
+	}
+	im := p.imgs[0]
+	if original {
+		im = p.original
+	}
+	palette := make(map[color.NRGBA]bool, len(colors))
+	for _, c := range colors {
+		// Avoid a lossy premultiplied round trip for wrapped NRGBA colors.
+		if wrapped, ok := c.(*colorutil.Color); ok {
+			c = wrapped.NRGBA
+		}
+		palette[color.NRGBAModel.Convert(c).(color.NRGBA)] = true
+	}
+	matched := 0
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			if palette[color.NRGBAModel.Convert(im.At(x, y)).(color.NRGBA)] {
+				matched++
+			}
+		}
+	}
+	return 100 * float64(matched) / float64(bounds.Dx()*bounds.Dy()), nil
 }
 
 func (p *Image) InitFromGIF(data []byte) error {
@@ -196,6 +246,10 @@ func (p *Image) Init(*starlark.Thread) error {
 
 	w := p.imgs[0].Bounds().Dx()
 	h := p.imgs[0].Bounds().Dy()
+	p.original = nil
+	if p.RetainOriginal {
+		p.original = p.imgs[0]
+	}
 
 	if p.Width != 0 || p.Height != 0 {
 		nw, nh := p.Width, p.Height

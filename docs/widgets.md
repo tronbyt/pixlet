@@ -19,6 +19,15 @@ Image widgets also expose `opaque_pixel_percentage(bounds?)`, which returns
 the percentage of pixels with non-zero alpha. The optional bounds tuple is
 `(x0, y0, x1, y1)` and is clipped to the image.
 
+`Image.color_pixel_percentage(colors, bounds?, original=False)` returns the
+percentage of first-frame pixels exactly matching any color in the supplied
+list (including alpha). Bounds are clipped to the measured image; transparent
+pixels remain in the denominator, and duplicate colors count only once.
+To measure before resizing, construct the Image with `retain_original=True`
+and call this method with `original=True`. Bounds then use source coordinates.
+Retaining the original first frame is opt-in to avoid extra memory use for
+ordinary rendering, and does not decode or fetch the image a second time.
+
 ## Colors
 
 When specifying colors, use a CSS-like hexadecimal color specification
@@ -247,6 +256,7 @@ the `delay` attribute.
 | `height` | `int` | Scale image to this height | N |
 | `delay` | `int` | (Read-only) Frame delay in ms, for animated GIFs | N |
 | `hold_frames` | `int` | Number of render frames to hold each animation frame, default is 1. | N |
+| `retain_original` | `bool` | Keep the first decoded frame for pixel measurements before resizing. | N |
 
 ## Line
 Line draws a line from (x1, y1) to (x2, y2).

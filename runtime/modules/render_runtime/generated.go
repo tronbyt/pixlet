@@ -5,6 +5,7 @@ package render_runtime
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"slices"
 
 	"github.com/gohugoio/hashstructure"
@@ -977,7 +978,8 @@ func newImage(
 		width  starlark.Int
 		height starlark.Int
 
-		hold_frames starlark.Int
+		hold_frames     starlark.Int
+		retain_original starlark.Bool
 	)
 
 	if err := starlark.UnpackArgs(
@@ -987,6 +989,7 @@ func newImage(
 		"width?", &width,
 		"height?", &height,
 		"hold_frames?", &hold_frames,
+		"retain_original?", &retain_original,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Image: %s", err)
 	}
@@ -1021,6 +1024,8 @@ func newImage(
 		return nil, fmt.Errorf("parsing hold_frames: %w", err)
 	}
 
+	w.RetainOriginal = bool(retain_original)
+
 	if err := w.Init(thread); err != nil {
 		return nil, err
 	}
@@ -1034,11 +1039,13 @@ func (w *Image) AsRenderWidget() render.Widget {
 
 func (w *Image) AttrNames() []string {
 	return []string{
+		"color_pixel_percentage",
 		"src",
 		"width",
 		"height",
 		"delay",
 		"hold_frames",
+		"retain_original",
 	}
 }
 
@@ -1054,10 +1061,14 @@ func (w *Image) Attr(name string) (starlark.Value, error) {
 		return starlark.MakeInt(int(w.Delay)), nil
 	case "hold_frames":
 		return starlark.MakeInt(int(w.HoldFrames)), nil
+	case "retain_original":
+		return starlark.Bool(w.RetainOriginal), nil
 	case "size":
 		return starlark.NewBuiltin("size", imageSize).BindReceiver(w), nil
 	case "opaque_pixel_percentage":
 		return starlark.NewBuiltin("opaque_pixel_percentage", imageOpaquePixelPercentage).BindReceiver(w), nil
+	case "color_pixel_percentage":
+		return starlark.NewBuiltin("color_pixel_percentage", imageColorPixelPercentage).BindReceiver(w), nil
 	case "frame_count":
 		return starlark.NewBuiltin("frame_count", imageFrameCount).BindReceiver(w), nil
 	default:
@@ -1087,6 +1098,51 @@ func imageSize(
 		starlark.MakeInt(width),
 		starlark.MakeInt(height),
 	}), nil
+}
+
+func imageColorPixelPercentage(
+	thread *starlark.Thread,
+	b *starlark.Builtin,
+	args starlark.Tuple,
+	kwargs []starlark.Tuple) (starlark.Value, error) {
+	var colors *starlark.List
+	var bounds starlark.Tuple
+	var original bool
+	if err := starlark.UnpackArgs("color_pixel_percentage", args, kwargs,
+		"colors", &colors, "bounds?", &bounds, "original?", &original); err != nil {
+		return nil, err
+	}
+	palette := make([]color.Color, colors.Len())
+	for i := 0; i < colors.Len(); i++ {
+		c, err := colorutil.Parse(colors.Index(i))
+		if err != nil || c == nil {
+			return nil, fmt.Errorf("colors[%d] must be a valid color", i)
+		}
+		palette[i] = c
+	}
+	w := b.Receiver().(*Image)
+	r, err := w.PixelBounds(original)
+	if err != nil {
+		return nil, err
+	}
+	if bounds != nil {
+		if bounds.Len() != 4 {
+			return nil, fmt.Errorf("bounds must contain four integers")
+		}
+		var coordinates [4]int
+		for i := range coordinates {
+			coordinates[i], err = starlark.AsInt32(bounds.Index(i))
+			if err != nil {
+				return nil, fmt.Errorf("bounds[%d] must be an integer", i)
+			}
+		}
+		r = image.Rect(coordinates[0], coordinates[1], coordinates[2], coordinates[3])
+	}
+	percentage, err := w.ColorPixelPercentage(palette, r, original)
+	if err != nil {
+		return nil, err
+	}
+	return starlark.Float(percentage), nil
 }
 
 func imageOpaquePixelPercentage(
