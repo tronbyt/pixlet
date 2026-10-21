@@ -56,7 +56,7 @@
     "react-router": "^8.3.0",
     "react-router-dom": "^7.18.2",
     "react-simple-oauth2-login": "^0.5.4",
-    "vite": "^8.0.16",
+    "vite": "^8.3.5",
     "vite-plugin-svgr": "^4.5.0"
   }
 }
