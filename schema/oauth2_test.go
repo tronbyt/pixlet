@@ -52,3 +52,63 @@ def main():
 	require.NoError(t, err)
 	assert.NotNil(t, screens)
 }
+
+func TestOAuth2ServerManaged(t *testing.T) {
+	const source = `
+load("schema.star", "schema")
+load("assert.star", "assert")
+
+t = schema.OAuth2(
+    id = "auth",
+    name = "GitHub",
+    desc = "Connect your GitHub account.",
+    icon = "github",
+    authorization_endpoint = "https://github.com/login/oauth/authorize",
+    token_endpoint = "https://github.com/login/oauth/access_token",
+    authorization_params = {"prompt": "consent"},
+    scopes = [
+        "read:user",
+    ],
+)
+
+assert.eq(t.id, "auth")
+assert.eq(t.token_endpoint, "https://github.com/login/oauth/access_token")
+assert.eq(t.authorization_params, {"prompt": "consent"})
+assert.eq(t.handler, None)
+assert.eq(t.client_id, "")
+
+def main():
+    return []
+
+`
+
+	app, err := runtime.NewApplet(t.Context(), "oauth2.star", []byte(source), runtime.WithTests(t))
+	require.NoError(t, err)
+
+	screens, err := app.Run(t.Context())
+	require.NoError(t, err)
+	assert.NotNil(t, screens)
+}
+
+func TestOAuth2AuthorizationParamsMustBeStrings(t *testing.T) {
+	const source = `
+load("schema.star", "schema")
+
+t = schema.OAuth2(
+    id = "auth",
+    name = "GitHub",
+    desc = "Connect your GitHub account.",
+    icon = "github",
+    authorization_endpoint = "https://github.com/login/oauth/authorize",
+    token_endpoint = "https://github.com/login/oauth/access_token",
+    authorization_params = {"max_age": 3600},
+    scopes = ["read:user"],
+)
+
+def main():
+    return []
+`
+
+	_, err := runtime.NewApplet(t.Context(), "oauth2.star", []byte(source), runtime.WithTests(t))
+	require.ErrorContains(t, err, "authorization_params")
+}
