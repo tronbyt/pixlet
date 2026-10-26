@@ -8,12 +8,20 @@ import (
 	"go.starlark.net/starlark"
 )
 
+// OAuth2 is the Starlark value returned by schema.OAuth2. Its SchemaField
+// holds what is serialized; the Starlark list and dict are kept so the
+// attributes read back exactly what the app passed in.
 type OAuth2 struct {
 	SchemaField
 
-	starlarkScopes *starlark.List
+	starlarkScopes              *starlark.List
+	starlarkAuthorizationParams *starlark.Dict
 }
 
+// newOAuth2 implements schema.OAuth2. Every mode-specific argument is
+// optional here: whether the field is complete for its mode (client_id and
+// handler, or token_endpoint) is checked by validateSchema once the field is
+// part of a schema, so the error can name the field.
 func newOAuth2(
 	thread *starlark.Thread,
 	_ *starlark.Builtin,
@@ -21,14 +29,16 @@ func newOAuth2(
 	kwargs []starlark.Tuple,
 ) (starlark.Value, error) {
 	var (
-		id           starlark.String
-		name         starlark.String
-		desc         starlark.String
-		icon         starlark.String
-		handler      *starlark.Function
-		clientID     starlark.String
-		authEndpoint starlark.String
-		scopes       *starlark.List
+		id            starlark.String
+		name          starlark.String
+		desc          starlark.String
+		icon          starlark.String
+		handler       *starlark.Function
+		clientID      starlark.String
+		authEndpoint  starlark.String
+		tokenEndpoint starlark.String
+		authParams    *starlark.Dict
+		scopes        *starlark.List
 	)
 
 	if err := starlark.UnpackArgs(
@@ -38,10 +48,12 @@ func newOAuth2(
 		"name", &name,
 		"desc", &desc,
 		"icon", &icon,
-		"handler", &handler,
-		"client_id", &clientID,
+		"handler?", &handler,
+		"client_id?", &clientID,
 		"authorization_endpoint", &authEndpoint,
 		"scopes", &scopes,
+		"token_endpoint?", &tokenEndpoint,
+		"authorization_params?", &authParams,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for OAuth2: %s", err)
 	}
@@ -52,11 +64,30 @@ func newOAuth2(
 	s.Name = name.GoString()
 	s.Description = desc.GoString()
 	s.Icon = icon.GoString()
-	s.Handler = handler.Name()
-	s.StarlarkHandler = handler
+	if handler != nil {
+		s.Handler = handler.Name()
+		s.StarlarkHandler = handler
+	}
 	s.ClientID = clientID.GoString()
 	s.AuthorizationEndpoint = authEndpoint.GoString()
+	s.TokenEndpoint = tokenEndpoint.GoString()
 	s.starlarkScopes = scopes
+	s.starlarkAuthorizationParams = authParams
+
+	if authParams != nil {
+		s.AuthorizationParams = make(map[string]string, authParams.Len())
+		for _, item := range authParams.Items() {
+			key, ok := item[0].(starlark.String)
+			if !ok {
+				return nil, fmt.Errorf("expected authorization_params keys to be strings but found: %s", item[0].Type())
+			}
+			value, ok := item[1].(starlark.String)
+			if !ok {
+				return nil, fmt.Errorf("expected authorization_params values to be strings but found: %s (for %q)", item[1].Type(), key.GoString())
+			}
+			s.AuthorizationParams[key.GoString()] = value.GoString()
+		}
+	}
 
 	if s.starlarkScopes != nil {
 		s.Scopes = make([]string, 0, scopes.Len())
@@ -81,16 +112,21 @@ func newOAuth2(
 	return s, nil
 }
 
+// AsSchemaField returns the field as it is serialized in the schema.
 func (s *OAuth2) AsSchemaField() SchemaField {
 	return s.SchemaField
 }
 
+// AttrNames lists the attributes readable from Starlark, one per argument.
 func (s *OAuth2) AttrNames() []string {
 	return []string{
 		"id", "name", "desc", "icon", "handler", "client_id", "authorization_endpoint", "scopes",
+		"token_endpoint", "authorization_params",
 	}
 }
 
+// Attr returns an argument's value. Unset optional arguments read as their
+// zero value: "" for strings, None for handler and authorization_params.
 func (s *OAuth2) Attr(name string) (starlark.Value, error) {
 	switch name {
 	case "id":
@@ -106,6 +142,9 @@ func (s *OAuth2) Attr(name string) (starlark.Value, error) {
 		return starlark.String(s.Icon), nil
 
 	case "handler":
+		if s.StarlarkHandler == nil {
+			return starlark.None, nil
+		}
 		return s.StarlarkHandler, nil
 
 	case "client_id":
@@ -116,6 +155,15 @@ func (s *OAuth2) Attr(name string) (starlark.Value, error) {
 
 	case "scopes":
 		return s.starlarkScopes, nil
+
+	case "token_endpoint":
+		return starlark.String(s.TokenEndpoint), nil
+
+	case "authorization_params":
+		if s.starlarkAuthorizationParams == nil {
+			return starlark.None, nil
+		}
+		return s.starlarkAuthorizationParams, nil
 
 	default:
 		return nil, nil
