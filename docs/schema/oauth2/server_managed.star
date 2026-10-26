@@ -3,6 +3,14 @@ load("render.star", "render")
 load("schema.star", "schema")
 
 def main(config):
+    """Shows the signed-in GitHub user's login, or a hint to sign in.
+
+    Args:
+      config: the app config. The server sets "auth" to an access token.
+
+    Returns:
+      The rendered root.
+    """
     token = config.get("auth")
     if not token:
         return render.Root(
@@ -30,6 +38,11 @@ def main(config):
     )
 
 def get_schema():
+    """Declares the GitHub sign-in. The server holds the OAuth client.
+
+    Returns:
+      The app schema.
+    """
     return schema.Schema(
         version = "1",
         fields = [

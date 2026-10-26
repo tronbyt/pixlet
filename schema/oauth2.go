@@ -8,6 +8,9 @@ import (
 	"go.starlark.net/starlark"
 )
 
+// OAuth2 is the Starlark value returned by schema.OAuth2. Its SchemaField
+// holds what is serialized; the Starlark list and dict are kept so the
+// attributes read back exactly what the app passed in.
 type OAuth2 struct {
 	SchemaField
 
@@ -15,6 +18,10 @@ type OAuth2 struct {
 	starlarkAuthorizationParams *starlark.Dict
 }
 
+// newOAuth2 implements schema.OAuth2. Every mode-specific argument is
+// optional here: whether the field is complete for its mode (client_id and
+// handler, or token_endpoint) is checked by validateSchema once the field is
+// part of a schema, so the error can name the field.
 func newOAuth2(
 	thread *starlark.Thread,
 	_ *starlark.Builtin,
@@ -105,10 +112,12 @@ func newOAuth2(
 	return s, nil
 }
 
+// AsSchemaField returns the field as it is serialized in the schema.
 func (s *OAuth2) AsSchemaField() SchemaField {
 	return s.SchemaField
 }
 
+// AttrNames lists the attributes readable from Starlark, one per argument.
 func (s *OAuth2) AttrNames() []string {
 	return []string{
 		"id", "name", "desc", "icon", "handler", "client_id", "authorization_endpoint", "scopes",
@@ -116,6 +125,8 @@ func (s *OAuth2) AttrNames() []string {
 	}
 }
 
+// Attr returns an argument's value. Unset optional arguments read as their
+// zero value: "" for strings, None for handler and authorization_params.
 func (s *OAuth2) Attr(name string) (starlark.Value, error) {
 	switch name {
 	case "id":

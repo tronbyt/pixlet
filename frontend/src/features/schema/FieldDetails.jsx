@@ -11,6 +11,11 @@ import Typeahead from './fields/Typeahead';
 import Typography from '@mui/material/Typography';
 
 
+/**
+ * Renders the input for one schema field in the pixlet serve config panel.
+ *
+ * @param {{ field: object }} props - the field, as serialized in the app's schema
+ */
 export default function FieldDetails({ field }) {
     switch (field.type) {
         case 'datetime':

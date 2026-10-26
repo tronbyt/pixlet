@@ -8,6 +8,8 @@ import (
 	"github.com/tronbyt/pixlet/runtime"
 )
 
+// TestOAuth2 checks the attributes of a field in the original Tidbyt mode,
+// with a client ID and a handler.
 func TestOAuth2(t *testing.T) {
 	const source = `
 load("encoding/json.star", "json")
@@ -53,6 +55,9 @@ def main():
 	assert.NotNil(t, screens)
 }
 
+// TestOAuth2ServerManaged checks the attributes of a server-managed field:
+// the new arguments read back, and the unset handler and client ID read as
+// None and "".
 func TestOAuth2ServerManaged(t *testing.T) {
 	const source = `
 load("schema.star", "schema")
@@ -90,6 +95,9 @@ def main():
 	assert.NotNil(t, screens)
 }
 
+// TestOAuth2AuthorizationParamsMustBeStrings checks that a non-string value
+// in authorization_params fails when the field is created, since it is sent
+// as a URL query parameter.
 func TestOAuth2AuthorizationParamsMustBeStrings(t *testing.T) {
 	const source = `
 load("schema.star", "schema")

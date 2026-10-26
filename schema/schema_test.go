@@ -1273,6 +1273,8 @@ def main():
 	assert.JSONEq(t, `{"version":"1","schema":[{"type":"text","id":"password","name":"Password","description":"Generated input","icon":"userSecret","default":"secret"}]}`, stringValue)
 }
 
+// TestSchemaWithServerManagedOAuth2 checks the schema JSON servers read for a
+// server-managed field, and that no handler is registered for it.
 func TestSchemaWithServerManagedOAuth2(t *testing.T) {
 	code := `
 load("schema.star", "schema")
@@ -1320,6 +1322,8 @@ def main():
 	assert.Empty(t, app.Schema.Handlers)
 }
 
+// TestSchemaWithServerManagedOAuth2Legacy checks that a dict-style schema can
+// declare a server-managed field too, with http endpoints on loopback hosts.
 func TestSchemaWithServerManagedOAuth2Legacy(t *testing.T) {
 	code := `
 def get_schema():
@@ -1343,6 +1347,9 @@ def main():
 	assert.Equal(t, "http://127.0.0.1:8080/token", app.Schema.Fields[0].TokenEndpoint)
 }
 
+// TestSchemaOAuth2Invalid checks that each incomplete or mixed-up OAuth2
+// field fails to load: neither mode, both modes, reserved authorization
+// params, and endpoints that are not plain absolute https URLs.
 func TestSchemaOAuth2Invalid(t *testing.T) {
 	tests := map[string]string{
 		"neither mode": `
@@ -1415,6 +1422,8 @@ def main():
 	}
 }
 
+// TestSchemaTokenEndpointOnlyForOAuth2 checks that token_endpoint is rejected
+// on fields other than OAuth2.
 func TestSchemaTokenEndpointOnlyForOAuth2(t *testing.T) {
 	code := `
 def get_schema():
