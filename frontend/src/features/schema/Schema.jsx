@@ -1,10 +1,9 @@
-import { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import refreshSchema from './actions';
 import Field from './Field';
 import Generated from './fields/Generated';
-
 
 export default function Schema() {
     const schema = useSelector(state => state.schema);
@@ -15,22 +14,26 @@ export default function Schema() {
 
     return (
         <div>
-            {
-                schema.value.schema.map((field) => {
-                    if (field.type === "generated") {
-                        return <Generated key={field.id} field={field} />
-                    }
+            {schema.value.schema.map((field) => {
+                if (field.type === 'generated') {
+                    const generatedFields =
+                        schema.generated[field.id]?.schema ?? [];
 
-                    return <Field key={field.id} field={field} />
-                })
-            }
-            {
-                schema.generated.schema.map((field) => {
-                    // A generated field cannot return a generated field, that
-                    // would be chaos!
-                    return <Field key={field.id} field={field} />
-                })
-            }
+                    return (
+                        <Fragment key={field.id}>
+                            <Generated field={field} />
+                            {generatedFields.map((generatedField) => (
+                                <Field
+                                    key={generatedField.id}
+                                    field={generatedField}
+                                />
+                            ))}
+                        </Fragment>
+                    );
+                }
+
+                return <Field key={field.id} field={field} />;
+            })}
         </div>
     );
 }

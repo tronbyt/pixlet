@@ -56,7 +56,10 @@ export function callGeneratedHandler(id, handler, param) {
     store.dispatch(loading(true));
     axios.post(`api/v1/handlers/` + handler, buildHandlerRequest(data))
         .then(res => {
-            store.dispatch(updateGenerated(res.data));
+            store.dispatch(updateGenerated({
+                id: id,
+                value: res.data,
+            }));
         })
         .catch(err => {
             // TODO: make sure this clears.
