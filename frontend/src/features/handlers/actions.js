@@ -49,25 +49,36 @@ export function callHandler(id, handler, param) {
 }
 
 export function callGeneratedHandler(id, handler, param) {
-    let data = {
+    const generation = store.getState().schema.generation;
+    const data = {
         id: id,
         param: param,
     };
+
     store.dispatch(loading(true));
+
     axios.post(`api/v1/handlers/` + handler, buildHandlerRequest(data))
         .then(res => {
-            store.dispatch(updateGenerated(res.data));
+            store.dispatch(updateGenerated({
+                id: id,
+                value: res.data,
+                generation: generation,
+            }));
         })
         .catch(err => {
-            // TODO: make sure this clears.
+            if (generation !== store.getState().schema.generation) {
+                return;
+            }
+
             const msg = parseErrorMessage(handler, err);
             store.dispatch(setError({ id: msg, message: msg }));
             console.log(err);
         })
-        .then(() => {
+        .finally(() => {
             store.dispatch(loading(false));
-        })
+        });
 }
+
 
 export function callHandlerSetValue(id, handler, param, valueHandler) {
     let data = {
