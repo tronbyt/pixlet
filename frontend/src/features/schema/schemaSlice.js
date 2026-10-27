@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     loading: false,
     error: '',
+    generation: 0,
     value: {
         version: '1',
         schema: [],
@@ -16,12 +17,17 @@ export const schemaSlice = createSlice({
     reducers: {
         update: (state, action) => {
             state.value = action.payload;
+            state.generation += 1;
             state.generated = {};
             state.loading = false;
             state.error = '';
         },
         updateGenerated: (state, action) => {
-            const { id, value } = action.payload;
+            const { id, value, generation } = action.payload;
+
+            if (generation !== state.generation) {
+                return;
+            }
 
             state.generated[id] = value;
             state.loading = false;
