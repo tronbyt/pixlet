@@ -5,6 +5,13 @@ import refreshSchema from './actions';
 import Field from './Field';
 import Generated from './fields/Generated';
 
+/**
+ * Renders configuration fields in schema declaration order.
+ * Places each generated declaration's fields immediately after that declaration,
+ * keeping results from multiple generators separate.
+ *
+ * @returns {import('react').ReactElement} The configuration form fields.
+ */
 export default function Schema() {
     const schema = useSelector(state => state.schema);
 

@@ -48,6 +48,15 @@ export function callHandler(id, handler, param) {
         })
 }
 
+/**
+ * Fetches generated fields for a schema declaration and stores them by ID.
+ * Tags the response with the current schema generation so responses from
+ * before a schema reload are ignored.
+ *
+ * @param {string} id - ID of the generated schema declaration.
+ * @param {string} handler - Name of the handler that generates the fields.
+ * @param {*} param - Configured source value passed to the handler.
+ */
 export function callGeneratedHandler(id, handler, param) {
     const generation = store.getState().schema.generation;
     const data = {

@@ -4,6 +4,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { callGeneratedHandler } from '../../handlers/actions';
 import { set as setError } from '../../errors/errorSlice';
 
+/**
+ * Runs a generated declaration's handler using its configured source value.
+ * Reruns when configuration or the base schema generation changes so a live
+ * schema reload repopulates generated fields without a source-value edit.
+ *
+ * @param {Object} props - Component properties.
+ * @param {Object} props.field - Generated declaration with ID, source, and handler.
+ * @returns {null} This component triggers generation without rendering UI.
+ */
 export default function Generated({ field }) {
     const config = useSelector(state => state.config);
     const baseSchema = useSelector(state => state.schema.value);
