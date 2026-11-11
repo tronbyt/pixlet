@@ -287,10 +287,48 @@ The value provided to `config.get()` is a JSON string with display and values pr
 ```
 
 ### OAuth2
-![oauth2 example](oauth2/oauth2.gif)
+> [Example App](oauth2/server_managed.star)
+
+The `OAuth2` field signs the user in to an OAuth2 compatible API, such as GitHub or Google, and gives the app an access token for it.
+
+```starlark
+schema.OAuth2(
+    id = "auth",
+    name = "GitHub",
+    desc = "Connect your GitHub account.",
+    icon = "github",
+    authorization_endpoint = "https://github.com/login/oauth/authorize",
+    token_endpoint = "https://github.com/login/oauth/access_token",
+    scopes = [
+        "read:user",
+    ],
+)
+```
+
+The app only names the service. It holds no client ID, client secret or handler: whoever runs the Tronbyt server registers an OAuth client with the service and enters it on the server. The server signs the user in (authorization code flow with PKCE), stores the tokens, refreshes them, and passes the app a fresh access token as the field's value:
+
+```starlark
+def main(config):
+    token = config.get("auth")  # an access token, or empty if the user is not signed in
+```
+
+An empty value means the user has not signed in yet, or has to sign in again. Show a hint instead of failing.
+
+| Argument | Description |
+| --- | --- |
+| `authorization_endpoint` | The service's authorization URL. |
+| `token_endpoint` | The service's token URL. The server sends the client secret only here. |
+| `scopes` | The scopes the app needs. |
+| `authorization_params` | Optional dict of extra authorization request parameters, e.g. `{"access_type": "offline", "prompt": "consent"}` for Google. It cannot set `client_id`, `redirect_uri`, `response_type`, `scope`, `state` or the PKCE parameters. |
+
+Both endpoints must be absolute `https` URLs (plain `http` is accepted for `localhost` while testing) without a query or fragment. A server offers an OAuth client to an app only when both endpoints match the ones the client was registered with, so use the exact URLs from the service's documentation.
+
+When testing with `pixlet serve`, paste an access token into the field.
+
+#### Tidbyt OAuth2
 > [Example App](oauth2/example.star)
 
-The `OAuth2` field provides mechanism to authenticate a user via an OAuth2 compatible API. 
+Apps written for the original Tidbyt service set `client_id` and `handler` instead of `token_endpoint`. This flow relied on Tidbyt's servers, which no longer exist, so Tronbyt servers do not support it. New apps should set `token_endpoint`.
 
 ```starlark
 schema.OAuth2(

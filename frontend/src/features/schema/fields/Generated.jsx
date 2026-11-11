@@ -1,45 +1,56 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { callGeneratedHandler } from '../../handlers/actions';
 import { set as setError } from '../../errors/errorSlice';
 
-
+/**
+ * Runs a generated declaration's handler using its configured source value.
+ * Reruns when configuration or the base schema generation changes so a live
+ * schema reload repopulates generated fields without a source-value edit.
+ *
+ * @param {Object} props - Component properties.
+ * @param {Object} props.field - Generated declaration with ID, source, and handler.
+ * @returns {null} This component triggers generation without rendering UI.
+ */
 export default function Generated({ field }) {
-    const [source, setSource] = useState(null);
     const config = useSelector(state => state.config);
-    const schema = useSelector(state => state.schema);
+    const baseSchema = useSelector(state => state.schema.value);
+    const generation = useSelector(state => state.schema.generation);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        onChange(source);
-    }, [config])
+    const { id, source, handler } = field;
 
     useEffect(() => {
-        setSource(getSourceField());
-    }, [schema])
+        const fields = baseSchema.schema;
 
-    const onChange = (source_field) => {
-        if (source_field && source_field.id in config) {
-            callGeneratedHandler(field.id, field.handler, config[source_field.id].value);
-        }
-    }
-
-    const getSourceField = () => {
-        if (schema.value.schema.length == 0) {
-            return null;
+        if (fields.length === 0) {
+            return;
         }
 
-        for (let i = 0; i < schema.value.schema.length; i++) {
-            if (schema.value.schema[i].id === field.source) {
-                return schema.value.schema[i];
-            }
+        const sourceField = fields.find(
+            candidate => candidate.id === source
+        );
+
+        if (!sourceField) {
+            const msg =
+                `schema.Generated references source that does not exist: ${source}`;
+
+            dispatch(setError({ id: msg, message: msg }));
+            return;
         }
 
-        let msg = `schema.Generated references source that does not exist: ${field.source}`;
-        dispatch(setError({ id: msg, message: msg }));
-        return null;
-    }
+        const sourceConfig = config[sourceField.id];
+
+        if (
+            !sourceConfig ||
+            typeof sourceConfig.value === 'undefined'
+        ) {
+            return;
+        }
+
+        callGeneratedHandler(id, handler, sourceConfig.value);
+    }, [config, baseSchema, generation, id, source, handler, dispatch]);
 
     return null;
 }

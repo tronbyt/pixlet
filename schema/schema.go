@@ -2,8 +2,11 @@ package schema
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"maps"
+	"net"
+	"net/url"
 	"reflect"
 	"slices"
 	"strings"
@@ -50,12 +53,19 @@ type SchemaField struct {
 	Sounds  []SchemaSound  `json:"sounds,omitempty"  validate:"required_for=notification,dive"`
 
 	Source          string             `json:"source,omitempty"  validate:"required_for=generated"`
-	Handler         string             `json:"handler,omitempty" validate:"required_for=generated locationbased typeahead oauth2"`
+	Handler         string             `json:"handler,omitempty" validate:"required_for=generated locationbased typeahead"`
 	StarlarkHandler *starlark.Function `json:"-"`
 
-	ClientID              string   `json:"client_id,omitempty"              validate:"required_for=oauth2"`
-	AuthorizationEndpoint string   `json:"authorization_endpoint,omitempty" validate:"required_for=oauth2"`
-	Scopes                []string `json:"scopes,omitempty"                 validate:"required_for=oauth2"`
+	// OAuth2 fields come in two modes, checked by validateOAuth2Field. In the
+	// original Tidbyt mode the app holds a client ID and a handler that swaps
+	// the authorization code for a token. In server-managed mode the app sets
+	// a token endpoint instead: the server keeps the OAuth client, signs the
+	// user in and passes the app a fresh access token as the field's value.
+	ClientID              string            `json:"client_id,omitempty"`
+	AuthorizationEndpoint string            `json:"authorization_endpoint,omitempty" validate:"required_for=oauth2"`
+	TokenEndpoint         string            `json:"token_endpoint,omitempty"         validate:"allowed_for=oauth2"`
+	AuthorizationParams   map[string]string `json:"authorization_params,omitempty"   validate:"allowed_for=oauth2"`
+	Scopes                []string          `json:"scopes,omitempty"                 validate:"required_for=oauth2"`
 
 	Secret bool `json:"secret,omitempty" validate:"allowed_for=text"`
 }
@@ -407,5 +417,85 @@ func validateSchema(schema *Schema) error {
 		return err
 	}
 
+	for i := range schema.Fields {
+		if schema.Fields[i].Type == "oauth2" {
+			if err := validateOAuth2Field(&schema.Fields[i]); err != nil {
+				return fmt.Errorf("field %q: %w", schema.Fields[i].ID, err)
+			}
+		}
+	}
+
 	return nil
+}
+
+// validateOAuth2Field checks that an OAuth2 field is complete for its mode.
+func validateOAuth2Field(f *SchemaField) error {
+	hasHandler := f.Handler != "" || f.StarlarkHandler != nil
+	if f.TokenEndpoint == "" {
+		if f.ClientID == "" || !hasHandler {
+			return errors.New("an OAuth2 field needs either token_endpoint, or client_id and handler")
+		}
+		if len(f.AuthorizationParams) > 0 {
+			return errors.New("authorization_params requires token_endpoint")
+		}
+		return nil
+	}
+
+	if f.ClientID != "" || hasHandler {
+		return errors.New("an OAuth2 field with token_endpoint must not set client_id or handler: the server holds the client and exchanges the code")
+	}
+	if err := validateOAuth2Endpoint(f.AuthorizationEndpoint); err != nil {
+		return fmt.Errorf("authorization_endpoint: %w", err)
+	}
+	if err := validateOAuth2Endpoint(f.TokenEndpoint); err != nil {
+		return fmt.Errorf("token_endpoint: %w", err)
+	}
+	for k := range f.AuthorizationParams {
+		if oauth2ReservedParams[k] {
+			return fmt.Errorf("authorization_params must not set %q: the server sets it", k)
+		}
+	}
+	return nil
+}
+
+// oauth2ReservedParams are authorization request parameters that the server
+// sets itself in server-managed mode.
+var oauth2ReservedParams = map[string]bool{
+	"client_id":             true,
+	"redirect_uri":          true,
+	"response_type":         true,
+	"scope":                 true,
+	"state":                 true,
+	"code_challenge":        true,
+	"code_challenge_method": true,
+}
+
+// validateOAuth2Endpoint accepts absolute https URLs without query, fragment
+// or credentials, and plain http on loopback hosts for local testing. Servers
+// match OAuth clients to apps by these URLs, so they must be unambiguous.
+func validateOAuth2Endpoint(raw string) error {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return err
+	}
+	switch {
+	case u.Opaque != "" || u.Host == "":
+		return errors.New("must be an absolute URL")
+	case u.User != nil:
+		return errors.New("must not contain credentials")
+	case u.RawQuery != "" || u.ForceQuery:
+		return errors.New("must not contain a query; use authorization_params for extra parameters")
+	case u.Fragment != "":
+		return errors.New("must not contain a fragment")
+	}
+	switch strings.ToLower(u.Scheme) {
+	case "https":
+		return nil
+	case "http":
+		host := u.Hostname()
+		if ip := net.ParseIP(host); host == "localhost" || (ip != nil && ip.IsLoopback()) {
+			return nil
+		}
+	}
+	return errors.New("must use https")
 }

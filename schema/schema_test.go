@@ -1272,3 +1272,173 @@ def main():
 	require.NoError(t, err)
 	assert.JSONEq(t, `{"version":"1","schema":[{"type":"text","id":"password","name":"Password","description":"Generated input","icon":"userSecret","default":"secret"}]}`, stringValue)
 }
+
+// TestSchemaWithServerManagedOAuth2 checks the schema JSON servers read for a
+// server-managed field, and that no handler is registered for it.
+func TestSchemaWithServerManagedOAuth2(t *testing.T) {
+	code := `
+load("schema.star", "schema")
+
+def get_schema():
+    return schema.Schema(
+        version = "1",
+        fields = [
+            schema.OAuth2(
+                id = "auth",
+                name = "GitHub",
+                desc = "Connect your GitHub account.",
+                icon = "github",
+                authorization_endpoint = "https://github.com/login/oauth/authorize",
+                token_endpoint = "https://github.com/login/oauth/access_token",
+                authorization_params = {"allow_signup": "false"},
+                scopes = ["read:user"],
+            ),
+        ],
+    )
+
+def main():
+    return None
+`
+
+	app, err := loadApp(t, code)
+	require.NoError(t, err)
+
+	js, err := json.Marshal(app.Schema)
+	require.NoError(t, err)
+	assert.JSONEq(t, `{
+		"version": "1",
+		"schema": [{
+			"type": "oauth2",
+			"id": "auth",
+			"name": "GitHub",
+			"description": "Connect your GitHub account.",
+			"icon": "github",
+			"authorization_endpoint": "https://github.com/login/oauth/authorize",
+			"token_endpoint": "https://github.com/login/oauth/access_token",
+			"authorization_params": {"allow_signup": "false"},
+			"scopes": ["read:user"]
+		}]
+	}`, string(js))
+	assert.Empty(t, app.Schema.Handlers)
+}
+
+// TestSchemaWithServerManagedOAuth2Legacy checks that a dict-style schema can
+// declare a server-managed field too, with http endpoints on loopback hosts.
+func TestSchemaWithServerManagedOAuth2Legacy(t *testing.T) {
+	code := `
+def get_schema():
+    return [
+        {"type": "oauth2",
+         "id": "auth",
+         "name": "GitHub",
+         "authorization_endpoint": "http://localhost:8080/authorize",
+         "token_endpoint": "http://127.0.0.1:8080/token",
+         "scopes": ["read:user"],
+        },
+    ]
+
+def main():
+    return None
+`
+
+	app, err := loadApp(t, code)
+	require.NoError(t, err)
+	require.Len(t, app.Schema.Fields, 1)
+	assert.Equal(t, "http://127.0.0.1:8080/token", app.Schema.Fields[0].TokenEndpoint)
+}
+
+// TestSchemaOAuth2Invalid checks that each incomplete or mixed-up OAuth2
+// field fails to load: neither mode, both modes, reserved authorization
+// params, and endpoints that are not plain absolute https URLs.
+func TestSchemaOAuth2Invalid(t *testing.T) {
+	tests := map[string]string{
+		"neither mode": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                authorization_endpoint = "https://example.com/authorize",
+                scopes = ["s"])`,
+		"client_id without handler": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                client_id = "id",
+                authorization_endpoint = "https://example.com/authorize",
+                scopes = ["s"])`,
+		"token_endpoint with client_id": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                client_id = "id",
+                authorization_endpoint = "https://example.com/authorize",
+                token_endpoint = "https://example.com/token",
+                scopes = ["s"])`,
+		"token_endpoint with handler": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                handler = oauth_handler,
+                authorization_endpoint = "https://example.com/authorize",
+                token_endpoint = "https://example.com/token",
+                scopes = ["s"])`,
+		"authorization_params without token_endpoint": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                handler = oauth_handler,
+                client_id = "id",
+                authorization_endpoint = "https://example.com/authorize",
+                authorization_params = {"prompt": "consent"},
+                scopes = ["s"])`,
+		"reserved authorization param": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                authorization_endpoint = "https://example.com/authorize",
+                token_endpoint = "https://example.com/token",
+                authorization_params = {"redirect_uri": "https://evil.example"},
+                scopes = ["s"])`,
+		"http token endpoint": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                authorization_endpoint = "https://example.com/authorize",
+                token_endpoint = "http://example.com/token",
+                scopes = ["s"])`,
+		"query in authorization endpoint": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                authorization_endpoint = "https://example.com/authorize?tenant=common",
+                token_endpoint = "https://example.com/token",
+                scopes = ["s"])`,
+		"relative token endpoint": `
+            schema.OAuth2(id = "auth", name = "A", desc = "A", icon = "a",
+                authorization_endpoint = "https://example.com/authorize",
+                token_endpoint = "/token",
+                scopes = ["s"])`,
+	}
+	for name, field := range tests {
+		t.Run(name, func(t *testing.T) {
+			code := `
+load("schema.star", "schema")
+
+def oauth_handler(params):
+    return "token"
+
+def get_schema():
+    return schema.Schema(version = "1", fields = [` + field + `])
+
+def main():
+    return None
+`
+			_, err := loadApp(t, code)
+			require.Error(t, err)
+		})
+	}
+}
+
+// TestSchemaTokenEndpointOnlyForOAuth2 checks that token_endpoint is rejected
+// on fields other than OAuth2.
+func TestSchemaTokenEndpointOnlyForOAuth2(t *testing.T) {
+	code := `
+def get_schema():
+    return [
+        {"type": "text",
+         "id": "t",
+         "name": "Text",
+         "description": "Text",
+         "token_endpoint": "https://example.com/token",
+        },
+    ]
+
+def main():
+    return None
+`
+	_, err := loadApp(t, code)
+	require.Error(t, err)
+}
