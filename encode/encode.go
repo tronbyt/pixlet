@@ -47,7 +47,14 @@ func ScreensFromRoots(roots []render.Root, width int, height int) *Screens {
 			screens.MaxAge = roots[0].MaxAge
 		}
 		screens.ShowFullAnimation = roots[0].ShowFullAnimation
-		screens.SoundID = roots[0].SoundID
+	}
+	// An app may return several roots. The first one that asks for a sound
+	// counts, so a request isn't lost when only a later root makes it.
+	for _, r := range roots {
+		if r.SoundID != "" {
+			screens.SoundID = r.SoundID
+			break
+		}
 	}
 	return &screens
 }

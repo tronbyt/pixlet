@@ -295,6 +295,14 @@ def main():
 	roots, err = app.Run(t.Context())
 	require.NoError(t, err)
 	assert.Empty(t, ScreensFromRoots(roots, 64, 32).SoundID)
+
+	// With several roots, the first one that asks for a sound counts.
+	several := []render.Root{
+		{Child: render.Box{}},
+		{Child: render.Box{}, SoundID: "second"},
+		{Child: render.Box{}, SoundID: "third"},
+	}
+	assert.Equal(t, "second", ScreensFromRoots(several, 64, 32).SoundID)
 }
 
 func webpDelays(t *testing.T, webpData []byte) []int {

@@ -52,3 +52,30 @@ def main():
 	require.NoError(t, err)
 	assert.NotEmpty(t, img)
 }
+
+// A loader reports each render's sound_id with that render's image, so a
+// later render can't overwrite it before the update is read.
+func TestLoaderRenderReportsSoundID(t *testing.T) {
+	dir := t.TempDir()
+	const app = `
+load("render.star", "render")
+def main(config):
+    return render.Root(sound_id = config.get("event", ""), child = render.Box())
+`
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "app.star"), []byte(app), 0o600))
+	root, err := os.OpenRoot(dir)
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = root.Close() })
+
+	l, err := NewLoader("app", root, false, nil, nil, "")
+	require.NoError(t, err)
+
+	img, first, err := l.renderApplet(t.Context(), map[string]any{"event": "goal-1-0"})
+	require.NoError(t, err)
+	assert.NotEmpty(t, img)
+	_, second, err := l.renderApplet(t.Context(), map[string]any{"event": "goal-2-0"})
+	require.NoError(t, err)
+
+	assert.Equal(t, "goal-1-0", first.SoundID)
+	assert.Equal(t, "goal-2-0", second.SoundID)
+}

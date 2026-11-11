@@ -136,9 +136,11 @@ func WithShowFullAnimation(v *bool) Option {
 	}
 }
 
-// WithResult asks the renderer to fill in result with what the app returned
-// besides the image, such as a requested sound. It is left unchanged if the
-// script fails.
+// WithResult asks RenderApplet and RenderAppletRoot to fill in result with
+// what the app returned besides the image, such as a requested sound. It is
+// left unchanged if the script fails. Loaders created with NewLoader ignore
+// it and report the same details on each Update instead, so each image
+// arrives with its own result.
 func WithResult(result *RenderResult) Option {
 	return func(config *RenderConfig) {
 		config.Result = result

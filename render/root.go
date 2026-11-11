@@ -44,7 +44,8 @@ const (
 // chosen sound the first time a new _sound_id_ arrives, if the user
 // has allowed the app to ask. Returning the same _sound_id_ on later
 // renders does not play it again, so apps don't need to remember
-// what they have already announced.
+// what they have already announced. If an app returns several roots,
+// the first one with a _sound_id_ counts.
 type Root struct {
 	// Widget to render
 	Child Widget `starlark:"child,required"`
