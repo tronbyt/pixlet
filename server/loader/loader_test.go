@@ -1,6 +1,7 @@
 package loader
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -78,4 +79,33 @@ def main(config):
 
 	assert.Equal(t, "goal-1-0", first.SoundID)
 	assert.Equal(t, "goal-2-0", second.SoundID)
+}
+
+// The on-demand path reports the sound_id of the render it returns.
+func TestLoadAppletWithResultReportsSoundID(t *testing.T) {
+	dir := t.TempDir()
+	const app = `
+load("render.star", "render")
+def main(config):
+    return render.Root(sound_id = config.get("event", ""), child = render.Box())
+`
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "app.star"), []byte(app), 0o600))
+	root, err := os.OpenRoot(dir)
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = root.Close() })
+
+	l, err := NewLoader("app", root, false, nil, nil, "")
+	require.NoError(t, err)
+	ctx, cancel := context.WithCancel(t.Context())
+	t.Cleanup(cancel)
+	go func() { _ = l.Run(ctx) }()
+
+	img, result, err := l.LoadAppletWithResult(map[string]any{"event": "goal-3-1"})
+	require.NoError(t, err)
+	assert.NotEmpty(t, img)
+	assert.Equal(t, "goal-3-1", result.SoundID)
+
+	_, result, err = l.LoadAppletWithResult(map[string]any{})
+	require.NoError(t, err)
+	assert.Empty(t, result.SoundID)
 }

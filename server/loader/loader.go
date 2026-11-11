@@ -132,6 +132,16 @@ func (l *Loader) Run(ctx context.Context) error {
 				}
 			}
 		case <-l.requestedChanges:
+			// LoadApplet sends its config before the request, but select may
+			// pick the request first, so apply any queued config now.
+			for pending := true; pending; {
+				select {
+				case c := <-l.configChanges:
+					config = c
+				default:
+					pending = false
+				}
+			}
 			up := Update{}
 
 			byteSlice, err := json.Marshal(config)
@@ -251,10 +261,17 @@ func (l *Loader) Location() *time.Location {
 // when you refresh a webpage during app development - so it doesn't seem likely
 // that it's going to cause issues in the short term.
 func (l *Loader) LoadApplet(config map[string]any) (string, error) {
+	img, _, err := l.LoadAppletWithResult(config)
+	return img, err
+}
+
+// LoadAppletWithResult is LoadApplet, also returning what the app reported
+// with that render, such as its sound_id.
+func (l *Loader) LoadAppletWithResult(config map[string]any) (string, RenderResult, error) {
 	l.configChanges <- config
 	l.requestedChanges <- struct{}{}
-	result := <-l.resultsChan
-	return result.Image, result.Err
+	up := <-l.resultsChan
+	return up.Image, RenderResult{SoundID: up.SoundID}, up.Err
 }
 
 func (l *Loader) GetSchema() []byte {
