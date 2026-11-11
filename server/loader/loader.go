@@ -363,6 +363,9 @@ func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config ma
 		runtime.WithLocation(conf.Location),
 		runtime.WithLanguage(conf.Language),
 	}
+	if conf.HostInfo != nil {
+		opts = append(opts, runtime.WithHostInfo(*conf.HostInfo))
+	}
 
 	if conf.SilenceOutput {
 		// Replace the print function from the starlark thread if the silent flag is passed.
