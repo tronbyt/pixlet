@@ -11,6 +11,11 @@ import Typeahead from './fields/Typeahead';
 import Typography from '@mui/material/Typography';
 
 
+/**
+ * Renders the input for one schema field in the pixlet serve config panel.
+ *
+ * @param {{ field: object }} props - the field, as serialized in the app's schema
+ */
 export default function FieldDetails({ field }) {
     switch (field.type) {
         case 'datetime':
@@ -22,6 +27,11 @@ export default function FieldDetails({ field }) {
         case 'locationbased':
             return <LocationBased field={field} />
         case 'oauth2':
+            // Server-managed fields get their token from the Tronbyt server,
+            // which pixlet serve is not; paste a token to test the app.
+            if (field.token_endpoint) {
+                return <TextInput field={{ ...field, name: `${field.name} access token` }} />
+            }
             return <OAuth2 field={field} />
         case 'png':
             return <PhotoSelect field={field} />
