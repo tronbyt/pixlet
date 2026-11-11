@@ -273,6 +273,30 @@ def main():
 	assert.False(t, ScreensFromRoots(roots, 64, 32).ShowFullAnimation)
 }
 
+func TestSoundID(t *testing.T) {
+	const withSound = `
+load("render.star", "render")
+def main():
+    return render.Root(sound_id="match-123-score-2-1", child=render.Box())
+`
+	app, err := runtime.NewApplet(t.Context(), "test.star", []byte(withSound), runtime.WithTests(t))
+	require.NoError(t, err)
+	roots, err := app.Run(t.Context())
+	require.NoError(t, err)
+	assert.Equal(t, "match-123-score-2-1", ScreensFromRoots(roots, 64, 32).SoundID)
+
+	const withoutSound = `
+load("render.star", "render")
+def main():
+    return render.Root(child=render.Box())
+`
+	app, err = runtime.NewApplet(t.Context(), "test.star", []byte(withoutSound), runtime.WithTests(t))
+	require.NoError(t, err)
+	roots, err = app.Run(t.Context())
+	require.NoError(t, err)
+	assert.Empty(t, ScreensFromRoots(roots, 64, 32).SoundID)
+}
+
 func webpDelays(t *testing.T, webpData []byte) []int {
 	decoder, err := webp.NewAnimationDecoder(webpData)
 	require.NoError(t, err)

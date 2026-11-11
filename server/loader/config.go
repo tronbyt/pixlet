@@ -21,6 +21,16 @@ type RenderConfig struct {
 	Location          *time.Location
 	Language          language.Tag
 	Filters           encode.RenderFilters
+	// Result, if set, is filled in with what the app returned alongside its
+	// image (see RenderResult).
+	Result *RenderResult
+}
+
+// RenderResult carries what an app returned besides the image itself.
+type RenderResult struct {
+	// SoundID is the app's render.Root(sound_id = ...) value, or "" when it
+	// didn't ask for a sound.
+	SoundID string
 }
 
 func NewRenderConfig(path string, config map[string]any, options ...Option) *RenderConfig {
@@ -123,5 +133,14 @@ func WithMeta(meta canvas.Metadata) Option {
 func WithShowFullAnimation(v *bool) Option {
 	return func(config *RenderConfig) {
 		config.ShowFullAnimation = v
+	}
+}
+
+// WithResult asks the renderer to fill in result with what the app returned
+// besides the image, such as a requested sound. It is left unchanged if the
+// script fails.
+func WithResult(result *RenderResult) Option {
+	return func(config *RenderConfig) {
+		config.Result = result
 	}
 }

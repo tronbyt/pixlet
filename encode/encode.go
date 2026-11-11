@@ -24,6 +24,7 @@ type Screens struct {
 	delay             int32
 	MaxAge            int32
 	ShowFullAnimation bool
+	SoundID           string
 	width             int
 	height            int
 }
@@ -46,6 +47,7 @@ func ScreensFromRoots(roots []render.Root, width int, height int) *Screens {
 			screens.MaxAge = roots[0].MaxAge
 		}
 		screens.ShowFullAnimation = roots[0].ShowFullAnimation
+		screens.SoundID = roots[0].SoundID
 	}
 	return &screens
 }

@@ -424,6 +424,10 @@ func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfi
 		screens.ShowFullAnimation = *conf.ShowFullAnimation
 	}
 
+	if conf.Result != nil {
+		conf.Result.SoundID = screens.SoundID
+	}
+
 	filter := encode.ImageFilter(nil)
 	var chain []encode.ImageFilter
 	if filters.Magnify > 1 {

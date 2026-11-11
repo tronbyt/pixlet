@@ -210,6 +210,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		}
 	}
 
+	var result loader.RenderResult
 	buf, _, err := loader.RenderApplet(
 		cmd.Context(),
 		path,
@@ -221,9 +222,14 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		loader.WithSilenceOutput(opts.silenceOutput),
 		loader.WithLanguage(lang),
 		loader.WithFilters(filters),
+		loader.WithResult(&result),
 	)
 	if err != nil {
 		return err
+	}
+
+	if result.SoundID != "" {
+		opts.log.Info("App requested a sound", "sound_id", result.SoundID)
 	}
 
 	if outPath == "-" {
