@@ -2,9 +2,10 @@
 // app about the server rendering it and the device it is rendering for.
 //
 // The values come from whoever runs the app (Tronbyt Server, for example)
-// through runtime.WithHostInfo. Anything the host doesn't provide reads as
-// None, so apps must handle that case, for example when run with
-// `pixlet render`.
+// through runtime.WithHostInfo, and are fixed when the module is loaded, so
+// they also work in callbacks such as custom animation curves. Anything the
+// host doesn't provide reads as None, so apps must handle that case, for
+// example when run with `pixlet render`.
 package host
 
 import (
@@ -18,8 +19,6 @@ import (
 const (
 	ServerModuleName = "server"
 	DeviceModuleName = "device"
-
-	threadHostKey = "github.com/tronbyt/pixlet/runtime/$host"
 )
 
 // Info describes the host running an app. Empty fields mean "unknown".
@@ -45,66 +44,48 @@ type Device struct {
 	FirmwareType string
 }
 
-// AttachToThread makes info available to the server and device modules.
-func AttachToThread(t *starlark.Thread, info Info) {
-	t.SetLocal(threadHostKey, info)
-}
-
-func fromThread(t *starlark.Thread) Info {
-	if t != nil {
-		if info, ok := t.Local(threadHostKey).(Info); ok {
-			return info
-		}
+// LoadServerModule returns the server.star module for info. pixletVersion is
+// the version of the Pixlet runtime itself, which is always known.
+func LoadServerModule(pixletVersion string, info Info) (starlark.StringDict, error) {
+	commitTime := starlark.Value(starlark.None)
+	if !info.SystemAppsCommitTime.IsZero() {
+		commitTime = starlarktime.Time(info.SystemAppsCommitTime)
 	}
-	return Info{}
-}
 
-// LoadServerModule returns the server.star module. pixletVersion is the
-// version of the Pixlet runtime itself, which is always known.
-func LoadServerModule(pixletVersion string) (starlark.StringDict, error) {
 	return starlark.StringDict{
 		ServerModuleName: &starlarkstruct.Module{
 			Name: ServerModuleName,
 			Members: starlark.StringDict{
-				"version": noArgs("version", func(i Info) starlark.Value { return optString(i.ServerVersion) }),
-				"pixlet_version": starlark.NewBuiltin("pixlet_version", func(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-					if err := starlark.UnpackArgs(b.Name(), args, kwargs); err != nil {
-						return nil, err
-					}
-					return optString(pixletVersion), nil
-				}),
-				"system_apps_commit": noArgs("system_apps_commit", func(i Info) starlark.Value { return optString(i.SystemAppsCommit) }),
-				"system_apps_commit_time": noArgs("system_apps_commit_time", func(i Info) starlark.Value {
-					if i.SystemAppsCommitTime.IsZero() {
-						return starlark.None
-					}
-					return starlarktime.Time(i.SystemAppsCommitTime)
-				}),
+				"version":                 noArgs("version", optString(info.ServerVersion)),
+				"pixlet_version":          noArgs("pixlet_version", optString(pixletVersion)),
+				"system_apps_commit":      noArgs("system_apps_commit", optString(info.SystemAppsCommit)),
+				"system_apps_commit_time": noArgs("system_apps_commit_time", commitTime),
 			},
 		},
 	}, nil
 }
 
-// LoadDeviceModule returns the device.star module.
-func LoadDeviceModule() (starlark.StringDict, error) {
+// LoadDeviceModule returns the device.star module for info.
+func LoadDeviceModule(info Info) (starlark.StringDict, error) {
 	return starlark.StringDict{
 		DeviceModuleName: &starlarkstruct.Module{
 			Name: DeviceModuleName,
 			Members: starlark.StringDict{
-				"model":            noArgs("model", func(i Info) starlark.Value { return optString(i.Device.Model) }),
-				"firmware_version": noArgs("firmware_version", func(i Info) starlark.Value { return optString(i.Device.FirmwareVersion) }),
-				"firmware_type":    noArgs("firmware_type", func(i Info) starlark.Value { return optString(i.Device.FirmwareType) }),
+				"model":            noArgs("model", optString(info.Device.Model)),
+				"firmware_version": noArgs("firmware_version", optString(info.Device.FirmwareVersion)),
+				"firmware_type":    noArgs("firmware_type", optString(info.Device.FirmwareType)),
 			},
 		},
 	}, nil
 }
 
-func noArgs(name string, fn func(Info) starlark.Value) *starlark.Builtin {
-	return starlark.NewBuiltin(name, func(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+// noArgs returns a builtin that takes no arguments and returns v.
+func noArgs(name string, v starlark.Value) *starlark.Builtin {
+	return starlark.NewBuiltin(name, func(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 		if err := starlark.UnpackArgs(b.Name(), args, kwargs); err != nil {
 			return nil, err
 		}
-		return fn(fromThread(thread)), nil
+		return v, nil
 	})
 }
 

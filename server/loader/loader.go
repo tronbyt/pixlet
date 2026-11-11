@@ -279,6 +279,9 @@ func (l *Loader) loadApplet() error {
 		runtime.WithLocation(l.conf.Location),
 		runtime.WithLanguage(l.conf.Language),
 	}
+	if l.conf.HostInfo != nil {
+		opts = append(opts, runtime.WithHostInfo(*l.conf.HostInfo))
+	}
 
 	app, err := runtime.NewAppletFromRoot(context.Background(), l.root, l.conf.Path, opts...)
 	l.markInitialLoadComplete()

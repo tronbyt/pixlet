@@ -86,6 +86,7 @@ type Applet struct {
 	compiledCache *appletcache.Cache
 	loader        ModuleLoader
 	initializers  []ThreadInitializer
+	hostInfo      host.Info
 	loadedPaths   map[string]bool
 	closers       []io.Closer
 
@@ -154,10 +155,7 @@ func WithCanvasMeta(m canvas.Metadata) AppletOption {
 // rendering for, through the server.star and device.star modules.
 func WithHostInfo(info host.Info) AppletOption {
 	return func(a *Applet) error {
-		a.initializers = append(a.initializers, func(t *starlark.Thread) *starlark.Thread {
-			host.AttachToThread(t, info)
-			return t
-		})
+		a.hostInfo = info
 		return nil
 	}
 }
@@ -927,10 +925,10 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 		return modulecolor.LoadModule()
 
 	case "server.star":
-		return host.LoadServerModule(Version)
+		return host.LoadServerModule(Version, a.hostInfo)
 
 	case "device.star":
-		return host.LoadDeviceModule()
+		return host.LoadDeviceModule(a.hostInfo)
 
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrInvalidModule, module)

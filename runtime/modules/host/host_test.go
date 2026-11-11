@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tronbyt/pixlet/runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/host"
+	"go.starlark.net/starlark"
+	"go.starlark.net/starlarkstruct"
 )
 
 func run(t *testing.T, src string, opts ...runtime.AppletOption) {
@@ -75,4 +77,16 @@ def main():
 	require.NoError(t, err)
 	_, err = app.Run(t.Context())
 	require.Error(t, err)
+}
+
+// Callbacks such as custom animation curves run on bare threads, so the
+// values must not depend on the calling thread.
+func TestHostInfoOnBareThread(t *testing.T) {
+	mod, err := host.LoadDeviceModule(host.Info{Device: host.Device{Model: "tidbyt_gen2"}})
+	require.NoError(t, err)
+	model, err := mod[host.DeviceModuleName].(*starlarkstruct.Module).Attr("model")
+	require.NoError(t, err)
+	v, err := starlark.Call(&starlark.Thread{}, model, nil, nil)
+	require.NoError(t, err)
+	require.Equal(t, starlark.String("tidbyt_gen2"), v)
 }
