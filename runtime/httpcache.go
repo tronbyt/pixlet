@@ -26,6 +26,7 @@ const (
 	MaxResponseTTL  = 1 * time.Hour
 	HTTPTimeoutEnv  = "PIXLET_HTTP_TIMEOUT"
 	MaxResponseEnv  = "PIXLET_HTTP_MAX_RESPONSE_MB"
+	BlockPrivateEnv = "PIXLET_HTTP_BLOCK_PRIVATE_IPS"
 	HTTPCachePrefix = "httpcache"
 	TTLHeader       = "X-Tidbyt-Cache-Seconds"
 )
@@ -42,7 +43,7 @@ type cacheClient struct {
 func InitHTTP(cache Cache) {
 	cc := &cacheClient{
 		cache:     cache,
-		transport: http.DefaultTransport,
+		transport: starlarkhttp.NewTransport(),
 	}
 
 	if rawVal := os.Getenv(MaxResponseEnv); rawVal != "" {
@@ -58,6 +59,14 @@ func InitHTTP(cache Cache) {
 			starlarkhttp.Timeout.Store(parsedVal)
 		} else {
 			slog.Warn(HTTPTimeoutEnv+" is invalid; using default", "error", err)
+		}
+	}
+
+	if rawVal := os.Getenv(BlockPrivateEnv); rawVal != "" {
+		if parsedVal, err := strconv.ParseBool(rawVal); err == nil {
+			starlarkhttp.BlockPrivateIPs.Store(parsedVal)
+		} else {
+			slog.Warn(BlockPrivateEnv+" is invalid; using default", "error", err)
 		}
 	}
 
