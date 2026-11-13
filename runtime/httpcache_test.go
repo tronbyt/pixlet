@@ -13,6 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tronbyt/pixlet/runtime/modules/starlarkhttp"
 	"github.com/tronbyt/pixlet/runtime/testdata"
 )
 
@@ -48,6 +49,29 @@ func TestInitHTTP(t *testing.T) {
 	screens, err := app.Run(t.Context())
 	require.NoError(t, err)
 	assert.NotNil(t, screens)
+}
+
+func TestInitHTTPBlocksPrivateIPs(t *testing.T) {
+	t.Setenv(BlockPrivateEnv, "true")
+	t.Cleanup(func() { starlarkhttp.BlockPrivateIPs.Store(false) })
+	c := NewInMemoryCache()
+	t.Cleanup(c.Close)
+	InitHTTP(c)
+
+	src := []byte(`
+load("http.star", "http")
+load("render.star", "render")
+
+def main():
+    http.get("` + testServer(t) + `")
+    return render.Root(child = render.Box())
+`)
+
+	app, err := NewApplet(t.Context(), "private.star", src, WithTests(t))
+	require.NoError(t, err)
+
+	_, err = app.Run(t.Context())
+	require.ErrorContains(t, err, "private IP addresses are not allowed")
 }
 
 // TestDetermineTTL tests the DetermineTTL function.

@@ -48,6 +48,7 @@ Additional features:
 - HTTP client accepts a parameter `ttl_seconds` to optionally cache HTTP responses.
 - Responses include a `status` property which contains the status text and the status code (e.g. "401 Unauthorized").
 - Additional function `http.status_text(code)` allows an applet to get the status text for a given status code (e.g. "Unauthorized").
+- Set `PIXLET_HTTP_BLOCK_PRIVATE_IPS=true` to block requests to private, loopback, and link-local addresses (e.g. `192.168.1.1`, `localhost`). This is recommended when running untrusted apps. If requests go through a proxy (`HTTP_PROXY`/`HTTPS_PROXY`), only the proxy's address is checked, so the proxy must block private destinations itself.
 
 | Module                                                            | Description              |
 |-------------------------------------------------------------------|--------------------------|

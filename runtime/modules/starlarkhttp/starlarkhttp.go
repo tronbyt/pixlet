@@ -58,7 +58,7 @@ const ModuleName = "http.star"
 var (
 	// StarlarkHTTPClient is the http client used to create the http module. override with
 	// a custom client before calling LoadModule.
-	StarlarkHTTPClient = http.DefaultClient
+	StarlarkHTTPClient = &http.Client{Transport: NewTransport()}
 	// StarlarkHTTPGuard is a global RequestGuard used in LoadModule. override with a custom
 	// implementation before calling LoadModule.
 	StarlarkHTTPGuard RequestGuard
