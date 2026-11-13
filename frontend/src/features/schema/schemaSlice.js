@@ -1,31 +1,43 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+    loading: false,
+    error: '',
+    generation: 0,
+    value: {
+        version: '1',
+        schema: [],
+    },
+    generated: {},
+};
+
 export const schemaSlice = createSlice({
     name: 'schema',
-    initialState: {
-        loading: false,
-        error: '',
-        value: {
-            version: '1',
-            schema: []
-        },
-        generated: {
-            version: '1',
-            schema: []
-        }
-    },
+    initialState,
     reducers: {
-        update: (state = initialState, action) => {
-            return { ...state, value: action.payload, loading: false, error: '' }
+        update: (state, action) => {
+            state.value = action.payload;
+            state.generation += 1;
+            state.generated = {};
+            state.loading = false;
+            state.error = '';
         },
-        updateGenerated: (state = initialState, action) => {
-            return { ...state, generated: action.payload, loading: false, error: '' }
+        updateGenerated: (state, action) => {
+            const { id, value, generation } = action.payload;
+
+            if (generation !== state.generation) {
+                return;
+            }
+
+            state.generated[id] = value;
+            state.loading = false;
+            state.error = '';
         },
-        loading: (state = initialState, action) => {
-            return { ...state, loading: action.payload }
+        loading: (state, action) => {
+            state.loading = action.payload;
         },
-        error: (state = initialState, action) => {
-            return { ...state, error: action.payload }
+        error: (state, action) => {
+            state.error = action.payload;
         },
     },
 });
