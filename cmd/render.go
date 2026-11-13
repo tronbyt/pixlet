@@ -210,8 +210,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		}
 	}
 
-	var result loader.RenderResult
-	buf, _, err := loader.RenderApplet(
+	result, err := loader.RenderApplet(
 		cmd.Context(),
 		path,
 		config,
@@ -222,7 +221,6 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		loader.WithSilenceOutput(opts.silenceOutput),
 		loader.WithLanguage(lang),
 		loader.WithFilters(filters),
-		loader.WithResult(&result),
 	)
 	if err != nil {
 		return err
@@ -232,6 +230,7 @@ func renderRun(cmd *cobra.Command, args []string, opts *renderOptions) error {
 		opts.log.Info("App requested a sound", "sound_id", result.SoundID)
 	}
 
+	buf := result.Image
 	if outPath == "-" {
 		if _, err := os.Stdout.Write(buf); err != nil {
 			return fmt.Errorf("writing to stdout: %w", err)

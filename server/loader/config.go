@@ -21,13 +21,14 @@ type RenderConfig struct {
 	Location          *time.Location
 	Language          language.Tag
 	Filters           encode.RenderFilters
-	// Result, if set, is filled in with what the app returned alongside its
-	// image (see RenderResult).
-	Result *RenderResult
 }
 
-// RenderResult carries what an app returned besides the image itself.
+// RenderResult is what a render produced.
 type RenderResult struct {
+	// Image is the encoded image (WebP or GIF).
+	Image []byte
+	// Output holds what the app printed, when WithSilenceOutput is set.
+	Output []string
 	// SoundID is the app's render.Root(sound_id = ...) value, or "" when it
 	// didn't ask for a sound.
 	SoundID string
@@ -133,16 +134,5 @@ func WithMeta(meta canvas.Metadata) Option {
 func WithShowFullAnimation(v *bool) Option {
 	return func(config *RenderConfig) {
 		config.ShowFullAnimation = v
-	}
-}
-
-// WithResult asks RenderApplet and RenderAppletRoot to fill in result with
-// what the app returned besides the image, such as a requested sound. It is
-// left unchanged if the script fails. Loaders created with NewLoader ignore
-// it and report the same details on each Update instead, so each image
-// arrives with its own result.
-func WithResult(result *RenderResult) Option {
-	return func(config *RenderConfig) {
-		config.Result = result
 	}
 }

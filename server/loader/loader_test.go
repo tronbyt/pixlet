@@ -10,12 +10,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func renderSource(t *testing.T, src string, options ...Option) ([]byte, error) {
+func renderSource(t *testing.T, src string, options ...Option) (RenderResult, error) {
 	t.Helper()
 	dir := t.TempDir()
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "app.star"), []byte(src), 0o600))
-	img, _, err := RenderApplet(t.Context(), filepath.Join(dir, "app.star"), nil, options...)
-	return img, err
+	return RenderApplet(t.Context(), filepath.Join(dir, "app.star"), nil, options...)
 }
 
 func TestRenderAppletReportsSoundID(t *testing.T) {
@@ -24,10 +23,9 @@ load("render.star", "render")
 def main():
     return render.Root(sound_id = "goal-2-1", child = render.Box())
 `
-	var result RenderResult
-	img, err := renderSource(t, app, WithResult(&result))
+	result, err := renderSource(t, app)
 	require.NoError(t, err)
-	assert.NotEmpty(t, img)
+	assert.NotEmpty(t, result.Image)
 	assert.Equal(t, "goal-2-1", result.SoundID)
 }
 
@@ -37,21 +35,34 @@ load("render.star", "render")
 def main():
     return render.Root(child = render.Box())
 `
-	result := RenderResult{SoundID: "stale"}
-	_, err := renderSource(t, app, WithResult(&result))
+	result, err := renderSource(t, app)
 	require.NoError(t, err)
+	assert.NotEmpty(t, result.Image)
 	assert.Empty(t, result.SoundID)
 }
 
-func TestRenderAppletWithoutResultOption(t *testing.T) {
+func TestRenderAppletReportsOutput(t *testing.T) {
 	const app = `
 load("render.star", "render")
 def main():
-    return render.Root(sound_id = "goal-2-1", child = render.Box())
+    print("hello")
+    return render.Root(child = render.Box())
 `
-	img, err := renderSource(t, app)
+	result, err := renderSource(t, app, WithSilenceOutput(true))
 	require.NoError(t, err)
-	assert.NotEmpty(t, img)
+	assert.Equal(t, []string{"hello"}, result.Output)
+}
+
+func TestRenderAppletKeepsOutputOnError(t *testing.T) {
+	const app = `
+def main():
+    print("before failing")
+    fail("broken")
+`
+	result, err := renderSource(t, app, WithSilenceOutput(true))
+	require.Error(t, err)
+	assert.Empty(t, result.Image)
+	assert.Equal(t, []string{"before failing"}, result.Output)
 }
 
 // A loader reports each render's sound_id with that render's image, so a
@@ -71,23 +82,26 @@ def main(config):
 	l, err := NewLoader("app", root, false, nil, nil, "")
 	require.NoError(t, err)
 
-	img, first, err := l.renderApplet(t.Context(), map[string]any{"event": "goal-1-0"})
+	first, err := l.renderApplet(t.Context(), map[string]any{"event": "goal-1-0"})
 	require.NoError(t, err)
-	assert.NotEmpty(t, img)
-	_, second, err := l.renderApplet(t.Context(), map[string]any{"event": "goal-2-0"})
+	assert.NotEmpty(t, first.Image)
+	second, err := l.renderApplet(t.Context(), map[string]any{"event": "goal-2-0"})
 	require.NoError(t, err)
 
 	assert.Equal(t, "goal-1-0", first.SoundID)
 	assert.Equal(t, "goal-2-0", second.SoundID)
 }
 
-// The on-demand path reports the sound_id of the render it returns.
-func TestLoadAppletWithResultReportsSoundID(t *testing.T) {
+// LoadApplet renders with the config it was given, even when the loader picks
+// up the render request before the config.
+func TestLoadAppletUsesItsConfig(t *testing.T) {
 	dir := t.TempDir()
 	const app = `
 load("render.star", "render")
 def main(config):
-    return render.Root(sound_id = config.get("event", ""), child = render.Box())
+    if not config.get("event"):
+        fail("missing config")
+    return render.Root(child = render.Box())
 `
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "app.star"), []byte(app), 0o600))
 	root, err := os.OpenRoot(dir)
@@ -100,12 +114,9 @@ def main(config):
 	t.Cleanup(cancel)
 	go func() { _ = l.Run(ctx) }()
 
-	img, result, err := l.LoadAppletWithResult(map[string]any{"event": "goal-3-1"})
-	require.NoError(t, err)
-	assert.NotEmpty(t, img)
-	assert.Equal(t, "goal-3-1", result.SoundID)
-
-	_, result, err = l.LoadAppletWithResult(map[string]any{})
-	require.NoError(t, err)
-	assert.Empty(t, result.SoundID)
+	for range 20 {
+		img, err := l.LoadApplet(map[string]any{"event": "goal-3-1"})
+		require.NoError(t, err)
+		assert.NotEmpty(t, img)
+	}
 }
