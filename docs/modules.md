@@ -448,6 +448,45 @@ Example:
 
 See [examples/sunrise/sunrise.star](../examples/sunrise/sunrise.star) for an example.
 
+## Pixlet modules: Server and Device
+
+The `server` and `device` modules tell an app about the server running
+it and the device it is rendering for. The server provides these
+values, so any of them can be `None`: when the app runs with
+`pixlet render` or `pixlet serve`, on an older server, or when the
+server doesn't know (for example, a device that hasn't reported its
+firmware version yet). Always handle `None`.
+
+```starlark
+load("device.star", "device")
+load("server.star", "server")
+```
+
+| Function | Description |
+| --- | --- |
+| `server.version()` | The server's version, e.g. `"v2.6.0"`, or `None`. |
+| `server.pixlet_version()` | The version of Pixlet running the app. |
+| `server.system_apps_commit()` | The commit of the server's local app store (its system apps repository), or `None`. |
+| `server.system_apps_commit_time()` | The time of that commit, as a `time`, or `None`. |
+| `device.model()` | The device type, e.g. `"tidbyt_gen2"`, or `None`. |
+| `device.firmware_version()` | The firmware version the device last reported, e.g. `"v1.7.4"`, or `None`. |
+| `device.firmware_type()` | The kind of firmware, e.g. `"esp32"` or `"tronberry"`, or `None`. |
+
+Example:
+
+```starlark
+load("device.star", "device")
+load("render.star", "render")
+load("server.star", "server")
+
+def main(config):
+    server_version = server.version() or "unknown"
+    firmware = device.firmware_version() or "unknown"
+    return render.Root(
+        child = render.WrappedText("Server %s, firmware %s" % (server_version, firmware)),
+    )
+```
+
 ## Pixlet module: Random
 
 The `random` module provides a pseudorandom number generator for pixlet. The generator is automatically seeded on each execution. The seed itself changes every 15 seconds, making apps deterministic over that same time window. This behavior enables more effective caching of execution results on Tidbyt servers. Developer can reseed via `random.seed` if needed.

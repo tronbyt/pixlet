@@ -35,6 +35,7 @@ import (
 	"github.com/tronbyt/pixlet/runtime/modules/file"
 	"github.com/tronbyt/pixlet/runtime/modules/filter_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/hmac"
+	"github.com/tronbyt/pixlet/runtime/modules/host"
 	"github.com/tronbyt/pixlet/runtime/modules/humanize"
 	"github.com/tronbyt/pixlet/runtime/modules/i18n_runtime"
 	"github.com/tronbyt/pixlet/runtime/modules/qrcode"
@@ -85,6 +86,7 @@ type Applet struct {
 	compiledCache *appletcache.Cache
 	loader        ModuleLoader
 	initializers  []ThreadInitializer
+	hostInfo      host.Info
 	loadedPaths   map[string]bool
 	closers       []io.Closer
 
@@ -145,6 +147,15 @@ func WithCanvasMeta(m canvas.Metadata) AppletOption {
 			canvas.AttachToThread(t, m)
 			return t
 		})
+		return nil
+	}
+}
+
+// WithHostInfo tells the app about the server running it and the device it is
+// rendering for, through the server.star and device.star modules.
+func WithHostInfo(info host.Info) AppletOption {
+	return func(a *Applet) error {
+		a.hostInfo = info
 		return nil
 	}
 }
@@ -912,6 +923,12 @@ func (a *Applet) loadModule(thread *starlark.Thread, module string) (starlark.St
 
 	case "color.star":
 		return modulecolor.LoadModule()
+
+	case "server.star":
+		return host.LoadServerModule(Version, a.hostInfo)
+
+	case "device.star":
+		return host.LoadDeviceModule(a.hostInfo)
 
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrInvalidModule, module)
