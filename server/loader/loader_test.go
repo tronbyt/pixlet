@@ -65,6 +65,21 @@ def main():
 	assert.Equal(t, []string{"before failing"}, result.Output)
 }
 
+// Output printed by top-level code is kept when the app fails to load.
+func TestRenderAppletKeepsOutputOnLoadError(t *testing.T) {
+	const app = `
+print("loading")
+fail("broken at load")
+
+def main():
+    return None
+`
+	result, err := renderSource(t, app, WithSilenceOutput(true))
+	require.Error(t, err)
+	assert.Empty(t, result.Image)
+	assert.Equal(t, []string{"loading"}, result.Output)
+}
+
 // A loader reports each render's sound_id with that render's image, so a
 // later render can't overwrite it before the update is read.
 func TestLoaderRenderReportsSoundID(t *testing.T) {

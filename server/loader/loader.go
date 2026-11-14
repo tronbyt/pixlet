@@ -387,7 +387,7 @@ func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config ma
 
 	applet, err := runtime.NewAppletFromRoot(ctx, root, path, opts...)
 	if err != nil {
-		return RenderResult{}, err
+		return RenderResult{Output: output}, err
 	}
 	defer func() { _ = applet.Close() }()
 
