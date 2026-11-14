@@ -450,6 +450,15 @@ displayed past a certain point in time, pass _MaxAge_ to specify
 an expiration time in seconds. Display devices use this to avoid
 displaying stale data in the event of e.g. connectivity issues.
 
+To ask for a notification sound, pass _sound_id_: a short string
+naming the event the sound is about (for example
+"match-123-score-2-1"). Servers that support it play the user's
+chosen sound the first time a new _sound_id_ arrives, if the user
+has allowed the app to ask. Returning the same _sound_id_ on later
+renders does not play it again, so apps don't need to remember
+what they have already announced. If an app returns several roots,
+the first one with a _sound_id_ counts.
+
 #### Attributes
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
@@ -457,6 +466,7 @@ displaying stale data in the event of e.g. connectivity issues.
 | `delay` | `int` | Frame delay in milliseconds | N |
 | `max_age` | `int` | Expiration time in seconds | N |
 | `show_full_animation` | `bool` | Request animation is shown in full, regardless of app cycle speed. | N |
+| `sound_id` | `str` | Asks the server to play a notification sound, once per new value. | N |
 
 ## Row
 Row lays out and draws its children horizontally (in a row).

@@ -60,7 +60,9 @@ type Update struct {
 	Image     string
 	ImageType string
 	Schema    string
-	Err       error
+	// SoundID is the sound the app asked for with this image, if any.
+	SoundID string
+	Err     error
 }
 
 // NewLoader instantiates a new loader structure. The loader will read off of
@@ -130,6 +132,16 @@ func (l *Loader) Run(ctx context.Context) error {
 				}
 			}
 		case <-l.requestedChanges:
+			// LoadApplet sends its config before the request, but select may
+			// pick the request first, so apply any queued config now.
+			for pending := true; pending; {
+				select {
+				case c := <-l.configChanges:
+					config = c
+				default:
+					pending = false
+				}
+			}
 			up := Update{}
 
 			byteSlice, err := json.Marshal(config)
@@ -146,12 +158,13 @@ func (l *Loader) Run(ctx context.Context) error {
 				}
 			}
 
-			img, err := l.renderApplet(ctx, config)
+			result, err := l.renderApplet(ctx, config)
 			if err != nil {
 				slog.Error("Loading applet", "error", err)
 				up.Err = err
 			} else {
-				up.Image = img
+				up.Image = base64.StdEncoding.EncodeToString(result.Image)
+				up.SoundID = result.SoundID
 				up.ImageType = l.conf.ImageFormat.String()
 			}
 			up.Metadata = l.conf.Meta
@@ -161,12 +174,13 @@ func (l *Loader) Run(ctx context.Context) error {
 			slog.Info("Detected updates; reloading")
 			up := Update{}
 
-			img, err := l.renderApplet(ctx, config)
+			result, err := l.renderApplet(ctx, config)
 			if err != nil {
 				slog.Error("Loading applet", "error", err)
 				up.Err = err
 			} else {
-				up.Image = img
+				up.Image = base64.StdEncoding.EncodeToString(result.Image)
+				up.SoundID = result.SoundID
 				up.ImageType = l.conf.ImageFormat.String()
 				up.Schema = string(l.GetSchema())
 			}
@@ -295,21 +309,16 @@ func (l *Loader) GetMainFile() string {
 	return l.applet.MainFile
 }
 
-func (l *Loader) renderApplet(ctx context.Context, config map[string]any) (string, error) {
+func (l *Loader) renderApplet(ctx context.Context, config map[string]any) (RenderResult, error) {
 	if l.watch {
 		if err := l.loadApplet(); err != nil {
-			return "", err
+			return RenderResult{}, err
 		}
 	}
 
 	l.conf.Config = config
 
-	img, err := renderApplet(ctx, &l.applet, l.conf)
-	if err != nil {
-		return "", err
-	}
-
-	return base64.StdEncoding.EncodeToString(img), nil
+	return renderApplet(ctx, &l.applet, l.conf)
 }
 
 func (l *Loader) markInitialLoadComplete() {
@@ -325,10 +334,12 @@ func (l *Loader) Meta() canvas.Metadata {
 	return l.conf.Meta
 }
 
-func RenderApplet(ctx context.Context, path string, config map[string]any, options ...Option) ([]byte, []string, error) {
+// RenderApplet renders the app at path, which may be a .star file or an app
+// folder. See RenderAppletRoot.
+func RenderApplet(ctx context.Context, path string, config map[string]any, options ...Option) (RenderResult, error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return nil, nil, fmt.Errorf("stat %s: %w", path, err)
+		return RenderResult{}, fmt.Errorf("stat %s: %w", path, err)
 	}
 
 	dir := path
@@ -338,20 +349,23 @@ func RenderApplet(ctx context.Context, path string, config map[string]any, optio
 
 	root, err := os.OpenRoot(dir)
 	if err != nil {
-		return nil, nil, fmt.Errorf("opening root: %w", err)
+		return RenderResult{}, fmt.Errorf("opening root: %w", err)
 	}
 	defer func() { _ = root.Close() }()
 
 	return RenderAppletRoot(ctx, root, filepath.Base(path), config, options...)
 }
 
-func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config map[string]any, options ...Option) (img []byte, output []string, err error) {
+// RenderAppletRoot renders the app at path within root. On error, the result
+// still holds any output the app printed before it failed.
+func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config map[string]any, options ...Option) (result RenderResult, err error) {
+	var output []string
 	// Starlark execution is already guarded by the runtime, but widgets may
 	// still panic while painting or encoding. Turn that into an error so a
 	// broken app cannot take down the calling process.
 	defer func() {
 		if r := recover(); r != nil {
-			img = nil
+			result = RenderResult{Output: output}
 			err = fmt.Errorf("rendering %s: %w", path, asPanicError(r))
 		}
 	}()
@@ -373,15 +387,13 @@ func RenderAppletRoot(ctx context.Context, root *os.Root, path string, config ma
 
 	applet, err := runtime.NewAppletFromRoot(ctx, root, path, opts...)
 	if err != nil {
-		return nil, nil, err
+		return RenderResult{Output: output}, err
 	}
 	defer func() { _ = applet.Close() }()
 
-	if img, err = renderApplet(ctx, applet, conf); err != nil {
-		return nil, output, err
-	}
-
-	return img, output, nil
+	result, err = renderApplet(ctx, applet, conf)
+	result.Output = output
+	return result, err
 }
 
 var ErrTimeout = errors.New("render timeout")
@@ -395,7 +407,7 @@ func asPanicError(r any) error {
 	return &render.PanicError{Value: r, Stack: debug.Stack()}
 }
 
-func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfig) ([]byte, error) {
+func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfig) (RenderResult, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -415,7 +427,7 @@ func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfi
 
 	roots, err := applet.RunWithConfig(ctx, conf.Config)
 	if err != nil {
-		return nil, fmt.Errorf("running script: %w", err)
+		return RenderResult{}, fmt.Errorf("running script: %w", err)
 	}
 
 	screens := encode.ScreensFromRoots(roots, meta.ScaledWidth(), meta.ScaledHeight())
@@ -452,8 +464,8 @@ func renderApplet(ctx context.Context, applet *runtime.Applet, conf *RenderConfi
 		img, err = screens.EncodeGIF(ctx, maxDuration, filter)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("rendering: %w", err)
+		return RenderResult{}, fmt.Errorf("rendering: %w", err)
 	}
 
-	return img, nil
+	return RenderResult{Image: img, SoundID: screens.SoundID}, nil
 }
