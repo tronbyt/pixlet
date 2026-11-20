@@ -5,6 +5,7 @@ import (
 
 	"github.com/tronbyt/pixlet/encode"
 	"github.com/tronbyt/pixlet/render"
+	"github.com/tronbyt/pixlet/runtime/modules/host"
 	"github.com/tronbyt/pixlet/runtime/modules/render_runtime/canvas"
 	"golang.org/x/text/language"
 )
@@ -21,6 +22,8 @@ type RenderConfig struct {
 	Location          *time.Location
 	Language          language.Tag
 	Filters           encode.RenderFilters
+	// HostInfo, if set, is passed to the app through server.star and device.star.
+	HostInfo *host.Info
 }
 
 func NewRenderConfig(path string, config map[string]any, options ...Option) *RenderConfig {
@@ -123,5 +126,13 @@ func WithMeta(meta canvas.Metadata) Option {
 func WithShowFullAnimation(v *bool) Option {
 	return func(config *RenderConfig) {
 		config.ShowFullAnimation = v
+	}
+}
+
+// WithHostInfo tells the app about the server running it and the device it is
+// rendering for (see the server.star and device.star modules).
+func WithHostInfo(info host.Info) Option {
+	return func(config *RenderConfig) {
+		config.HostInfo = &info
 	}
 }
