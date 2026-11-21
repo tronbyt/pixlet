@@ -37,15 +37,17 @@ def main():
     assert.eq(device.model(), "tidbyt_gen2")
     assert.eq(device.firmware_version(), "v1.7.4")
     assert.eq(device.firmware_type(), "esp32")
+    assert.eq(device.latest_firmware_version(), "v1.7.5")
     return render.Root(child = render.Box())
 `, runtime.WithHostInfo(host.Info{
 		ServerVersion:        "v2.6.0",
 		SystemAppsCommit:     "5fb4e4ba6",
 		SystemAppsCommitTime: updated,
 		Device: host.Device{
-			Model:           "tidbyt_gen2",
-			FirmwareVersion: "v1.7.4",
-			FirmwareType:    "esp32",
+			Model:                 "tidbyt_gen2",
+			FirmwareVersion:       "v1.7.4",
+			FirmwareType:          "esp32",
+			LatestFirmwareVersion: "v1.7.5",
 		},
 	}))
 }
@@ -64,6 +66,7 @@ def main():
     assert.eq(device.model(), None)
     assert.eq(device.firmware_version(), None)
     assert.eq(device.firmware_type(), None)
+    assert.eq(device.latest_firmware_version(), None)
     return render.Root(child = render.Box())
 `)
 }

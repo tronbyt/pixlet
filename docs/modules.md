@@ -471,6 +471,7 @@ load("server.star", "server")
 | `device.model()` | The device type, e.g. `"tidbyt_gen2"`, or `None`. |
 | `device.firmware_version()` | The firmware version the device last reported, e.g. `"v1.7.4"`, or `None`. |
 | `device.firmware_type()` | The kind of firmware, e.g. `"esp32"` or `"tronberry"`, or `None`. |
+| `device.latest_firmware_version()` | The newest firmware version the server has for the device, e.g. `"v1.7.5"`: the version it would install. `None` if the server has no firmware for it. |
 
 Example:
 
