@@ -42,6 +42,9 @@ type Device struct {
 	FirmwareVersion string
 	// FirmwareType is the kind of firmware, e.g. "esp32" or "tronberry".
 	FirmwareType string
+	// LatestFirmwareVersion is the newest firmware version the host has for
+	// this device, e.g. "v1.7.5": the version it would install.
+	LatestFirmwareVersion string
 }
 
 // LoadServerModule returns the server.star module for info. pixletVersion is
@@ -71,9 +74,10 @@ func LoadDeviceModule(info Info) (starlark.StringDict, error) {
 		DeviceModuleName: &starlarkstruct.Module{
 			Name: DeviceModuleName,
 			Members: starlark.StringDict{
-				"model":            noArgs("model", optString(info.Device.Model)),
-				"firmware_version": noArgs("firmware_version", optString(info.Device.FirmwareVersion)),
-				"firmware_type":    noArgs("firmware_type", optString(info.Device.FirmwareType)),
+				"model":                   noArgs("model", optString(info.Device.Model)),
+				"firmware_version":        noArgs("firmware_version", optString(info.Device.FirmwareVersion)),
+				"firmware_type":           noArgs("firmware_type", optString(info.Device.FirmwareType)),
+				"latest_firmware_version": noArgs("latest_firmware_version", optString(info.Device.LatestFirmwareVersion)),
 			},
 		},
 	}, nil
