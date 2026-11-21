@@ -116,7 +116,7 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	buf, _, err := loader.RenderAppletRoot(
+	result, err := loader.RenderAppletRoot(
 		req.Context(),
 		o.root,
 		r.Path,
@@ -143,7 +143,7 @@ func (o *apiOptions) renderHandler(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", ct)
 	}
 
-	w.Write(buf) //nolint:errcheck
+	w.Write(result.Image) //nolint:errcheck
 }
 
 func apiRun(cmd *cobra.Command, _ []string, opts *apiOptions) error {

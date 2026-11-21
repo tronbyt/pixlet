@@ -2346,6 +2346,7 @@ func newRoot(
 		delay               starlark.Int
 		max_age             starlark.Int
 		show_full_animation starlark.Bool
+		sound_id            starlark.String
 	)
 
 	if err := starlark.UnpackArgs(
@@ -2355,6 +2356,7 @@ func newRoot(
 		"delay?", &delay,
 		"max_age?", &max_age,
 		"show_full_animation?", &show_full_animation,
+		"sound_id?", &sound_id,
 	); err != nil {
 		return nil, fmt.Errorf("unpacking arguments for Root: %s", err)
 	}
@@ -2387,6 +2389,8 @@ func newRoot(
 
 	w.ShowFullAnimation = bool(show_full_animation)
 
+	w.SoundID = sound_id.GoString()
+
 	return w, nil
 }
 
@@ -2400,6 +2404,7 @@ func (w *Root) AttrNames() []string {
 		"delay",
 		"max_age",
 		"show_full_animation",
+		"sound_id",
 	}
 }
 
@@ -2413,6 +2418,8 @@ func (w *Root) Attr(name string) (starlark.Value, error) {
 		return starlark.MakeInt(int(w.MaxAge)), nil
 	case "show_full_animation":
 		return starlark.Bool(w.ShowFullAnimation), nil
+	case "sound_id":
+		return starlark.String(w.SoundID), nil
 	default:
 		return nil, nil
 	}

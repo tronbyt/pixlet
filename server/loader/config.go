@@ -26,6 +26,17 @@ type RenderConfig struct {
 	HostInfo *host.Info
 }
 
+// RenderResult is what a render produced.
+type RenderResult struct {
+	// Image is the encoded image (WebP or GIF).
+	Image []byte
+	// Output holds what the app printed, when WithSilenceOutput is set.
+	Output []string
+	// SoundID is the app's render.Root(sound_id = ...) value, or "" when it
+	// didn't ask for a sound.
+	SoundID string
+}
+
 func NewRenderConfig(path string, config map[string]any, options ...Option) *RenderConfig {
 	conf := &RenderConfig{
 		Path:   path,
